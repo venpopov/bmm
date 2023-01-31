@@ -21,3 +21,5 @@ Imports:
     parallel,
     dplyr,
     withr
+URL: https://github.com/venpopov/bmm
+BugReports: https://github.com/venpopov/bmm/issues
