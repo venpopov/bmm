@@ -65,8 +65,8 @@ functions and combined using the c method or the + operator. See also
 get_prior for more help. Not necessary for the default model fitting, but
 you can provide prior constraints to model parameters}
 
-\item{...}{Further arguments passed to \code{brm()} or Stan. See the description
-of \code{brm()} for more details}
+\item{...}{Further arguments passed to \code{\link{brms::brm}} or Stan. See
+the description of \code{brm()} for more details}
 }
 \value{
 An object of class brmsfit which contains the posterior draws along
@@ -75,7 +75,11 @@ with many other useful information about the model. Use methods(class =
 }
 \description{
 Fit a Bayesian multilevel mixture model for visual working
-memory. Currently implementedare the two-parameter mixture model by Zhang
+memory. Currently implemented are the two-parameter mixture model by Zhang
 and Luck (2008), and the three-parameter mixture model by Bays et al
-(2009).
+(2009). This is a wrapper function for \code{\link{brms::brm}}, which is
+used to estimate the model
+}
+\seealso{
+\code{\link{brms::brm}}
 }

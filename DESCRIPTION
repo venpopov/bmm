@@ -20,4 +20,5 @@ Imports:
     brms,
     magrittr,
     parallel,
-    dplyr
+    dplyr,
+    withr
