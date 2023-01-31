@@ -155,7 +155,7 @@ fit_model <- function(formula, data, model_type, target=NULL, lures=NULL, setsiz
       brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetant")
 
     # if there is setsize 1 in the data, set constant prior over thetant for setsize1
-    if (1 %in% ss_numeric) {
+    if ((1 %in% ss_numeric) && !is.numeric(data[[setsize]])) {
       mix_prior <- mix_prior +
         brms::prior_("constant(-100)", class="b", coef=paste0(setsize, 1), nlpar="thetant")
     }
