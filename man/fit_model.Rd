@@ -60,13 +60,13 @@ by the \code{chain} argument) in parallel using the parallel package}
 
 \item{chains}{Numeric. Number of Markov chains (defaults to 4)}
 
-\item{prior}{One or more brmsprior objects created by set_prior or related
+\item{prior}{One or more \code{brmsprior} objects created by \code{\link[brms:set_prior]{brms::set_prior()}} or related
 functions and combined using the c method or the + operator. See also
-get_prior for more help. Not necessary for the default model fitting, but
+\code{\link[brms:get_prior]{brms::get_prior()}} for more help. Not necessary for the default model fitting, but
 you can provide prior constraints to model parameters}
 
-\item{...}{Further arguments passed to \code{\link{brms::brm}} or Stan. See
-the description of \code{brm()} for more details}
+\item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See
+the description of \code{\link[brms:brm]{brms::brm()}} for more details}
 }
 \value{
 An object of class brmsfit which contains the posterior draws along
@@ -77,9 +77,9 @@ with many other useful information about the model. Use methods(class =
 Fit a Bayesian multilevel mixture model for visual working
 memory. Currently implemented are the two-parameter mixture model by Zhang
 and Luck (2008), and the three-parameter mixture model by Bays et al
-(2009). This is a wrapper function for \code{\link{brms::brm}}, which is
+(2009). This is a wrapper function for \link[brms:brm]{brms::brm}, which is
 used to estimate the model
 }
 \seealso{
-\code{\link{brms::brm}}
+\code{\link[brms:brm]{brms::brm()}}
 }

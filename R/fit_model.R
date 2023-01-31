@@ -2,7 +2,7 @@
 #' @description Fit a Bayesian multilevel mixture model for visual working
 #'   memory. Currently implemented are the two-parameter mixture model by Zhang
 #'   and Luck (2008), and the three-parameter mixture model by Bays et al
-#'   (2009). This is a wrapper function for \code{\link{brms::brm}}, which is
+#'   (2009). This is a wrapper function for [brms::brm], which is
 #'   used to estimate the model
 #'
 #' @param formula An object of class `brmsformula`. A symbolic description of
@@ -37,16 +37,16 @@
 #'   detected and brms will fit max(chains, cores) number of chains (specified
 #'   by the `chain` argument) in parallel using the parallel package
 #' @param chains Numeric. Number of Markov chains (defaults to 4)
-#' @param prior One or more brmsprior objects created by set_prior or related
+#' @param prior One or more `brmsprior` objects created by [brms::set_prior()] or related
 #'   functions and combined using the c method or the + operator. See also
-#'   get_prior for more help. Not necessary for the default model fitting, but
+#'   [brms::get_prior()] for more help. Not necessary for the default model fitting, but
 #'   you can provide prior constraints to model parameters
-#' @param ... Further arguments passed to \code{\link{brms::brm}} or Stan. See
-#'   the description of `brm()` for more details
+#' @param ... Further arguments passed to [brms::brm()] or Stan. See
+#'   the description of [brms::brm()] for more details
 #' @returns An object of class brmsfit which contains the posterior draws along
 #'   with many other useful information about the model. Use methods(class =
 #'   "brmsfit") for an overview on available methods.
-#' @seealso \code{\link{brms::brm}}
+#' @seealso [brms::brm()]
 #' @export
 fit_model <- function(formula, data, model_type, target=NULL, lures=NULL, setsize=NULL, relative=T, parallel=FALSE, chains=4, prior=NULL, ...) {
   if (parallel){

@@ -1,15 +1,14 @@
 Package: bmm
-Title: Bayesian Mixture Models for Visual Working Memory using brms
+Title: Bayesian Measurement Models for Visual Working Memory using 'brms'
 Version: 0.0.0.9000
-Authors@R: 
-    person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre"))
-    person("Gidon", "Frischkorn-Bartsch", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cre"))
-Description: Wrapper functions that make it easier to estimate commong mixture 
-    models for visual working memory using the brms package. Currently implemented 
+Authors@R: c(
+    person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre")),
+    person("Gidon", "Frischkorn-Bartsch", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut")))
+Description: Wrapper functions that make it easier to estimate commong mixture measurement
+    models for visual working memory using the 'brms' package. Currently implemented 
     are the two-parameter mixture model by Zhang and Luck (2008), and the three-
     parameter mixture model by Bays et al (2009).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
