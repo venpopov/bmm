@@ -18,7 +18,8 @@
 calc_error_relative_to_nontargets <- function(data, response, lures) {
   y <- y_nt <- non_target_name <- non_target_value <- NULL
   data <- data %>%
-    tidyr::gather(non_target_name, non_target_value, eval(lures)) %>%
-    dplyr::mutate(y_nt = wrap(y-non_target_value))
+    tidyr::gather(non_target_name, non_target_value, eval(lures))
+
+  data$y_nt <- wrap(data[[response]]-data[["non_target_value"]])
   return(data)
 }
