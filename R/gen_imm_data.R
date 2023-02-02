@@ -9,7 +9,7 @@
 #'      s = spatial similarity gradient,
 #'      n = background noise,
 #'      kappa = precision of memory representations
-#' @param nResp Numeric. number of responses to simulate for each subject
+#' @param ntrials Numeric. number of responses to simulate for each subject
 #' @param setsize Numeric. Number of items in memory set
 #'
 #' @return A data.frame object. resp is the response, respErr is the relative
@@ -64,7 +64,7 @@ gen_imm_data <- function(parms,
     for (trial in 1:ntrials) {
       # generate random memory set & distances for each trial
       memset[trial,1:setsize] <- bmm::wrap(circular::rvonmises(setsize, 0, 0,  control.circular = list(units = "radians")))  # draw items from uniform
-      D[trial,2:setsize] <- runif(setsize - 1, 0.5, pi)   # draw distances of non-targets from uniform range 0.5 to pi
+      D[trial,2:setsize] <- stats::runif(setsize - 1, 0.5, pi)   # draw distances of non-targets from uniform range 0.5 to pi
 
       # compute activation for all items + random guessing
       acts[1:setsize] <- parms[idx,"a"] + exp(-parms[idx,"s"]*D[trial,]) * parms[idx,"c"]
@@ -75,7 +75,7 @@ gen_imm_data <- function(parms,
 
       # randomly select from which distribution the response will come from
       cumP <- cumsum(P)
-      draw <- runif(1,0,1)
+      draw <- stats::runif(1,0,1)
       aa <- draw < cumP
       choice <- min(which(aa == TRUE))
 

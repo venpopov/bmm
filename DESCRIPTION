@@ -21,6 +21,8 @@ Imports:
     parallel,
     dplyr,
     withr,
-    tidyr
+    tidyr,
+    circular,
+    stats
 URL: https://github.com/venpopov/bmm
 BugReports: https://github.com/venpopov/bmm/issues
