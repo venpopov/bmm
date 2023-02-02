@@ -165,12 +165,18 @@ fit_model <- function(formula, data, model_type, target=NULL, lures=NULL, setsiz
                 'should be "2p" for the 2 parameter mixture model or "3p" for the 3 parameter mixture model. '))
   }
 
+  # combine the default prior plus user givne prior
+  if (!is.null(prior)) {
+    mix_prior <- dplyr::anti_join(mix_prior, prior, by=c('class', 'dpar','nlpar','coef','group','resp'))
+    mix_prior <- mix_prior+prior
+  }
+
   # estimate model
   fit <- brms::brm(
     formula = ff,
     data    = data,
     family  = mix_family,
-    prior   = mix_prior+prior,
+    prior   = mix_prior,
     ...)
 
   return(fit)
