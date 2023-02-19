@@ -26,6 +26,9 @@
 #'   items also have to be centered on the target. If the response is the raw
 #'   response and not centered on the target, then the non-target values should
 #'   also not be centered on the target
+#' @param spaDist A vector of names of the columns containing the spatial distances of
+#'   non-target items to the target item. Only necessary if `model_type=="IMMbsc "` or
+#'   `model_type == "IMMfull"`.
 #' @param setsize Name of the column containing the set size variable (if
 #'   setsize varies) or a numeric value for the setsize, if the setsize is
 #'   fixed. Only necessary if fitting the 3 parameter mixture model.
