@@ -21,7 +21,6 @@
 #' @export
 gen_imm_data <- function(parms,
                          ntrials = 200, setsize=6){
-
   # pre-allocate & collect variables for the data simulation
   nsubj <- nrow(parms) # number of subject
 

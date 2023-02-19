@@ -48,83 +48,113 @@
 #'   "brmsfit") for an overview on available methods.
 #' @seealso [brms::brm()]
 #' @export
-fit_model <- function(formula, data, model_type, target=NULL, lures=NULL, setsize=NULL, relative=T, parallel=FALSE, chains=4, prior=NULL, ...) {
-  if (parallel){
+fit_model <- function(formula, data, model_type,
+                      target=NULL, lures=NULL, spaPos = NULL, setsize=NULL,
+                      relative=T, parallel=FALSE, chains=4, prior=NULL,
+                      ...) {
+  # enable parallel sampling if parallel equals TRUE
+  if (parallel) {
     withr::local_options(list(mc.cores =  parallel::detectCores()))
     if (chains >  parallel::detectCores()) {
       chains <-  parallel::detectCores()
     }
   }
 
+  # Pre-Check: was a valid brms formula provided
   if (!inherits(formula, 'brmsformula')) {
     stop("The provided formula is not a brms formula.
           Please specify formula with the bf() function. E.g.: bf(y ~ 1, kappa ~ 1, thetat ~ 1")
   }
 
-  # check data
+  # check data ---------------------------------------------------------------------------
   if (max(abs(data[[formula$resp]])) > 10) {
     data[[formula$resp]] <- data[[formula$resp]]*pi/180
     warning('It appears your response variable is in degrees. We will transform it to radians.')
   }
-  data[[formula$resp]] <- wrap(data[[formula$resp]])
 
+  if(model_type != "2p"){
+    if (max(abs(data[,lures])) > 10) {
+      data[,lures] <- data[,lures]*pi/180
+      warning('It appears your lure variables are in degrees. We will transform it to radians.')
+    }
+    # wrap lure variables around the circle (range = -pi to pi)
+    data[,lures] <- bmm::wrap(data[,lures])
 
-  # 2 parameter model
+    if(model_type == "IMMbsc" | model_type == "IMMfull"){
+      if (max(abs(data[,spaPos])) > 10) {
+        data[,spaPos] <- data[,spaPos]*pi/180
+        warning('It appears your spatial position variables are in degrees. We will transform it to radians.')
+      }
+      # wrap spatial position variables around the circle (range = -pi to pi)
+      data[,spaPos] <- bmm::wrap(data[,spaPos])
+    }
+  }
+
+  # wrap recoded responses around the circle (range = -pi to pi)
+  data[[formula$resp]] <- bmm::wrap(data[[formula$resp]])
+
   if (model_type == "2p") {
+    # 2 parameter model ------------------------------------------------------------------
+    # specify the formula for the mixture model
     ff <- formula +
       brms::lf(kappa2 ~ 1, mu1 ~ 1, mu2 ~ 1) +
       brms::nlf(kappa1 ~ kappa) +
       brms::nlf(theta1 ~ thetat)
-    mix_family <- brms::mixture("von_mises", "von_mises", order="none")
-    mix_prior <- brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +    # fix mean of the first von Mises to zero
-      brms::prior_("constant(0)", class = "Intercept", dpar = "mu2") +               # fix mean of the second von Mises to zero
-      brms::prior_("constant(-100)", class = "Intercept", dpar = "kappa2") +         # fix kappa of the second von Mises to (alomst) zero
-      brms::prior_("normal(5.0, 0.8)", class = "b", nlpar = "kappa") +
+
+    # specify the mixture family
+    mix_family <- brms::mixture("von_mises", "von_mises", order = "none")
+
+    # set priors for the estimated parameters
+    mix_prior <- # fix mean of the first von Mises to zero
+      brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+      # fix mean of the second von Mises to zero
+      brms::prior_("constant(0)", class = "Intercept", dpar = "mu2") +
+      # fix kappa of the second von Mises to (alomst) zero
+      brms::prior_("constant(-100)", class = "Intercept", dpar = "kappa2") +
+      # set reasonable default priors for the estimated parameters
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
       brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat")
 
-
-    # 3 parameter model
   } else if (model_type == "3p") {
+    # 3 parameter model ------------------------------------------------------------------
     if (is.null(setsize)) {
       stop(paste0("Argument 'setsize' is not specified. For a 3 parameter mixture model, ",
                   "please set the 'setsize' argument either to a number, if the setsize ",
                   "is fixed, or to the name of the variable containing the setsize, ",
                   "if the setsize varies in your dataset"))
-
     } else if (is.character(setsize)) {
       # Variable setsize
       ss_numeric <- as.numeric(as.character(data[[setsize]]))
       max_setsize <- max(ss_numeric)
-
     } else if (is.numeric(setsize)) {
       # Fixed setsize
-      ss_numeric <- rep(setsize, times=nrow(data))
+      ss_numeric <- rep(setsize, times = nrow(data))
       max_setsize <- setsize
     }
 
-    if (length(lures) < max_setsize-1) {
+    if (length(lures) < max_setsize - 1) {
       stop(paste0('The number of columns for non-target values in the argument',
                   '`lures` is less than max(setsize)-1'))
-    } else if (length(lures) > max_setsize-1) {
+    } else if (length(lures) > max_setsize - 1) {
       stop(paste0('The number of columns for non-target values in the argument',
                   '`lures` is more than max(setsize)-1'))
     }
 
     # create index variables for lures and correction variable for theta due to setsize
-    lure_idx_vars <- paste0('LureIdx',1:(max_setsize-1))
-    for(i in 1:(max_setsize-1)) {
-      data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i+1), 1, 0)
+    lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
+    for (i in 1:(max_setsize - 1)) {
+      data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
     }
-    data$inv_ss = 1/(ss_numeric-1)
+    data$inv_ss = 1/(ss_numeric - 1)
     data$inv_ss = ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
     data[,lures][is.na(data[,lures])] <- 0
 
     # names for parameters
     kappa_nts <- paste0('kappa', 2:max_setsize)
-    kappa_unif <- paste0('kappa',max_setsize+1)
+    kappa_unif <- paste0('kappa',max_setsize + 1)
     theta_nts <- paste0('theta',2:max_setsize)
     mu_nts <- paste0('mu', 2:max_setsize)
-    mu_unif <- paste0('mu', max_setsize+1)
+    mu_unif <- paste0('mu', max_setsize + 1)
 
     # construct formula
     ff <- formula +
@@ -157,7 +187,260 @@ fit_model <- function(formula, data, model_type, target=NULL, lures=NULL, setsiz
     # if there is setsize 1 in the data, set constant prior over thetant for setsize1
     if ((1 %in% ss_numeric) && !is.numeric(data[[setsize]])) {
       mix_prior <- mix_prior +
-        brms::prior_("constant(-100)", class="b", coef=paste0(setsize, 1), nlpar="thetant")
+        brms::prior_("constant(-100)", class="b", coef = paste0(setsize, 1), nlpar="thetant")
+    }
+
+
+  } else if (model_type == "IMMabc") {
+    # IMMabc -----------------------------------------------------------------------------
+    if (is.null(setsize)) {
+      stop(paste0("Argument 'setsize' is not specified. For the Interference Measurement Model, ",
+                  "please set the 'setsize' argument either to a number, if the setsize ",
+                  "is fixed, or to the name of the variable containing the setsize, ",
+                  "if the setsize varies in your dataset"))
+    } else if (is.character(setsize)) {
+      # Variable setsize
+      ss_numeric <- as.numeric(as.character(data[[setsize]]))
+      max_setsize <- max(ss_numeric)
+    } else if (is.numeric(setsize)) {
+      # Fixed setsize
+      ss_numeric <- rep(setsize, times = nrow(data))
+      max_setsize <- setsize
+    }
+
+    if (length(lures) < max_setsize - 1) {
+      stop(paste0('The number of columns for non-target values in the argument',
+                  '`lures` is less than max(setsize)-1'))
+    } else if (length(lures) > max_setsize-1) {
+      stop(paste0('The number of columns for non-target values in the argument',
+                  '`lures` is more than max(setsize)-1'))
+    }
+
+    # create index variables for lures and correction variable for theta due to setsize
+    lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
+    for (i in 1:(max_setsize - 1)) {
+      data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
+    }
+    data[,lures][is.na(data[,lures])] <- 0
+
+    # names for parameters
+    kappa_nts <- paste0('kappa', 2:max_setsize)
+    kappa_unif <- paste0('kappa',max_setsize + 1)
+    theta_nts <- paste0('theta',2:max_setsize)
+    mu_nts <- paste0('mu', 2:max_setsize)
+    mu_unif <- paste0('mu', max_setsize + 1)
+
+    # construct formula
+    ff <- formula +
+      brms::lf(mu1 ~ 1,
+               stats::as.formula(paste0(kappa_unif,' ~ 1')),
+               stats::as.formula(paste0(mu_unif, ' ~ 1'))) +
+      brms::nlf(theta1 ~ c + a) +
+      brms::nlf(kappa1 ~ kappa)
+    for (i in 1:(max_setsize-1)) {
+      ff <- ff +
+        brms::nlf(stats::as.formula(paste0(kappa_nts[i], ' ~ kappa'))) +
+        brms::nlf(stats::as.formula(paste0(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(a) + (1-', lure_idx_vars[i], ')*(-100)'))) +
+        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', lures[i])))
+    }
+
+    # define mixture family
+    vm_list = lapply(1:(max_setsize+1), function(x) brms::von_mises(link="identity"))
+    vm_list$order = "none"
+    mix_family <- brms::do_call(brms::mixture, vm_list)
+
+    # define prior
+    mix_prior <- # fix mean of the first von Mises to zero
+      brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+      # fix mean of the guessing distribution to zero
+      brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
+      # fix kappa of the second von Mises to (alomst) zero
+      brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
+      # set reasonable priors fpr the to be estimated parameters
+      brms::prior_("normal(2.0, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "a")
+
+    # if there is setsize 1 in the data, set constant prior over thetant for setsize1
+    if ((1 %in% ss_numeric) && !is.numeric(data[[setsize]])) {
+      mix_prior <- mix_prior +
+        brms::prior_("constant(0)", class="b", coef = paste0(setsize, 1), nlpar="a")
+    }
+
+  }  else if(model_type == "IMMbsc") {
+    # IMMbsc -----------------------------------------------------------------------------
+    if (is.null(setsize)) {
+      stop(paste0("Argument 'setsize' is not specified. For the Interference Measurement Model, ",
+                  "please set the 'setsize' argument either to a number, if the setsize ",
+                  "is fixed, or to the name of the variable containing the setsize, ",
+                  "if the setsize varies in your dataset"))
+    } else if (is.character(setsize)) {
+      # Variable setsize
+      ss_numeric <- as.numeric(as.character(data[[setsize]]))
+      max_setsize <- max(ss_numeric)
+    } else if (is.numeric(setsize)) {
+      # Fixed setsize
+      ss_numeric <- rep(setsize, times = nrow(data))
+      max_setsize <- setsize
+    }
+
+    if (length(lures) < max_setsize - 1) {
+      stop(paste0('The number of columns for non-target values in the argument',
+                  '`lures` is less than max(setsize)-1'))
+    } else if (length(lures) > max_setsize-1) {
+      stop(paste0('The number of columns for non-target values in the argument',
+                  '`lures` is more than max(setsize)-1'))
+    }
+
+    if (length(spaPos) < max_setsize - 1) {
+      stop(paste0('The number of columns for spatial positions in the argument',
+                  '`spaPos` is less than max(setsize)-1'))
+    } else if (length(spaPos) > max_setsize-1) {
+      stop(paste0('The number of columns for spatial positions in the argument',
+                  '`spaPos` is more than max(setsize)-1'))
+    }
+
+    # create index variables for lures and correction variable for theta due to setsize
+    lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
+    for (i in 1:(max_setsize - 1)) {
+      data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
+    }
+    data[,lures][is.na(data[,lures])] <- 0
+
+    # names for parameters
+    kappa_nts <- paste0('kappa', 2:max_setsize)
+    kappa_unif <- paste0('kappa',max_setsize + 1)
+    theta_nts <- paste0('theta',2:max_setsize)
+    mu_nts <- paste0('mu', 2:max_setsize)
+    mu_unif <- paste0('mu', max_setsize + 1)
+
+    # construct formula
+    ff <- formula +
+      brms::lf(mu1 ~ 1,
+               stats::as.formula(paste0(kappa_unif,' ~ 1')),
+               stats::as.formula(paste0(mu_unif, ' ~ 1'))) +
+      brms::nlf(theta1 ~ c) +
+      brms::nlf(kappa1 ~ kappa) +
+      brms::nlf(expS ~ exp(s))
+    for (i in 1:(max_setsize-1)) {
+      ff <- ff +
+        brms::nlf(stats::as.formula(paste0(kappa_nts[i], ' ~ kappa'))) +
+        brms::nlf(stats::as.formula(paste0(theta_nts[i], ' ~ ',
+                                           lure_idx_vars[i], '*(exp(-expS*',spaPos[i],')*c) + (1-',
+                                           lure_idx_vars[i], ')*(-100)'))) +
+        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', lures[i])))
+    }
+
+    # define mixture family
+    vm_list = lapply(1:(max_setsize+1), function(x) brms::von_mises(link="identity"))
+    vm_list$order = "none"
+    mix_family <- brms::do_call(brms::mixture, vm_list)
+
+    # define prior
+    mix_prior <- # fix mean of the first von Mises to zero
+      brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+      # fix mean of the guessing distribution to zero
+      brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
+      # fix kappa of the second von Mises to (alomst) zero
+      brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
+      # set reasonable priors fpr the to be estimated parameters
+      brms::prior_("normal(2.0, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
+
+    # if there is setsize 1 in the data, set constant prior over thetant for setsize1
+    if ((1 %in% ss_numeric) && !is.numeric(data[[setsize]])) {
+      mix_prior <- mix_prior +
+        brms::prior_("constant(0)", class="b", coef = paste0(setsize, 1), nlpar="s")
+    }
+
+  } else if(model_type == "IMMfull") {
+    # IMMfull ----------------------------------------------------------------------------
+    if (is.null(setsize)) {
+      stop(paste0("Argument 'setsize' is not specified. For the Interference Measurement Model, ",
+                  "please set the 'setsize' argument either to a number, if the setsize ",
+                  "is fixed, or to the name of the variable containing the setsize, ",
+                  "if the setsize varies in your dataset"))
+    } else if (is.character(setsize)) {
+      # Variable setsize
+      ss_numeric <- as.numeric(as.character(data[[setsize]]))
+      max_setsize <- max(ss_numeric)
+    } else if (is.numeric(setsize)) {
+      # Fixed setsize
+      ss_numeric <- rep(setsize, times = nrow(data))
+      max_setsize <- setsize
+    }
+
+    if (length(lures) < max_setsize - 1) {
+      stop(paste0('The number of columns for non-target values in the argument',
+                  '`lures` is less than max(setsize)-1'))
+    } else if (length(lures) > max_setsize-1) {
+      stop(paste0('The number of columns for non-target values in the argument',
+                  '`lures` is more than max(setsize)-1'))
+    }
+
+    if (length(spaPos) < max_setsize - 1) {
+      stop(paste0('The number of columns for spatial positions in the argument',
+                  '`spaPos` is less than max(setsize)-1'))
+    } else if (length(spaPos) > max_setsize-1) {
+      stop(paste0('The number of columns for spatial positions in the argument',
+                  '`spaPos` is more than max(setsize)-1'))
+    }
+
+    # create index variables for lures and correction variable for theta due to setsize
+    lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
+    for (i in 1:(max_setsize - 1)) {
+      data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
+    }
+    data[,lures][is.na(data[,lures])] <- 0
+
+    # names for parameters
+    kappa_nts <- paste0('kappa', 2:max_setsize)
+    kappa_unif <- paste0('kappa',max_setsize + 1)
+    theta_nts <- paste0('theta',2:max_setsize)
+    mu_nts <- paste0('mu', 2:max_setsize)
+    mu_unif <- paste0('mu', max_setsize + 1)
+
+    # construct formula
+    ff <- formula +
+      brms::lf(mu1 ~ 1,
+               stats::as.formula(paste0(kappa_unif,' ~ 1')),
+               stats::as.formula(paste0(mu_unif, ' ~ 1'))) +
+      brms::nlf(theta1 ~ c) +
+      brms::nlf(kappa1 ~ kappa) +
+      brms::nlf(expS ~ exp(s))
+    for (i in 1:(max_setsize-1)) {
+      ff <- ff +
+        brms::nlf(stats::as.formula(paste0(kappa_nts[i], ' ~ kappa'))) +
+        brms::nlf(stats::as.formula(paste0(theta_nts[i], ' ~ ',
+                                           lure_idx_vars[i], '*(exp(-expS*',spaPos[i],')*c + a) + (1-',
+                                           lure_idx_vars[i], ')*(-100)'))) +
+        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', lures[i])))
+    }
+
+    # define mixture family
+    vm_list = lapply(1:(max_setsize+1), function(x) brms::von_mises(link="identity"))
+    vm_list$order = "none"
+    mix_family <- brms::do_call(brms::mixture, vm_list)
+
+    # define prior
+    mix_prior <- # fix mean of the first von Mises to zero
+      brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+      # fix mean of the guessing distribution to zero
+      brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
+      # fix kappa of the second von Mises to (alomst) zero
+      brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
+      # set reasonable priors fpr the to be estimated parameters
+      brms::prior_("normal(2.0, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "a") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
+
+    # if there is setsize 1 in the data, set constant prior over thetant for setsize1
+    if ((1 %in% ss_numeric) && !is.numeric(data[[setsize]])) {
+      mix_prior <- mix_prior +
+        brms::prior_("constant(0)", class="b", coef = paste0(setsize, 1), nlpar="a") +
+        brms::prior_("constant(0)", class="b", coef = paste0(setsize, 1), nlpar="s")
     }
 
   } else {
