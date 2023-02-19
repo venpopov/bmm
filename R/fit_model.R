@@ -1,8 +1,9 @@
-#' @title Fit Mixture Model for Visual Working Memory using BRMS
+#' @title Fit Mixture Models for Visual Working Memory using BRMS
 #' @description Fit a Bayesian multilevel mixture model for visual working
 #'   memory. Currently implemented are the two-parameter mixture model by Zhang
-#'   and Luck (2008), and the three-parameter mixture model by Bays et al
-#'   (2009). This is a wrapper function for [brms::brm], which is
+#'   and Luck (2008), the three-parameter mixture model by Bays et al
+#'   (2009), and three different versions of the Interference Measurement Model
+#'   (Oberauer et al., 2017). This is a wrapper function for [brms::brm], which is
 #'   used to estimate the model
 #'
 #' @param formula An object of class `brmsformula`. A symbolic description of
@@ -17,11 +18,16 @@
 #'   from them the value of the target before running the model
 #' @param model_type A description of the mixture model. "2p" for the 2
 #'   parameter mixture model of Zhang and Luck (2008), "3p" for the 3 parameter
-#'   mixture model of Bays et al (2009)
+#'   mixture model of Bays et al (2009). "IMMabc" for the interfernece measurement model assuming swap
+#'   errors to occur independent of spatial proximity between target and non-target
+#'   items, "IMMbsc" for the interference measurement model assuming swap errors to occur
+#'   only as a function of spatial proximity between target and non-targets, and "IMMfull"
+#'   for the full interference measurement model accounting for swap both dependent and
+#'   independent of proximity between target and non-targets (Oberauer et al., 2017).
 #' @param target Name of the column containing the values of the target. Only
-#'   necessary if argument `relative==F`
+#'   necessary if argument `relative==F` (currently experimental)
 #' @param lures A vector of names of the columns containing the non-target
-#'   values. Only necessary if `model_type=="3p"`. If the response is the
+#'   values. Necessary for all models, except if `model_type="2p"`. If the response is the
 #'   response error centered on the target, then the values for the non-target
 #'   items also have to be centered on the target. If the response is the raw
 #'   response and not centered on the target, then the non-target values should
@@ -75,7 +81,7 @@ fit_model <- function(formula, data, model_type,
     warning('It appears your response variable is in degrees. We will transform it to radians.')
   }
 
-  if(model_type != "2p"){
+  if (model_type != "2p") {
     if (max(abs(data[,lures])) > 10) {
       data[,lures] <- data[,lures]*pi/180
       warning('It appears your lure variables are in degrees. We will transform it to radians.')
@@ -83,7 +89,7 @@ fit_model <- function(formula, data, model_type,
     # wrap lure variables around the circle (range = -pi to pi)
     data[,lures] <- bmm::wrap(data[,lures])
 
-    if(model_type == "IMMbsc" | model_type == "IMMfull"){
+    if (model_type == "IMMbsc" | model_type == "IMMfull") {
       if (max(abs(data[,spaPos])) > 10) {
         data[,spaPos] <- data[,spaPos]*pi/180
         warning('It appears your spatial position variables are in degrees. We will transform it to radians.')
