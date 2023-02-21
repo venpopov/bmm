@@ -32,7 +32,7 @@
 #'   items also have to be centered on the target. If the response is the raw
 #'   response and not centered on the target, then the non-target values should
 #'   also not be centered on the target
-#' @param spaDist A vector of names of the columns containing the spatial distances of
+#' @param spaPos A vector of names of the columns containing the spatial distances of
 #'   non-target items to the target item. Only necessary if `model_type=="IMMbsc "` or
 #'   `model_type == "IMMfull"`.
 #' @param setsize Name of the column containing the set size variable (if
@@ -168,8 +168,8 @@ fit_model <- function(formula, data, model_type,
     # construct formula
     ff <- formula +
       brms::lf(mu1 ~ 1,
-         stats::as.formula(paste0(kappa_unif,' ~ 1')),
-         stats::as.formula(paste0(mu_unif, ' ~ 1'))) +
+               stats::as.formula(paste0(kappa_unif,' ~ 1')),
+               stats::as.formula(paste0(mu_unif, ' ~ 1'))) +
       brms::nlf(theta1 ~ thetat) +
       brms::nlf(kappa1 ~ kappa)
     for (i in 1:(max_setsize-1)) {
@@ -453,8 +453,9 @@ fit_model <- function(formula, data, model_type,
     }
 
   } else {
-    stop(paste0('Invalid value for argument model_type: ', model_type, '\nThe model_type ',
-                'should be "2p" for the 2 parameter mixture model or "3p" for the 3 parameter mixture model. '))
+    stop(paste0('Invalid value for argument model_type: ', model_type, '\n\nThe model_type ',
+                'should be "2p" for the 2 parameter mixture model, \n"3p" for the 3 parameter mixture model,\n',
+                'or "IMMabc", "IMMbsc", or "IMMfull" for one of  \nthe three interference measurement model types.'))
   }
 
   # estimate model
