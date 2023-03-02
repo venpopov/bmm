@@ -7,7 +7,7 @@
 get_response(formula)
 }
 \arguments{
-\item{formula}{}
+\item{formula}{an object of type bfformula}
 }
 \value{
 String. Name of the response variable

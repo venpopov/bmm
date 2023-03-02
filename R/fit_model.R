@@ -11,7 +11,7 @@
 #' @param data An object of class data.frame, containing data of all variables
 #'   used in the model. Response, target and lure values must be in radians.
 #'   There must be as many lure value columns as the maximum setsize-1. For
-#'   setsizes smaller than the maximum, values for non-existing lures must be
+#'   setsizes smaller than the maximum, values for non-existing non_targets must be
 #'   coded as NA. The outcome variable must be response error relative to the
 #'   target, not the raw response. Similarly, the lure values must be coded
 #'   relative to the target. If the lure values are absolute, you must subtract
@@ -26,7 +26,7 @@
 #'   independent of proximity between target and non-targets (Oberauer et al., 2017).
 #' @param target Name of the column containing the values of the target. Only
 #'   necessary if argument `relative==F` (currently experimental)
-#' @param lures A vector of names of the columns containing the non-target
+#' @param non_targets A vector of names of the columns containing the non-target
 #'   values. Necessary for all models, except if `model_type="2p"`. If the response is the
 #'   response error centered on the target, then the values for the non-target
 #'   items also have to be centered on the target. If the response is the raw
@@ -40,7 +40,7 @@
 #'   fixed. Only necessary if fitting the 3 parameter mixture model.
 #' @param relative Logical; TRUE if the response is the response error centered
 #'   on the target value, and the lure positions (for the 3 parameter model) are
-#'   also centered relative to the target. FALSE if the response and the lures
+#'   also centered relative to the target. FALSE if the response and the non_targets
 #'   are the absolute values not centered on the target. Default is TRUE.
 #' @param parallel Logical; If TRUE, the number of cores on your machine will be
 #'   detected and brms will fit max(chains, cores) number of chains (specified
@@ -58,7 +58,7 @@
 #' @seealso [brms::brm()]
 #' @export
 fit_model <- function(formula, data, model_type,
-                      target=NULL, lures=NULL, spaPos = NULL, setsize=NULL,
+                      target=NULL, non_targets=NULL, spaPos = NULL, setsize=NULL,
                       relative=T, parallel=FALSE, chains=4, prior=NULL,
                       ...) {
   # enable parallel sampling if parallel equals TRUE
@@ -84,12 +84,12 @@ fit_model <- function(formula, data, model_type,
   }
 
   if (model_type != "2p") {
-    if (max(abs(data[,lures])) > 10) {
-      data[,lures] <- data[,lures]*pi/180
+    if (max(abs(data[,non_targets])) > 10) {
+      data[,non_targets] <- data[,non_targets]*pi/180
       warning('It appears your lure variables are in degrees. We will transform it to radians.')
     }
     # wrap lure variables around the circle (range = -pi to pi)
-    data[,lures] <- bmm::wrap(data[,lures])
+    data[,non_targets] <- bmm::wrap(data[,non_targets])
 
     if (model_type == "IMMbsc" | model_type == "IMMfull") {
       if (max(abs(data[,spaPos])) > 10) {
@@ -143,22 +143,22 @@ fit_model <- function(formula, data, model_type,
       max_setsize <- setsize
     }
 
-    if (length(lures) < max_setsize - 1) {
+    if (length(non_targets) < max_setsize - 1) {
       stop(paste0('The number of columns for non-target values in the argument',
-                  '`lures` is less than max(setsize)-1'))
-    } else if (length(lures) > max_setsize - 1) {
+                  '`non_targets` is less than max(setsize)-1'))
+    } else if (length(non_targets) > max_setsize - 1) {
       stop(paste0('The number of columns for non-target values in the argument',
-                  '`lures` is more than max(setsize)-1'))
+                  '`non_targets` is more than max(setsize)-1'))
     }
 
-    # create index variables for lures and correction variable for theta due to setsize
+    # create index variables for non_targets and correction variable for theta due to setsize
     lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
     for (i in 1:(max_setsize - 1)) {
       data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
     }
     data$inv_ss = 1/(ss_numeric - 1)
     data$inv_ss = ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
-    data[,lures][is.na(data[,lures])] <- 0
+    data[,non_targets][is.na(data[,non_targets])] <- 0
 
     # names for parameters
     kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -178,7 +178,7 @@ fit_model <- function(formula, data, model_type,
       ff <- ff +
         brms::nlf(stats::as.formula(paste0(kappa_nts[i], ' ~ kappa'))) +
         brms::nlf(stats::as.formula(paste0(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(thetant + log(inv_ss)) + (1-', lure_idx_vars[i], ')*(-100)'))) +
-        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', lures[i])))
+        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', non_targets[i])))
     }
 
     # define mixture family
@@ -219,20 +219,20 @@ fit_model <- function(formula, data, model_type,
       max_setsize <- setsize
     }
 
-    if (length(lures) < max_setsize - 1) {
+    if (length(non_targets) < max_setsize - 1) {
       stop(paste0('The number of columns for non-target values in the argument',
-                  '`lures` is less than max(setsize)-1'))
-    } else if (length(lures) > max_setsize-1) {
+                  '`non_targets` is less than max(setsize)-1'))
+    } else if (length(non_targets) > max_setsize-1) {
       stop(paste0('The number of columns for non-target values in the argument',
-                  '`lures` is more than max(setsize)-1'))
+                  '`non_targets` is more than max(setsize)-1'))
     }
 
-    # create index variables for lures and correction variable for theta due to setsize
+    # create index variables for non_targets and correction variable for theta due to setsize
     lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
     for (i in 1:(max_setsize - 1)) {
       data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
     }
-    data[,lures][is.na(data[,lures])] <- 0
+    data[,non_targets][is.na(data[,non_targets])] <- 0
 
     # names for parameters
     kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -252,7 +252,7 @@ fit_model <- function(formula, data, model_type,
       ff <- ff +
         brms::nlf(stats::as.formula(paste0(kappa_nts[i], ' ~ kappa'))) +
         brms::nlf(stats::as.formula(paste0(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(a) + (1-', lure_idx_vars[i], ')*(-100)'))) +
-        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', lures[i])))
+        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', non_targets[i])))
     }
 
     # define mixture family
@@ -295,12 +295,12 @@ fit_model <- function(formula, data, model_type,
       max_setsize <- setsize
     }
 
-    if (length(lures) < max_setsize - 1) {
+    if (length(non_targets) < max_setsize - 1) {
       stop(paste0('The number of columns for non-target values in the argument',
-                  '`lures` is less than max(setsize)-1'))
-    } else if (length(lures) > max_setsize-1) {
+                  '`non_targets` is less than max(setsize)-1'))
+    } else if (length(non_targets) > max_setsize-1) {
       stop(paste0('The number of columns for non-target values in the argument',
-                  '`lures` is more than max(setsize)-1'))
+                  '`non_targets` is more than max(setsize)-1'))
     }
 
     if (length(spaPos) < max_setsize - 1) {
@@ -311,12 +311,12 @@ fit_model <- function(formula, data, model_type,
                   '`spaPos` is more than max(setsize)-1'))
     }
 
-    # create index variables for lures and correction variable for theta due to setsize
+    # create index variables for non_targets and correction variable for theta due to setsize
     lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
     for (i in 1:(max_setsize - 1)) {
       data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
     }
-    data[,lures][is.na(data[,lures])] <- 0
+    data[,non_targets][is.na(data[,non_targets])] <- 0
 
     # names for parameters
     kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -339,7 +339,7 @@ fit_model <- function(formula, data, model_type,
         brms::nlf(stats::as.formula(paste0(theta_nts[i], ' ~ ',
                                            lure_idx_vars[i], '*(exp(-expS*',spaPos[i],')*c) + (1-',
                                            lure_idx_vars[i], ')*(-100)'))) +
-        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', lures[i])))
+        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', non_targets[i])))
     }
 
     # define mixture family
@@ -382,12 +382,12 @@ fit_model <- function(formula, data, model_type,
       max_setsize <- setsize
     }
 
-    if (length(lures) < max_setsize - 1) {
+    if (length(non_targets) < max_setsize - 1) {
       stop(paste0('The number of columns for non-target values in the argument',
-                  '`lures` is less than max(setsize)-1'))
-    } else if (length(lures) > max_setsize-1) {
+                  '`non_targets` is less than max(setsize)-1'))
+    } else if (length(non_targets) > max_setsize-1) {
       stop(paste0('The number of columns for non-target values in the argument',
-                  '`lures` is more than max(setsize)-1'))
+                  '`non_targets` is more than max(setsize)-1'))
     }
 
     if (length(spaPos) < max_setsize - 1) {
@@ -398,12 +398,12 @@ fit_model <- function(formula, data, model_type,
                   '`spaPos` is more than max(setsize)-1'))
     }
 
-    # create index variables for lures and correction variable for theta due to setsize
+    # create index variables for non_targets and correction variable for theta due to setsize
     lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
     for (i in 1:(max_setsize - 1)) {
       data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
     }
-    data[,lures][is.na(data[,lures])] <- 0
+    data[,non_targets][is.na(data[,non_targets])] <- 0
 
     # names for parameters
     kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -426,7 +426,7 @@ fit_model <- function(formula, data, model_type,
         brms::nlf(stats::as.formula(paste0(theta_nts[i], ' ~ ',
                                            lure_idx_vars[i], '*(exp(-expS*',spaPos[i],')*c + a) + (1-',
                                            lure_idx_vars[i], ')*(-100)'))) +
-        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', lures[i])))
+        brms::nlf(stats::as.formula(paste0(mu_nts[i], ' ~ ', non_targets[i])))
     }
 
     # define mixture family
