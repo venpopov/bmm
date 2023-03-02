@@ -108,7 +108,7 @@ you would pass to `brm`.
 fit <- fit_model(formula = ff,
                  data = dat,
                  model_type = "3p",
-                 lures = paste0('nt',1:3,'_loc'),
+                 non_targets = paste0('nt',1:3,'_loc'),
                  setsize=4,
                  parallel=T,
                  iter=500)
