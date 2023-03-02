@@ -78,13 +78,13 @@ fit_model <- function(formula, data, model_type,
 
   # check data
   resp_name <- get_response(formula$formula)
-  if (max(abs(data[[resp_name]])) > 10) {
+  if (max(abs(data[[resp_name]]), na.rm=T) > 10) {
     data[[resp_name]] <- data[[resp_name]]*pi/180
     warning('It appears your response variable is in degrees. We will transform it to radians.')
   }
 
   if (model_type != "2p") {
-    if (max(abs(data[,non_targets])) > 10) {
+    if (max(abs(data[,non_targets]), na.rm=T) > 10) {
       data[,non_targets] <- data[,non_targets]*pi/180
       warning('It appears your lure variables are in degrees. We will transform it to radians.')
     }
@@ -92,7 +92,7 @@ fit_model <- function(formula, data, model_type,
     data[,non_targets] <- bmm::wrap(data[,non_targets])
 
     if (model_type == "IMMbsc" | model_type == "IMMfull") {
-      if (max(abs(data[,spaPos])) > 10) {
+      if (max(abs(data[,spaPos]), na.rm=T) > 10) {
         data[,spaPos] <- data[,spaPos]*pi/180
         warning('It appears your spatial position variables are in degrees. We will transform it to radians.')
       }
