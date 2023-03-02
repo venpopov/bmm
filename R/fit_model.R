@@ -62,11 +62,12 @@ fit_model <- function(formula, data, model_type, target=NULL, lures=NULL, setsiz
   }
 
   # check data
-  if (max(abs(data[[formula$resp]])) > 10) {
-    data[[formula$resp]] <- data[[formula$resp]]*pi/180
+  resp_name <- get_response(formula$formula)
+  if (max(abs(data[[resp_name]])) > 10) {
+    data[[resp_name]] <- data[[resp_name]]*pi/180
     warning('It appears your response variable is in degrees. We will transform it to radians.')
   }
-  data[[formula$resp]] <- wrap(data[[formula$resp]])
+  data[[resp_name]] <- wrap(data[[resp_name]])
 
 
   # 2 parameter model
