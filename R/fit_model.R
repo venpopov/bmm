@@ -75,9 +75,11 @@ fit_model <- function(formula, data, model_type,
           Please specify formula with the bf() function. E.g.: bf(y ~ 1, kappa ~ 1, thetat ~ 1")
   }
 
-  # check data ---------------------------------------------------------------------------
-  if (max(abs(data[[formula$resp]])) > 10) {
-    data[[formula$resp]] <- data[[formula$resp]]*pi/180
+
+  # check data
+  resp_name <- get_response(formula$formula)
+  if (max(abs(data[[resp_name]])) > 10) {
+    data[[resp_name]] <- data[[resp_name]]*pi/180
     warning('It appears your response variable is in degrees. We will transform it to radians.')
   }
 
@@ -100,7 +102,7 @@ fit_model <- function(formula, data, model_type,
   }
 
   # wrap recoded responses around the circle (range = -pi to pi)
-  data[[formula$resp]] <- bmm::wrap(data[[formula$resp]])
+  data[[resp_name]] <- wrap(data[[resp_name]])
 
   if (model_type == "2p") {
     # 2 parameter model ------------------------------------------------------------------
@@ -458,12 +460,18 @@ fit_model <- function(formula, data, model_type,
                 'or "IMMabc", "IMMbsc", or "IMMfull" for one of  \nthe three interference measurement model types.'))
   }
 
+  # combine the default prior plus user givne prior
+  if (!is.null(prior)) {
+    mix_prior <- dplyr::anti_join(mix_prior, prior, by=c('class', 'dpar','nlpar','coef','group','resp'))
+    mix_prior <- mix_prior+prior
+  }
+
   # estimate model
   fit <- brms::brm(
     formula = ff,
     data    = data,
     family  = mix_family,
-    prior   = mix_prior+prior,
+    prior   = mix_prior,
     ...)
 
   return(fit)
