@@ -417,7 +417,7 @@ fit_model <- function(formula, data, model_type,
       brms::lf(mu1 ~ 1,
                stats::as.formula(paste0(kappa_unif,' ~ 1')),
                stats::as.formula(paste0(mu_unif, ' ~ 1'))) +
-      brms::nlf(theta1 ~ c + a) +
+      brms::nlf(theta1 ~ c) +
       brms::nlf(kappa1 ~ kappa) +
       brms::nlf(expS ~ exp(s))
     for (i in 1:(max_setsize-1)) {
