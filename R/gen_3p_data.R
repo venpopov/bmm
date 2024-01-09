@@ -19,6 +19,22 @@
 #'   non-targets, where i=setsize-1.
 #'
 #' @export
+#'
+#' @examples
+#' # example code
+#' nsub = 30
+#' df_3p_parms <- data.frame(
+#'   theta_pmem = rnorm(nsub, mean = 2, sd = 1),
+#'   theta_pnt = rnorm(nsub, mean = 1, sd = 0.5),
+#'   kappa = pmax(0,rnorm(nsub, mean = 5, sd = 1)).
+#'   pmem = numeric(),
+#'   pnt = numeric(),
+#'   pguess = numeric()
+#' )
+#'
+#' # transform continous mixture weights into probabilities using the softmax
+#' df_3p_parms[,c("pmem","pnt","pguess")] <- apply(df_3p_parms[,c("theta_pmem","theta_pnt")],1,utilities::softmax)
+#'
 gen_3p_data <- function(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=2, relative_resp=T) {
   t_loc <- NULL
   resample <- function(x, ...) x[sample.int(length(x), ...)]
@@ -64,7 +80,7 @@ gen_3p_data <- function(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=2, relative
   # recode responses such that the response is the error relative to the target
   # also recode nt_loc, such that it is relative to the target as well
   if (relative_resp) {
-    dat <- wrap(dat-dat$t_loc)
+    dat <- bmm::wrap(dat-dat$t_loc)
     dat <- dplyr::select(dat, -t_loc)
   }
   return(dat)
