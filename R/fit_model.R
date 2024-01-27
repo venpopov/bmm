@@ -191,7 +191,7 @@ fit_model <- function(formula, data, model_type,
       brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
       brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
       brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
-      brms::prior_("normal(5.0, 0.8)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
       brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat") +
       brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetant")
 
@@ -268,7 +268,7 @@ fit_model <- function(formula, data, model_type,
       # fix kappa of the second von Mises to (alomst) zero
       brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
       # set reasonable priors fpr the to be estimated parameters
-      brms::prior_("normal(2.0, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "a")
 
@@ -355,7 +355,7 @@ fit_model <- function(formula, data, model_type,
       # fix kappa of the second von Mises to (alomst) zero
       brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
       # set reasonable priors fpr the to be estimated parameters
-      brms::prior_("normal(2.0, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
 
@@ -442,7 +442,7 @@ fit_model <- function(formula, data, model_type,
       # fix kappa of the second von Mises to (alomst) zero
       brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
       # set reasonable priors fpr the to be estimated parameters
-      brms::prior_("normal(2.0, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "a") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
