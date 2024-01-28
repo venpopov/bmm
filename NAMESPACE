@@ -2,9 +2,13 @@
 
 export("%>%")
 export(calc_error_relative_to_nontargets)
+export(dsdm)
 export(fit_model)
 export(gen_3p_data)
 export(gen_imm_data)
 export(k2sd)
+export(psdm)
+export(qsdm)
+export(rsdm)
 export(wrap)
 importFrom(magrittr,"%>%")
