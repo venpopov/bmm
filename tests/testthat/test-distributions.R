@@ -5,7 +5,7 @@ test_that("sdm distribution functions run without errors", {
   res <- psdm(runif(n, -pi, pi), mu = rnorm(n), c = 0:(n-1), kappa = 0:(n-1))
   expect_true(length(res) == n)
   expect_error(rsdm(n, mu = rnorm(n), c = 0:(n-1), kappa = 0:(n-1)),
-               "Function not vectorized yet. Only single values for mu, c, and kappa are supported")
+               "Function not vectorized yet. Only single values for n, mu, c, and kappa are supported")
 })
 
 test_that("dsdm integrates to 1", {
@@ -31,4 +31,22 @@ test_that("rsdm returns values between -pi and pi", {
 
   res <- rsdm(1000, mu = 0, c = 3, kappa = 3)
   expect_true(all(res >= -pi) && all(res <= pi))
+})
+
+test_that("conversion between sdm parametrizations works", {
+  kappa <- rnorm(100, 5, 1)
+  c_b <- rnorm(100, 5, 1)
+  c_se <- c_bessel2sqrtexp(c_b, kappa)
+  c_b2 <- c_sqrtexp2bessel(c_se, kappa)
+  expect_equal(c_b, c_b2)
+})
+
+test_that("dsdm parametrization conversion returns accurate results", {
+  y <- seq(-pi, pi, length.out = 100)
+  kappa <- rnorm(100, 5, 1)
+  c_b <- rnorm(100, 5, 1)
+  c_se <- c_bessel2sqrtexp(c_b, kappa)
+  d1 <- dsdm(y, 0, c_b, kappa, parametrization = "bessel")
+  d2 <- dsdm(y, 0, c_se, kappa, parametrization = "sqrtexp")
+  expect_equal(d1,d2)
 })

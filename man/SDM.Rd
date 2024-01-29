@@ -8,7 +8,7 @@
 \alias{rsdm}
 \title{The Signal Discrimination Model (SDM) Distribution}
 \usage{
-dsdm(x, mu = 0, c = 3, kappa = 3.5, log = FALSE)
+dsdm(x, mu = 0, c = 3, kappa = 3.5, log = FALSE, parametrization = "sqrtexp")
 
 psdm(
   q,
@@ -17,12 +17,13 @@ psdm(
   kappa = 3.5,
   lower.tail = TRUE,
   log.p = FALSE,
-  lower.bound = -pi
+  lower.bound = -pi,
+  parametrization = "sqrtexp"
 )
 
-qsdm(p, mu = 0, c = 3, kappa = 3.5)
+qsdm(p, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp")
 
-rsdm(n, mu = 0, c = 3, kappa = 3.5, ...)
+rsdm(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp")
 }
 \arguments{
 \item{x}{Vector of quantiles}
@@ -35,10 +36,14 @@ rsdm(n, mu = 0, c = 3, kappa = 3.5, ...)
 
 \item{log}{Logical; if \code{TRUE}, values are returned on the log scale.}
 
+\item{parametrization}{Character; either \code{"bessel"} or \code{"sqrtexp"}
+(default). See \code{vignette("bmm_models")} for details on the
+parameterization.}
+
 \item{q}{Vector of quantiles}
 
-\item{lower.tail}{Logical; If \code{TRUE} (default), return P(X <= x).
-Else, return P(X > x)}
+\item{lower.tail}{Logical; If \code{TRUE} (default), return P(X <= x). Else,
+return P(X > x)}
 
 \item{log.p}{Logical; if \code{TRUE}, probabilities are returned on the log
 scale.}
@@ -49,8 +54,6 @@ distribution}
 \item{p}{Vector of probabilities}
 
 \item{n}{Number of observations to sample}
-
-\item{...}{additional arguments passed to or from other methods}
 }
 \value{
 \code{dsdm} gives the density, \code{psdm} gives the distribution
@@ -65,6 +68,14 @@ memory strength \code{c}, and precision \code{kappa}. Currently only a
 single activation source is supported.
 }
 \details{
+\bold{Parametrization}
+
+See \code{vignette("bmm_models")} for details on the parameterization.
+Oberauer (2023) introduced the SDM with the bessel parametrization. The
+sqrtexp parametrization is the default in the \code{bmm} package for
+numerical stability and efficiency. The two parametrizations are related by
+the functions \code{c_bessel2sqrtexp()} and \code{c_sqrtexp2bessel()}.
+
 \bold{The cumulative distribution function}
 
 Since responses are on the circle, the cumulative distribution function
