@@ -172,17 +172,16 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
     stop("c must be non-negative")
   }
 
-  if (any(length(n) > 1, length(mu) > 1, length(c) > 1, length(kappa) > 1)) {
-    stop(glue::glue("Function not vectorized yet. Only single values for n, \\
-                    mu, c, and kappa are supported"))
+  if (length(n) > 1) {
+    stop("n must be a single integer")
   }
 
-  maxy <- dsdm(mu, mu, c, kappa)
+  maxy <- dsdm(0, 0, c, kappa)
   xa <- c()
 
   .rsdm_inner <- function(n, mu, c, kappa, parametrization, xa) {
     x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, maxy)
+    y <- stats::runif(n, 0, 1) * maxy
     accept <- y < dsdm(x, mu, c, kappa, parametrization=parametrization)
     xa <- c(xa, x[accept])
 
@@ -284,6 +283,6 @@ c_bessel2sqrtexp <- function(c, kappa) {
 }
 
 .dsdm_integrate_numer_v <- Vectorize(.dsdm_integrate_numer,
-                                     vectorize.args = c("mu", "c", "kappa"))
+                                     vectorize.args = c("mu", "c", "kappa", 'lower','upper'))
 
 

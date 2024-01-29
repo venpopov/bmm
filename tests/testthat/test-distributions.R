@@ -4,8 +4,8 @@ test_that("sdm distribution functions run without errors", {
   expect_true(length(res) == n)
   res <- psdm(runif(n, -pi, pi), mu = rnorm(n), c = 0:(n-1), kappa = 0:(n-1))
   expect_true(length(res) == n)
-  expect_error(rsdm(n, mu = rnorm(n), c = 0:(n-1), kappa = 0:(n-1)),
-               "Function not vectorized yet. Only single values for n, mu, c, and kappa are supported")
+  res <- rsdm(n, mu = rnorm(n), c = 0:(n-1), kappa = 0:(n-1))
+  expect_true(length(res) == n)
 })
 
 test_that("dsdm integrates to 1", {
