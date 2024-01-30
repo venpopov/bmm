@@ -26,14 +26,15 @@
 #' df_3p_parms <- data.frame(
 #'   theta_pmem = rnorm(nsub, mean = 2, sd = 1),
 #'   theta_pnt = rnorm(nsub, mean = 1, sd = 0.5),
-#'   kappa = pmax(0,rnorm(nsub, mean = 5, sd = 1)).
-#'   pmem = numeric(),
-#'   pnt = numeric(),
-#'   pguess = numeric()
+#'   kappa = pmax(0,rnorm(nsub, mean = 5, sd = 1)),
+#'   pmem = numeric(nsub),
+#'   pnt = numeric(nsub),
+#'   pguess = numeric(nsub)
 #' )
 #'
 #' # transform continous mixture weights into probabilities using the softmax
-#' df_3p_parms[,c("pmem","pnt","pguess")] <- apply(df_3p_parms[,c("theta_pmem","theta_pnt")],1,utilities::softmax)
+#' df_3p_parms[,c("pmem","pnt","pguess")] <- apply(df_3p_parms[,c("theta_pmem","theta_pnt")],
+#'                                                 1,softmax)
 #'
 gen_3p_data <- function(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=2, relative_resp=T) {
   t_loc <- NULL
