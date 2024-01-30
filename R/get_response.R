@@ -2,7 +2,6 @@
 #'
 #' @param formula an object of type bfformula
 #'
-#'
 #' @return String. Name of the response variable
 get_response <- function(formula) {
   tt <- stats::terms(formula)
