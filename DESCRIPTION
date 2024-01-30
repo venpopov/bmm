@@ -25,6 +25,7 @@ Imports:
     withr,
     tidyr,
     circular,
-    stats
+    stats,
+    matrixStats
 URL: https://github.com/venpopov/bmm
 BugReports: https://github.com/venpopov/bmm/issues

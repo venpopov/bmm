@@ -27,6 +27,6 @@ variable, D1 to DN is the spatial distance of the N items for the N items
 specified by the setsize variable
 }
 \description{
-Given a set of parameters, and desired setsize, thi function generates
+Given a set of parameters, and desired setsize, this function generates
 data following the assumptions of the interference measurement models
 }
