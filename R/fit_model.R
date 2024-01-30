@@ -1,10 +1,10 @@
-#' @title Fit Mixture Models for Visual Working Memory using BRMS
-#' @description Fit a Bayesian multilevel mixture model for visual working
-#'   memory. Currently implemented are the two-parameter mixture model by Zhang
-#'   and Luck (2008), the three-parameter mixture model by Bays et al
-#'   (2009), and three different versions of the Interference Measurement Model
+#' @title Fit Measurement Models using BRMS
+#' @description Fit a Bayesian multilevel measurement model. Currently implemented
+#'   are the two-parameter mixture model by Zhang and Luck (2008),
+#'   the three-parameter mixture model by Bays et al (2009),
+#'   and three different versions of the Interference Measurement Model
 #'   (Oberauer et al., 2017). This is a wrapper function for [brms::brm], which is
-#'   used to estimate the model
+#'   used to estimate the model.
 #'
 #' @param formula An object of class `brmsformula`. A symbolic description of
 #'   the model to be fitted.
@@ -16,9 +16,9 @@
 #'   target, not the raw response. Similarly, the lure values must be coded
 #'   relative to the target. If the lure values are absolute, you must subtract
 #'   from them the value of the target before running the model
-#' @param model_type A description of the mixture model. "2p" for the 2
+#' @param model_type A description of the measurement model. "2p" for the 2
 #'   parameter mixture model of Zhang and Luck (2008), "3p" for the 3 parameter
-#'   mixture model of Bays et al (2009). "IMMabc" for the interfernece measurement model assuming swap
+#'   mixture model of Bays et al (2009). "IMMabc" for the interference measurement model assuming swap
 #'   errors to occur independent of spatial proximity between target and non-target
 #'   items, "IMMbsc" for the interference measurement model assuming swap errors to occur
 #'   only as a function of spatial proximity between target and non-targets, and "IMMfull"
@@ -52,11 +52,17 @@
 #'   you can provide prior constraints to model parameters
 #' @param ... Further arguments passed to [brms::brm()] or Stan. See
 #'   the description of [brms::brm()] for more details
+#'
 #' @returns An object of class brmsfit which contains the posterior draws along
 #'   with many other useful information about the model. Use methods(class =
 #'   "brmsfit") for an overview on available methods.
+#'
 #' @seealso [brms::brm()]
+#'
 #' @export
+#'
+#'
+#'
 fit_model <- function(formula, data, model_type,
                       target=NULL, non_targets=NULL, spaPos = NULL, setsize=NULL,
                       relative=T, parallel=FALSE, chains=4, prior=NULL,
@@ -191,7 +197,7 @@ fit_model <- function(formula, data, model_type,
       brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
       brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
       brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
-      brms::prior_("normal(5.0, 0.8)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
       brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat") +
       brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetant")
 
@@ -268,7 +274,7 @@ fit_model <- function(formula, data, model_type,
       # fix kappa of the second von Mises to (alomst) zero
       brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
       # set reasonable priors fpr the to be estimated parameters
-      brms::prior_("normal(2.0, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "a")
 
@@ -355,7 +361,7 @@ fit_model <- function(formula, data, model_type,
       # fix kappa of the second von Mises to (alomst) zero
       brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
       # set reasonable priors fpr the to be estimated parameters
-      brms::prior_("normal(2.0, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
 
@@ -442,7 +448,7 @@ fit_model <- function(formula, data, model_type,
       # fix kappa of the second von Mises to (alomst) zero
       brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
       # set reasonable priors fpr the to be estimated parameters
-      brms::prior_("normal(2.0, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "a") +
       brms::prior_("normal(0, 1)", class = "b", nlpar = "s")

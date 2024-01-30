@@ -13,6 +13,7 @@
 #'   and m is the number of non-target variables. It preserves all other columns
 #'   of `data`, except for the non-target locations, and adds a column `y_nt`,
 #'   which contains the transformed response error relative to the non-targets
+#'
 #' @export
 #'
 calc_error_relative_to_nontargets <- function(data, response, lures) {

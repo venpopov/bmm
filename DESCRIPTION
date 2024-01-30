@@ -1,13 +1,14 @@
 Package: bmm
-Title: Bayesian Measurement Models for Visual Working Memory using 'brms'
+Title: Easy and Accesible Bayesian Measurement Models using 'brms'
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre")),
-    person("Gidon", "Frischkorn-Bartsch", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut")))
-Description: Wrapper functions that make it easier to estimate common mixture measurement
-    models for visual working memory using the 'brms' package. Currently implemented 
-    are the two-parameter mixture model by Zhang and Luck (2008), and the three-
-    parameter mixture model by Bays et al (2009).
+    person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph")),
+    person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")))
+Description: Wrapper functions and custom distributions that make it easier to estimate common 
+    measurement models for using the 'brms' package. Currently implemented 
+    are the two-parameter mixture model by Zhang and Luck (2008),the three-
+    parameter mixture model by Bays et al (2009), and the Interference Measurement Model 
+    (Oberauer et al., 2017).
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
