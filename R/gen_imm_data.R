@@ -1,5 +1,5 @@
 #' @title Generate artificial data from the Interference measurement model
-#' @description Given a set of parameters, and desired setsize, thi function generates
+#' @description Given a set of parameters, and desired setsize, this function generates
 #' data following the assumptions of the interference measurement models
 #'
 #' @param parms Matrix/DataFrame. Matrix or Data frame of IMM parameters,
