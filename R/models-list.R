@@ -51,6 +51,7 @@ get_model <- function(model) {
   out <- list()
   attr(out, "domain") <- "Visual working memory"
   attr(out, "name") <- "Two-parameter mixture model by Zhang and Luck (2008)."
+  class(out) <- c("vwm")
   out
 }
 
@@ -58,6 +59,7 @@ get_model <- function(model) {
   out <- list()
   attr(out, "domain") <- "Visual working memory"
   attr(out, "name") <- "Three-parameter mixture model by Bays et al (2009)."
+  class(out) <- c('vwm','nontargets')
   out
 }
 
@@ -65,6 +67,7 @@ get_model <- function(model) {
   out <- list()
   attr(out, "domain") <- "Visual working memory"
   attr(out, "name") <- "Interference measurement model by Oberauer and Lin (2017)."
+  class(out) <- c('vwm','nontargets')
   out
 }
 
@@ -72,6 +75,7 @@ get_model <- function(model) {
   out <- list()
   attr(out, "domain") <- "Visual working memory"
   attr(out, "name") <- "Interference measurement model by Oberauer and Lin (2017)."
+  class(out) <- c('vwm','nontargets', 'IMMspatial')
   out
 }
 
@@ -79,6 +83,7 @@ get_model <- function(model) {
   out <- list()
   attr(out, "domain") <- "Visual working memory"
   attr(out, "name") <- "Interference measurement model by Oberauer and Lin (2017)."
+  class(out) <- c('vwm','nontargets','IMMspatial')
   out
 }
 
