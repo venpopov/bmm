@@ -21,8 +21,9 @@ print_pretty_models_md <- function() {
   domains <- c()
   models <- c()
   for (model in ok_models) {
-    domains <- c(domains, attr(get(paste0('.model_', model))(), 'domain'))
-    models <- c(models, attr(get(paste0('.model_', model))(), 'name'))
+    m <- get_model(model)()
+    domains <- c(domains, attr(m, 'domain'))
+    models <- c(models, attr(m, 'name'))
   }
   unique_domains <- unique(domains)
   for (dom in unique_domains) {
@@ -33,6 +34,15 @@ print_pretty_models_md <- function() {
     }
   }
 }
+
+# retrieves one of the model functions below
+get_model <- function(model) {
+  get(paste0('.model_', model))
+}
+
+#############################################################################!
+# MODELS                                                                 ####
+#############################################################################!
 
 
 # TODO: add citation attribute to each model
