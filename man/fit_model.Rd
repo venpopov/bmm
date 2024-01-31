@@ -16,7 +16,7 @@ fit_model(
   parallel = FALSE,
   chains = 4,
   prior = NULL,
-  model_type = model,
+  model_type = NULL,
   ...
 )
 }

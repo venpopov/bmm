@@ -35,6 +35,23 @@ print_pretty_models_md <- function() {
   }
 }
 
+# Check: is the model type valid
+check_model <- function(model, model_type) {
+  if (length(model_type) > 0) {
+    warning("Argument 'model_type' is deprecated. Please use argument ",
+            "'model' instead.")
+    model <- model_type
+  }
+
+  ok_models <- supported_models()
+  if (!model %in% ok_models) {
+    stop(model, " is not a supported model. Supported ",
+         "models are:\n", collapse_comma(ok_models))
+  }
+
+  return(model)
+}
+
 # retrieves one of the model functions below
 get_model <- function(model) {
   get(paste0('.model_', model))

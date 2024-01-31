@@ -65,14 +65,15 @@
 #'
 #'
 fit_model <- function(formula, data, model,
-                      target=NULL, non_targets=NULL, spaPos = NULL, setsize=NULL,
-                      relative=T, parallel=FALSE, chains=4, prior=NULL, model_type=model,
-                      ...) {
+                      target = NULL, non_targets = NULL, spaPos = NULL, setsize = NULL,
+                      relative = T, parallel = FALSE, chains = 4, prior = NULL,
+                      model_type = NULL,...) {
 
   # enable parallel sampling if parallel equals TRUE
   configure_options(nlist(parallel))
 
-  # check formula and data, and transform data if necessary
+  # check model, formula and data, and transform data if necessary
+  model <- check_model(model, model_type)
   formula <- check_formula(formula, model)
   data <- check_data(data, model)
 
