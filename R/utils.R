@@ -74,3 +74,6 @@ configure_options <- function(opts, env=parent.frame()) {
 }
 
 
+not_in_list <- function(key, list) {
+  !(key %in% names(list))
+}

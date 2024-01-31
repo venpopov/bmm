@@ -19,12 +19,12 @@ check_data <- function(model, data, formula, ...) {
 # and then get variable names from there
 
 #' @export
-check_data.default <- function(object, data, formula, ...) {
+check_data.default <- function(model, data, formula, ...) {
   return(data)
 }
 
 #' @export
-check_data.vwm <- function(object, data, formula, ...) {
+check_data.vwm <- function(model, data, formula, ...) {
   resp_name <- get_response(formula$formula)
   if (max(abs(data[[resp_name]]), na.rm=T) > 10) {
     data[[resp_name]] <- data[[resp_name]]*pi/180
@@ -40,10 +40,12 @@ check_data.vwm <- function(object, data, formula, ...) {
 }
 
 #' @export
-check_data.nontargets <- function(object, data, formula, non_targets, ...) {
-  if(missing(non_targets)) {
+check_data.nontargets <- function(model, data, formula, ...) {
+  dots <- list(...)
+  if(not_in_list("non_targets", dots)) {
     stop("Argument 'non_targets' must be specified.")
   }
+  non_targets <- dots$non_targets
   if (max(abs(data[,non_targets]), na.rm=T) > 10) {
     data[,non_targets] <- data[,non_targets]*pi/180
     warning('It appears your lure variables are in degrees. We will transform it to radians.')
@@ -57,10 +59,12 @@ check_data.nontargets <- function(object, data, formula, non_targets, ...) {
 }
 
 #' @export
-check_data.IMMspatial <- function(object, data, formula, non_targets, spaPos, ...) {
-  if(missing(spaPos)) {
+check_data.IMMspatial <- function(model, data, formula, ...) {
+  dots <- list(...)
+  if(not_in_list("spaPos", dots)) {
     stop("Argument 'spaPos' must be specified.")
   }
+  spaPos <- dots$spaPos
   if (max(abs(data[,spaPos]), na.rm=T) > 10) {
     data[,spaPos] <- data[,spaPos]*pi/180
     warning('It appears your spatial position variables are in degrees. We will transform it to radians.')
