@@ -72,7 +72,7 @@ fit_model <- function(formula, data, model,
   # enable parallel sampling if parallel equals TRUE
   configure_options(nlist(parallel))
 
-  # check formula and data
+  # check formula and data, and transform data if necessary
   formula <- check_formula(formula, model)
   data <- check_data(data, model)
 
