@@ -3,11 +3,18 @@
 
 # bmm <!-- badges: start --> <!-- badges: end -->
 
-The goal of bmm (Bayesian Measurement Models for Visual Working Memory)
-is to make it easier to estimate common mixture measurement models for
-visual working memory using the ‘brms’ package. Currently implemented
-are the two-parameter mixture model by Zhang and Luck (2008), and the
-three- parameter mixture model by Bays et al (2009).
+The goal of bmm (Bayesian Measurement Models) is to make it easier to
+estimate common measurement models for behavioral research using
+Bayesian hierarhical estimation via the ‘brms’ package’. Currently
+implemented models are:
+
+#### Visual working memory
+
+- Two-parameter mixture model by Zhang and Luck (2008).
+
+- Three-parameter mixture model by Bays et al (2009).
+
+- Interference measurement model by Oberauer and Lin (2017).
 
 ## Installation
 
@@ -19,7 +26,7 @@ You can install the development version of bmm from
 devtools::install_github("venpopov/bmm")
 ```
 
-## Example
+## Example 1
 
 The three-parameter mixture model by Bays et al (2009) assumes that
 responses can come from three different sources - noisy representation
@@ -32,23 +39,28 @@ let’s generate a dataset with known parameters. We can use the function
 ``` r
 library(bmm)
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-#> ✔ ggplot2 3.4.0     ✔ purrr   1.0.1
-#> ✔ tibble  3.1.8     ✔ dplyr   1.1.0
-#> ✔ tidyr   1.3.0     ✔ stringr 1.5.0
-#> ✔ readr   2.1.3     ✔ forcats 1.0.0
+#> Warning: package 'ggplot2' was built under R version 4.3.2
+#> Warning: package 'dplyr' was built under R version 4.3.2
+#> Warning: package 'stringr' was built under R version 4.3.2
+#> ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+#> ✔ dplyr     1.1.4     ✔ readr     2.1.4
+#> ✔ forcats   1.0.0     ✔ stringr   1.5.1
+#> ✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+#> ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+#> ✔ purrr     1.0.1     
 #> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
+#> ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
 head(dat)
-#>            y    nt1_loc    nt2_loc      nt3_loc
-#> 1  0.2569243  2.6968595  1.1011967 -2.381452975
-#> 2 -0.2995747  3.0590161 -2.6963216  2.097664573
-#> 3 -0.6496101  1.0919187 -1.1204057 -0.897425564
-#> 4  0.6172717  1.3327058  1.0317656 -0.522874907
-#> 5 -0.2693346  2.1338354  0.2148838 -0.001552538
-#> 6 -0.2150131 -0.3817029 -2.8162736  0.636291417
+#>               y    nt1_loc    nt2_loc    nt3_loc
+#> 1  0.3487698474  1.8985136  0.3796621 -0.8366318
+#> 2  0.1454692058 -0.1746312 -2.6965681  0.9784810
+#> 3 -0.0000697827 -2.2937998  0.7249212  2.4478609
+#> 4  0.0939472136 -2.0868535 -1.1523776 -1.3120891
+#> 5 -0.0266451029 -0.6624271 -2.6928092  0.2941023
+#> 6  0.3327737127  1.5681273  2.0013667  2.0061682
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%
@@ -67,7 +79,7 @@ centered on 0, with long tails:
 hist(dat$y, breaks = 60, xlab = "Response error relative to target")
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 Another key property of the data is that some error responses are not
 random, but that they are due to confusion of the target with one of the
 lures. We can visualize this by centering the response error relative to
@@ -82,7 +94,7 @@ dat %>%
 #> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 Ok, so now let’s fit the three-parameter model. We only need to do two
 things: - Specify the model formula - Call fit_model()
@@ -108,8 +120,13 @@ you would pass to `brm`.
 fit <- fit_model(formula = ff,
                  data = dat,
                  model_type = "3p",
-                 non_targets = paste0('nt',1:3,'_loc'),
+                 lures = paste0('nt',1:3,'_loc'),
                  setsize=4,
                  parallel=T,
                  iter=500)
 ```
+
+## Example 2
+
+We can do the same but with a dataset that has a variable set size
+condition. First we generate

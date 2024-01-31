@@ -7,11 +7,10 @@ check_formula <- function(formula, model) {
   }
 
   # Check: is the model type valid
-  supported_models <- brms::lsp("bmm", pattern = "^\\.model_")
-  supported_models <- sub("^\\.model_", "", supported_models)
-  if (!model %in% supported_models) {
+  ok_models <- supported_models()
+  if (!model %in% ok_models) {
     stop(model, " is not a supported model. Supported ",
-         "models are:\n", collapse_comma(supported_models))
+         "models are:\n", collapse_comma(ok_models))
   }
 
   # Check: is the formula valid for the specified model type
@@ -19,3 +18,6 @@ check_formula <- function(formula, model) {
 
   return(formula)
 }
+
+
+

@@ -63,7 +63,7 @@
 #'
 #'
 #'
-fit_model <- function(formula, data, model_type,
+fit_model_old <- function(formula, data, model_type,
                       target=NULL, non_targets=NULL, spaPos = NULL, setsize=NULL,
                       relative=T, parallel=FALSE, chains=4, prior=NULL,
                       ...) {

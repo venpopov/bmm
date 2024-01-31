@@ -4,10 +4,10 @@ check_data <- function(data, model) {
   }
   data <- try(as.data.frame(data), silent = TRUE)
   if (is_try_error(data)) {
-    stop2("Argument 'data' must be coercible to a data.frame.")
+    stop("Argument 'data' must be coercible to a data.frame.")
   }
   if (!isTRUE(nrow(data) > 0L)) {
-    stop2("Argument 'data' does not contain observations.")
+    stop("Argument 'data' does not contain observations.")
   }
 
   # TODO add model classes, so that checks common for different models can be

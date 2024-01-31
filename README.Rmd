@@ -12,11 +12,13 @@ knitr::opts_chunk$set(
 ```
 # bmm <!-- badges: start --> <!-- badges: end --> 
 
-The goal of bmm (Bayesian Measurement Models for Visual Working Memory) is to make it
-easier to estimate common mixture measurement models for visual working memory
-using the 'brms' package. Currently implemented are the two-parameter mixture
-model by Zhang and Luck (2008), and the three- parameter mixture model by Bays
-et al (2009). 
+The goal of bmm (Bayesian Measurement Models) is to make it easier to estimate 
+common measurement models for behavioral research using Bayesian hierarhical 
+estimation via the 'brms' package'. Currently implemented models are:
+
+```{r, results="asis", echo=FALSE}
+bmm::print_pretty_models_md()
+```
 
 ## Installation 
 
