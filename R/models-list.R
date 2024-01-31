@@ -54,7 +54,7 @@ check_model <- function(model, model_type) {
 
 # retrieves one of the model functions below
 get_model <- function(model) {
-  get(paste0('.model_', model))
+  get(paste0('.model_', model), mode='function')
 }
 
 #############################################################################!

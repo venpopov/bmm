@@ -10,6 +10,10 @@ check_data <- function(model, data, formula, ...) {
   if (!isTRUE(nrow(data) > 0L)) {
     stop("Argument 'data' does not contain observations.")
   }
+  resp_name <- get_response(formula$formula)
+  if (not_in(resp_name, colnames(data))) {
+    stop(paste0("The response variable '", resp_name, "' is not present in the data."))
+  }
 
   UseMethod("check_data")
 }
@@ -57,29 +61,29 @@ check_data.nontargets <- function(model, data, formula, ...) {
   if(not_in_list("setsize", dots)) {
     stop(paste0("Argument 'setsize' is not specified. For the ",
                 attr(model, "name"),
-                ", please set the 'setsize' argument either to a number, if the setsize ",
-                "is fixed, or to the name of the variable containing the setsize, ",
-                "if the setsize varies in your dataset"))
+                ",\n  please set the 'setsize' argument either to a number, if the setsize \n",
+                "  is fixed, or to the name of the variable containing the setsize, \n",
+                "  if the setsize varies in your dataset\n"))
   }
   setsize <- dots$setsize
-  if (is.character(setsize)) {
+  if (is.character(setsize) && length(setsize) == 1) {
     # Variable setsize
     ss_numeric <- as.numeric(as.character(data[[setsize]]))
     max_setsize <- max(ss_numeric)
-  } else if (is.numeric(setsize)) {
+  } else if (is.numeric(setsize) && length(setsize) == 1) {
     # Fixed setsize
     ss_numeric <- rep(setsize, times = nrow(data))
     max_setsize <- setsize
   } else {
-    stop("Argument 'setsize' must be either a numeric value or a character string.")
+    stop("Argument 'setsize' must be either a single numeric value or a character string.")
   }
 
   if (length(non_targets) < max_setsize - 1) {
-    stop(paste0('The number of columns for non-target values in the argument',
-                '`non_targets` is less than max(setsize)-1'))
+    stop("The number of columns for non-target values in the argument ",
+         "'non_targets' is less than max(setsize)-1")
   } else if (length(non_targets) > max_setsize - 1) {
-    stop(paste0('The number of columns for non-target values in the argument',
-                '`non_targets` is more than max(setsize)-1'))
+    stop('The number of columns for non-target values in the argument ',
+         '`non_targets` is more than max(setsize)-1')
   }
 
   # wrap lure variables around the circle (range = -pi to pi)
@@ -111,13 +115,14 @@ check_data.IMMspatial <- function(model, data, formula, ...) {
   if(not_in_list("spaPos", dots)) {
     stop("Argument 'spaPos' must be specified.")
   }
+  spaPos <- dots$spaPos
 
   if (length(spaPos) < attr(data, 'max_setsize') - 1) {
-    stop(paste0('The number of columns for spatial positions in the argument',
-                '`spaPos` is less than max(setsize)-1'))
+    stop(paste0("The number of columns for spatial positions in the argument",
+                "'spaPos' is less than max(setsize)-1"))
   } else if (length(spaPos) > attr(data, 'max_setsize')-1) {
-    stop(paste0('The number of columns for spatial positions in the argument',
-                '`spaPos` is more than max(setsize)-1'))
+    stop(paste0("The number of columns for spatial positions in the argument",
+                "spaPos'' is more than max(setsize)-1"))
   }
 
   spaPos <- dots$spaPos
@@ -132,19 +137,3 @@ check_data.IMMspatial <- function(model, data, formula, ...) {
 
   return(data)
 }
-
-
-# ff <- brms::bf(y~x)
-# m <- .model_2p()
-# check_data(m, data = data.frame(x = 1:12, y = 1:12), formula=ff)
-#
-# check_data(m, data = data.frame(x = 1:12, y = 1:12), formula=ff)
-#
-# m2 <- .model_3p()
-# check_data(m2, data = data.frame(x = 1:12, y = 1:12), formula=ff, non_targets = c("x"))
-
-#
-# m2 <- .model_IMMfull()
-# check_data(m2, data = data.frame(x = 1:12, y = 1:12, t = sqrt(1:12), s = 1:12),
-#            formula=ff, non_targets = c("x"),
-#            spaPos = c("s"))

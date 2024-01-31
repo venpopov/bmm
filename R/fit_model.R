@@ -68,6 +68,7 @@ fit_model <- function(formula, data, model,
                       target = NULL, non_targets = NULL, spaPos = NULL, setsize = NULL,
                       relative = T, parallel = FALSE, chains = 4, prior = NULL,
                       model_type = NULL,...) {
+  # TODO: generalize model-specific arguments
 
   # enable parallel sampling if parallel equals TRUE
   configure_options(nlist(parallel))
@@ -75,7 +76,7 @@ fit_model <- function(formula, data, model,
   # check model, formula and data, and transform data if necessary
   model <- check_model(model, model_type)
   formula <- check_formula(formula, model)
-  data <- check_data(data, model)
+  data <- check_data(data, model, formula, non_targets, spaPos, setsize)
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(formula, data, model, target, non_targets,
