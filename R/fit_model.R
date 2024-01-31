@@ -16,7 +16,7 @@
 #'   target, not the raw response. Similarly, the lure values must be coded
 #'   relative to the target. If the lure values are absolute, you must subtract
 #'   from them the value of the target before running the model
-#' @param model_type A description of the measurement model. "2p" for the 2
+#' @param model A description of the measurement model. "2p" for the 2
 #'   parameter mixture model of Zhang and Luck (2008), "3p" for the 3 parameter
 #'   mixture model of Bays et al (2009). "IMMabc" for the interference measurement model assuming swap
 #'   errors to occur independent of spatial proximity between target and non-target
@@ -24,6 +24,7 @@
 #'   only as a function of spatial proximity between target and non-targets, and "IMMfull"
 #'   for the full interference measurement model accounting for swap both dependent and
 #'   independent of proximity between target and non-targets (Oberauer et al., 2017).
+#' @param model_type (deprecated) Alias for `model`. Use `model` instead.
 #' @param target Name of the column containing the values of the target. Only
 #'   necessary if argument `relative==F` (currently experimental)
 #' @param non_targets A vector of names of the columns containing the non-target
@@ -63,20 +64,20 @@
 #'
 #'
 #'
-fit_model <- function(formula, data, model_type,
+fit_model <- function(formula, data, model,
                       target=NULL, non_targets=NULL, spaPos = NULL, setsize=NULL,
-                      relative=T, parallel=FALSE, chains=4, prior=NULL,
+                      relative=T, parallel=FALSE, chains=4, prior=NULL, model_type=model,
                       ...) {
 
   # enable parallel sampling if parallel equals TRUE
   configure_options(nlist(parallel))
 
   # check formula and data
-  formula <- check_formula(formula, model_type)
-  data <- check_data(data, model_type)
+  formula <- check_formula(formula, model)
+  data <- check_data(data, model)
 
   # generate the model specification to pass to brms later
-  config_args <- configure_model(formula, data, model_type, target, non_targets,
+  config_args <- configure_model(formula, data, model, target, non_targets,
                                   spaPos, setsize, relative)
 
   # combine the default prior plus user given prior
@@ -88,3 +89,4 @@ fit_model <- function(formula, data, model_type,
 
   return(fit)
 }
+

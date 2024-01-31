@@ -1,4 +1,4 @@
-check_data <- function(data, model_type) {
+check_data <- function(data, model) {
   if (missing(data)) {
     stop("Data must be specified using the 'data' argument.")
   }
