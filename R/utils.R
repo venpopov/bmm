@@ -71,6 +71,9 @@ configure_options <- function(opts, env=parent.frame()) {
       opts$chains <-  parallel::detectCores()
     }
   }
+  exclude <- c("parallel")
+  # return only options that can be passed to brms
+  opts <- opts[not_in(names(opts), exclude)]
   return(opts)
 }
 
