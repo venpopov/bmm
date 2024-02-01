@@ -94,6 +94,7 @@ check_data.nontargets <- function(model, data, formula, ...) {
   for (i in 1:(max_setsize - 1)) {
     data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
   }
+  data$ss_numeric <- ss_numeric
   data$inv_ss = 1/(ss_numeric - 1)
   data$inv_ss = ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
   data[,non_targets][is.na(data[,non_targets])] <- 0
@@ -102,6 +103,7 @@ check_data.nontargets <- function(model, data, formula, ...) {
   attr(data, "max_setsize") <- max_setsize
   attr(data, "non_targets") <- non_targets
   attr(data, "lure_idx_vars") <- lure_idx_vars
+  attr(data, "setsize_var") <- setsize
 
   data = NextMethod("check_data")
 
@@ -132,6 +134,9 @@ check_data.IMMspatial <- function(model, data, formula, ...) {
   }
   # wrap spatial position variables around the circle (range = -pi to pi)
   data[,spaPos] <- bmm::wrap(data[,spaPos])
+
+  # save some variables as attributes of the data for later use
+  attr(data, "spaPos") <- spaPos
 
   data = NextMethod("check_data")
 

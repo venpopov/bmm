@@ -71,22 +71,26 @@ fit_model <- function(formula, data, model,
   # TODO: generalize model-specific arguments
 
   # enable parallel sampling if parallel equals TRUE
-  configure_options(nlist(parallel))
+  configure_options(nlist(parallel, chains))
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model, model_type)
-  formula <- check_formula(formula, model)
-  data <- check_data(data, model, formula, non_targets, spaPos, setsize)
+  formula <- check_formula(model, formula)
+  data <- check_data(model, data, formula,
+                     non_targets = non_targets,
+                     spaPos = spaPos,
+                     setsize = setsize)
 
   # generate the model specification to pass to brms later
-  config_args <- configure_model(formula, data, model, target, non_targets,
+  config_args <- configure_model(model, data, formula, target, non_targets,
                                   spaPos, setsize, relative)
 
   # combine the default prior plus user given prior
   config_args <- combine_prior(config_args, prior)
 
   # estimate the model
-  fit_args <- c(config_args, nlist(parallel, chains), list(...))
+  dots <- list(...)
+  fit_args <- c(config_args, nlist(parallel, chains), dots)
   fit <- do_call(brms::brm, fit_args)
 
   return(fit)

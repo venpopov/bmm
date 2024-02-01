@@ -1,4 +1,4 @@
-check_formula <- function(formula, model) {
+check_formula <- function(model, formula) {
   # Pre-Check: was a valid brms formula provided
   if (!inherits(formula, 'brmsformula')) {
     stop("The provided formula is not a brms formula.

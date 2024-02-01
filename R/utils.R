@@ -81,3 +81,13 @@ not_in <- function(value, vector) {
 not_in_list <- function(key, list) {
   !(key %in% names(list))
 }
+
+glue_nlf <- function(...) {
+  dots = list(...)
+  brms::nlf(stats::as.formula(collapse(...)))
+}
+
+glue_lf <- function(...) {
+  dots = list(...)
+  brms::lf(stats::as.formula(collapse(...)))
+}
