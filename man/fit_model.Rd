@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_model.R
 \name{fit_model}
 \alias{fit_model}
-\title{Fit Mixture Models for Visual Working Memory using BRMS}
+\title{Fit Measurement Models using BRMS}
 \usage{
 fit_model(
   formula,
@@ -32,9 +32,9 @@ target, not the raw response. Similarly, the lure values must be coded
 relative to the target. If the lure values are absolute, you must subtract
 from them the value of the target before running the model}
 
-\item{model_type}{A description of the mixture model. "2p" for the 2
+\item{model_type}{A description of the measurement model. "2p" for the 2
 parameter mixture model of Zhang and Luck (2008), "3p" for the 3 parameter
-mixture model of Bays et al (2009). "IMMabc" for the interfernece measurement model assuming swap
+mixture model of Bays et al (2009). "IMMabc" for the interference measurement model assuming swap
 errors to occur independent of spatial proximity between target and non-target
 items, "IMMbsc" for the interference measurement model assuming swap errors to occur
 only as a function of spatial proximity between target and non-targets, and "IMMfull"
@@ -84,12 +84,12 @@ with many other useful information about the model. Use methods(class =
 "brmsfit") for an overview on available methods.
 }
 \description{
-Fit a Bayesian multilevel mixture model for visual working
-memory. Currently implemented are the two-parameter mixture model by Zhang
-and Luck (2008), the three-parameter mixture model by Bays et al
-(2009), and three different versions of the Interference Measurement Model
+Fit a Bayesian multilevel measurement model. Currently implemented
+are the two-parameter mixture model by Zhang and Luck (2008),
+the three-parameter mixture model by Bays et al (2009),
+and three different versions of the Interference Measurement Model
 (Oberauer et al., 2017). This is a wrapper function for \link[brms:brm]{brms::brm}, which is
-used to estimate the model
+used to estimate the model.
 }
 \seealso{
 \code{\link[brms:brm]{brms::brm()}}
