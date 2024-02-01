@@ -48,7 +48,7 @@ check_data.nontargets <- function(model, data, formula, ...) {
   dots <- list(...)
 
   # check if arguments are valid
-  if(not_in_list("non_targets", dots)) {
+  if(is.null(dots$non_targets)) {
     stop("Argument 'non_targets' must be specified.")
   }
 
@@ -58,7 +58,7 @@ check_data.nontargets <- function(model, data, formula, ...) {
     warning('It appears your lure variables are in degrees. We will transform it to radians.')
   }
 
-  if(not_in_list("setsize", dots)) {
+  if(is.null(dots$setsize)) {
     stop(paste0("Argument 'setsize' is not specified. For the ",
                 attr(model, "name"),
                 ",\n  please set the 'setsize' argument either to a number, if the setsize \n",
@@ -114,7 +114,7 @@ check_data.nontargets <- function(model, data, formula, ...) {
 #' @export
 check_data.IMMspatial <- function(model, data, formula, ...) {
   dots <- list(...)
-  if(not_in_list("spaPos", dots)) {
+  if(is.null(dots$spaPos)) {
     stop("Argument 'spaPos' must be specified.")
   }
   spaPos <- dots$spaPos

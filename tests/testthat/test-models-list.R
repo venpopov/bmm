@@ -9,8 +9,11 @@ test_that("get_model() returns the correct function", {
 
 test_that("check_model() refuses invalid models and accepts valid models", {
   expect_error(check_model("invalid_model", NULL))
-  expect_silent(check_model("2p",NULL))
-  expect_type(check_model("2p",NULL), "list")
+  okmodels <- supported_models()
+  for (model in okmodels) {
+    expect_silent(check_model(model, NULL))
+    expect_type(check_model(model,NULL), "list")
+  }
 })
 
 

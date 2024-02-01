@@ -91,7 +91,7 @@ fit_model <- function(formula, data, model,
   # estimate the model
   dots <- list(...)
   fit_args <- c(config_args, opts, dots)
-  fit <- brms::do_call(brms::brm, fit_args)
+  fit <- call_brm(fit_args)
 
   return(fit)
 }

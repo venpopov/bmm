@@ -95,3 +95,11 @@ glue_lf <- function(...) {
   dots = list(...)
   brms::lf(stats::as.formula(collapse(...)))
 }
+
+call_brm <- function(fit_args) {
+  fit <- brms::do_call(brms::brm, fit_args)
+  if (fit_args$backend == "mock") {
+    fit$fit_args <- fit_args
+  }
+  return(fit)
+}
