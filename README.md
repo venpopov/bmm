@@ -16,6 +16,13 @@ implemented models are:
 
 - Interference measurement model by Oberauer and Lin (2017).
 
+You can always view the latest list of supported models by running:
+
+``` r
+bmm::supported_models()
+#> [1] "2p"      "3p"      "IMMabc"  "IMMbsc"  "IMMfull"
+```
+
 ## Installation
 
 You can install the development version of bmm from
@@ -41,13 +48,13 @@ library(bmm)
 library(tidyverse)
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
 head(dat)
-#>             y   nt1_loc    nt2_loc     nt3_loc
-#> 1 -0.11182195 -2.055452 -1.7848563  0.47425980
-#> 2 -0.11556300  1.403156  0.5931497 -0.05000802
-#> 3 -0.15723376  2.950425 -0.8802946  0.49276455
-#> 4  0.08757818 -0.829254  1.4013302  0.44143983
-#> 5  0.24900620  2.042890  2.7460277  1.47863817
-#> 6 -0.80903848  1.759539 -1.9708203  2.76594867
+#>             y    nt1_loc    nt2_loc    nt3_loc
+#> 1 -0.48346223  1.6481214  1.7239921  0.1258224
+#> 2 -0.11983030 -1.6478270 -1.8722221 -1.2260134
+#> 3  0.89761778 -0.1812635  1.7624608 -0.1498153
+#> 4 -0.08878312  0.1784370  0.2471922  1.4389696
+#> 5 -0.33871783  2.5483247  3.0433640 -1.2262777
+#> 6 -0.14428208 -0.9519158  2.4495659 -1.2138929
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%
@@ -66,7 +73,7 @@ centered on 0, with long tails:
 hist(dat$y, breaks = 60, xlab = "Response error relative to target")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 Another key property of the data is that some error responses are not
 random, but that they are due to confusion of the target with one of the
 lures. We can visualize this by centering the response error relative to
@@ -81,7 +88,7 @@ dat %>%
 #> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 Ok, so now let’s fit the three-parameter model. We only need to do two
 things: - Specify the model formula - Call fit_model()
@@ -106,9 +113,10 @@ you would pass to `brm`.
 ``` r
 fit <- fit_model(formula = ff,
                  data = dat,
-                 model_type = "3p",
+                 model = "3p",
                  non_targets = paste0('nt',1:3,'_loc'),
                  setsize=4,
                  parallel=T,
-                 iter=500)
+                 iter=500,
+                 backend='cmdstanr')
 ```
