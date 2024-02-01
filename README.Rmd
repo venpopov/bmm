@@ -38,7 +38,7 @@ based on a uniform distribution. To estimate these parameters for a dataset, we
 can use the `fit_model()` function. First, let's generate a dataset with known
 parameters. We can use the function `gen_3p_data()`
 
-```{r example}
+```{r example, message=FALSE, warning=FALSE}
 library(bmm)
 library(tidyverse)
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
@@ -96,12 +96,9 @@ pass to `brm`.
 fit <- fit_model(formula = ff,
                  data = dat,
                  model_type = "3p",
-                 lures = paste0('nt',1:3,'_loc'),
+                 non_targets = paste0('nt',1:3,'_loc'),
                  setsize=4,
                  parallel=T,
                  iter=500)
 ```
 
-## Example 2
-We can do the same but with a dataset that has a variable set size condition. 
-First we generate 

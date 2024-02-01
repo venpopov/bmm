@@ -39,28 +39,15 @@ let’s generate a dataset with known parameters. We can use the function
 ``` r
 library(bmm)
 library(tidyverse)
-#> Warning: package 'ggplot2' was built under R version 4.3.2
-#> Warning: package 'dplyr' was built under R version 4.3.2
-#> Warning: package 'stringr' was built under R version 4.3.2
-#> ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-#> ✔ dplyr     1.1.4     ✔ readr     2.1.4
-#> ✔ forcats   1.0.0     ✔ stringr   1.5.1
-#> ✔ ggplot2   3.4.4     ✔ tibble    3.2.1
-#> ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-#> ✔ purrr     1.0.1     
-#> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-#> ✖ dplyr::filter() masks stats::filter()
-#> ✖ dplyr::lag()    masks stats::lag()
-#> ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
 head(dat)
-#>               y    nt1_loc    nt2_loc    nt3_loc
-#> 1  0.3487698474  1.8985136  0.3796621 -0.8366318
-#> 2  0.1454692058 -0.1746312 -2.6965681  0.9784810
-#> 3 -0.0000697827 -2.2937998  0.7249212  2.4478609
-#> 4  0.0939472136 -2.0868535 -1.1523776 -1.3120891
-#> 5 -0.0266451029 -0.6624271 -2.6928092  0.2941023
-#> 6  0.3327737127  1.5681273  2.0013667  2.0061682
+#>             y   nt1_loc    nt2_loc     nt3_loc
+#> 1 -0.11182195 -2.055452 -1.7848563  0.47425980
+#> 2 -0.11556300  1.403156  0.5931497 -0.05000802
+#> 3 -0.15723376  2.950425 -0.8802946  0.49276455
+#> 4  0.08757818 -0.829254  1.4013302  0.44143983
+#> 5  0.24900620  2.042890  2.7460277  1.47863817
+#> 6 -0.80903848  1.759539 -1.9708203  2.76594867
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%
@@ -120,13 +107,8 @@ you would pass to `brm`.
 fit <- fit_model(formula = ff,
                  data = dat,
                  model_type = "3p",
-                 lures = paste0('nt',1:3,'_loc'),
+                 non_targets = paste0('nt',1:3,'_loc'),
                  setsize=4,
                  parallel=T,
                  iter=500)
 ```
-
-## Example 2
-
-We can do the same but with a dataset that has a variable set size
-condition. First we generate
