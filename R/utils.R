@@ -63,7 +63,18 @@ softmaxinv <- function(p, lambda = 1) {
   SOFTINV
 }
 
-# helper function to configure local options during model fitting
+#' @title Configure local options during model fitting
+#
+#' @description Currently it serves to set local options for parallel processing and update
+#' number of chains if the number of chains is greater than the number of cores.
+#'
+#' @param opts A list of options
+#' @param env The environment in which to set the options - when set to parent.frame()
+#' the changes would apply to the environment of the function that called it. In our
+#' case, this is the environment of the fit_model() function. Changes will not be
+#' propagated to the user environment.
+#' @keywords internal
+#' @returns A list of options to pass to brm()
 configure_options <- function(opts, env=parent.frame()) {
   if (opts$parallel) {
     withr::local_options(list(mc.cores = parallel::detectCores()), .local_envir=env)
@@ -77,28 +88,44 @@ configure_options <- function(opts, env=parent.frame()) {
   return(opts)
 }
 
+# ------------------------------------------------------------------------------
+# check if a value is not in a vector
 not_in <- function(value, vector) {
   !(value %in% vector)
 }
 
-
+# ------------------------------------------------------------------------------
+# check if a key is not in a list
 not_in_list <- function(key, list) {
   !(key %in% names(list))
 }
 
+
+#' wrappers to construct a brms nlf and lf formulas from multiple string arguments
+#' @param ... string parts of the formula separated by commas
+#' @examples
+#' kappa_nts <- paste0('kappa_nt', 1:4)
+#' glue_nlf(kappa_nts[i], ' ~ kappa')  ## same as brms::nlf(kappa_nt1 ~ kappa)
+#' @noRd
 glue_nlf <- function(...) {
   dots = list(...)
   brms::nlf(stats::as.formula(collapse(...)))
 }
 
+# like glue_nlf but for lf formulas
 glue_lf <- function(...) {
   dots = list(...)
   brms::lf(stats::as.formula(collapse(...)))
 }
 
+#' wrapper function to call brms, saving fit_args if backend is mock for testing
+#' not used directly, but called by fit_model(). If fit_model() is run with
+#' backend="mock", then we can perform tests on the fit_args to check if the
+#' model configuration is correct. Avoids compiling and running the model
+#' @noRd
 call_brm <- function(fit_args) {
   fit <- brms::do_call(brms::brm, fit_args)
-  if (fit_args$backend == "mock") {
+  if (!is.null(fit_args$backend) && fit_args$backend == "mock") {
     fit$fit_args <- fit_args
   }
   return(fit)

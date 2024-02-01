@@ -10,5 +10,6 @@ print_pretty_models_md()
 Markdown code for printing the list of measurement models available in \code{bmm}
 }
 \description{
-Generate a markdown list of the measurement models available in \code{bmm}
+Used internally to automatically populate information in the README file
 }
+\keyword{internal}

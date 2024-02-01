@@ -1,4 +1,26 @@
-# generic S3 method for checking data based on model type
+#' @title Generic S3 method for checking data based on model type
+#' @description Called by fit_model() to automatically perform checks on the
+#'   data depending on the model type. It will call the appropriate check_data
+#'   methods based on the list of classes defined in the .model_* functions. For
+#'   models with several classes listed, it will call the functions in the order
+#'   they are listed. Thus, any operations that are common to a group of models
+#'   should be defined in the appropriate check_data.* function, where \*
+#'   corresponds to the shared class. For example, for the .model_IMMabc model,
+#'   this corresponds to the following order of check_data.* functions:
+#'   check_data() -> check_data.vwm(), check_data.nontargets() the output of the
+#'   final function is returned to fit_model().
+#' @param model A model list object returned from check_model()
+#' @param data The user supplied data.frame containing the data to be checked
+#' @param formula The user supplied formula
+#' @param ... Additional arguments passed to the check_data.* functions
+#' @return A data.frame with the same number of rows as the input data, but with
+#'   additional columns added as necessary, any necessary transformations
+#'   applied, and attributes added to the data.frame for later use. If you need
+#'   to reuse variables created by the check_data.* functions in subsequent
+#'   stages (e.g. in configure_model()), you can store and access them using the
+#'   attr() function.
+#' @export
+#' @keywords internal
 check_data <- function(model, data, formula, ...) {
   if (missing(data)) {
     stop("Data must be specified using the 'data' argument.")
