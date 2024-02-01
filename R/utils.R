@@ -67,10 +67,11 @@ softmaxinv <- function(p, lambda = 1) {
 configure_options <- function(opts, env=parent.frame()) {
   if (opts$parallel) {
     withr::local_options(list(mc.cores = parallel::detectCores()), .local_envir=env)
-    if (chains >  parallel::detectCores()) {
-      chains <-  parallel::detectCores()
+    if (opts$chains >  parallel::detectCores()) {
+      opts$chains <-  parallel::detectCores()
     }
   }
+  return(opts)
 }
 
 not_in <- function(value, vector) {

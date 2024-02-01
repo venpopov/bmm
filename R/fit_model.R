@@ -71,7 +71,7 @@ fit_model <- function(formula, data, model,
   # TODO: generalize model-specific arguments
 
   # enable parallel sampling if parallel equals TRUE
-  configure_options(nlist(parallel, chains))
+  opts <- configure_options(nlist(parallel, chains))
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model, model_type)
@@ -90,7 +90,7 @@ fit_model <- function(formula, data, model,
 
   # estimate the model
   dots <- list(...)
-  fit_args <- c(config_args, nlist(parallel, chains), dots)
+  fit_args <- c(config_args, nlist(parallel, chains), opts, dots)
   fit <- do_call(brms::brm, fit_args)
 
   return(fit)
