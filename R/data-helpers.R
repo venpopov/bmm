@@ -21,7 +21,7 @@
 #'   attr() function.
 #' @export
 #' @keywords internal
-check_data <- function(model, data, formula, ...) {
+check_data <- function(model, data, formula) {
   if (missing(data)) {
     stop("Data must be specified using the 'data' argument.")
   }
@@ -43,13 +43,13 @@ check_data <- function(model, data, formula, ...) {
 
 
 #' @export
-check_data.default <- function(model, data, formula, ...) {
+check_data.default <- function(model, data, formula) {
   return(data)
 }
 
 
 #' @export
-check_data.vwm <- function(model, data, formula, ...) {
+check_data.vwm <- function(model, data, formula) {
   resp_name <- get_response(formula$formula)
   if (max(abs(data[[resp_name]]), na.rm=T) > 10) {
     data[[resp_name]] <- data[[resp_name]]*pi/180
@@ -66,28 +66,14 @@ check_data.vwm <- function(model, data, formula, ...) {
 
 
 #' @export
-check_data.nontargets <- function(model, data, formula, ...) {
-  dots <- list(...)
-
-  # check if arguments are valid
-  if(is.null(dots$non_targets)) {
-    stop("Argument 'non_targets' must be specified.")
-  }
-
-  non_targets <- dots$non_targets
+check_data.nontargets <- function(model, data, formula) {
+  non_targets <- model$vars$non_targets
   if (max(abs(data[,non_targets]), na.rm=T) > 10) {
     data[,non_targets] <- data[,non_targets]*pi/180
     warning('It appears your lure variables are in degrees. We will transform it to radians.')
   }
 
-  if(is.null(dots$setsize)) {
-    stop(paste0("Argument 'setsize' is not specified. For the ",
-                attr(model, "name"),
-                ",\n  please set the 'setsize' argument either to a number, if the setsize \n",
-                "  is fixed, or to the name of the variable containing the setsize, \n",
-                "  if the setsize varies in your dataset\n"))
-  }
-  setsize <- dots$setsize
+  setsize <- model$vars$setsize
   if (is.character(setsize) && length(setsize) == 1) {
     # Variable setsize
     ss_numeric <- as.numeric(as.character(data[[setsize]]))
@@ -121,11 +107,9 @@ check_data.nontargets <- function(model, data, formula, ...) {
   data$inv_ss = ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
   data[,non_targets][is.na(data[,non_targets])] <- 0
 
-  # save some variables as attributes of the data for later use
-  attr(data, "max_setsize") <- max_setsize
-  attr(data, "non_targets") <- non_targets
-  attr(data, "lure_idx_vars") <- lure_idx_vars
-  attr(data, "setsize_var") <- setsize
+  # save some variables for later use
+  attr(data, 'max_setsize') <- max_setsize
+  attr(data, 'lure_idx_vars') <- lure_idx_vars
 
   data = NextMethod("check_data")
 

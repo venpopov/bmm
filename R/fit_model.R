@@ -24,25 +24,6 @@
 #'   only as a function of spatial proximity between target and non-targets, and "IMMfull"
 #'   for the full interference measurement model accounting for swap both dependent and
 #'   independent of proximity between target and non-targets (Oberauer et al., 2017).
-#' @param model_type (deprecated) Alias for `model`. Use `model` instead.
-#' @param target Name of the column containing the values of the target. Only
-#'   necessary if argument `relative==F` (currently experimental)
-#' @param non_targets A vector of names of the columns containing the non-target
-#'   values. Necessary for all models, except if `model_type="2p"`. If the response is the
-#'   response error centered on the target, then the values for the non-target
-#'   items also have to be centered on the target. If the response is the raw
-#'   response and not centered on the target, then the non-target values should
-#'   also not be centered on the target
-#' @param spaPos A vector of names of the columns containing the spatial distances of
-#'   non-target items to the target item. Only necessary if `model_type=="IMMbsc "` or
-#'   `model_type == "IMMfull"`.
-#' @param setsize Name of the column containing the set size variable (if
-#'   setsize varies) or a numeric value for the setsize, if the setsize is
-#'   fixed. Only necessary if fitting the 3 parameter mixture model.
-#' @param relative Logical; TRUE if the response is the response error centered
-#'   on the target value, and the lure positions (for the 3 parameter model) are
-#'   also centered relative to the target. FALSE if the response and the non_targets
-#'   are the absolute values not centered on the target. Default is TRUE.
 #' @param parallel Logical; If TRUE, the number of cores on your machine will be
 #'   detected and brms will fit max(chains, cores) number of chains (specified
 #'   by the `chain` argument) in parallel using the parallel package
@@ -62,28 +43,19 @@
 #'
 #' @export
 #'
-#'
-#'
-fit_model <- function(formula, data, model,
-                      target = NULL, non_targets = NULL, spaPos = NULL, setsize = NULL,
-                      relative = T, parallel = FALSE, chains = 4, prior = NULL,
-                      model_type = NULL,...) {
+fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior = NULL, ...) {
   # TODO: generalize model-specific arguments
 
   # enable parallel sampling if parallel equals TRUE
   opts <- configure_options(nlist(parallel, chains))
 
   # check model, formula and data, and transform data if necessary
-  model <- check_model(model, model_type)
+  model <- check_model(model)
   formula <- check_formula(model, formula)
-  data <- check_data(model, data, formula,
-                     non_targets = non_targets,
-                     spaPos = spaPos,
-                     setsize = setsize)
+  data <- check_data(model, data, formula)
 
   # generate the model specification to pass to brms later
-  config_args <- configure_model(model, data, formula, target, non_targets,
-                                  spaPos, setsize, relative)
+  config_args <- configure_model(model, data, formula)
 
   # combine the default prior plus user given prior
   config_args <- combine_prior(config_args, prior)

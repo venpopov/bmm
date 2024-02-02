@@ -22,7 +22,7 @@
 #' @details A bare bones configure_model.* method should look like this:
 #'
 #'  ``` r
-#'  configure_model.newmodel <- function(model, data, formula, ...) {
+#'  configure_model.newmodel <- function(model, data, formula) {
 #'
 #'     # preprocessing - e.g. extract arguments from data check, construct new variables
 #'     <preprocessing code>
@@ -43,7 +43,7 @@
 #'  ```
 #' @examples
 #' \dontrun{
-#' configure_model.3p <- function(model, data, formula, ...) {
+#' configure_model.3p <- function(model, data, formula) {
 #'    # retrieve arguments from the data check
 #'    max_setsize <- attr(data, "max_setsize")
 #'    non_targets <- attr(data, "non_targets")
@@ -99,7 +99,7 @@
 #'
 #' @export
 #' @keywords internal
-configure_model <- function(model, data, formula, ...) {
+configure_model <- function(model, data, formula) {
   UseMethod("configure_model")
 }
 

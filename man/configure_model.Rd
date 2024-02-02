@@ -4,7 +4,7 @@
 \alias{configure_model}
 \title{Generic S3 method for configuring the model to be fit by brms}
 \usage{
-configure_model(model, data, formula, ...)
+configure_model(model, data, formula)
 }
 \arguments{
 \item{model}{A model list object returned from check_model()}
@@ -38,7 +38,7 @@ shared methods for classes of models that share the same configuration.
 \details{
 A bare bones configure_model.* method should look like this:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{configure_model.newmodel <- function(model, data, formula, ...) \{
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{configure_model.newmodel <- function(model, data, formula) \{
 
    # preprocessing - e.g. extract arguments from data check, construct new variables
    <preprocessing code>
@@ -60,7 +60,7 @@ A bare bones configure_model.* method should look like this:
 }
 \examples{
 \dontrun{
-configure_model.3p <- function(model, data, formula, ...) {
+configure_model.3p <- function(model, data, formula) {
    # retrieve arguments from the data check
    max_setsize <- attr(data, "max_setsize")
    non_targets <- attr(data, "non_targets")

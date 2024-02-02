@@ -18,7 +18,7 @@
 # data checks can be performed on all of them. The 'mixture2p' model does not have
 # non-targets or setsize arguments, so it has a different class.
 
-mixture3p <- function(non_targets, setsize) {
+mixture3p <- function(non_targets, setsize, ...) {
   .model_mixture3p(non_targets = non_targets,
                    setsize = setsize)
 }
@@ -46,12 +46,12 @@ mixture3p <- function(non_targets, setsize) {
 # ?configure_model for more information.
 
 #' @export
-configure_model.mixture3p <- function(model, data, formula, ...) {
+configure_model.mixture3p <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, "max_setsize")
-  non_targets <- attr(data, "non_targets")
+  max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  setsize_var <- attr(data, "setsize_var")
+  non_targets <- model$vars$non_targets
+  setsize_var <- model$vars$setsize
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)

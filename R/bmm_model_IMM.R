@@ -18,18 +18,18 @@
 # data checks can be performed on all of them. The 'mixture2p' model does not have
 # non-targets or setsize arguments, so it has a different class.
 
-IMMabc <- function(non_targets, setsize) {
+IMMabc <- function(non_targets, setsize, ...) {
   .model_IMMabc(non_targets = non_targets,
                 setsize = setsize)
 }
 
-IMMbsc <- function(non_targets, setsize, spaPos) {
+IMMbsc <- function(non_targets, setsize, spaPos, ...) {
   .model_IMMbsc(non_targets = non_targets,
                 setsize = setsize,
                 spaPos = spaPos)
 }
 
-IMMfull <- function(non_targets, setsize, spaPos) {
+IMMfull <- function(non_targets, setsize, spaPos, ...) {
   .model_IMMfull(non_targets = non_targets,
                 setsize = setsize,
                 spaPos = spaPos)
@@ -92,32 +92,24 @@ IMMfull <- function(non_targets, setsize, spaPos) {
 # the model. See ?check_data for details
 
 #' @export
-check_data.IMMspatial <- function(model, data, formula, ...) {
-  dots <- list(...)
-  if(is.null(dots$spaPos)) {
-    stop("Argument 'spaPos' must be specified.")
-  }
-  spaPos <- dots$spaPos
+check_data.IMMspatial <- function(model, data, formula) {
+  spaPos <- model$vars$spaPos
+  max_setsize <- attr(data, 'max_setsize')
 
-  if (length(spaPos) < attr(data, 'max_setsize') - 1) {
+  if (length(spaPos) < max_setsize - 1) {
     stop(paste0("The number of columns for spatial positions in the argument",
                 "'spaPos' is less than max(setsize)-1"))
-  } else if (length(spaPos) > attr(data, 'max_setsize')-1) {
+  } else if (length(spaPos) > max_setsize-1) {
     stop(paste0("The number of columns for spatial positions in the argument",
                 "spaPos'' is more than max(setsize)-1"))
   }
 
-  spaPos <- dots$spaPos
   if (max(abs(data[,spaPos]), na.rm=T) > 10) {
     data[,spaPos] <- data[,spaPos]*pi/180
     warning('It appears your spatial position variables are in degrees. We will transform it to radians.')
   }
   # wrap spatial position variables around the circle (range = -pi to pi)
   data[,spaPos] <- bmm::wrap(data[,spaPos])
-
-  # save some variables as attributes of the data for later use
-  attr(data, "spaPos") <- spaPos
-
   data = NextMethod("check_data")
 
   return(data)
@@ -130,12 +122,12 @@ check_data.IMMspatial <- function(model, data, formula, ...) {
 # ?configure_model for more information.
 
 #' @export
-configure_model.IMMabc <- function(model, data, formula, ...) {
+configure_model.IMMabc <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, "max_setsize")
-  non_targets <- attr(data, "non_targets")
+  max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  setsize_var <- attr(data, "setsize_var")
+  non_targets <- model$vars$non_targets
+  setsize_var <- model$vars$setsize
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -187,13 +179,13 @@ configure_model.IMMabc <- function(model, data, formula, ...) {
 }
 
 #' @export
-configure_model.IMMbsc <- function(model, data, formula, ...) {
+configure_model.IMMbsc <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, "max_setsize")
-  non_targets <- attr(data, "non_targets")
+  max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  spaPos <- attr(data, "spaPos")
-  setsize_var <- attr(data, "setsize_var")
+  non_targets <- model$vars$non_targets
+  setsize_var <- model$vars$setsize
+  spaPos <- model$vars$spaPos
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -246,13 +238,13 @@ configure_model.IMMbsc <- function(model, data, formula, ...) {
 }
 
 #' @export
-configure_model.IMMfull <- function(model, data, formula, ...) {
+configure_model.IMMfull <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, "max_setsize")
-  non_targets <- attr(data, "non_targets")
+  max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  spaPos <- attr(data, "spaPos")
-  setsize_var <- attr(data, "setsize_var")
+  non_targets <- model$vars$non_targets
+  setsize_var <- model$vars$setsize
+  spaPos <- model$vars$spaPos
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)

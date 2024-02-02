@@ -4,7 +4,7 @@
 \alias{check_data}
 \title{Generic S3 method for checking data based on model type}
 \usage{
-check_data(model, data, formula, ...)
+check_data(model, data, formula)
 }
 \arguments{
 \item{model}{A model list object returned from check_model()}

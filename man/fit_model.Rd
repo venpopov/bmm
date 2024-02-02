@@ -8,15 +8,9 @@ fit_model(
   formula,
   data,
   model,
-  target = NULL,
-  non_targets = NULL,
-  spaPos = NULL,
-  setsize = NULL,
-  relative = T,
   parallel = FALSE,
   chains = 4,
   prior = NULL,
-  model_type = NULL,
   ...
 )
 }
@@ -42,29 +36,6 @@ only as a function of spatial proximity between target and non-targets, and "IMM
 for the full interference measurement model accounting for swap both dependent and
 independent of proximity between target and non-targets (Oberauer et al., 2017).}
 
-\item{target}{Name of the column containing the values of the target. Only
-necessary if argument \code{relative==F} (currently experimental)}
-
-\item{non_targets}{A vector of names of the columns containing the non-target
-values. Necessary for all models, except if \code{model_type="2p"}. If the response is the
-response error centered on the target, then the values for the non-target
-items also have to be centered on the target. If the response is the raw
-response and not centered on the target, then the non-target values should
-also not be centered on the target}
-
-\item{spaPos}{A vector of names of the columns containing the spatial distances of
-non-target items to the target item. Only necessary if \code{model_type=="IMMbsc "} or
-\code{model_type == "IMMfull"}.}
-
-\item{setsize}{Name of the column containing the set size variable (if
-setsize varies) or a numeric value for the setsize, if the setsize is
-fixed. Only necessary if fitting the 3 parameter mixture model.}
-
-\item{relative}{Logical; TRUE if the response is the response error centered
-on the target value, and the lure positions (for the 3 parameter model) are
-also centered relative to the target. FALSE if the response and the non_targets
-are the absolute values not centered on the target. Default is TRUE.}
-
 \item{parallel}{Logical; If TRUE, the number of cores on your machine will be
 detected and brms will fit max(chains, cores) number of chains (specified
 by the \code{chain} argument) in parallel using the parallel package}
@@ -75,8 +46,6 @@ by the \code{chain} argument) in parallel using the parallel package}
 functions and combined using the c method or the + operator. See also
 \code{\link[brms:get_prior]{brms::get_prior()}} for more help. Not necessary for the default model fitting, but
 you can provide prior constraints to model parameters}
-
-\item{model_type}{(deprecated) Alias for \code{model}. Use \code{model} instead.}
 
 \item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See
 the description of \code{\link[brms:brm]{brms::brm()}} for more details}

@@ -18,7 +18,7 @@
 # data checks can be performed on all of them. The 'mixture2p' model does not have
 # non-targets or setsize arguments, so it has a different class.
 
-mixture2p <- function() {
+mixture2p <- function(...) {
   .model_mixture2p()
 }
 
@@ -44,7 +44,7 @@ mixture2p <- function() {
 # ?configure_model for more information.
 
 #' @export
-configure_model.mixture2p <- function(model, data, formula, ...) {
+configure_model.mixture2p <- function(model, data, formula) {
   # specify the formula for the mixture model
   formula <- formula +
     brms::lf(kappa2 ~ 1, mu1 ~ 1, mu2 ~ 1) +
