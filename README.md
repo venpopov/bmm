@@ -3,11 +3,25 @@
 
 # bmm <!-- badges: start --> <!-- badges: end -->
 
-The goal of bmm (Bayesian Measurement Models for Visual Working Memory)
-is to make it easier to estimate common mixture measurement models for
-visual working memory using the ‘brms’ package. Currently implemented
-are the two-parameter mixture model by Zhang and Luck (2008), and the
-three- parameter mixture model by Bays et al (2009).
+The goal of bmm (Bayesian Measurement Models) is to make it easier to
+estimate common measurement models for behavioral research using
+Bayesian hierarhical estimation via the ‘brms’ package’. Currently
+implemented models are:
+
+#### Visual working memory
+
+- Two-parameter mixture model by Zhang and Luck (2008).
+
+- Three-parameter mixture model by Bays et al (2009).
+
+- Interference measurement model by Oberauer and Lin (2017).
+
+You can always view the latest list of supported models by running:
+
+``` r
+bmm::supported_models()
+#> [1] "2p"      "3p"      "IMMabc"  "IMMbsc"  "IMMfull"
+```
 
 ## Installation
 
@@ -19,7 +33,7 @@ You can install the development version of bmm from
 devtools::install_github("venpopov/bmm")
 ```
 
-## Example
+## Example 1
 
 The three-parameter mixture model by Bays et al (2009) assumes that
 responses can come from three different sources - noisy representation
@@ -32,23 +46,15 @@ let’s generate a dataset with known parameters. We can use the function
 ``` r
 library(bmm)
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-#> ✔ ggplot2 3.4.0     ✔ purrr   1.0.1
-#> ✔ tibble  3.1.8     ✔ dplyr   1.1.0
-#> ✔ tidyr   1.3.0     ✔ stringr 1.5.0
-#> ✔ readr   2.1.3     ✔ forcats 1.0.0
-#> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-#> ✖ dplyr::filter() masks stats::filter()
-#> ✖ dplyr::lag()    masks stats::lag()
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
 head(dat)
-#>            y    nt1_loc    nt2_loc      nt3_loc
-#> 1  0.2569243  2.6968595  1.1011967 -2.381452975
-#> 2 -0.2995747  3.0590161 -2.6963216  2.097664573
-#> 3 -0.6496101  1.0919187 -1.1204057 -0.897425564
-#> 4  0.6172717  1.3327058  1.0317656 -0.522874907
-#> 5 -0.2693346  2.1338354  0.2148838 -0.001552538
-#> 6 -0.2150131 -0.3817029 -2.8162736  0.636291417
+#>             y    nt1_loc    nt2_loc    nt3_loc
+#> 1 -0.48346223  1.6481214  1.7239921  0.1258224
+#> 2 -0.11983030 -1.6478270 -1.8722221 -1.2260134
+#> 3  0.89761778 -0.1812635  1.7624608 -0.1498153
+#> 4 -0.08878312  0.1784370  0.2471922  1.4389696
+#> 5 -0.33871783  2.5483247  3.0433640 -1.2262777
+#> 6 -0.14428208 -0.9519158  2.4495659 -1.2138929
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%
@@ -67,7 +73,7 @@ centered on 0, with long tails:
 hist(dat$y, breaks = 60, xlab = "Response error relative to target")
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 Another key property of the data is that some error responses are not
 random, but that they are due to confusion of the target with one of the
 lures. We can visualize this by centering the response error relative to
@@ -82,7 +88,7 @@ dat %>%
 #> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 Ok, so now let’s fit the three-parameter model. We only need to do two
 things: - Specify the model formula - Call fit_model()
@@ -107,9 +113,10 @@ you would pass to `brm`.
 ``` r
 fit <- fit_model(formula = ff,
                  data = dat,
-                 model_type = "3p",
+                 model = "3p",
                  non_targets = paste0('nt',1:3,'_loc'),
                  setsize=4,
                  parallel=T,
-                 iter=500)
+                 iter=500,
+                 backend='cmdstanr')
 ```

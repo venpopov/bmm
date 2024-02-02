@@ -12,11 +12,19 @@ knitr::opts_chunk$set(
 ```
 # bmm <!-- badges: start --> <!-- badges: end --> 
 
-The goal of bmm (Bayesian Measurement Models for Visual Working Memory) is to make it
-easier to estimate common mixture measurement models for visual working memory
-using the 'brms' package. Currently implemented are the two-parameter mixture
-model by Zhang and Luck (2008), and the three- parameter mixture model by Bays
-et al (2009). 
+The goal of bmm (Bayesian Measurement Models) is to make it easier to estimate 
+common measurement models for behavioral research using Bayesian hierarhical 
+estimation via the 'brms' package'. Currently implemented models are:
+
+```{r, results="asis", echo=FALSE}
+bmm::print_pretty_models_md()
+```
+
+You can always view the latest list of supported models by running:
+
+```{r}
+bmm::supported_models()
+```
 
 ## Installation 
 
@@ -36,7 +44,7 @@ based on a uniform distribution. To estimate these parameters for a dataset, we
 can use the `fit_model()` function. First, let's generate a dataset with known
 parameters. We can use the function `gen_3p_data()`
 
-```{r example}
+```{r example, message=FALSE, warning=FALSE}
 library(bmm)
 library(tidyverse)
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
@@ -93,13 +101,11 @@ pass to `brm`.
 ``` r
 fit <- fit_model(formula = ff,
                  data = dat,
-                 model_type = "3p",
-                 lures = paste0('nt',1:3,'_loc'),
+                 model = "3p",
+                 non_targets = paste0('nt',1:3,'_loc'),
                  setsize=4,
                  parallel=T,
-                 iter=500)
+                 iter=500,
+                 backend='cmdstanr')
 ```
 
-## Example 2
-We can do the same but with a dataset that has a variable set size condition. 
-First we generate 
