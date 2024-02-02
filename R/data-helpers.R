@@ -133,34 +133,3 @@ check_data.nontargets <- function(model, data, formula, ...) {
 }
 
 
-#' @export
-check_data.IMMspatial <- function(model, data, formula, ...) {
-  dots <- list(...)
-  if(is.null(dots$spaPos)) {
-    stop("Argument 'spaPos' must be specified.")
-  }
-  spaPos <- dots$spaPos
-
-  if (length(spaPos) < attr(data, 'max_setsize') - 1) {
-    stop(paste0("The number of columns for spatial positions in the argument",
-                "'spaPos' is less than max(setsize)-1"))
-  } else if (length(spaPos) > attr(data, 'max_setsize')-1) {
-    stop(paste0("The number of columns for spatial positions in the argument",
-                "spaPos'' is more than max(setsize)-1"))
-  }
-
-  spaPos <- dots$spaPos
-  if (max(abs(data[,spaPos]), na.rm=T) > 10) {
-    data[,spaPos] <- data[,spaPos]*pi/180
-    warning('It appears your spatial position variables are in degrees. We will transform it to radians.')
-  }
-  # wrap spatial position variables around the circle (range = -pi to pi)
-  data[,spaPos] <- bmm::wrap(data[,spaPos])
-
-  # save some variables as attributes of the data for later use
-  attr(data, "spaPos") <- spaPos
-
-  data = NextMethod("check_data")
-
-  return(data)
-}
