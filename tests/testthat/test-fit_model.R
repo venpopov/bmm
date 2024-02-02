@@ -5,7 +5,7 @@ test_that('Available mock models run without errors',{
 
   # two-parameter model mock fit
   f <- brms::bf(respErr ~ 1, kappa ~ 1, thetat ~ 1)
-  mock_fit <- fit_model(f, dat, "2p", backend="mock", mock_fit=1, rename=FALSE)
+  mock_fit <- fit_model(f, dat, "mixture2p", backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
   expect_equal(names(mock_fit$fit_args[1:4]), c("formula", "data", "family", "prior"))
@@ -13,7 +13,7 @@ test_that('Available mock models run without errors',{
 
   # three-parameter model mock fit
   f <- brms::bf(respErr ~ 1, kappa ~ 1, thetat ~ 1, thetant ~ 1)
-  mock_fit <- fit_model(f, dat, "3p", backend="mock", mock_fit=1, rename=FALSE,
+  mock_fit <- fit_model(f, dat, "mixture3p", backend="mock", mock_fit=1, rename=FALSE,
                         setsize=5, non_targets = paste0('Item',2:5,'_rel'))
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
@@ -57,7 +57,7 @@ test_that('Available models produce expected errors', {
   }
 
 
-  okmodels <- c('3p','IMMabc','IMMbsc','IMMfull')
+  okmodels <- c('mixture3p','IMMabc','IMMbsc','IMMfull')
   for (model in okmodels) {
     expect_error(fit_model(brms::bf(respErr~1), data=dat, model=model, backend="mock",
                            mock_fit=1, rename=FALSE),

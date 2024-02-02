@@ -1,12 +1,12 @@
 test_that("check_data() produces expected errors and warnings", {
-  expect_error(check_data(.model_2p()),
+  expect_error(check_data(.model_mixture2p()),
                "Data must be specified using the 'data' argument.")
-  expect_error(check_data(.model_2p(), data.frame(), brms::bf(y ~ 1)),
+  expect_error(check_data(.model_mixture2p(), data.frame(), brms::bf(y ~ 1)),
                "Argument 'data' does not contain observations.")
-  expect_error(check_data(.model_2p(), data.frame(x = 1), brms::bf(y ~ 1)),
+  expect_error(check_data(.model_mixture2p(), data.frame(x = 1), brms::bf(y ~ 1)),
                "The response variable 'y' is not present in the data.")
 
-  mls <- lapply(c('2p','3p','IMMabc','IMMbsc','IMMfull'), get_model)
+  mls <- lapply(c('mixture2p','mixture3p','IMMabc','IMMbsc','IMMfull'), get_model)
   for (ml in mls) {
     expect_warning(check_data(ml(), data.frame(y = 12, x = 1, z = 2), brms::bf(y ~ 1),
                               non_targets = 'x', setsize=2, spaPos = 'z'),
@@ -15,7 +15,7 @@ test_that("check_data() produces expected errors and warnings", {
                               non_targets = 'x', setsize=2, spaPos = 'z'))
   }
 
-  mls <- lapply(c('3p','IMMabc','IMMbsc','IMMfull'), get_model)
+  mls <- lapply(c('mixture3p','IMMabc','IMMbsc','IMMfull'), get_model)
   for (ml in mls) {
     expect_error(check_data(ml(), data.frame(y = 1, x = 1, z = 2), brms::bf(y ~ 1),
                             non_targets = 'x', spaPos = 'z'),

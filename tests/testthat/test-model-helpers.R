@@ -4,7 +4,7 @@ test_that("supported_models() returns a non-empty character vector", {
 })
 
 test_that("get_model() returns the correct function", {
-  expect_equal(get_model("2p"), .model_2p)
+  expect_equal(get_model("mixture2p"), .model_mixture2p)
 })
 
 test_that("check_model() refuses invalid models and accepts valid models", {

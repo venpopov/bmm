@@ -8,14 +8,14 @@
 #   citation: the citation for the model (e.g. "Zhang, W., & Luck, S. J. (2008).
 #             Discrete fixed-resolution representations in visual working memory.
 #             Nature, 453(7192), 233–235. https://doi.org/10.1038/nature06860")
-#   class: a character vector with the class of the model (e.g. c("vwm","2p"))
+#   class: a character vector with the class of the model (e.g. c("vwm","mixture2p"))
 #
 # The class attribute is used by generic S3 functions to perform data checks and
 # model configuration. The classes should be ordered from most general to most
-# specific c("vwm","nontargets","3p"). A general class exists when the same operations
-# can be performed on multiple models. For example, the '3p', 'IMMabc', 'IMMbsc'
+# specific c("vwm","nontargets","mixture3p"). A general class exists when the same operations
+# can be performed on multiple models. For example, the 'mixture3p', 'IMMabc', 'IMMbsc'
 # and 'IMMfull' models all have non-targets and setsize arguments, so the same
-# data checks can be performed on all of them. The '2p' model does not have
+# data checks can be performed on all of them. The 'mixture2p' model does not have
 # non-targets or setsize arguments, so it has a different class.
 
 .model_IMMabc <- function() {

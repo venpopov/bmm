@@ -65,7 +65,7 @@ check_model <- function(model, model_type) {
 #' @param model A string with the name of the model supplied by the user
 #' @return A function of type .model_*
 #' @details the returned object is a function. To get the model object, call the
-#'   returned function, e.g. `get_model("2p")()`
+#'   returned function, e.g. `get_model("mixture2p")()`
 #' @noRd
 get_model <- function(model) {
   get(paste0('.model_', model), mode='function')
@@ -96,14 +96,14 @@ use_model_template <- function(model_name, testing=FALSE) {
   "#   citation: the citation for the model (e.g. Zhang, W., & Luck, S. J. (2008).\n",
   "#             Discrete fixed-resolution representations in visual working memory.\n",
   "#             Nature, 453(7192), 233-235.) \n",
-  "#   class: a character vector with the class of the model (e.g. c('vwm','2p'))\n",
+  "#   class: a character vector with the class of the model (e.g. c('vwm','mixture2p'))\n",
   "#\n",
   "# The class attribute is used by generic S3 functions to perform data checks and\n",
   "# model configuration. The classes should be ordered from most general to most\n",
-  "# specific c('vwm','nontargets','3p'). A general class exists when the same operations\n",
-  "# can be performed on multiple models. For example, the '3p', 'IMMabc', 'IMMbsc'\n",
+  "# specific c('vwm','nontargets','mixture3p'). A general class exists when the same operations\n",
+  "# can be performed on multiple models. For example, the 'mixture3p', 'IMMabc', 'IMMbsc'\n",
   "# and 'IMMfull' models all have non-targets and setsize arguments, so the same\n",
-  "# data checks can be performed on all of them. The '2p' model does not have\n",
+  "# data checks can be performed on all of them. The 'mixture2p' model does not have\n",
   "# non-targets or setsize arguments, so it has a different class.\n\n\n")
 
   check_data_header <- paste0(
