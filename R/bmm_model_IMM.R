@@ -18,26 +18,66 @@
 # data checks can be performed on all of them. The 'mixture2p' model does not have
 # non-targets or setsize arguments, so it has a different class.
 
-.model_IMMabc <- function() {
-  out <- list()
-  attr(out, "domain") <- "Visual working memory"
-  attr(out, "name") <- "Interference measurement model by Oberauer and Lin (2017)."
+IMMabc <- function(non_targets, setsize) {
+  .model_IMMabc(non_targets = non_targets,
+                setsize = setsize)
+}
+
+IMMbsc <- function(non_targets, setsize, spaPos) {
+  .model_IMMbsc(non_targets = non_targets,
+                setsize = setsize,
+                spaPos = spaPos)
+}
+
+IMMfull <- function(non_targets, setsize, spaPos) {
+  .model_IMMfull(non_targets = non_targets,
+                setsize = setsize,
+                spaPos = spaPos)
+}
+
+
+
+.model_IMMabc <- function(...) {
+  out <- list(
+    vars = nlist(...),
+    info = list(
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Interference measurement model by Oberauer and Lin (2017).",
+      version = "abc",
+      citation = paste0("Oberauer, K., & Lin, H.Y. (2017). An interference model ",
+                        "of visual working memory. Psychological Review, 124(1), 21-59")
+    ))
   class(out) <- c("vwm","nontargets","IMMabc")
   out
 }
 
-.model_IMMbsc <- function() {
-  out <- list()
-  attr(out, "domain") <- "Visual working memory"
-  attr(out, "name") <- "Interference measurement model by Oberauer and Lin (2017)."
-  class(out) <- c("vwm","nontargets", "IMMspatial","IMMbsc")
+.model_IMMbsc <- function(...) {
+  out <- list(
+    vars = nlist(...),
+    info = list(
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Interference measurement model by Oberauer and Lin (2017).",
+      version = "bsc",
+      citation = paste0("Oberauer, K., & Lin, H.Y. (2017). An interference model ",
+                        "of visual working memory. Psychological Review, 124(1), 21-59")
+    ))
+  class(out) <- c("vwm","nontargets","IMMspatial","IMMbsc")
   out
 }
 
-.model_IMMfull <- function() {
-  out <- list()
-  attr(out, "domain") <- "Visual working memory"
-  attr(out, "name") <- "Interference measurement model by Oberauer and Lin (2017)."
+.model_IMMfull <- function(...) {
+  out <- list(
+    vars = nlist(...),
+    info = list(
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Interference measurement model by Oberauer and Lin (2017).",
+      version = "abc",
+      citation = paste0("Oberauer, K., & Lin, H.Y. (2017). An interference model ",
+                        "of visual working memory. Psychological Review, 124(1), 21-59")
+    ))
   class(out) <- c("vwm","nontargets","IMMspatial","IMMfull")
   out
 }

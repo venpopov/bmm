@@ -18,11 +18,24 @@
 # data checks can be performed on all of them. The 'mixture2p' model does not have
 # non-targets or setsize arguments, so it has a different class.
 
-.model_mixture3p <- function() {
-  out <- list()
-  attr(out, "domain") <- "Visual working memory"
-  attr(out, "name") <- "Three-parameter mixture model by Bays et al (2009)."
-  class(out) <- c("vwm","nontargets","mixture3p")
+mixture3p <- function(non_targets, setsize) {
+  .model_mixture3p(non_targets = non_targets,
+                   setsize = setsize)
+}
+
+.model_mixture3p <- function(...) {
+  out <- list(
+    vars = nlist(...),
+    info = list(
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Three-parameter mixture model by Bays et al (2009).",
+      version = "",
+      citation = paste0("Bays, P. M., Catalao, R. F. G., & Husain, M. (2009). ",
+                        "The precision of visual working memory is set by allocation ",
+                        "of a shared resource. Journal of Vision, 9(10), 1-11")
+    ))
+  class(out) = c("bmmmodel", "vwm", "nontargets", "mixture3p")
   out
 }
 

@@ -22,11 +22,18 @@ mixture2p <- function() {
   .model_mixture2p()
 }
 
-.model_mixture2p <- function() {
-  out <- list()
-  attr(out, "domain") <- "Visual working memory"
-  attr(out, "name") <- "Two-parameter mixture model by Zhang and Luck (2008)."
-  class(out) <- c("vwm","mixture2p")
+.model_mixture2p <- function(...) {
+  out <- list(
+      vars = list(...),
+      info = list(
+        domain = "Visual working memory",
+        task = "Continuous reproduction",
+        name = "Two-parameter mixture model by Zhang and Luck (2008).",
+        version = "",
+        citation = paste0("Zhang, W., & Luck, S. J. (2008). Discrete fixed-resolution",
+          "representations in visual working memory. Nature, 453(7192), 233-235")
+      ))
+  class(out) <- c("bmmmodel", "vwm", "mixture2p")
   out
 }
 
