@@ -26,6 +26,7 @@ Imports:
     tidyr,
     circular,
     stats,
-    matrixStats
+    matrixStats,
+    methods
 URL: https://github.com/venpopov/bmm
 BugReports: https://github.com/venpopov/bmm/issues

@@ -27,14 +27,10 @@ target, not the raw response. Similarly, the lure values must be coded
 relative to the target. If the lure values are absolute, you must subtract
 from them the value of the target before running the model}
 
-\item{model}{A description of the measurement model. "2p" for the 2
-parameter mixture model of Zhang and Luck (2008), "3p" for the 3 parameter
-mixture model of Bays et al (2009). "IMMabc" for the interference measurement model assuming swap
-errors to occur independent of spatial proximity between target and non-target
-items, "IMMbsc" for the interference measurement model assuming swap errors to occur
-only as a function of spatial proximity between target and non-targets, and "IMMfull"
-for the full interference measurement model accounting for swap both dependent and
-independent of proximity between target and non-targets (Oberauer et al., 2017).}
+\item{model}{A description of the model to be fitted. This is a call to a bmmmodel
+function. Every model function has a number of required arguments which need
+to be specified within the function call. Call \code{\link[=supported_models]{supported_models()}} to see
+the list of supported models and their required arguments}
 
 \item{parallel}{Logical; If TRUE, the number of cores on your machine will be
 detected and brms will fit max(chains, cores) number of chains (specified
@@ -62,6 +58,39 @@ the three-parameter mixture model by Bays et al (2009),
 and three different versions of the Interference Measurement Model
 (Oberauer et al., 2017). This is a wrapper function for \link[brms:brm]{brms::brm}, which is
 used to estimate the model.
+}
+\details{
+The following models are supported:
+\itemize{
+\item \code{IMMabc(non_targets, setsize)}
+\item \code{IMMbsc(non_targets, setsize, spaPos)}
+\item \code{IMMfull(non_targets, setsize, spaPos)}
+\item \code{mixture2p()}
+\item \code{mixture3p(non_targets, setsize)}
+}
+
+Type ?modelname to get information about a specific model, e.g. ?IMMfull
+}
+\examples{
+\dontrun{
+# generate artificial data from the Bays et al (2009) 3-parameter mixture model
+dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
+
+# define formula
+ff <- brms::bf(y ~ 1,
+              kappa ~ 1,
+              thetat ~ 1,
+              thetant ~ 1)
+
+# fit the model
+fit <- fit_model(formula = ff,
+                 data = dat,
+                 model = mixture3p(non_targets = paste0('nt',1:3,'_loc'), setsize=4),
+                 parallel=T,
+                 iter=500,
+                 backend='cmdstanr')
+}
+
 }
 \seealso{
 \code{\link[brms:brm]{brms::brm()}}

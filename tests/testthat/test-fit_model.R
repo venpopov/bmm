@@ -49,7 +49,7 @@ test_that('Available models produce expected errors', {
                       ntrial = 100, setsize = 5)
 
   # Missing data
-  okmodels <- supported_models()
+  okmodels <- supported_models(print_call=FALSE)
   for (model in okmodels) {
     model <- get_model2(model)
     args_list <- formals(model)

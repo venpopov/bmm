@@ -1,6 +1,6 @@
 test_that("supported_models() returns a non-empty character vector", {
-  expect_type(supported_models(), "character")
-  expect_gt(length(supported_models()), 0)
+  expect_type(supported_models(print_call=FALSE), "character")
+  expect_gt(length(supported_models(print_call=FALSE)), 0)
 })
 
 test_that("get_model() returns the correct function", {
@@ -10,7 +10,7 @@ test_that("get_model() returns the correct function", {
 test_that("check_model() refuses invalid models and accepts valid models", {
   expect_error(check_model("invalid_model"))
   expect_error(check_model(structure(list(), class='invalid')))
-  okmodels <- supported_models()
+  okmodels <- supported_models(print_call=FALSE)
   for (model in okmodels) {
     model <- get_model2(model)
     args_list <- formals(model)
@@ -23,7 +23,7 @@ test_that("check_model() refuses invalid models and accepts valid models", {
 
 test_that("use_model_template() prevents duplicate models", {
   skip_on_cran()
-  okmodels <- supported_models()
+  okmodels <- supported_models(print_call=FALSE)
   for (model in okmodels) {
     expect_error(use_model_template(model))
   }

@@ -12,15 +12,16 @@
 #
 # The class attribute is used by generic S3 functions to perform data checks and
 # model configuration. The classes should be ordered from most general to most
-# specific c("vwm","nontargets","mixture3p"). A general class exists when the same operations
+# specific c("bmmmodel", "vwm","nontargets","mixture3p"). A general class exists when the same operations
 # can be performed on multiple models. For example, the 'mixture3p', 'IMMabc', 'IMMbsc'
 # and 'IMMfull' models all have non-targets and setsize arguments, so the same
 # data checks can be performed on all of them. The 'mixture2p' model does not have
 # non-targets or setsize arguments, so it has a different class.
-
-mixture2p <- function(...) {
-  .model_mixture2p()
-}
+#
+# The first class of every function should be "bmmmodel"
+#
+# Each .model_* function should have an exported user facing alias with the same
+# name as the function, e.g. mixture2p <- .model_mixture2p
 
 .model_mixture2p <- function(...) {
   out <- list(
@@ -30,12 +31,23 @@ mixture2p <- function(...) {
         task = "Continuous reproduction",
         name = "Two-parameter mixture model by Zhang and Luck (2008).",
         version = "",
-        citation = paste0("Zhang, W., & Luck, S. J. (2008). Discrete fixed-resolution",
-          "representations in visual working memory. Nature, 453(7192), 233-235")
+        citation = paste0("Zhang, W., & Luck, S. J. (2008). Discrete fixed-resolution ",
+          "representations in visual working memory. Nature, 453(7192), 233-235"),
+        requirements = paste0('- The response vairable should be in radians and ',
+                              'represent the angular error relative to the target')
       ))
   class(out) <- c("bmmmodel", "vwm", "mixture2p")
   out
 }
+
+# user facing alias
+#' @title `r .model_mixture2p()$info$name`
+#' @description A two-parameter mixture model for visual working memory.
+#' @details `r model_info(mixture2p())`
+#' @param ... no required arguments, call as `mixture2p()`
+#' @return An object of class `bmmmodel`
+#' @export
+mixture2p <- .model_mixture2p
 
 #############################################################################!
 # CONFIGURE_MODEL METHODS                                                ####

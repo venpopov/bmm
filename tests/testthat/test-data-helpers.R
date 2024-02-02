@@ -38,7 +38,7 @@ test_that("check_data() produces expected errors and warnings", {
 })
 
 test_that("check_data() returns a data.frame()", {
-  mls <- lapply(supported_models(), get_model)
+  mls <- lapply(supported_models(print_call=FALSE), get_model)
   for (ml in mls) {
     expect_s3_class(check_data(ml(non_targets = 'x', setsize=2, spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), brms::bf(y ~ 1)), "data.frame")
   }
