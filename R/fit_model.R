@@ -34,6 +34,8 @@
 #'
 #' @details `r a= supported_models(); a`
 #'
+#'   Type `help(package=bmm)` for a full list of available help topics.
+#'
 #' @returns An object of class brmsfit which contains the posterior draws along
 #'   with many other useful information about the model. Use methods(class =
 #'   "brmsfit") for an overview on available methods.

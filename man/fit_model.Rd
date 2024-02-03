@@ -71,6 +71,8 @@ The following models are supported:
 }
 
 Type \code{?modelname} to get information about a specific model, e.g. \code{?IMMfull}
+
+Type \code{help(package=bmm)} for a full list of available help topics.
 }
 \examples{
 \dontrun{
@@ -100,5 +102,5 @@ Introducing the Bayesian Measurement Modeling  (bmm) package for R.
 https://doi.org/10.31234/osf.io/umt57
 }
 \seealso{
-\code{\link[brms:brm]{brms::brm()}}
+\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:brm]{brms::brm()}}
 }
