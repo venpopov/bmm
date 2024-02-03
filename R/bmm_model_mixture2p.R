@@ -1,27 +1,6 @@
 #############################################################################!
 # MODELS                                                                 ####
 #############################################################################!
-# Each model should have a corresponding .model_* function which returns a list
-# with the following attributes:
-#   domain: the domain of the model (e.g. "Visual working memory")
-#   name: the name of the model (e.g. "Two-parameter mixture model by Zhang and Luck (2008).")
-#   citation: the citation for the model (e.g. "Zhang, W., & Luck, S. J. (2008).
-#             Discrete fixed-resolution representations in visual working memory.
-#             Nature, 453(7192), 233–235. https://doi.org/10.1038/nature06860")
-#   class: a character vector with the class of the model (e.g. c("vwm","mixture2p"))
-#
-# The class attribute is used by generic S3 functions to perform data checks and
-# model configuration. The classes should be ordered from most general to most
-# specific c("bmmmodel", "vwm","nontargets","mixture3p"). A general class exists when the same operations
-# can be performed on multiple models. For example, the 'mixture3p', 'IMMabc', 'IMMbsc'
-# and 'IMMfull' models all have non-targets and setsize arguments, so the same
-# data checks can be performed on all of them. The 'mixture2p' model does not have
-# non-targets or setsize arguments, so it has a different class.
-#
-# The first class of every function should be "bmmmodel"
-#
-# Each .model_* function should have an exported user facing alias with the same
-# name as the function, e.g. mixture2p <- .model_mixture2p
 
 .model_mixture2p <- function(...) {
   out <- list(
@@ -30,11 +9,15 @@
         domain = "Visual working memory",
         task = "Continuous reproduction",
         name = "Two-parameter mixture model by Zhang and Luck (2008).",
-        version = "",
+        version = "NA",
         citation = paste0("Zhang, W., & Luck, S. J. (2008). Discrete fixed-resolution ",
           "representations in visual working memory. Nature, 453(7192), 233-235"),
         requirements = paste0('- The response vairable should be in radians and ',
-                              'represent the angular error relative to the target')
+                              'represent the angular error relative to the target'),
+        parameters = list(
+          kappa = "Concentration parameter of the von Mises distribution (log scale)",
+          thetat = "Mixture weight for target responses"
+        )
       ))
   class(out) <- c("bmmmodel", "vwm", "mixture2p")
   out
@@ -42,10 +25,29 @@
 
 # user facing alias
 #' @title `r .model_mixture2p()$info$name`
-#' @description A two-parameter mixture model for visual working memory.
 #' @details `r model_info(mixture2p())`
 #' @param ... no required arguments, call as `mixture2p()`
 #' @return An object of class `bmmmodel`
+#' @examples
+#' \dontrun{
+#' # generate artificial data
+#' dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
+#'
+#' # define formula
+#' ff <- brms::bf(y ~ 1,
+#'               kappa ~ 1,
+#'               thetat ~ 1)
+#'
+#' model <- mixture2p()
+#'
+#' # fit the model
+#' fit <- fit_model(formula = ff,
+#'                  data = dat,
+#'                  model = model,
+#'                  parallel=T,
+#'                  iter=500,
+#'                  backend='cmdstanr')
+#' }
 #' @export
 mixture2p <- .model_mixture2p
 

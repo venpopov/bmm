@@ -56,19 +56,41 @@ print_pretty_models_md <- function() {
   }
 }
 
-model_info <- function(model) {
+model_info <- function(model, components = 'all') {
   UseMethod("model_info")
 }
 
 
 #' @export
-model_info.bmmmodel <- function(model) {
-  paste0("* **Domain:** ", model$info$domain, "\n\n",
-             "* **Task:** ", model$info$task, "\n\n",
-             "* **Name:** ", model$info$name, "\n\n",
-             "* **Citation:** \n\n   - ", model$info$citation, "\n\n",
-             "* **Version:** ", model$info$version, "\n\n",
-             "* **Requirements:** \n\n  ", model$info$requirements, "\n\n")
+model_info.bmmmodel <- function(model, components = 'all') {
+  pars <- model$info$parameters
+  par_info <- ""
+  if (length(pars) > 0) {
+    for (par in names(pars)) {
+      par_info <- paste0(par_info, "   - `", par, "`: ", pars[[par]], "\n")
+    }
+  }
+
+  info_all <-   list(
+    domain = paste0("* **Domain:** ", model$info$domain, "\n\n"),
+    task = paste0("* **Task:** ", model$info$task, "\n\n"),
+    name = paste0("* **Name:** ", model$info$name, "\n\n"),
+    citation = paste0("* **Citation:** \n\n   - ", model$info$citation, "\n\n"),
+    version = paste0("* **Version:** ", model$info$version, "\n\n"),
+    requirements = paste0("* **Requirements:** \n\n  ", model$info$requirements, "\n\n"),
+    parameters = paste0("* **Parameters:** \n\n  ", par_info, "\n\n")
+  )
+
+  if (length(components) == 1 && components == 'all') {
+    components <- names(info_all)
+  }
+
+  if (model$info$version == "NA" || model$info$version == "") {
+    components <- components[components != "version"]
+  }
+
+  # return only the specified components
+  return(collapse(info_all[components]))
 }
 
 #' Checks if the model is supported, and returns the model function

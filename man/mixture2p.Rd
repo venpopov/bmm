@@ -13,7 +13,7 @@ mixture2p(...)
 An object of class \code{bmmmodel}
 }
 \description{
-A two-parameter mixture model for visual working memory.
+Two-parameter mixture model by Zhang and Luck (2008).
 }
 \details{
 \itemize{
@@ -24,10 +24,35 @@ A two-parameter mixture model for visual working memory.
 \itemize{
 \item Zhang, W., & Luck, S. J. (2008). Discrete fixed-resolution representations in visual working memory. Nature, 453(7192), 233-235
 }
-\item \strong{Version:}
 \item \strong{Requirements:}
 \itemize{
 \item The response vairable should be in radians and represent the angular error relative to the target
 }
+\item \strong{Parameters:}
+\itemize{
+\item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
+\item \code{thetat}: Mixture weight for target responses
+}
+}
+}
+\examples{
+\dontrun{
+# generate artificial data
+dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
+
+# define formula
+ff <- brms::bf(y ~ 1,
+              kappa ~ 1,
+              thetat ~ 1)
+
+model <- mixture2p()
+
+# fit the model
+fit <- fit_model(formula = ff,
+                 data = dat,
+                 model = model,
+                 parallel=T,
+                 iter=500,
+                 backend='cmdstanr')
 }
 }
