@@ -56,6 +56,8 @@ print_pretty_models_md <- function() {
   }
 }
 
+# used to extract well formatted information from the model object to print
+# in the @details section for the documentation of each model
 model_info <- function(model, components = 'all') {
   UseMethod("model_info")
 }
@@ -119,6 +121,7 @@ get_model <- function(model) {
   get(paste0('.model_', model), mode='function')
 }
 
+# same as get_model2, but with the new model structure for the user facing alias
 get_model2 <- function(model) {
   get(model, mode='function')
 }
@@ -127,6 +130,29 @@ get_model2 <- function(model) {
 
 
 
+#' Create a file with a template for adding a new model (for developers)
+#'
+#' @param model_name A string with the name of the model. The file will be named
+#'  `bmm_model_model_name.R` and all necessary functions will be created with the
+#'  appropriate names and structure. The file will be saved in the `R/` directory
+#' @param testing Logical; If TRUE, the function will return the file content but
+#'  will not save the file. If FALSE (default), the function will save the file
+#'
+#' @return If `testing` is TRUE, the function will return the file content as a
+#'  string. If `testing` is FALSE, the function will return NULL
+#'
+#' @details The function will create a file with the following structure:
+#'
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'  # create a new model file
+#'  use_model_template("newmodel")
+#'  # check the file
+#'  file.show("R/bmm_model_newmodel.R")
+#'}
 use_model_template <- function(model_name, testing=FALSE) {
   file_name <- paste0('bmm_model_', model_name, '.R')
   # check if model exists
@@ -141,22 +167,8 @@ use_model_template <- function(model_name, testing=FALSE) {
   "#############################################################################!\n",
   "# MODELS                                                                 ####\n",
   "#############################################################################!\n",
-  "# Each model should have a corresponding .model_* function which returns a list\n",
-  "# with the following attributes:\n",
-  "#   domain: the domain of the model (e.g. 'Visual working memory')\n",
-  "#   name: the name of the model (e.g. 'Two-parameter mixture model by Zhang and Luck (2008).')\n",
-  "#   citation: the citation for the model (e.g. Zhang, W., & Luck, S. J. (2008).\n",
-  "#             Discrete fixed-resolution representations in visual working memory.\n",
-  "#             Nature, 453(7192), 233-235.) \n",
-  "#   class: a character vector with the class of the model (e.g. c('vwm','mixture2p'))\n",
-  "#\n",
-  "# The class attribute is used by generic S3 functions to perform data checks and\n",
-  "# model configuration. The classes should be ordered from most general to most\n",
-  "# specific c('vwm','nontargets','mixture3p'). A general class exists when the same operations\n",
-  "# can be performed on multiple models. For example, the 'mixture3p', 'IMMabc', 'IMMbsc'\n",
-  "# and 'IMMfull' models all have non-targets and setsize arguments, so the same\n",
-  "# data checks can be performed on all of them. The 'mixture2p' model does not have\n",
-  "# non-targets or setsize arguments, so it has a different class.\n\n\n")
+  "# see file 'R/bmm_model_mixture3p.R' for an example\n\n")
+
 
   check_data_header <- paste0(
   "\n\n\n#############################################################################!\n",
@@ -174,20 +186,46 @@ use_model_template <- function(model_name, testing=FALSE) {
   "# Each model should have a corresponding configure_model.* function. See\n",
   "# ?configure_model for more information.\n\n\n")
 
-  model_object <- glue::glue(".model_<<model_name>> <- function() {\n",
-                             "   out <- list()\n",
-                             "   attr(out, 'domain') <- ''\n",
-                             "   attr(out, 'name') <- ''\n",
-                             "   attr(out, 'citation') <- ''\n",
-                             "   class(out) <- c('<<model_name>>')\n",
+  model_object <- glue::glue(".model_<<model_name>> <- function(required_arg1, required_arg2, ...) {\n",
+                             "   out <- list(\n",
+                             "      vars = nlist(required_arg1, required_arg2),\n",
+                             "      info = list(\n",
+                             "         domain = '',\n",
+                             "         task = '',\n",
+                             "         name = '',\n",
+                             "         citation = '',\n",
+                             "         version = '',\n",
+                             "         requirements = '',\n",
+                             "         parameters = list()\n",
+                             "      ))\n",
+                             "   class(out) <- c('bmmmodel', '<<model_name>>')\n",
                              "   out\n",
-                             "}\n\n",
+                             "}\n\n\n",
                              .open = "<<", .close = ">>")
+
+  user_facing_alias <- glue::glue("# user facing alias\n",
+                                  "# information in the title and details sections will be filled in\n",
+                                  "# automatically based on the information in the .model_<<model_name>>()$info\n",
+                                  "#' @title `r .model_<<model_name>>()$info$name`\n",
+                                  "#' @details `r model_info(<<model_name>>(NA,NA))`\n",
+                                  "#' @param required_arg1 A description of the required argument\n",
+                                  "#' @param required_arg2 A description of the required argument\n",
+                                  "#' @param ... used internally for testing, ignore it\n",
+                                  "#' @return An object of class `bmmmodel`\n",
+                                  "#' @export\n",
+                                  "#' @examples\n",
+                                  "#' \\dontrun{\n",
+                                  "#' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)\n",
+                                  "#' }\n",
+                                  "<<model_name>> <- .model_<<model_name>>\n\n",
+                                  .open = "<<", .close = ">>")
 
   check_data_method <- glue::glue("#' @export\n",
                                   "check_data.<<model_name>> <- function(model, data, formula) {\n",
-                                  "   dots <- list(...)\n\n",
-                                  "   # check if arguments are valid (required)\n\n\n",
+                                  "   # retrieve required arguments\n",
+                                  "   required_arg1 <- model$vars$required_arg1\n",
+                                  "   required_arg2 <- model$vars$required_arg2\n\n\n",
+                                  "   # check the data (required)\n\n\n",
                                   "   # compute any necessary transformations (optional)\n\n\n",
                                   "   # save some variables as attributes of the data for later use (optional)\n\n\n",
                                   "   data = NextMethod('check_data')\n\n",
@@ -197,7 +235,9 @@ use_model_template <- function(model_name, testing=FALSE) {
 
   configure_model_method <- glue::glue("#' @export\n",
                                        "configure_model.<<model_name>> <- function(model, data, formula) {\n",
-                                       "   dots <- list(...)\n\n",
+                                       "   # retrieve required arguments\n",
+                                       "   required_arg1 <- model$vars$required_arg1\n",
+                                       "   required_arg2 <- model$vars$required_arg2\n\n\n",
                                        "   # retrieve arguments from the data check\n",
                                        "   my_precomputed_var <- attr(data, 'my_precomputed_var')\n\n\n",
                                        "   # construct the formula\n",
@@ -214,6 +254,7 @@ use_model_template <- function(model_name, testing=FALSE) {
 
   file_content <- paste0(model_header,
                              model_object,
+                             user_facing_alias,
                              check_data_header,
                              check_data_method,
                              configure_model_header,
@@ -221,7 +262,8 @@ use_model_template <- function(model_name, testing=FALSE) {
 
   if (!testing) {
     writeLines(file_content, paste0('R/', file_name))
+    utils::file.edit(paste0('R/', file_name))
   } else {
-    return(file_content)
+    cat(file_content)
   }
 }

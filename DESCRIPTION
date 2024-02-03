@@ -27,6 +27,7 @@ Imports:
     circular,
     stats,
     matrixStats,
-    methods
+    methods,
+    utils
 URL: https://github.com/venpopov/bmm
 BugReports: https://github.com/venpopov/bmm/issues
