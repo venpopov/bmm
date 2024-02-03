@@ -1,3 +1,8 @@
+#############################################################################!
+# CHECK_DATA METHODS                                                     ####
+#############################################################################!
+
+
 #' @title Generic S3 method for checking data based on model type
 #' @description Called by fit_model() to automatically perform checks on the
 #'   data depending on the model type. It will call the appropriate check_data
@@ -70,7 +75,7 @@ check_data.nontargets <- function(model, data, formula) {
   non_targets <- model$vars$non_targets
   if (max(abs(data[,non_targets]), na.rm=T) > 10) {
     data[,non_targets] <- data[,non_targets]*pi/180
-    warning('It appears your lure variables are in degrees. We will transform it to radians.')
+    warning('It appears your non_target variables are in degrees. We will transform it to radians.')
   }
 
   setsize <- model$vars$setsize
@@ -94,7 +99,7 @@ check_data.nontargets <- function(model, data, formula) {
          '`non_targets` is more than max(setsize)-1')
   }
 
-  # wrap lure variables around the circle (range = -pi to pi)
+  # wrap non_target variables around the circle (range = -pi to pi)
   data[,non_targets] <- wrap(data[,non_targets])
 
   # create index variables for non_targets and correction variable for theta due to setsize
@@ -117,3 +122,60 @@ check_data.nontargets <- function(model, data, formula) {
 }
 
 
+#############################################################################!
+# HELPER FUNCTIONS                                                       ####
+#############################################################################!
+
+#' Calculate response error relative to non-target values
+#'
+#' @description Given a vector of responses, and the values of non-targets, this
+#'   function computes the error relative to each of the non-targets.
+#' @param data A `data.frame` object where each row is a single observation
+#' @param response Character. The name of the column in `data` which contains
+#'   the response
+#' @param non_targets Character vector. The names of the columns in `data` which
+#'   contain the values of the non-targets
+#' @return A `data.frame` with n*m rows, where n is the number of rows of `data`
+#'   and m is the number of non-target variables. It preserves all other columns
+#'   of `data`, except for the non-target locations, and adds a column `y_nt`,
+#'   which contains the transformed response error relative to the non-targets
+#'
+#' @export
+#'
+calc_error_relative_to_nontargets <- function(data, response, non_targets) {
+  y <- y_nt <- non_target_name <- non_target_value <- NULL
+  data <- data %>%
+    tidyr::gather(non_target_name, non_target_value, eval(non_targets))
+
+  data$y_nt <- wrap(data[[response]]-data[["non_target_value"]])
+  return(data)
+}
+
+#' @title Wrap angles that extend beyond (-pi;pi)
+#' @description On the circular space, angles can be only in the range (-pi;pi
+#'   or -180;180). When subtracting angles, this can result in values outside of
+#'   this range. For example, when calculating the difference between a value of
+#'   10 degrees minus 340 degrees, this results in a difference of 330 degrees.
+#'   However, the true difference between these two values is -30 degrees. This
+#'   function wraps such values, so that they occur in the circle
+#' @param x A numeric vector, matrix or data.frame of angles to be wrapped. In
+#'   radians (default) or degrees.
+#' @param radians Logical. Is x in radians (default=TRUE) or degrees (FALSE)
+#' @return An object of the same type as x
+#' @export
+#' @examples
+#' x <- runif(1000, -pi, pi)
+#' y <- runif(1000, -pi, pi)
+#' diff <- x-y
+#' hist(diff)
+#' wrapped_diff <- wrap(x-y)
+#' hist(wrapped_diff)
+#'
+wrap <- function(x, radians=TRUE) {
+  stopifnot(is.logical(radians))
+  if (radians) {
+    return(((x+pi) %% (2*pi)) - pi)
+  } else {
+    return(((x+180) %% (2*180)) - 180)
+  }
+}

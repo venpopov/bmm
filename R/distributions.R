@@ -195,50 +195,6 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 }
 
 
-#' Convert between parametrizations of the c parameter of the SDM distribution
-#'
-#' @name c_parametrizations
-#'
-#' @inheritParams SDM
-#'
-#' @return \code{c_bessel2sqrtexp} converts the memory strength parameter (c)
-#'   from the bessel parametrization to the sqrtexp parametrization,
-#'   \code{c_sqrtexp2bessel} converts from the sqrtexp parametrization to the
-#'   bessel parametrization.
-#'
-#' @details See \code{vignette("bmm_models")} for details on the
-#'   parameterization. The sqrtexp parametrization is the default in the
-#'   \code{bmm} package.
-#'
-#'
-#' @export
-c_sqrtexp2bessel <- function(c, kappa) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
-
-  c * besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa)
-}
-
-#' @rdname c_parametrizations
-#' @export
-c_bessel2sqrtexp <- function(c, kappa) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
-
-  c / (besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa))
-}
-
-
 
 
 # helper functions for calculating the density of the SDM distribution

@@ -38,7 +38,12 @@
 #'   with many other useful information about the model. Use methods(class =
 #'   "brmsfit") for an overview on available methods.
 #'
-#' @seealso [brms::brm()]
+#' @references Frischkorn, G. T., & Popov, V. (2023). A tutorial for
+#' estimating mixture models for visual working memory tasks in brms:
+#' Introducing the Bayesian Measurement Modeling  (bmm) package for R.
+#' https://doi.org/10.31234/osf.io/umt57
+#'
+#' @seealso [supported_models()], [brms::brm()]
 #'
 #' @export
 #'

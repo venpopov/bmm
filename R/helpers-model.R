@@ -1,3 +1,108 @@
+#' @title Generic S3 method for configuring the model to be fit by brms
+#' @description Called by fit_model() to automatically construct the model
+#'   formula, family objects and default priors for the model specified by the
+#'   user. It will call the appropriate configure_model.* functions based on the
+#'   list of classes defined in the .model_* functions. Currently, we have a
+#'   method only for the last class listed in the .model_* functions. This is to
+#'   keep model configuration as simple as possible. In the future we may add
+#'   shared methods for classes of models that share the same configuration.
+#' @param model A model list object returned from check_model()
+#' @param data The user supplied data.frame containing the data to be checked
+#' @param formula The user supplied formula
+#' @param ... Additional arguments passed to the configure_model.* functions
+#' @return A named list containing at minimum the following elements:
+#'
+#'  - formula: An object of class `brmsformula`. The constructed model formula
+#'  - data: the user supplied data.frame, preprocessed by check_data
+#'  - family: the brms family object
+#'  - prior: the brms prior object
+#'  - stanvars: (optional) An object of class `stanvars` (for custom families).
+#'   See [brms::custom_family()] for more details.
+#'
+#' @details A bare bones configure_model.* method should look like this:
+#'
+#'  ``` r
+#'  configure_model.newmodel <- function(model, data, formula) {
+#'
+#'     # preprocessing - e.g. extract arguments from data check, construct new variables
+#'     <preprocessing code>
+#'
+#'     # construct the formula
+#'     formula <- formula + <new terms>
+#'
+#'     # construct the family
+#'     family <- <code for new family>
+#'
+#'     # construct the default prior
+#'     prior <- <code for new prior>
+#'
+#'     # return the list
+#'     out <- nlist(formula, data, family, prior)
+#'     return(out)
+#'  }
+#'  ```
+#' @examples
+#' \dontrun{
+#' configure_model.3p <- function(model, data, formula) {
+#'    # retrieve arguments from the data check
+#'    max_setsize <- attr(data, "max_setsize")
+#'    non_targets <- attr(data, "non_targets")
+#'    lure_idx_vars <- attr(data, "lure_idx_vars")
+#'    setsize_var <- attr(data, "setsize_var")
+#'
+#'    # names for parameters
+#'    kappa_nts <- paste0('kappa', 2:max_setsize)
+#'    kappa_unif <- paste0('kappa',max_setsize + 1)
+#'    theta_nts <- paste0('theta',2:max_setsize)
+#'    mu_nts <- paste0('mu', 2:max_setsize)
+#'    mu_unif <- paste0('mu', max_setsize + 1)
+#'
+#'    # construct formula
+#'    formula <- formula +
+#'      brms::lf(mu1 ~ 1) +
+#'      glue_lf(kappa_unif,' ~ 1') +
+#'      glue_lf(mu_unif, ' ~ 1') +
+#'      brms::nlf(theta1 ~ thetat) +
+#'      brms::nlf(kappa1 ~ kappa)
+#'    for (i in 1:(max_setsize-1)) {
+#'      formula <- formula +
+#'        glue_nlf(kappa_nts[i], ' ~ kappa') +
+#'        glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(thetant + log(inv_ss)) + ',
+#'                 '(1-', lure_idx_vars[i], ')*(-100)') +
+#'        glue_nlf(mu_nts[i], ' ~ ', non_targets[i])
+#'    }
+#'
+#'    # define mixture family
+#'    vm_list = lapply(1:(max_setsize+1), function(x) brms::von_mises(link="identity"))
+#'    vm_list$order = "none"
+#'    family <- brms::do_call(brms::mixture, vm_list)
+#'
+#'    # define prior
+#'    prior <-
+#'      brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+#'      brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
+#'      brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
+#'      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
+#'      brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat") +
+#'      brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetant")
+#'
+#'    # if there is setsize 1 in the data, set constant prior over thetant for setsize1
+#'    if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
+#'      prior <- prior +
+#'        brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
+#'    }
+#'
+#'    out <- nlist(formula, data, family, prior)
+#'    return(out)
+#' }
+#' }
+#'
+#' @export
+#' @keywords internal
+configure_model <- function(model, data, formula) {
+  UseMethod("configure_model")
+}
+
 #############################################################################!
 # HELPER FUNCTIONS                                                       ####
 #############################################################################!

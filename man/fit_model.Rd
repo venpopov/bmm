@@ -93,6 +93,12 @@ fit <- fit_model(formula = ff,
 }
 
 }
+\references{
+Frischkorn, G. T., & Popov, V. (2023). A tutorial for
+estimating mixture models for visual working memory tasks in brms:
+Introducing the Bayesian Measurement Modeling  (bmm) package for R.
+https://doi.org/10.31234/osf.io/umt57
+}
 \seealso{
 \code{\link[brms:brm]{brms::brm()}}
 }

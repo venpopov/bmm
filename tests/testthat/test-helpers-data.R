@@ -43,3 +43,31 @@ test_that("check_data() returns a data.frame()", {
     expect_s3_class(check_data(ml(non_targets = 'x', setsize=2, spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), brms::bf(y ~ 1)), "data.frame")
   }
 })
+
+
+
+test_that("wrap(x) returns the same for values between -pi and pi", {
+  x <- runif(100, -pi, pi)
+  expect_equal(wrap(x), x)
+})
+
+test_that("wrap(x) returns the correct value for values between (pi, 2*pi)", {
+  x <- pi+1
+  expect_equal(wrap(x), -(pi-1))
+})
+
+
+test_that("wrap(x) returns the correct value for values between (-2*pi, -pi)", {
+  x <- -pi-1
+  expect_equal(wrap(x), pi-1)
+})
+
+test_that("wrap(x) returns the correct value for values over 2*pi", {
+  x <- 2*pi+1
+  expect_equal(wrap(x), 1)
+})
+
+test_that("wrap(x) returns the correct value for values between (3*pi,4*pi)", {
+  x <- 3*pi+1
+  expect_equal(wrap(x), -(pi-1))
+})
