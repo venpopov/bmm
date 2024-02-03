@@ -23,7 +23,7 @@ Signal Discrimination Model (SDM) by Oberauer (2023)
 \item \strong{Name:} Signal Discrimination Model (SDM) by Oberauer (2023)
 \item \strong{Citation:}
 \itemize{
-\item Oberauer, K. (2023). Measurement models for visual working memory - A factorial model comparison. Psychological Review, 130(3), 841–852
+\item Oberauer, K. (2023). Measurement models for visual working memory - A factorial model comparison. Psychological Review, 130(3), 841-852
 }
 \item \strong{Version:} Simple (no non-targets)
 \item \strong{Requirements:}
@@ -32,7 +32,6 @@ Signal Discrimination Model (SDM) by Oberauer (2023)
 }
 \item \strong{Parameters:}
 \itemize{
-\item \code{mu}: Location parameter of the SDM distribution (radians)
 \item \code{c}: Memory strength parameter of the SDM distribution
 \item \code{kappa}: Precision parameter of the SDM distribution (log scale)
 }

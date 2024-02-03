@@ -10,11 +10,11 @@
          task = 'Continuous reproduction',
          name = 'Signal Discrimination Model (SDM) by Oberauer (2023)',
          citation = paste0('Oberauer, K. (2023). Measurement models for visual working memory - ',
-                           'A factorial model comparison. Psychological Review, 130(3), 841–852'),
+                           'A factorial model comparison. Psychological Review, 130(3), 841-852'),
          version = 'Simple (no non-targets)',
          requirements = '- The response variable should be in radians and represent the angular error relative to the target',
          parameters = list(
-            mu = 'Location parameter of the SDM distribution (radians)',
+            # mu = 'Location parameter of the SDM distribution (in radians; fixed internally to 0)',
             c = 'Memory strength parameter of the SDM distribution',
             kappa = 'Precision parameter of the SDM distribution (log scale)'
          )
@@ -28,7 +28,7 @@
 # automatically based on the information in the .model_sdmSimple()$info
 #' @title `r .model_sdmSimple()$info$name`
 #' @name SDM
-#' @details `r model_info(sdmSimple(NA,NA))`2
+#' @details `r model_info(sdmSimple())`2
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
@@ -41,33 +41,6 @@ sdmSimple <- .model_sdmSimple
 
 
 #############################################################################!
-# CHECK_DATA S3 methods                                                  ####
-#############################################################################!
-# A check_data.* function should be defined for each class of the model.
-# If a model shares methods with other models, the shared methods should be
-# defined in data-helpers.R. Put here only the methods that are specific to
-# the model. See ?check_data for details
-
-
-#' @export
-check_data.sdmSimple <- function(model, data, formula) {
-   # check the data (required)
-
-
-   # compute any necessary transformations (optional)
-
-
-   # save some variables as attributes of the data for later use (optional)
-
-
-   data = NextMethod('check_data')
-
-   return(data)
-}
-
-
-
-#############################################################################!
 # CONFIGURE_MODEL S3 METHODS                                             ####
 #############################################################################!
 # Each model should have a corresponding configure_model.* function. See
@@ -76,24 +49,35 @@ check_data.sdmSimple <- function(model, data, formula) {
 
 #' @export
 configure_model.sdmSimple <- function(model, data, formula) {
-   # retrieve arguments from the data check
-   # my_precomputed_var <- attr(data, 'my_precomputed_var')
+    # construct the family
+    sdm_simple <- brms::custom_family(
+      "sdm_simple", dpars = c("mu", "kappa"),
+      links = c("identity", "log"), lb = c(NA, NA),
+      type = "real", loop=FALSE,
+    )
+    family <- sdm_simple
 
-
-   # construct the formula
-   formula <- formula + brms::lf()
-
-
-   # construct the family
-   family <- NULL
+    # prepare initial stanvars to pass to brms, model formula and priors
+    stan_funs <- readChar('inst/stan_chunks/sdmSimple_funs.stan',
+                          file.info('inst/stan_chunks/sdmSimple_funs.stan')$size)
+    stan_tdata <- readChar('inst/stan_chunks/sdmSimple_tdata.stan',
+                           file.info('inst/stan_chunks/sdmSimple_tdata.stan')$size)
+    stan_likelihood <- readChar('inst/stan_chunks/sdmSimple_likelihood.stan',
+                               file.info('inst/stan_chunks/sdmSimple_likelihood.stan')$size)
+    stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
+      brms::stanvar(scode = stan_tdata, block = 'tdata') +
+      brms::stanvar(scode = stan_likelihood, block = 'likelihood', position="end")
 
 
    # construct the default prior
-   prior <- NULL
+   # TODO: add a proper prior
+   prior <-
+     # fix mu to 0 (when I change mu to be the center, not c)
+     # brms::prior_("constant(0)", class = "Intercept", dpar = "mu")
 
 
    # return the list
-   out <- nlist(formula, data, family, prior)
+   out <- nlist(formula, data, family, prior, stanvars)
    return(out)
 }
 

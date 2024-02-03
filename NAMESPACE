@@ -3,7 +3,6 @@
 S3method(check_data,IMMspatial)
 S3method(check_data,default)
 S3method(check_data,nontargets)
-S3method(check_data,sdmSimple)
 S3method(check_data,vwm)
 S3method(configure_model,IMMabc)
 S3method(configure_model,IMMbsc)

@@ -22,7 +22,15 @@ string. If \code{testing} is FALSE, the function will return NULL
 Create a file with a template for adding a new model (for developers)
 }
 \details{
-The function will create a file with the following structure:
+If you get a warning during check() about non-ASCII characters,
+this is often due to the citation field. You can find what the problem is by
+running
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{remotes::install_github("eddelbuettel/dang")
+dang::checkPackageAsciiCode(dir = ".")
+}\if{html}{\out{</div>}}
+
+usually rewriting the numbers (issue, page numbers) manually fixes it
 }
 \examples{
 \dontrun{
