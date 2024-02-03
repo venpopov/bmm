@@ -42,7 +42,10 @@ print_pretty_models_md <- function() {
   domains <- c()
   models <- c()
   for (model in ok_models) {
-    m <- get_model(model)()
+    m <- get_model(model)
+    args_list <- formals(m)
+    test_args <- lapply(args_list, function(x) {NULL})
+    m <- brms::do_call(m, test_args)
     domains <- c(domains, m$info$domain)
     models <- c(models, m$info$name)
   }

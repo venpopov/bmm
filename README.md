@@ -10,17 +10,25 @@ implemented models are:
 
 #### Visual working memory
 
+- Interference measurement model by Oberauer and Lin (2017).
+
 - Two-parameter mixture model by Zhang and Luck (2008).
 
 - Three-parameter mixture model by Bays et al (2009).
-
-- Interference measurement model by Oberauer and Lin (2017).
 
 You can always view the latest list of supported models by running:
 
 ``` r
 bmm::supported_models()
-#> [1] "2p"      "3p"      "IMMabc"  "IMMbsc"  "IMMfull"
+#> The following models are supported:
+#> 
+#> -  IMMabc(non_targets, setsize) 
+#> -  IMMbsc(non_targets, setsize, spaPos) 
+#> -  IMMfull(non_targets, setsize, spaPos) 
+#> -  mixture2p() 
+#> -  mixture3p(non_targets, setsize) 
+#> 
+#> Type ?modelname to get information about a specific model, e.g. ?IMMfull
 ```
 
 ## Installation
@@ -48,13 +56,13 @@ library(bmm)
 library(tidyverse)
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
 head(dat)
-#>             y    nt1_loc    nt2_loc    nt3_loc
-#> 1 -0.48346223  1.6481214  1.7239921  0.1258224
-#> 2 -0.11983030 -1.6478270 -1.8722221 -1.2260134
-#> 3  0.89761778 -0.1812635  1.7624608 -0.1498153
-#> 4 -0.08878312  0.1784370  0.2471922  1.4389696
-#> 5 -0.33871783  2.5483247  3.0433640 -1.2262777
-#> 6 -0.14428208 -0.9519158  2.4495659 -1.2138929
+#>            y     nt1_loc    nt2_loc    nt3_loc
+#> 1 -0.4254292 -0.85998378  0.3450462  0.9499082
+#> 2 -0.1460760 -0.24487534  1.6936344 -1.0813592
+#> 3  0.1966222 -0.05597637 -0.3338466  1.3718396
+#> 4  0.2368027  3.01629900  0.8224493  2.7518247
+#> 5 -0.1191807 -2.23919337  2.5598308  1.8855162
+#> 6 -0.1173442  0.92999531  2.1827326 -0.4774797
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%
@@ -106,6 +114,18 @@ ff <- brms::bf(y ~ 1,
          thetant ~ 1)
 ```
 
+Then specify the model and give it information about the required
+arguments. In the case of the 3-parameter model, we need to specify the
+names of the non-target variables and the setsize. We can do this with
+the `mixture3p()` function:
+
+``` r
+model <- mixture3p(non_targets = paste0('nt',1:3,'_loc'), setsize=4)
+```
+
+You can always get full help and information about the model and its
+required arguments, as well as examples by running `?mixture3p`
+
 Finally we just run the model. The arguments to the function explained
 in `help(fit_model)` and you can also pass any additional arguments that
 you would pass to `brm`.
@@ -113,9 +133,7 @@ you would pass to `brm`.
 ``` r
 fit <- fit_model(formula = ff,
                  data = dat,
-                 model = "3p",
-                 non_targets = paste0('nt',1:3,'_loc'),
-                 setsize=4,
+                 model = model,
                  parallel=T,
                  iter=500,
                  backend='cmdstanr')
