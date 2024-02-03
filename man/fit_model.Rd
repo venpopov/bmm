@@ -68,6 +68,7 @@ The following models are supported:
 \item \code{IMMfull(non_targets, setsize, spaPos)}
 \item \code{mixture2p()}
 \item \code{mixture3p(non_targets, setsize)}
+\item \code{sdmSimple()}
 }
 
 Type \code{?modelname} to get information about a specific model, e.g. \code{?IMMfull}

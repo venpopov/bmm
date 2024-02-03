@@ -5,7 +5,7 @@
 #'   memory strength \code{c}, and precision \code{kappa}. Currently only a
 #'   single activation source is supported.
 #'
-#' @name SDM
+#' @name SDMdist
 #'
 #' @param x Vector of quantiles
 #' @param q Vector of quantiles
@@ -110,7 +110,7 @@ dsdm <- function(x, mu = 0, c = 3, kappa = 3.5, log = FALSE,
   return(lnumerator - log(denom))
 }
 
-#' @rdname SDM
+#' @rdname SDMdist
 #' @export
 psdm <- function(q, mu = 0, c = 3, kappa = 3.5, lower.tail = TRUE, log.p = FALSE,
                  lower.bound = -pi, parametrization = "sqrtexp") {
@@ -153,14 +153,14 @@ psdm <- function(q, mu = 0, c = 3, kappa = 3.5, lower.tail = TRUE, log.p = FALSE
   out
 }
 
-#' @rdname SDM
+#' @rdname SDMdist
 #' @export
 qsdm <- function(p, mu=0, c=3, kappa=3.5, parametrization = "sqrtexp") {
   .NotYetImplemented()
 }
 
 
-#' @rdname SDM
+#' @rdname SDMdist
 #' @export
 rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
   if (isTRUE(any(kappa < 0))) {

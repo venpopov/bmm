@@ -35,7 +35,7 @@ k2sd <- function (K) {
 #' Convert between parametrizations of the c parameter of the SDM distribution
 #'
 #' @name c_parametrizations
-#' @inheritParams SDM
+#' @inheritParams SDMdist
 #' @return \code{c_bessel2sqrtexp} converts the memory strength parameter (c)
 #'   from the bessel parametrization to the sqrtexp parametrization,
 #'   \code{c_sqrtexp2bessel} converts from the sqrtexp parametrization to the
