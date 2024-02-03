@@ -26,8 +26,7 @@
 #'   return P(X > x)
 #'
 #' @references Oberauer, K. (2023). Measurement models for visual working
-#'   memory—A factorial model comparison. Psychological Review, 130(3), 841–852.
-#'   https://doi.org/10.1037/rev0000328
+#'   memory - A factorial model comparison. Psychological Review, 130(3), 841–852
 #'
 #' @return \code{dsdm} gives the density, \code{psdm} gives the distribution
 #'   function, \code{qsdm} gives the quantile function, \code{rsdm} generates

@@ -21,16 +21,17 @@ the model to be fitted.}
 \item{data}{An object of class data.frame, containing data of all variables
 used in the model. Response, target and lure values must be in radians.
 There must be as many lure value columns as the maximum setsize-1. For
-setsizes smaller than the maximum, values for non-existing non_targets must be
-coded as NA. The outcome variable must be response error relative to the
+setsizes smaller than the maximum, values for non-existing non_targets must
+be coded as NA. The outcome variable must be response error relative to the
 target, not the raw response. Similarly, the lure values must be coded
 relative to the target. If the lure values are absolute, you must subtract
 from them the value of the target before running the model}
 
-\item{model}{A description of the model to be fitted. This is a call to a bmmmodel
-function. Every model function has a number of required arguments which need
-to be specified within the function call. Call \code{\link[=supported_models]{supported_models()}} to see
-the list of supported models and their required arguments}
+\item{model}{A description of the model to be fitted. This is a call to a
+\code{bmmmodel} such as \code{mixture3p()} function. Every model function has a
+number of required arguments which need to be specified within the function
+call. Call \code{\link[=supported_models]{supported_models()}} to see the list of supported models and
+their required arguments}
 
 \item{parallel}{Logical; If TRUE, the number of cores on your machine will be
 detected and brms will fit max(chains, cores) number of chains (specified
@@ -38,13 +39,13 @@ by the \code{chain} argument) in parallel using the parallel package}
 
 \item{chains}{Numeric. Number of Markov chains (defaults to 4)}
 
-\item{prior}{One or more \code{brmsprior} objects created by \code{\link[brms:set_prior]{brms::set_prior()}} or related
-functions and combined using the c method or the + operator. See also
-\code{\link[brms:get_prior]{brms::get_prior()}} for more help. Not necessary for the default model fitting, but
-you can provide prior constraints to model parameters}
+\item{prior}{One or more \code{brmsprior} objects created by \code{\link[brms:set_prior]{brms::set_prior()}}
+or related functions and combined using the c method or the + operator. See
+also \code{\link[brms:get_prior]{brms::get_prior()}} for more help. Not necessary for the default model
+fitting, but you can provide prior constraints to model parameters}
 
-\item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See
-the description of \code{\link[brms:brm]{brms::brm()}} for more details}
+\item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See the
+description of \code{\link[brms:brm]{brms::brm()}} for more details}
 }
 \value{
 An object of class brmsfit which contains the posterior draws along
@@ -52,12 +53,12 @@ with many other useful information about the model. Use methods(class =
 "brmsfit") for an overview on available methods.
 }
 \description{
-Fit a Bayesian multilevel measurement model. Currently implemented
-are the two-parameter mixture model by Zhang and Luck (2008),
-the three-parameter mixture model by Bays et al (2009),
-and three different versions of the Interference Measurement Model
-(Oberauer et al., 2017). This is a wrapper function for \link[brms:brm]{brms::brm}, which is
-used to estimate the model.
+Fit a Bayesian multilevel measurement model. Currently
+implemented are the two-parameter mixture model by Zhang and Luck (2008),
+the three-parameter mixture model by Bays et al (2009), and three different
+versions of the Interference Measurement Model (Oberauer et al., 2017).
+This is a wrapper function for \link[brms:brm]{brms::brm}, which is used to estimate the
+model.
 }
 \details{
 The following models are supported:
@@ -69,7 +70,7 @@ The following models are supported:
 \item \code{mixture3p(non_targets, setsize)}
 }
 
-Type ?modelname to get information about a specific model, e.g. ?IMMfull
+Type \code{?modelname} to get information about a specific model, e.g. \code{?IMMfull}
 }
 \examples{
 \dontrun{

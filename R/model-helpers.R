@@ -25,7 +25,7 @@ supported_models <- function(print_call=TRUE) {
       args <- gsub("'", "", args)
       out <- paste0(out, '- `', model,'(',args,')`', "\n", sep='')
     }
-    out <- paste0(out, "\nType ?modelname to get information about a specific model, e.g. ?IMMfull\n")
+    out <- paste0(out, "\nType `?modelname` to get information about a specific model, e.g. `?IMMfull`\n")
     cat(gsub("`", " ", out))
     return(invisible(out))
   }

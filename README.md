@@ -28,7 +28,7 @@ bmm::supported_models()
 #> -  mixture2p() 
 #> -  mixture3p(non_targets, setsize) 
 #> 
-#> Type ?modelname to get information about a specific model, e.g. ?IMMfull
+#> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
 ```
 
 ## Installation
@@ -39,6 +39,16 @@ You can install the development version of bmm from
 ``` r
 # install.packages("devtools")
 devtools::install_github("venpopov/bmm")
+```
+
+The package was significantly updated on Feb 03, 2024. If you are
+following the old version of the [Tutorial
+preprint](https://osf.io/preprints/psyarxiv/umt57), you need to install
+the 0.0.1 version of the bmm package with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("venpopov/bmm@v0.0.1")
 ```
 
 ## Example 1
@@ -56,13 +66,13 @@ library(bmm)
 library(tidyverse)
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
 head(dat)
-#>            y     nt1_loc    nt2_loc    nt3_loc
-#> 1 -0.4254292 -0.85998378  0.3450462  0.9499082
-#> 2 -0.1460760 -0.24487534  1.6936344 -1.0813592
-#> 3  0.1966222 -0.05597637 -0.3338466  1.3718396
-#> 4  0.2368027  3.01629900  0.8224493  2.7518247
-#> 5 -0.1191807 -2.23919337  2.5598308  1.8855162
-#> 6 -0.1173442  0.92999531  2.1827326 -0.4774797
+#>              y    nt1_loc     nt2_loc     nt3_loc
+#> 1 -0.262562484  0.5194131  0.04023566  0.02380744
+#> 2  0.314136370 -1.3632070  3.01577183  0.26238357
+#> 3 -0.267298707  2.2981244 -2.09627162 -3.02060983
+#> 4 -0.407608270 -2.7137502  0.31459890  1.53500240
+#> 5 -0.409859787  1.3540894  0.05649135 -0.14420294
+#> 6  0.001353045  1.2121734  2.99353460 -2.77869585
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%

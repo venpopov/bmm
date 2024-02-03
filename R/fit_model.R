@@ -1,35 +1,36 @@
 #' @title Fit Measurement Models using BRMS
-#' @description Fit a Bayesian multilevel measurement model. Currently implemented
-#'   are the two-parameter mixture model by Zhang and Luck (2008),
-#'   the three-parameter mixture model by Bays et al (2009),
-#'   and three different versions of the Interference Measurement Model
-#'   (Oberauer et al., 2017). This is a wrapper function for [brms::brm], which is
-#'   used to estimate the model.
+#' @description Fit a Bayesian multilevel measurement model. Currently
+#'   implemented are the two-parameter mixture model by Zhang and Luck (2008),
+#'   the three-parameter mixture model by Bays et al (2009), and three different
+#'   versions of the Interference Measurement Model (Oberauer et al., 2017).
+#'   This is a wrapper function for [brms::brm], which is used to estimate the
+#'   model.
 #'
 #' @param formula An object of class `brmsformula`. A symbolic description of
 #'   the model to be fitted.
 #' @param data An object of class data.frame, containing data of all variables
 #'   used in the model. Response, target and lure values must be in radians.
 #'   There must be as many lure value columns as the maximum setsize-1. For
-#'   setsizes smaller than the maximum, values for non-existing non_targets must be
-#'   coded as NA. The outcome variable must be response error relative to the
+#'   setsizes smaller than the maximum, values for non-existing non_targets must
+#'   be coded as NA. The outcome variable must be response error relative to the
 #'   target, not the raw response. Similarly, the lure values must be coded
 #'   relative to the target. If the lure values are absolute, you must subtract
 #'   from them the value of the target before running the model
-#' @param model A description of the model to be fitted. This is a call to a bmmmodel
-#'   function. Every model function has a number of required arguments which need
-#'   to be specified within the function call. Call [supported_models()] to see
-#'   the list of supported models and their required arguments
+#' @param model A description of the model to be fitted. This is a call to a
+#'   `bmmmodel` such as `mixture3p()` function. Every model function has a
+#'   number of required arguments which need to be specified within the function
+#'   call. Call [supported_models()] to see the list of supported models and
+#'   their required arguments
 #' @param parallel Logical; If TRUE, the number of cores on your machine will be
 #'   detected and brms will fit max(chains, cores) number of chains (specified
 #'   by the `chain` argument) in parallel using the parallel package
 #' @param chains Numeric. Number of Markov chains (defaults to 4)
-#' @param prior One or more `brmsprior` objects created by [brms::set_prior()] or related
-#'   functions and combined using the c method or the + operator. See also
-#'   [brms::get_prior()] for more help. Not necessary for the default model fitting, but
-#'   you can provide prior constraints to model parameters
-#' @param ... Further arguments passed to [brms::brm()] or Stan. See
-#'   the description of [brms::brm()] for more details
+#' @param prior One or more `brmsprior` objects created by [brms::set_prior()]
+#'   or related functions and combined using the c method or the + operator. See
+#'   also [brms::get_prior()] for more help. Not necessary for the default model
+#'   fitting, but you can provide prior constraints to model parameters
+#' @param ... Further arguments passed to [brms::brm()] or Stan. See the
+#'   description of [brms::brm()] for more details
 #'
 #' @details `r a= supported_models(); a`
 #'
@@ -62,6 +63,15 @@
 #' }
 #'
 fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior = NULL, ...) {
+  # warning for using old version
+  dots <- list(...)
+  if ("model_type" %in% names(dots)) {
+    stop('The "model_type" argument was deprecated on Feb 3, 2024. Either:
+         - See ?fit_model for the new usage;
+         - or install the old version of the package with: devtools::install_github("venpopov/bmm@v0.0.1")
+         ')
+  }
+
   # enable parallel sampling if parallel equals TRUE
   opts <- configure_options(nlist(parallel, chains))
 
