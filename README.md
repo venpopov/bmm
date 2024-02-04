@@ -16,6 +16,8 @@ implemented models are:
 
 - Three-parameter mixture model by Bays et al (2009).
 
+- Signal Discrimination Model (SDM) by Oberauer (2023)
+
 You can always view the latest list of supported models by running:
 
 ``` r
@@ -27,6 +29,7 @@ bmm::supported_models()
 #> -  IMMfull(non_targets, setsize, spaPos) 
 #> -  mixture2p() 
 #> -  mixture3p(non_targets, setsize) 
+#> -  sdmSimple() 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
 ```
@@ -67,12 +70,12 @@ library(tidyverse)
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
 head(dat)
 #>             y   nt1_loc    nt2_loc    nt3_loc
-#> 1 -0.08792013  2.420222  0.8371048 -1.8481993
-#> 2  0.13172717  1.798926 -0.4088748 -1.4330674
-#> 3 -0.40837172  1.217436 -0.6902744  0.4176152
-#> 4  0.12679714  1.109288 -1.3264547 -0.9016477
-#> 5 -0.32175486 -1.248465 -1.7171368  2.5956402
-#> 6  0.47851769  1.331026 -2.5293817 -1.4883674
+#> 1 -0.03880320  1.187316  2.8595500 -0.1729633
+#> 2  0.02319524  1.839056  3.0275899  1.9383575
+#> 3 -0.10303542  0.703646  0.6177912  2.7920794
+#> 4  0.04581333  2.867917 -2.4058564  2.2684104
+#> 5 -0.03419014 -2.391411  1.4843210 -1.6363560
+#> 6  0.23730643  1.441160 -3.0585950 -2.2605816
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%
