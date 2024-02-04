@@ -17,26 +17,26 @@
     }
 
   // utility function for determining optimal number of chebyshev points for the denominator approximation
-  int get_m(real mu, real kappa) {
-    real m = floor(2 * exp(0.4*mu) * kappa^(fma(mu,0.0145,0.7)) + 0.5)+2;
+  int get_m(real c, real kappa) {
+    real m = floor(2 * exp(0.4*c) * kappa^(fma(c,0.0145,0.7)) + 0.5)+2;
     int M = bin_search(m, 2, 200);
     return(M);
   }
 
   // log of the numerator of the sdm likelihood
-  real sdm_simple_lpdf(vector y, vector mu, vector kappa) {
+  real sdm_simple_lpdf(vector y, vector mu, vector c, vector kappa) {
     int N = size(y);
-    vector[N] num = exp(fma(kappa,cos(y)-1,mu)) ;
+    vector[N] num = exp(fma(kappa,cos(y-mu)-1,c)) ;
     real out = dot_product(num, sqrt(kappa));
     out *= inv(sqrt2()) * inv_sqrt(pi());
     return(out);
   }
 
   // log of the normalization constant, approximated by chebyshev quadrature
-  real sdm_simple_ldenom_chquad_adaptive(real mu, real kappa, matrix CN) {
-    int m = get_m(mu,kappa);
+  real sdm_simple_ldenom_chquad_adaptive(real c, real kappa, matrix CN) {
+    int m = get_m(c,kappa);
     vector[m] cosn = CN[1:m,m];
-    vector[m] fn = exp(fma(kappa,cosn,mu)) * sqrt(kappa) * inv(sqrt2()) * inv_sqrt(pi());
+    vector[m] fn = exp(fma(kappa,cosn,c)) * sqrt(kappa) * inv(sqrt2()) * inv_sqrt(pi());
     real out = -log_sum_exp(fn)+log(m);
     return(out);
   }

@@ -50,9 +50,10 @@ sdmSimple <- .model_sdmSimple
 #' @export
 configure_model.sdmSimple <- function(model, data, formula) {
     # construct the family
+    # note - c has a log link, but I've coded it manually for computational efficiency
     sdm_simple <- brms::custom_family(
-      "sdm_simple", dpars = c("mu", "kappa"),
-      links = c("identity", "log"), lb = c(NA, NA),
+      "sdm_simple", dpars = c("mu", "c","kappa"),
+      links = c("identity","identity", "log"), lb = c(NA, NA, NA),
       type = "real", loop=FALSE,
     )
     family <- sdm_simple
@@ -73,7 +74,7 @@ configure_model.sdmSimple <- function(model, data, formula) {
    # TODO: add a proper prior
    prior <-
      # fix mu to 0 (when I change mu to be the center, not c)
-     # brms::prior_("constant(0)", class = "Intercept", dpar = "mu")
+     brms::prior_("constant(0)", class = "Intercept", dpar = "mu")
 
 
    # return the list
