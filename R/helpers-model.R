@@ -238,19 +238,33 @@ get_model2 <- function(model) {
 
 
 
-#' Create a file with a template for adding a new model (for developers)
+#'Create a file with a template for adding a new model (for developers)
 #'
-#' @param model_name A string with the name of the model. The file will be named
-#'  `bmm_model_model_name.R` and all necessary functions will be created with the
-#'  appropriate names and structure. The file will be saved in the `R/` directory
-#' @param testing Logical; If TRUE, the function will return the file content but
+#'@param model_name A string with the name of the model. The file will be named
+#'  `bmm_model_model_name.R` and all necessary functions will be created with
+#'  the appropriate names and structure. The file will be saved in the `R/`
+#'  directory
+#'@param testing Logical; If TRUE, the function will return the file content but
 #'  will not save the file. If FALSE (default), the function will save the file
+#'@param custom_family Logical; Do you plan to define a brms::custom_family()?
+#'  If TRUE the function will add a section for the custom family, placeholders
+#'  for the stan_vars and corresponding empty .stan files in
+#'  `inst/stan_chunks/`, that you can fill For an example, see the sdmSimple
+#'  model in `/R/bmm_model_sdmSimple.R`. If FALSE (default) the function will
+#'  not add the custom family section nor stan files.
+#'@param stanvar_blocks A character vector with the names of the blocks that
+#'  will be added to the custom family section. See [brms::stanvar()] for more
+#'  details. The default lists all the possible blocks, but it is unlikely that
+#'  you will need all of them. You can specify a vector of only those that you
+#'  need. The function will add a section for each block in the list
+#'@param open_files Logical; If TRUE (default), the function will open the
+#'  template files that were created in RStudio
 #'
-#' @return If `testing` is TRUE, the function will return the file content as a
+#'@return If `testing` is TRUE, the function will return the file content as a
 #'  string. If `testing` is FALSE, the function will return NULL
 #'
-#' @details If you get a warning during check() about non-ASCII characters,
-#'  this is often due to the citation field. You can find what the problem is by
+#'@details If you get a warning during check() about non-ASCII characters, this
+#'  is often due to the citation field. You can find what the problem is by
 #'  running
 #'  ```r
 #'  remotes::install_github("eddelbuettel/dang")
@@ -258,16 +272,26 @@ get_model2 <- function(model) {
 #'  ```
 #'  usually rewriting the numbers (issue, page numbers) manually fixes it
 #'
-#' @export
+#'@export
 #'
 #' @examples
 #' \dontrun{
-#'  # create a new model file
+#'  library(usethis)
+#'
+#'  # create a new model file without a brms::custom_family, and open the file
 #'  use_model_template("newmodel")
-#'  # check the file
-#'  file.show("R/bmm_model_newmodel.R")
+#'
+#'  # create a new model file with a brms::custom_family, three .stan files in
+#'  # inst/stan_chunks/ and open the files
+#'  use_model_template('abc',custom_family = TRUE, stanvar_blocks = c('functions','likelihood','tdata'))
 #'}
-use_model_template <- function(model_name, testing=FALSE) {
+use_model_template <- function(model_name,
+                               custom_family = FALSE,
+                               stanvar_blocks = c('data','tdata','parameters',
+                                                  'tparameters','model','likelihood',
+                                                  'genquant','functions'),
+                               open_files = TRUE,
+                               testing = FALSE) {
   file_name <- paste0('bmm_model_', model_name, '.R')
   # check if model exists
   if (model_name %in% supported_models(print_call=FALSE)) {
@@ -299,6 +323,14 @@ use_model_template <- function(model_name, testing=FALSE) {
   "#############################################################################!\n",
   "# Each model should have a corresponding configure_model.* function. See\n",
   "# ?configure_model for more information.\n\n\n")
+
+  postprocess_brm_header <- paste0(
+  "\n\n\n#############################################################################!\n",
+  "# POSTPROCESS METHODS                                                    ####\n",
+  "#############################################################################!\n",
+  "# A postprocess_brm.* function should be defined for the model class. See \n",
+  "# ?postprocess_brm for details\n\n\n")
+
 
   model_object <- glue::glue(".model_<<model_name>> <- function(required_arg1, required_arg2, ...) {\n",
                              "   out <- list(\n",
@@ -347,6 +379,51 @@ use_model_template <- function(model_name, testing=FALSE) {
                                   "}\n\n",
                                   .open = "<<", .close = ">>")
 
+
+  # add custom family section if custom_family is TRUE
+  if (custom_family) {
+    family_template <- paste0("   <<model_name>>_family <- brms::custom_family(\n",
+                               "     '<<model_name>>', dpars = c(),\n",
+                               "     links = c(), lb = c(), ub = c(),\n",
+                               "     type = '', loop=FALSE,\n",
+                               "   )\n   family <- <<model_name>>_family\n\n")
+
+
+    stan_vars_template <- "   # prepare initial stanvars to pass to brms, model formula and priors\n"
+    for (stanvar_block in stanvar_blocks) {
+      stan_vars_file <- paste0('inst/stan_chunks/', model_name, '_', stanvar_block, '.stan')
+      if(!testing) {
+        file.create(stan_vars_file)
+        if (open_files) {
+          usethis::edit_file(stan_vars_file)
+        }
+      }
+      stan_vars_template <- paste0(stan_vars_template,
+                                   "   stan_", stanvar_block, " <- readChar('inst/stan_chunks/", model_name, "_", stanvar_block, ".stan',\n",
+                                   "      file.info('inst/stan_chunks/", model_name, "_", stanvar_block, ".stan')$size)\n")
+    }
+    stan_vars_template <- paste0(stan_vars_template, "\n   stanvars <- ")
+    i = 1
+    for (stanvar_block in stanvar_blocks) {
+      if (i < length(stanvar_blocks)) {
+        stan_vars_template <- paste0(stan_vars_template, "stanvar(scode = stan_", stanvar_block, ", block = '", stanvar_block, "') +\n      ")
+        i = i + 1
+      } else {
+        stan_vars_template <- paste0(stan_vars_template, "stanvar(scode = stan_", stanvar_block, ", block = '", stanvar_block, "')\n\n\n")
+      }
+    }
+  } else {
+    stan_vars_template <- ""
+    family_template <- "   family <- NULL\n\n\n"
+  }
+
+  if (custom_family) {
+    out_template <- "   out <- nlist(formula, data, family, prior, stanvars)\n"
+  } else {
+    out_template <- "   out <- nlist(formula, data, family, prior)\n"
+  }
+
+
   configure_model_method <- glue::glue("#' @export\n",
                                        "configure_model.<<model_name>> <- function(model, data, formula) {\n",
                                        "   # retrieve required arguments\n",
@@ -357,12 +434,20 @@ use_model_template <- function(model_name, testing=FALSE) {
                                        "   # construct the formula\n",
                                        "   formula <- formula + brms::lf()\n\n\n",
                                        "   # construct the family\n",
-                                       "   family <- NULL\n\n\n",
+                                       family_template,
+                                       stan_vars_template,
                                        "   # construct the default prior\n",
                                        "   prior <- NULL\n\n\n",
                                        "   # return the list\n",
-                                       "   out <- nlist(formula, data, family, prior)\n",
+                                       out_template,
                                        "   return(out)\n",
+                                       "}\n\n",
+                                       .open = "<<", .close = ">>")
+
+  postprocess_brm_method <- glue::glue("#' @export\n",
+                                       "postprocess_brm.<<model_name>> <- function(model, fit) {\n",
+                                       "   # any required postprocessing (if none, delete this section)\n\n\n",
+                                       "   return(fit)\n",
                                        "}\n\n",
                                        .open = "<<", .close = ">>")
 
@@ -372,11 +457,15 @@ use_model_template <- function(model_name, testing=FALSE) {
                              check_data_header,
                              check_data_method,
                              configure_model_header,
-                             configure_model_method)
+                             configure_model_method,
+                             postprocess_brm_header,
+                             postprocess_brm_method)
 
   if (!testing) {
     writeLines(file_content, paste0('R/', file_name))
-    utils::file.edit(paste0('R/', file_name))
+    if (open_files) {
+      usethis::edit_file(paste0('R/', file_name))
+    }
   } else {
     cat(file_content)
   }
