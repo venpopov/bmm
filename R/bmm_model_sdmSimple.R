@@ -28,13 +28,41 @@
 # automatically based on the information in the .model_sdmSimple()$info
 #' @title `r .model_sdmSimple()$info$name`
 #' @name SDM
-#' @details `r model_info(sdmSimple())`2
+#' @details `r model_info(sdmSimple())`
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
 #' @examples
 #' \dontrun{
-#' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)
+#' # simulate data from the model
+#' library(bmm)
+#' library(brms)
+#' dat <- data.frame(y = rsdm(n = 1000, c = 4, kappa = 3))
+#'
+#' # specify formula
+#' ff <- bf(y ~ 1,
+#'                c ~ 1,
+#'                kappa ~ 1)
+#'
+#' # specify prior
+#' prior <- prior(normal(1,2), class='Intercept', dpar='c')+
+#'    prior(normal(1,2), class='Intercept', dpar='kappa')
+#'
+#' # specify the model
+#' fit <- fit_model(formula = ff,
+#'                  data = dat,
+#'                  model = sdmSimple(),
+#'                  prior = prior,
+#'                  parallel=T,
+#'                  iter=2000,
+#'                  backend='cmdstanr')
+#'
+#' # extract coefficients and plot fit
+#' coef <- exp(brms::fixef(fit)[2:3,1])
+#' hist(dat$y, breaks=60, freq=F)
+#' x <- seq(-pi,pi,0.01)
+#' lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
+#'               kappa=coef['kappa_Intercept']), col='red')
 #' }
 sdmSimple <- .model_sdmSimple
 
@@ -82,3 +110,15 @@ configure_model.sdmSimple <- function(model, data, formula) {
    return(out)
 }
 
+
+#############################################################################!
+# POSTPROCESS METHODS                                                    ####
+#############################################################################!
+
+#' @export
+postprocess_brm.sdmSimple <- function(model, fit) {
+  # manually set link_c to "log" since I coded it manually
+  fit$family$link_c <- "log"
+  fit$formula$family$link_c <- "log"
+  return(fit)
+}
