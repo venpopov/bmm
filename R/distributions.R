@@ -5,7 +5,7 @@
 #'   memory strength \code{c}, and precision \code{kappa}. Currently only a
 #'   single activation source is supported.
 #'
-#' @name SDM
+#' @name SDMdist
 #'
 #' @param x Vector of quantiles
 #' @param q Vector of quantiles
@@ -26,8 +26,7 @@
 #'   return P(X > x)
 #'
 #' @references Oberauer, K. (2023). Measurement models for visual working
-#'   memory—A factorial model comparison. Psychological Review, 130(3), 841–852.
-#'   https://doi.org/10.1037/rev0000328
+#'   memory - A factorial model comparison. Psychological Review, 130(3), 841–852
 #'
 #' @return \code{dsdm} gives the density, \code{psdm} gives the distribution
 #'   function, \code{qsdm} gives the quantile function, \code{rsdm} generates
@@ -111,7 +110,7 @@ dsdm <- function(x, mu = 0, c = 3, kappa = 3.5, log = FALSE,
   return(lnumerator - log(denom))
 }
 
-#' @rdname SDM
+#' @rdname SDMdist
 #' @export
 psdm <- function(q, mu = 0, c = 3, kappa = 3.5, lower.tail = TRUE, log.p = FALSE,
                  lower.bound = -pi, parametrization = "sqrtexp") {
@@ -154,14 +153,14 @@ psdm <- function(q, mu = 0, c = 3, kappa = 3.5, lower.tail = TRUE, log.p = FALSE
   out
 }
 
-#' @rdname SDM
+#' @rdname SDMdist
 #' @export
 qsdm <- function(p, mu=0, c=3, kappa=3.5, parametrization = "sqrtexp") {
   .NotYetImplemented()
 }
 
 
-#' @rdname SDM
+#' @rdname SDMdist
 #' @export
 rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
   if (isTRUE(any(kappa < 0))) {
@@ -193,50 +192,6 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
   }
 
   .rsdm_inner(n, mu, c, kappa, parametrization, xa)
-}
-
-
-#' Convert between parametrizations of the c parameter of the SDM distribution
-#'
-#' @name c_parametrizations
-#'
-#' @inheritParams SDM
-#'
-#' @return \code{c_bessel2sqrtexp} converts the memory strength parameter (c)
-#'   from the bessel parametrization to the sqrtexp parametrization,
-#'   \code{c_sqrtexp2bessel} converts from the sqrtexp parametrization to the
-#'   bessel parametrization.
-#'
-#' @details See \code{vignette("bmm_models")} for details on the
-#'   parameterization. The sqrtexp parametrization is the default in the
-#'   \code{bmm} package.
-#'
-#'
-#' @export
-c_sqrtexp2bessel <- function(c, kappa) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
-
-  c * besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa)
-}
-
-#' @rdname c_parametrizations
-#' @export
-c_bessel2sqrtexp <- function(c, kappa) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
-
-  c / (besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa))
 }
 
 
