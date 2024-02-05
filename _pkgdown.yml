@@ -2,6 +2,22 @@ url: ~
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+     left: [intro, reference, articles, changelog, develop]
+  components:
+     reference:
+        text: Functions
+        href: reference/index.html
+     changelog:
+        text: Changelog
+        href: news/index.html
+     develop:
+        text: Develop
+        href: dev-notes/index.html
+
+
+
 reference:
  - title: "About bmm"
    desc: "These pages provide a summary of the functionality available in bmm"

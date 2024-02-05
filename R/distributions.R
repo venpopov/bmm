@@ -1,8 +1,8 @@
 #' @title The Signal Discrimination Model (SDM) Distribution
 #'
 #' @description Density, distribution function, and random generation for the
-#'   Signal Discrimination Model (SDM) Distribution with location \code{mu},
-#'   memory strength \code{c}, and precision \code{kappa}. Currently only a
+#'   Signal Discrimination Model (SDM) Distribution with location `mu`,
+#'   memory strength `c`, and precision `kappa`. Currently only a
 #'   single activation source is supported.
 #'
 #' @name SDMdist
@@ -14,43 +14,43 @@
 #' @param mu Vector of location values in radians
 #' @param c Vector of memory strength values
 #' @param kappa Vector of precision values
-#' @param log Logical; if \code{TRUE}, values are returned on the log scale.
-#' @param parametrization Character; either \code{"bessel"} or \code{"sqrtexp"}
-#'   (default). See \code{vignette("bmm_models")} for details on the
+#' @param log Logical; if `TRUE`, values are returned on the log scale.
+#' @param parametrization Character; either `"bessel"` or `"sqrtexp"`
+#'   (default). See `vignette("bmm_models")` for details on the
 #'   parameterization.
-#' @param log.p Logical; if \code{TRUE}, probabilities are returned on the log
+#' @param log.p Logical; if `TRUE`, probabilities are returned on the log
 #'   scale.
 #' @param lower.bound Numeric; Lower bound of integration for the cumulative
 #'   distribution
-#' @param lower.tail Logical; If \code{TRUE} (default), return P(X <= x). Else,
+#' @param lower.tail Logical; If `TRUE` (default), return P(X <= x). Else,
 #'   return P(X > x)
 #' @keywords distribution
 #'
 #' @references Oberauer, K. (2023). Measurement models for visual working
 #'   memory - A factorial model comparison. Psychological Review, 130(3), 841–852
 #'
-#' @return \code{dsdm} gives the density, \code{psdm} gives the distribution
-#'   function, \code{qsdm} gives the quantile function, \code{rsdm} generates
-#'   random deviates, and \code{.dsdm_integrate} is a helper function for
+#' @return `dsdm` gives the density, `psdm` gives the distribution
+#'   function, `qsdm` gives the quantile function, `rsdm` generates
+#'   random deviates, and `.dsdm_integrate` is a helper function for
 #'   calculating the density of the SDM distribution.
 #'
-#' @details \bold{Parametrization}
+#' @details **Parametrization**
 #'
-#' See \code{vignette("bmm_models")} for details on the parameterization.
+#' See `vignette("bmm_models")` for details on the parameterization.
 #' Oberauer (2023) introduced the SDM with the bessel parametrization. The
-#' sqrtexp parametrization is the default in the \code{bmm} package for
+#' sqrtexp parametrization is the default in the `bmm` package for
 #' numerical stability and efficiency. The two parametrizations are related by
-#' the functions \code{c_bessel2sqrtexp()} and \code{c_sqrtexp2bessel()}.
+#' the functions `c_bessel2sqrtexp()` and `c_sqrtexp2bessel()`.
 #'
-#' \bold{The cumulative distribution function}
+#' **The cumulative distribution function**
 #'
 #' Since responses are on the circle, the cumulative distribution function
 #' requires you to choose a lower bound of integration. The default is
 #' \eqn{-\pi}, as for the brms::pvon_mises() function but you can choose any
-#' value in the argument \code{lower_bound} of \code{psdm}. Another useful
+#' value in the argument `lower_bound` of `psdm`. Another useful
 #' choice is the mean of the response distribution minus \eqn{\pi}, e.g.
-#' \code{lower_bound = mu-pi}. This is the default in
-#' \code{circular::pvonmises()}, and it ensures that 50% of the cumulative
+#' `lower_bound = mu-pi`. This is the default in
+#' `circular::pvonmises()`, and it ensures that 50% of the cumulative
 #' probability mass is below the mean of the response distribution.
 #'
 #' @export

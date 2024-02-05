@@ -37,14 +37,14 @@ k2sd <- function (K) {
 #'
 #' @name c_parametrizations
 #' @inheritParams SDMdist
-#' @return \code{c_bessel2sqrtexp} converts the memory strength parameter (c)
+#' @return `c_bessel2sqrtexp` converts the memory strength parameter (c)
 #'   from the bessel parametrization to the sqrtexp parametrization,
-#'   \code{c_sqrtexp2bessel} converts from the sqrtexp parametrization to the
+#'   `c_sqrtexp2bessel` converts from the sqrtexp parametrization to the
 #'   bessel parametrization.
 #' @keywords transform
-#' @details See \code{vignette("bmm_models")} for details on the
+#' @details See `vignette("bmm_models")` for details on the
 #'   parameterization. The sqrtexp parametrization is the default in the
-#'   \code{bmm} package.
+#'   `bmm` package.
 #' @export
 c_sqrtexp2bessel <- function(c, kappa) {
   if (isTRUE(any(kappa < 0))) {

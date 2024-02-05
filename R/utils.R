@@ -1,6 +1,6 @@
 #' Pipe operator
 #'
-#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
+#' See `magrittr::[\%>\%][magrittr::pipe]` for details.
 #'
 #' @name %>%
 #' @rdname pipe
@@ -16,11 +16,11 @@ NULL
 
 #' Softmax and logsoftmax functions and their inverse functions
 #'
-#' \code{softmax} returns the value of the softmax function
-#' \code{softmaxinv} returns the value of the inverse-softmax function
+#' `softmax` returns the value of the softmax function
+#' `softmaxinv` returns the value of the inverse-softmax function
 #'
-#' The softmax function is a bijective function that maps a real vector with length \code{m-1} to a probability vector
-#' with length \code{m} with all non-zero probabilities.  The present functions define the softmax function and its inverse, both with a tuning
+#' The softmax function is a bijective function that maps a real vector with length `m-1` to a probability vector
+#' with length `m` with all non-zero probabilities.  The present functions define the softmax function and its inverse, both with a tuning
 #' parameter.
 #'
 #' The current functions define the softmax as:
