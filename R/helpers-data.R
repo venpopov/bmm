@@ -17,7 +17,6 @@
 #' @param model A model list object returned from check_model()
 #' @param data The user supplied data.frame containing the data to be checked
 #' @param formula The user supplied formula
-#' @param ... Additional arguments passed to the check_data.* functions
 #' @return A data.frame with the same number of rows as the input data, but with
 #'   additional columns added as necessary, any necessary transformations
 #'   applied, and attributes added to the data.frame for later use. If you need
@@ -25,7 +24,7 @@
 #'   stages (e.g. in configure_model()), you can store and access them using the
 #'   attr() function.
 #' @export
-#' @keywords internal
+#' @keywords internal, developer
 check_data <- function(model, data, formula) {
   if (missing(data)) {
     stop("Data must be specified using the 'data' argument.")
@@ -135,6 +134,7 @@ check_data.nontargets <- function(model, data, formula) {
 #'   the response
 #' @param non_targets Character vector. The names of the columns in `data` which
 #'   contain the values of the non-targets
+#' @keywords transform
 #' @return A `data.frame` with n*m rows, where n is the number of rows of `data`
 #'   and m is the number of non-target variables. It preserves all other columns
 #'   of `data`, except for the non-target locations, and adds a column `y_nt`,
@@ -162,6 +162,7 @@ calc_error_relative_to_nontargets <- function(data, response, non_targets) {
 #'   radians (default) or degrees.
 #' @param radians Logical. Is x in radians (default=TRUE) or degrees (FALSE)
 #' @return An object of the same type as x
+#' @keywords transform
 #' @export
 #' @examples
 #' x <- runif(1000, -pi, pi)

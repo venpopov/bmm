@@ -15,7 +15,7 @@
 #' @param fit the fitted brm model returned by `call_brm()`
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export
-#' @keywords internal
+#' @keywords internal, developer
 postprocess_brm <- function(model, fit) {
   UseMethod('postprocess_brm')
 }

@@ -24,6 +24,7 @@
 #'   distribution
 #' @param lower.tail Logical; If \code{TRUE} (default), return P(X <= x). Else,
 #'   return P(X > x)
+#' @keywords distribution
 #'
 #' @references Oberauer, K. (2023). Measurement models for visual working
 #'   memory - A factorial model comparison. Psychological Review, 130(3), 841–852

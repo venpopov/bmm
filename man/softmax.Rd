@@ -38,3 +38,4 @@ Code adapted from the \href{https://github.com/ben-oneill/utilities/}{utilities}
 softmax(5:7)
 softmaxinv(softmax(5:7))
 }
+\keyword{transform}

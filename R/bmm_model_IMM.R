@@ -98,14 +98,17 @@
 #'   non-target items to the target item. Only necessary for the `IMMbsc` and `IMMfull` models
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
+#' @keywords bmmmodel
 #' @export
 IMMfull <- .model_IMMfull
 
 #' @rdname IMM
+#' @keywords bmmmodel
 #' @export
 IMMbsc <- .model_IMMbsc
 
 #' @rdname IMM
+#' @keywords bmmmodel
 #' @export
 IMMabc <- .model_IMMabc
 

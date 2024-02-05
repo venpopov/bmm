@@ -70,3 +70,4 @@ lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
               kappa=coef['kappa_Intercept']), col='red')
 }
 }
+\keyword{bmmmodel}

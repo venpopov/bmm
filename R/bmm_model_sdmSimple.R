@@ -32,6 +32,7 @@
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
+#' @keywords bmmmodel
 #' @examples
 #' \dontrun{
 #' # simulate data from the model

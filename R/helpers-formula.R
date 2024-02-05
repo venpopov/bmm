@@ -2,7 +2,7 @@
 #' @param model a model list object returned from check_model()
 #' @param formula user supplied formula
 #' @return the formula object
-#' @noRd
+#' @keywords internal, developer
 check_formula <- function(model, formula) {
   # Pre-Check: was a valid brms formula provided
   if (!inherits(formula, 'brmsformula')) {
@@ -22,7 +22,7 @@ check_formula <- function(model, formula) {
 #' Extracts the name of the response variable in a formula
 #'
 #' @param formula an object of type bfformula
-#'
+#' @noRd
 #' @return String. Name of the response variable
 get_response <- function(formula) {
   tt <- stats::terms(formula)

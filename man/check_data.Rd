@@ -12,8 +12,6 @@ check_data(model, data, formula)
 \item{data}{The user supplied data.frame containing the data to be checked}
 
 \item{formula}{The user supplied formula}
-
-\item{...}{Additional arguments passed to the check_data.* functions}
 }
 \value{
 A data.frame with the same number of rows as the input data, but with
@@ -35,4 +33,5 @@ this corresponds to the following order of check_data.* functions:
 check_data() -> check_data.vwm(), check_data.nontargets() the output of the
 final function is returned to fit_model().
 }
-\keyword{internal}
+\keyword{developer}
+\keyword{internal,}

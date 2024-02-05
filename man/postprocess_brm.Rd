@@ -28,4 +28,5 @@ in the brms custom family. If your model requires no postprocessing, you can
 skip this method, and the default method will be used (which returns the same
 brmsfit object that was passed to it).
 }
-\keyword{internal}
+\keyword{developer}
+\keyword{internal,}

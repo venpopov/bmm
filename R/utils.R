@@ -32,6 +32,7 @@ NULL
 #' @param p A probability vector (i.e., numeric vector of non-negative values that sum to one)
 #' @param eta A numeric vector input
 #' @return Value of the softmax function or its inverse
+#' @keywords transform
 #'
 #' @details Code adapted from the [utilities](https://github.com/ben-oneill/utilities/) package
 #'

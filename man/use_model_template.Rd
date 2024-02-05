@@ -65,6 +65,9 @@ usually rewriting the numbers (issue, page numbers) manually fixes it
 
  # create a new model file with a brms::custom_family, three .stan files in
  # inst/stan_chunks/ and open the files
- use_model_template('abc',custom_family = TRUE, stanvar_blocks = c('functions','likelihood','tdata'))
+ use_model_template('abc',custom_family = TRUE,
+                    stanvar_blocks = c('functions','likelihood','tdata'))
 }
 }
+\keyword{developer}
+\keyword{internal,}

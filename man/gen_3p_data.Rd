@@ -57,3 +57,4 @@ df_3p_parms[,c("pmem","pnt","pguess")] <- apply(df_3p_parms[,c("theta_pmem","the
                                                 1,softmax)
 
 }
+\keyword{simulation}

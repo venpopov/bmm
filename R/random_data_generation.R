@@ -12,6 +12,7 @@
 #' @param relative_resp Logical. if TRUE, returns response error relative to the
 #'   target and all non-target item locations are coded relative to the target.
 #'   If FALSE, returns actual response and the location of all items is absolute
+#' @keywords simulation
 #'
 #' @return A data.frame object. y is the response (if relative_resp==F) or
 #'   response error (if relative_resp==T), t_loc is the value of the target
@@ -100,6 +101,7 @@ gen_3p_data <- function(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=2, relative
 #'      kappa = precision of memory representations
 #' @param ntrials Numeric. number of responses to simulate for each subject
 #' @param setsize Numeric. Number of items in memory set
+#' @keywords simulation
 #'
 #' @return A data.frame object. resp is the response, respErr is the relative
 #'    response to the target, Item1 to ItemN is the absolute location of the

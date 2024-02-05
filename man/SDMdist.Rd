@@ -116,3 +116,4 @@ lines(x,d,type="l", col="red")
 Oberauer, K. (2023). Measurement models for visual working
 memory - A factorial model comparison. Psychological Review, 130(3), 841–852
 }
+\keyword{distribution}
