@@ -31,6 +31,6 @@ Imports:
     stats,
     matrixStats,
     methods
-URL: https://github.com/venpopov/bmm
+URL: https://github.com/venpopov/bmm, http://venpopov.com/bmm/
 BugReports: https://github.com/venpopov/bmm/issues
 VignetteBuilder: knitr
