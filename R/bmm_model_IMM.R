@@ -1,46 +1,114 @@
 #############################################################################!
 # MODELS                                                                 ####
 #############################################################################!
-# Each model should have a corresponding .model_* function which returns a list
-# with the following attributes:
-#   domain: the domain of the model (e.g. "Visual working memory")
-#   name: the name of the model (e.g. "Two-parameter mixture model by Zhang and Luck (2008).")
-#   citation: the citation for the model (e.g. "Zhang, W., & Luck, S. J. (2008).
-#             Discrete fixed-resolution representations in visual working memory.
-#             Nature, 453(7192), 233–235. https://doi.org/10.1038/nature06860")
-#   class: a character vector with the class of the model (e.g. c("vwm","2p"))
-#
-# The class attribute is used by generic S3 functions to perform data checks and
-# model configuration. The classes should be ordered from most general to most
-# specific c("vwm","nontargets","3p"). A general class exists when the same operations
-# can be performed on multiple models. For example, the '3p', 'IMMabc', 'IMMbsc'
-# and 'IMMfull' models all have non-targets and setsize arguments, so the same
-# data checks can be performed on all of them. The '2p' model does not have
-# non-targets or setsize arguments, so it has a different class.
 
-.model_IMMabc <- function() {
-  out <- list()
-  attr(out, "domain") <- "Visual working memory"
-  attr(out, "name") <- "Interference measurement model by Oberauer and Lin (2017)."
-  class(out) <- c("vwm","nontargets","IMMabc")
+.model_IMMabc <- function(non_targets, setsize, ...) {
+  out <- list(
+    vars = nlist(non_targets, setsize),
+    info = list(
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Interference measurement model by Oberauer and Lin (2017).",
+      version = "abc",
+      citation = paste0("Oberauer, K., & Lin, H.Y. (2017). An interference model ",
+                        "of visual working memory. Psychological Review, 124(1), 21-59"),
+      requirements = paste0('- The response vairable should be in radians and ',
+                            'represent the angular error relative to the target\n  ',
+                            '- The non-target variables should be in radians and be ',
+                            'centered relative to the target'),
+      parameters = list(
+        kappa = "Concentration parameter of the von Mises distribution (log scale)",
+        a = "General activation of memory items",
+        b = "Background activation (internally fixed to 0)",
+        c = "Context activation"
+      )
+    ))
+  class(out) <- c("bmmmodel", "vwm","nontargets","IMMabc")
   out
 }
 
-.model_IMMbsc <- function() {
-  out <- list()
-  attr(out, "domain") <- "Visual working memory"
-  attr(out, "name") <- "Interference measurement model by Oberauer and Lin (2017)."
-  class(out) <- c("vwm","nontargets", "IMMspatial","IMMbsc")
+.model_IMMbsc <- function(non_targets, setsize, spaPos, ...) {
+  out <- list(
+    vars = nlist(non_targets, setsize, spaPos),
+    info = list(
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Interference measurement model by Oberauer and Lin (2017).",
+      version = "bsc",
+      citation = paste0("Oberauer, K., & Lin, H.Y. (2017). An interference model ",
+                        "of visual working memory. Psychological Review, 124(1), 21-59"),
+      requirements = paste0('- The response vairable should be in radians and ',
+                            'represent the angular error relative to the target\n  ',
+                            '- The non-target variables should be in radians and be ',
+                            'centered relative to the target'),
+      parameters = list(
+        kappa = "Concentration parameter of the von Mises distribution (log scale)",
+        b = "Background activation (internally fixed to 0)",
+        c = "Context activation",
+        s = "Spatial similarity gradient"
+      )
+    ))
+  class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMbsc")
   out
 }
 
-.model_IMMfull <- function() {
-  out <- list()
-  attr(out, "domain") <- "Visual working memory"
-  attr(out, "name") <- "Interference measurement model by Oberauer and Lin (2017)."
-  class(out) <- c("vwm","nontargets","IMMspatial","IMMfull")
+.model_IMMfull <- function(non_targets, setsize, spaPos, ...) {
+  out <- list(
+    vars = nlist(non_targets, setsize, spaPos),
+    info = list(
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Interference measurement model by Oberauer and Lin (2017).",
+      version = "full",
+      citation = paste0("Oberauer, K., & Lin, H.Y. (2017). An interference model ",
+                        "of visual working memory. Psychological Review, 124(1), 21-59"),
+      requirements = paste0('- The response vairable should be in radians and ',
+                            'represent the angular error relative to the target\n  ',
+                            '- The non-target variables should be in radians and be ',
+                            'centered relative to the target'),
+      parameters = list(
+        kappa = "Concentration parameter of the von Mises distribution (log scale)",
+        a = "General activation of memory items",
+        b = "Background activation (internally fixed to 0)",
+        c = "Context activation",
+        s = "Spatial similarity gradient"
+      )
+    ))
+  class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMfull")
   out
 }
+
+# user facing alias
+#' @title `r .model_IMMfull(NA, NA, NA)$info$name`
+#' @name IMM
+#' @details `r model_info(IMMfull(NA, NA, NA), components =c('domain', 'task', 'name', 'citation'))`
+#' #### Version: `IMMfull`
+#' `r model_info(IMMfull(NA, NA, NA), components =c('requirements', 'parameters'))`
+#' #### Version: `IMMbsc`
+#' `r model_info(IMMbsc(NA, NA, NA), components =c('requirements', 'parameters'))`
+#' #### Version: `IMMabc`
+#' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters'))`
+#' @param non_targets A character vector with the names of the non-target variables.
+#'   The non_target variables should be in radians and be centered relative to the
+#'   target.
+#' @param setsize Name of the column containing the set size variable (if
+#'   setsize varies) or a numeric value for the setsize, if the setsize is
+#'   fixed.
+#' @param spaPos A vector of names of the columns containing the spatial distances of
+#'   non-target items to the target item. Only necessary for the `IMMbsc` and `IMMfull` models
+#' @param ... used internally for testing, ignore it
+#' @return An object of class `bmmmodel`
+#' @export
+IMMfull <- .model_IMMfull
+
+#' @rdname IMM
+#' @export
+IMMbsc <- .model_IMMbsc
+
+#' @rdname IMM
+#' @export
+IMMabc <- .model_IMMabc
+
 
 
 #############################################################################!
@@ -52,32 +120,24 @@
 # the model. See ?check_data for details
 
 #' @export
-check_data.IMMspatial <- function(model, data, formula, ...) {
-  dots <- list(...)
-  if(is.null(dots$spaPos)) {
-    stop("Argument 'spaPos' must be specified.")
-  }
-  spaPos <- dots$spaPos
+check_data.IMMspatial <- function(model, data, formula) {
+  spaPos <- model$vars$spaPos
+  max_setsize <- attr(data, 'max_setsize')
 
-  if (length(spaPos) < attr(data, 'max_setsize') - 1) {
+  if (length(spaPos) < max_setsize - 1) {
     stop(paste0("The number of columns for spatial positions in the argument",
                 "'spaPos' is less than max(setsize)-1"))
-  } else if (length(spaPos) > attr(data, 'max_setsize')-1) {
+  } else if (length(spaPos) > max_setsize-1) {
     stop(paste0("The number of columns for spatial positions in the argument",
                 "spaPos'' is more than max(setsize)-1"))
   }
 
-  spaPos <- dots$spaPos
   if (max(abs(data[,spaPos]), na.rm=T) > 10) {
     data[,spaPos] <- data[,spaPos]*pi/180
     warning('It appears your spatial position variables are in degrees. We will transform it to radians.')
   }
   # wrap spatial position variables around the circle (range = -pi to pi)
   data[,spaPos] <- bmm::wrap(data[,spaPos])
-
-  # save some variables as attributes of the data for later use
-  attr(data, "spaPos") <- spaPos
-
   data = NextMethod("check_data")
 
   return(data)
@@ -90,12 +150,12 @@ check_data.IMMspatial <- function(model, data, formula, ...) {
 # ?configure_model for more information.
 
 #' @export
-configure_model.IMMabc <- function(model, data, formula, ...) {
+configure_model.IMMabc <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, "max_setsize")
-  non_targets <- attr(data, "non_targets")
+  max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  setsize_var <- attr(data, "setsize_var")
+  non_targets <- model$vars$non_targets
+  setsize_var <- model$vars$setsize
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -147,13 +207,13 @@ configure_model.IMMabc <- function(model, data, formula, ...) {
 }
 
 #' @export
-configure_model.IMMbsc <- function(model, data, formula, ...) {
+configure_model.IMMbsc <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, "max_setsize")
-  non_targets <- attr(data, "non_targets")
+  max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  spaPos <- attr(data, "spaPos")
-  setsize_var <- attr(data, "setsize_var")
+  non_targets <- model$vars$non_targets
+  setsize_var <- model$vars$setsize
+  spaPos <- model$vars$spaPos
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -206,13 +266,13 @@ configure_model.IMMbsc <- function(model, data, formula, ...) {
 }
 
 #' @export
-configure_model.IMMfull <- function(model, data, formula, ...) {
+configure_model.IMMfull <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, "max_setsize")
-  non_targets <- attr(data, "non_targets")
+  max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  spaPos <- attr(data, "spaPos")
-  setsize_var <- attr(data, "setsize_var")
+  non_targets <- model$vars$non_targets
+  setsize_var <- model$vars$setsize
+  spaPos <- model$vars$spaPos
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)
