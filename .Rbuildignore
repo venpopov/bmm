@@ -4,5 +4,8 @@
 ^README\.Rmd$
 ^cran-comments\.md$
 ^local$
-^doc$
 ^.github$
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
