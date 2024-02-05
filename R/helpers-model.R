@@ -249,8 +249,14 @@ get_model2 <- function(model) {
 #' @return If `testing` is TRUE, the function will return the file content as a
 #'  string. If `testing` is FALSE, the function will return NULL
 #'
-#' @details The function will create a file with the following structure:
-#'
+#' @details If you get a warning during check() about non-ASCII characters,
+#'  this is often due to the citation field. You can find what the problem is by
+#'  running
+#'  ```r
+#'  remotes::install_github("eddelbuettel/dang")
+#'  dang::checkPackageAsciiCode(dir = ".")
+#'  ```
+#'  usually rewriting the numbers (issue, page numbers) manually fixes it
 #'
 #' @export
 #'
