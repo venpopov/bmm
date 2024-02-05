@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>BMM Developer Notes - 4&nbsp; Example model file</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./add-new-model.html" rel="next">
+<link href="./bmm-architecture.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./example-model.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Example model file</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">BMM Developer Notes</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">System setup</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./git-workflow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Git and Github workflow</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bmm-architecture.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">BMM code structure</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./example-model.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Example model file</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./add-new-model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Adding a new model</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-interference-measurement-model-imm" id="toc-the-interference-measurement-model-imm" class="nav-link active" data-scroll-target="#the-interference-measurement-model-imm"><span class="header-section-number">4.1</span> The Interference Measurement Model (IMM)</a>
+  <ul class="collapse">
+  <li><a href="#model-definition" id="toc-model-definition" class="nav-link" data-scroll-target="#model-definition"><span class="header-section-number">4.1.1</span> Model definition</a></li>
+  <li><a href="#model-alias" id="toc-model-alias" class="nav-link" data-scroll-target="#model-alias"><span class="header-section-number">4.1.2</span> Model alias</a></li>
+  <li><a href="#check_data-methods" id="toc-check_data-methods" class="nav-link" data-scroll-target="#check_data-methods"><span class="header-section-number">4.1.3</span> check_data() methods</a></li>
+  <li><a href="#configure_model-methods" id="toc-configure_model-methods" class="nav-link" data-scroll-target="#configure_model-methods"><span class="header-section-number">4.1.4</span> configure_model() methods</a></li>
+  </ul></li>
+  <li><a href="#the-signal-discrimination-model-sdm" id="toc-the-signal-discrimination-model-sdm" class="nav-link" data-scroll-target="#the-signal-discrimination-model-sdm"><span class="header-section-number">4.2</span> The Signal Discrimination Model (SDM)</a>
+  <ul class="collapse">
+  <li><a href="#model-definition-1" id="toc-model-definition-1" class="nav-link" data-scroll-target="#model-definition-1"><span class="header-section-number">4.2.1</span> Model definition</a></li>
+  <li><a href="#check_data-methods-1" id="toc-check_data-methods-1" class="nav-link" data-scroll-target="#check_data-methods-1"><span class="header-section-number">4.2.2</span> check_data() methods</a></li>
+  <li><a href="#configure_model-methods-1" id="toc-configure_model-methods-1" class="nav-link" data-scroll-target="#configure_model-methods-1"><span class="header-section-number">4.2.3</span> configure_model() methods</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-example-model" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Example model file</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>All models in the package are defined as S3 classes and follow a strict template. This allows us to implement general methods for handling model fitting, data checking, and postprocessing. Each model has an internal function that defines the model and its parameters, and a user-facing alias. Let’s look at how two models are implemented - the IMM model, which uses both general class and specific model methods, but no custom stan code, and the SDM model, which depends heavily on custom stan code. If you use the <code>use_model_template()</code> function, all sections bellows will be automatically generated for your model.</p>
+<section id="the-interference-measurement-model-imm" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="the-interference-measurement-model-imm"><span class="header-section-number">4.1</span> The Interference Measurement Model (IMM)</h2>
+<p>The model is defined in the file <code>R/bmm_model_IMM.R.</code> Let’s go through the different parts.</p>
+<section id="model-definition" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="model-definition"><span class="header-section-number">4.1.1</span> Model definition</h3>
+<p>The full IMM model is defined in the following internal model class:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>.model_IMMfull <span class="ot">&lt;-</span> <span class="cf">function</span>(non_targets, setsize, spaPos, ...) {</span>
+<span id="cb1-2"><a href="#cb1-2"></a>  out <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-3"><a href="#cb1-3"></a>    <span class="at">vars =</span> <span class="fu">nlist</span>(non_targets, setsize, spaPos),</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="at">info =</span> <span class="fu">list</span>(</span>
+<span id="cb1-5"><a href="#cb1-5"></a>      <span class="at">domain =</span> <span class="st">"Visual working memory"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6"></a>      <span class="at">task =</span> <span class="st">"Continuous reproduction"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7"></a>      <span class="at">name =</span> <span class="st">"Interference measurement model by Oberauer and Lin (2017)."</span>,</span>
+<span id="cb1-8"><a href="#cb1-8"></a>      <span class="at">version =</span> <span class="st">"full"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9"></a>      <span class="at">citation =</span> <span class="fu">paste0</span>(<span class="st">"Oberauer, K., &amp; Lin, H.Y. (2017). An interference model "</span>,</span>
+<span id="cb1-10"><a href="#cb1-10"></a>                        <span class="st">"of visual working memory. Psychological Review, 124(1), 21-59"</span>),</span>
+<span id="cb1-11"><a href="#cb1-11"></a>      <span class="at">requirements =</span> <span class="fu">paste0</span>(<span class="st">'- The response vairable should be in radians and '</span>,</span>
+<span id="cb1-12"><a href="#cb1-12"></a>                            <span class="st">'represent the angular error relative to the target</span><span class="sc">\n</span><span class="st">  '</span>,</span>
+<span id="cb1-13"><a href="#cb1-13"></a>                            <span class="st">'- The non-target variables should be in radians and be '</span>,</span>
+<span id="cb1-14"><a href="#cb1-14"></a>                            <span class="st">'centered relative to the target'</span>),</span>
+<span id="cb1-15"><a href="#cb1-15"></a>      <span class="at">parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb1-16"><a href="#cb1-16"></a>        <span class="at">kappa =</span> <span class="st">"Concentration parameter of the von Mises distribution (log scale)"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17"></a>        <span class="at">a =</span> <span class="st">"General activation of memory items"</span>,</span>
+<span id="cb1-18"><a href="#cb1-18"></a>        <span class="at">b =</span> <span class="st">"Background activation (internally fixed to 0)"</span>,</span>
+<span id="cb1-19"><a href="#cb1-19"></a>        <span class="at">c =</span> <span class="st">"Context activation"</span>,</span>
+<span id="cb1-20"><a href="#cb1-20"></a>        <span class="at">s =</span> <span class="st">"Spatial similarity gradient"</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>      )</span>
+<span id="cb1-22"><a href="#cb1-22"></a>    ))</span>
+<span id="cb1-23"><a href="#cb1-23"></a>  <span class="fu">class</span>(out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"bmmmodel"</span>,<span class="st">"vwm"</span>,<span class="st">"nontargets"</span>,<span class="st">"IMMspatial"</span>,<span class="st">"IMMfull"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24"></a>  out</span>
+<span id="cb1-25"><a href="#cb1-25"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here is a brief explanation of the different components of the model definition:</p>
+<p><code>vars</code>: a list of variables that are required for the model. This is used to check if the data contains all necessary information for fitting the model. In the example above, the IMM model requires the names of the non-target variables, the setsize and the variable specifying the spatial distance between the memory items. The user has to provide these variables in the data frame that is passed to the <code>fit_model</code> function</p>
+<p><code>info</code>: contains information about the model, such as the domain, task, name, citation, version, requirements, and parameters. This information is used to generate the documentation for the model.</p>
+<p><code>class</code>: is the most important part. It contains the class of the model. This is used by generic S3 methods to perform data checks and model configuration. The classes should be ordered from most general to most specific. A general class exists when the same operations can be performed on multiple models. For example, the ‘3p’, ‘IMMabc’, ‘IMMbsc’ and ‘IMMfull’ models all have non-targets and setsize arguments, so the same data checks can be performed on all of them, represented by the class <code>nontargets</code>. The first class should always be <code>bmmmodel</code>, which is the main class for all models. The last class should be the specific model name, in this case <code>IMMfull</code>.</p>
+</section>
+<section id="model-alias" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="model-alias"><span class="header-section-number">4.1.2</span> Model alias</h3>
+<p>The model alias is a user-facing function that calls the internal model function. It is defined as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># user facing alias</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co">#' @title `r .model_IMMfull(NA, NA, NA)$info$name`</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co">#' @name IMM</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co">#' @details `r model_info(IMMfull(NA, NA, NA), components =c('domain', 'task', 'name', 'citation'))`</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="co">#' #### Version: `IMMfull`</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co">#' `r model_info(IMMfull(NA, NA, NA), components =c('requirements', 'parameters'))`</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">#' #### Version: `IMMbsc`</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co">#' `r model_info(IMMbsc(NA, NA, NA), components =c('requirements', 'parameters'))`</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co">#' #### Version: `IMMabc`</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="co">#' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters'))`</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#' @param non_targets A character vector with the names of the non-target variables.</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co">#'   The non_target variables should be in radians and be centered relative to the</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co">#'   target.</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="co">#' @param setsize Name of the column containing the set size variable (if</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a><span class="co">#'   setsize varies) or a numeric value for the setsize, if the setsize is</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="co">#'   fixed.</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="co">#' @param spaPos A vector of names of the columns containing the spatial distances of</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a><span class="co">#'   non-target items to the target item. Only necessary for the `IMMbsc` and `IMMfull` models</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a><span class="co">#' @param ... used internally for testing, ignore it</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="co">#' @return An object of class `bmmmodel`</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a><span class="co">#' @keywords bmmmodel</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a><span class="co">#' @export</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a>IMMfull <span class="ot">&lt;-</span> .model_IMMfull</span>
+<span id="cb2-24"><a href="#cb2-24"></a></span>
+<span id="cb2-25"><a href="#cb2-25"></a><span class="co">#' @rdname IMM</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a><span class="co">#' @keywords bmmmodel</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a><span class="co">#' @export</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a>IMMbsc <span class="ot">&lt;-</span> .model_IMMbsc</span>
+<span id="cb2-29"><a href="#cb2-29"></a></span>
+<span id="cb2-30"><a href="#cb2-30"></a><span class="co">#' @rdname IMM</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a><span class="co">#' @keywords bmmmodel</span></span>
+<span id="cb2-32"><a href="#cb2-32"></a><span class="co">#' @export</span></span>
+<span id="cb2-33"><a href="#cb2-33"></a>IMMabc <span class="ot">&lt;-</span> .model_IMMabc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The details will be filled out automatically from the model definition. The example for the IMM model also includes the aliases for the other versions of the IMM model, which are <code>IMMbsc</code> and <code>IMMabc</code>, and does some fancy formatting to include documentation about all versions of the model in the same help file.</p>
+</section>
+<section id="check_data-methods" class="level3" data-number="4.1.3">
+<h3 data-number="4.1.3" class="anchored" data-anchor-id="check_data-methods"><span class="header-section-number">4.1.3</span> check_data() methods</h3>
+<p>Each model should have a <code>check_data.modelname()</code> method that checks if the data contains all necessary information for fitting the model. For the IMM, all three versions of the model share the same data requirements, so check_data is defined for the more general class, <code>IMMspatial</code>. The method is defined as follows:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">#' @export</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>check_data.IMMspatial <span class="ot">&lt;-</span> <span class="cf">function</span>(model, data, formula) {</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  spaPos <span class="ot">&lt;-</span> model<span class="sc">$</span>vars<span class="sc">$</span>spaPos</span>
+<span id="cb3-4"><a href="#cb3-4"></a>  max_setsize <span class="ot">&lt;-</span> <span class="fu">attr</span>(data, <span class="st">'max_setsize'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a>  <span class="cf">if</span> (<span class="fu">length</span>(spaPos) <span class="sc">&lt;</span> max_setsize <span class="sc">-</span> <span class="dv">1</span>) {</span>
+<span id="cb3-7"><a href="#cb3-7"></a>    <span class="fu">stop</span>(<span class="fu">paste0</span>(<span class="st">"The number of columns for spatial positions in the argument"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8"></a>                <span class="st">"'spaPos' is less than max(setsize)-1"</span>))</span>
+<span id="cb3-9"><a href="#cb3-9"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">length</span>(spaPos) <span class="sc">&gt;</span> max_setsize<span class="dv">-1</span>) {</span>
+<span id="cb3-10"><a href="#cb3-10"></a>    <span class="fu">stop</span>(<span class="fu">paste0</span>(<span class="st">"The number of columns for spatial positions in the argument"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11"></a>                <span class="st">"spaPos'' is more than max(setsize)-1"</span>))</span>
+<span id="cb3-12"><a href="#cb3-12"></a>  }</span>
+<span id="cb3-13"><a href="#cb3-13"></a></span>
+<span id="cb3-14"><a href="#cb3-14"></a>  <span class="cf">if</span> (<span class="fu">max</span>(<span class="fu">abs</span>(data[,spaPos]), <span class="at">na.rm=</span>T) <span class="sc">&gt;</span> <span class="dv">10</span>) {</span>
+<span id="cb3-15"><a href="#cb3-15"></a>    data[,spaPos] <span class="ot">&lt;-</span> data[,spaPos]<span class="sc">*</span>pi<span class="sc">/</span><span class="dv">180</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>    <span class="fu">warning</span>(<span class="st">'It appears your spatial position variables are in degrees. We will transform it to radians.'</span>)</span>
+<span id="cb3-17"><a href="#cb3-17"></a>  }</span>
+<span id="cb3-18"><a href="#cb3-18"></a>  <span class="co"># wrap spatial position variables around the circle (range = -pi to pi)</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>  data[,spaPos] <span class="ot">&lt;-</span> bmm<span class="sc">::</span><span class="fu">wrap</span>(data[,spaPos])</span>
+<span id="cb3-20"><a href="#cb3-20"></a>  data <span class="ot">=</span> <span class="fu">NextMethod</span>(<span class="st">"check_data"</span>)</span>
+<span id="cb3-21"><a href="#cb3-21"></a></span>
+<span id="cb3-22"><a href="#cb3-22"></a>  <span class="fu">return</span>(data)</span>
+<span id="cb3-23"><a href="#cb3-23"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The IMM models share methods with the <code>mixture3p</code> model, all of which are of class <code>nontargets</code> so the <code>check_data.nontargets</code> method is defined in the general file <code>R/helpers-data.R</code>. If you are adding a new model, you should check if the data requirements are similar to any existing model and define the <code>check_data</code> method only for the methods that are unique to your model.</p>
+<p>The <code>check_data.mymodel()</code> function should always take the arguments <code>model</code>, <code>data</code>, and <code>formula</code> and return the data with the necessary transformations. It should also call <code>data = NextMethod("check_data")</code> to call the check_data method of the more general class.</p>
+</section>
+<section id="configure_model-methods" class="level3" data-number="4.1.4">
+<h3 data-number="4.1.4" class="anchored" data-anchor-id="configure_model-methods"><span class="header-section-number">4.1.4</span> configure_model() methods</h3>
+<p>The configure_model.mymodel() method is where you specify the model formula, the family, any custom code, and the priors. The method is defined as follows for the IMM model:</p>
+<p>(we show only the <code>IMMfull</code> version)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">#' @export</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>configure_model.IMMfull <span class="ot">&lt;-</span> <span class="cf">function</span>(model, data, formula) {</span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="co"># retrieve arguments from the data check</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  max_setsize <span class="ot">&lt;-</span> <span class="fu">attr</span>(data, <span class="st">'max_setsize'</span>)</span>
+<span id="cb4-5"><a href="#cb4-5"></a>  lure_idx_vars <span class="ot">&lt;-</span> <span class="fu">attr</span>(data, <span class="st">"lure_idx_vars"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a>  non_targets <span class="ot">&lt;-</span> model<span class="sc">$</span>vars<span class="sc">$</span>non_targets</span>
+<span id="cb4-7"><a href="#cb4-7"></a>  setsize_var <span class="ot">&lt;-</span> model<span class="sc">$</span>vars<span class="sc">$</span>setsize</span>
+<span id="cb4-8"><a href="#cb4-8"></a>  spaPos <span class="ot">&lt;-</span> model<span class="sc">$</span>vars<span class="sc">$</span>spaPos</span>
+<span id="cb4-9"><a href="#cb4-9"></a></span>
+<span id="cb4-10"><a href="#cb4-10"></a>  <span class="co"># names for parameters</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>  kappa_nts <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'kappa'</span>, <span class="dv">2</span><span class="sc">:</span>max_setsize)</span>
+<span id="cb4-12"><a href="#cb4-12"></a>  kappa_unif <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'kappa'</span>,max_setsize <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb4-13"><a href="#cb4-13"></a>  theta_nts <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'theta'</span>,<span class="dv">2</span><span class="sc">:</span>max_setsize)</span>
+<span id="cb4-14"><a href="#cb4-14"></a>  mu_nts <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'mu'</span>, <span class="dv">2</span><span class="sc">:</span>max_setsize)</span>
+<span id="cb4-15"><a href="#cb4-15"></a>  mu_unif <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'mu'</span>, max_setsize <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb4-16"><a href="#cb4-16"></a></span>
+<span id="cb4-17"><a href="#cb4-17"></a>  <span class="co"># construct formula</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>  formula <span class="ot">&lt;-</span> formula <span class="sc">+</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a>    brms<span class="sc">::</span><span class="fu">lf</span>(mu1 <span class="sc">~</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a>    <span class="fu">glue_lf</span>(kappa_unif,<span class="st">' ~ 1'</span>) <span class="sc">+</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a>    <span class="fu">glue_lf</span>(mu_unif, <span class="st">' ~ 1'</span>) <span class="sc">+</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a>    brms<span class="sc">::</span><span class="fu">nlf</span>(theta1 <span class="sc">~</span> c <span class="sc">+</span> a) <span class="sc">+</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>    brms<span class="sc">::</span><span class="fu">nlf</span>(kappa1 <span class="sc">~</span> kappa) <span class="sc">+</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a>    brms<span class="sc">::</span><span class="fu">nlf</span>(expS <span class="sc">~</span> <span class="fu">exp</span>(s))</span>
+<span id="cb4-25"><a href="#cb4-25"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(max_setsize<span class="dv">-1</span>)) {</span>
+<span id="cb4-26"><a href="#cb4-26"></a>    formula <span class="ot">&lt;-</span> formula <span class="sc">+</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a>      <span class="fu">glue_nlf</span>(kappa_nts[i], <span class="st">' ~ kappa'</span>) <span class="sc">+</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a>      <span class="fu">glue_nlf</span>(theta_nts[i], <span class="st">' ~ '</span>, lure_idx_vars[i], <span class="st">'*(exp(-expS*'</span>,spaPos[i],<span class="st">')*c + a) + '</span>,</span>
+<span id="cb4-29"><a href="#cb4-29"></a>               <span class="st">'(1-'</span>, lure_idx_vars[i], <span class="st">')*(-100)'</span>) <span class="sc">+</span></span>
+<span id="cb4-30"><a href="#cb4-30"></a>      <span class="fu">glue_nlf</span>(mu_nts[i], <span class="st">' ~ '</span>, non_targets[i])</span>
+<span id="cb4-31"><a href="#cb4-31"></a>  }</span>
+<span id="cb4-32"><a href="#cb4-32"></a></span>
+<span id="cb4-33"><a href="#cb4-33"></a>  <span class="co"># define mixture family</span></span>
+<span id="cb4-34"><a href="#cb4-34"></a>  vm_list <span class="ot">=</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>(max_setsize<span class="sc">+</span><span class="dv">1</span>), <span class="cf">function</span>(x) brms<span class="sc">::</span><span class="fu">von_mises</span>(<span class="at">link=</span><span class="st">"identity"</span>))</span>
+<span id="cb4-35"><a href="#cb4-35"></a>  vm_list<span class="sc">$</span>order <span class="ot">=</span> <span class="st">"none"</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a>  family <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">do_call</span>(brms<span class="sc">::</span>mixture, vm_list)</span>
+<span id="cb4-37"><a href="#cb4-37"></a></span>
+<span id="cb4-38"><a href="#cb4-38"></a>  <span class="co"># define prior</span></span>
+<span id="cb4-39"><a href="#cb4-39"></a>  prior <span class="ot">&lt;-</span> <span class="co"># fix mean of the first von Mises to zero</span></span>
+<span id="cb4-40"><a href="#cb4-40"></a>    brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"constant(0)"</span>, <span class="at">class =</span> <span class="st">"Intercept"</span>, <span class="at">dpar =</span> <span class="st">"mu1"</span>) <span class="sc">+</span></span>
+<span id="cb4-41"><a href="#cb4-41"></a>    <span class="co"># fix mean of the guessing distribution to zero</span></span>
+<span id="cb4-42"><a href="#cb4-42"></a>    brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"constant(0)"</span>, <span class="at">class =</span> <span class="st">"Intercept"</span>, <span class="at">dpar =</span> mu_unif) <span class="sc">+</span></span>
+<span id="cb4-43"><a href="#cb4-43"></a>    <span class="co"># fix kappa of the second von Mises to (alomst) zero</span></span>
+<span id="cb4-44"><a href="#cb4-44"></a>    brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"constant(-100)"</span>, <span class="at">class =</span> <span class="st">"Intercept"</span>, <span class="at">dpar =</span> kappa_unif) <span class="sc">+</span></span>
+<span id="cb4-45"><a href="#cb4-45"></a>    <span class="co"># set reasonable priors fpr the to be estimated parameters</span></span>
+<span id="cb4-46"><a href="#cb4-46"></a>    brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"normal(2, 1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">nlpar =</span> <span class="st">"kappa"</span>) <span class="sc">+</span></span>
+<span id="cb4-47"><a href="#cb4-47"></a>    brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"normal(0, 1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">nlpar =</span> <span class="st">"c"</span>) <span class="sc">+</span></span>
+<span id="cb4-48"><a href="#cb4-48"></a>    brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"normal(0, 1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">nlpar =</span> <span class="st">"a"</span>) <span class="sc">+</span></span>
+<span id="cb4-49"><a href="#cb4-49"></a>    brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"normal(0, 1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">nlpar =</span> <span class="st">"s"</span>)</span>
+<span id="cb4-50"><a href="#cb4-50"></a></span>
+<span id="cb4-51"><a href="#cb4-51"></a>  <span class="co"># if there is setsize 1 in the data, set constant prior over thetant for setsize1</span></span>
+<span id="cb4-52"><a href="#cb4-52"></a>  <span class="cf">if</span> ((<span class="dv">1</span> <span class="sc">%in%</span> data<span class="sc">$</span>ss_numeric) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.numeric</span>(data[[setsize_var]])) {</span>
+<span id="cb4-53"><a href="#cb4-53"></a>    prior <span class="ot">&lt;-</span> prior <span class="sc">+</span></span>
+<span id="cb4-54"><a href="#cb4-54"></a>      brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"constant(0)"</span>, <span class="at">class=</span><span class="st">"b"</span>, <span class="at">coef =</span> <span class="fu">paste0</span>(setsize_var, <span class="dv">1</span>), <span class="at">nlpar=</span><span class="st">"a"</span>)<span class="sc">+</span></span>
+<span id="cb4-55"><a href="#cb4-55"></a>      brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"constant(0)"</span>, <span class="at">class=</span><span class="st">"b"</span>, <span class="at">coef =</span> <span class="fu">paste0</span>(setsize_var, <span class="dv">1</span>), <span class="at">nlpar=</span><span class="st">"s"</span>)</span>
+<span id="cb4-56"><a href="#cb4-56"></a>  }</span>
+<span id="cb4-57"><a href="#cb4-57"></a></span>
+<span id="cb4-58"><a href="#cb4-58"></a>  out <span class="ot">&lt;-</span> <span class="fu">nlist</span>(formula, data, family, prior)</span>
+<span id="cb4-59"><a href="#cb4-59"></a>  <span class="fu">return</span>(out)</span>
+<span id="cb4-60"><a href="#cb4-60"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The configure_model method should always take the arguments <code>model</code>, <code>data</code>, and <code>formula</code> and return a named list with the formula, the data, the family, and the prior.</p>
+</section>
+</section>
+<section id="the-signal-discrimination-model-sdm" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="the-signal-discrimination-model-sdm"><span class="header-section-number">4.2</span> The Signal Discrimination Model (SDM)</h2>
+<p>The SDM model is defined in the file <code>R/bmm_model_SDM.R</code>. The SDM model is a bit more complex than the IMM model, as it requires custom stan code. Let’s go through the different parts. As before, we start with the model definition.</p>
+<section id="model-definition-1" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="model-definition-1"><span class="header-section-number">4.2.1</span> Model definition</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>.model_sdmSimple <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
+<span id="cb5-2"><a href="#cb5-2"></a>   out <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-3"><a href="#cb5-3"></a>      <span class="at">vars =</span> <span class="fu">nlist</span>(),</span>
+<span id="cb5-4"><a href="#cb5-4"></a>      <span class="at">info =</span> <span class="fu">list</span>(</span>
+<span id="cb5-5"><a href="#cb5-5"></a>         <span class="at">domain =</span> <span class="st">'Visual working memory'</span>,</span>
+<span id="cb5-6"><a href="#cb5-6"></a>         <span class="at">task =</span> <span class="st">'Continuous reproduction'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7"></a>         <span class="at">name =</span> <span class="st">'Signal Discrimination Model (SDM) by Oberauer (2023)'</span>,</span>
+<span id="cb5-8"><a href="#cb5-8"></a>         <span class="at">citation =</span> <span class="fu">paste0</span>(<span class="st">'Oberauer, K. (2023). Measurement models for visual working memory - '</span>,</span>
+<span id="cb5-9"><a href="#cb5-9"></a>                           <span class="st">'A factorial model comparison. Psychological Review, 130(3), 841-852'</span>),</span>
+<span id="cb5-10"><a href="#cb5-10"></a>         <span class="at">version =</span> <span class="st">'Simple (no non-targets)'</span>,</span>
+<span id="cb5-11"><a href="#cb5-11"></a>         <span class="at">requirements =</span> <span class="st">'- The response variable should be in radians and represent the angular error relative to the target'</span>,</span>
+<span id="cb5-12"><a href="#cb5-12"></a>         <span class="at">parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb5-13"><a href="#cb5-13"></a>            <span class="co"># mu = 'Location parameter of the SDM distribution (in radians; fixed internally to 0)',</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>            <span class="at">c =</span> <span class="st">'Memory strength parameter of the SDM distribution'</span>,</span>
+<span id="cb5-15"><a href="#cb5-15"></a>            <span class="at">kappa =</span> <span class="st">'Precision parameter of the SDM distribution (log scale)'</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>         )</span>
+<span id="cb5-17"><a href="#cb5-17"></a>      ))</span>
+<span id="cb5-18"><a href="#cb5-18"></a>   <span class="fu">class</span>(out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'bmmmodel'</span>, <span class="st">'vwm'</span>, <span class="st">'sdmSimple'</span>)</span>
+<span id="cb5-19"><a href="#cb5-19"></a>   out</span>
+<span id="cb5-20"><a href="#cb5-20"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The model definition is similar to the IMM model, but the SDM model does not require non-target variables, so the <code>vars</code> list is empty. The <code>class</code> is also different, as the SDM model is not a subclass of the IMM model. We’ll skip the alias for the SDM model, as it is similar for every model.</p>
+</section>
+<section id="check_data-methods-1" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="check_data-methods-1"><span class="header-section-number">4.2.2</span> check_data() methods</h3>
+<p>The SDM does not require special data checks beyond it’s shared class with other <code>vwm</code> models, so we don’t need to define a <code>check_data.sdmSimple</code> method. The <code>check_data.vwm</code> method is defined in the general file <code>R/helpers-data.R</code>.</p>
+</section>
+<section id="configure_model-methods-1" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="configure_model-methods-1"><span class="header-section-number">4.2.3</span> configure_model() methods</h3>
+<p>The configure_model method for the SDM model is a bit more complex than for the IMM model, as it requires custom stan code. The method is defined as follows:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">#' @export</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>configure_model.sdmSimple <span class="ot">&lt;-</span> <span class="cf">function</span>(model, data, formula) {</span>
+<span id="cb6-3"><a href="#cb6-3"></a>    <span class="co"># construct the family</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>    <span class="co"># note - c has a log link, but I've coded it manually for computational efficiency</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>    sdm_simple <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">custom_family</span>(</span>
+<span id="cb6-6"><a href="#cb6-6"></a>      <span class="st">"sdm_simple"</span>, <span class="at">dpars =</span> <span class="fu">c</span>(<span class="st">"mu"</span>, <span class="st">"c"</span>,<span class="st">"kappa"</span>),</span>
+<span id="cb6-7"><a href="#cb6-7"></a>      <span class="at">links =</span> <span class="fu">c</span>(<span class="st">"identity"</span>,<span class="st">"identity"</span>, <span class="st">"log"</span>), <span class="at">lb =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>),</span>
+<span id="cb6-8"><a href="#cb6-8"></a>      <span class="at">type =</span> <span class="st">"real"</span>, <span class="at">loop=</span><span class="cn">FALSE</span>,</span>
+<span id="cb6-9"><a href="#cb6-9"></a>    )</span>
+<span id="cb6-10"><a href="#cb6-10"></a>    family <span class="ot">&lt;-</span> sdm_simple</span>
+<span id="cb6-11"><a href="#cb6-11"></a></span>
+<span id="cb6-12"><a href="#cb6-12"></a>    <span class="co"># prepare initial stanvars to pass to brms, model formula and priors</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a>    stan_funs <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="st">'inst/stan_chunks/sdmSimple_funs.stan'</span>,</span>
+<span id="cb6-14"><a href="#cb6-14"></a>                          <span class="fu">file.info</span>(<span class="st">'inst/stan_chunks/sdmSimple_funs.stan'</span>)<span class="sc">$</span>size)</span>
+<span id="cb6-15"><a href="#cb6-15"></a>    stan_tdata <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="st">'inst/stan_chunks/sdmSimple_tdata.stan'</span>,</span>
+<span id="cb6-16"><a href="#cb6-16"></a>                           <span class="fu">file.info</span>(<span class="st">'inst/stan_chunks/sdmSimple_tdata.stan'</span>)<span class="sc">$</span>size)</span>
+<span id="cb6-17"><a href="#cb6-17"></a>    stan_likelihood <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="st">'inst/stan_chunks/sdmSimple_likelihood.stan'</span>,</span>
+<span id="cb6-18"><a href="#cb6-18"></a>                               <span class="fu">file.info</span>(<span class="st">'inst/stan_chunks/sdmSimple_likelihood.stan'</span>)<span class="sc">$</span>size)</span>
+<span id="cb6-19"><a href="#cb6-19"></a>    stanvars <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">stanvar</span>(<span class="at">scode =</span> stan_funs, <span class="at">block =</span> <span class="st">"functions"</span>) <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a>      brms<span class="sc">::</span><span class="fu">stanvar</span>(<span class="at">scode =</span> stan_tdata, <span class="at">block =</span> <span class="st">'tdata'</span>) <span class="sc">+</span></span>
+<span id="cb6-21"><a href="#cb6-21"></a>      brms<span class="sc">::</span><span class="fu">stanvar</span>(<span class="at">scode =</span> stan_likelihood, <span class="at">block =</span> <span class="st">'likelihood'</span>, <span class="at">position=</span><span class="st">"end"</span>)</span>
+<span id="cb6-22"><a href="#cb6-22"></a></span>
+<span id="cb6-23"><a href="#cb6-23"></a></span>
+<span id="cb6-24"><a href="#cb6-24"></a>   <span class="co"># construct the default prior</span></span>
+<span id="cb6-25"><a href="#cb6-25"></a>   <span class="co"># </span><span class="al">TODO</span><span class="co">: add a proper prior</span></span>
+<span id="cb6-26"><a href="#cb6-26"></a>   prior <span class="ot">&lt;-</span></span>
+<span id="cb6-27"><a href="#cb6-27"></a>     <span class="co"># fix mu to 0 (when I change mu to be the center, not c)</span></span>
+<span id="cb6-28"><a href="#cb6-28"></a>     brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"constant(0)"</span>, <span class="at">class =</span> <span class="st">"Intercept"</span>, <span class="at">dpar =</span> <span class="st">"mu"</span>)</span>
+<span id="cb6-29"><a href="#cb6-29"></a></span>
+<span id="cb6-30"><a href="#cb6-30"></a></span>
+<span id="cb6-31"><a href="#cb6-31"></a>   <span class="co"># return the list</span></span>
+<span id="cb6-32"><a href="#cb6-32"></a>   out <span class="ot">&lt;-</span> <span class="fu">nlist</span>(formula, data, family, prior, stanvars)</span>
+<span id="cb6-33"><a href="#cb6-33"></a>   <span class="fu">return</span>(out)</span>
+<span id="cb6-34"><a href="#cb6-34"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Lines 5-10</strong> use the <code>brms::custom_family</code> function to define a custom family for the SDM model. The <code>dpars</code> argument specifies the parameters of the model, and the <code>links</code> argument specifies the link functions for the parameters. For more information, see <a href="https://cran.r-project.org/web/packages/brms/vignettes/brms_customfamilies.html">here</a></p>
+<p><strong>Lines 13-22</strong> read the custom stan code from the <code>inst/stan_chunks</code> directory. The <code>stanvars</code> object is used to pass custom stan code to the <code>brms</code> package. The <code>stanvars</code> object is a list of <code>brms::stanvar</code> objects, each of which contains the stan code for a specific part of the model. There is a separate <code>.stan</code> file for each part of the stan code, and each file is read into a separate <code>brms::stanvar</code> object.</p>
+<p>The rest is the same as for the IMM model.</p>
+<p>We will now look at how to construct all these parts for a new model. Hint: you don’t have to do it manually, you can use the <code>use_model_template()</code> function to generate the template for your model.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./bmm-architecture.html" class="pagination-link  aria-label=" &lt;span="" code="" structure&lt;="" span&gt;"="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">BMM code structure</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./add-new-model.html" class="pagination-link" aria-label="<span class='chapter-number'>5</span>&nbsp; <span class='chapter-title'>Adding a new model</span>">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Adding a new model</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

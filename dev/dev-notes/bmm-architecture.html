@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>BMM Developer Notes - 3&nbsp; BMM code structure</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./example-model.html" rel="next">
+<link href="./git-workflow.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./bmm-architecture.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">BMM code structure</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">BMM Developer Notes</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">System setup</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./git-workflow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Git and Github workflow</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bmm-architecture.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">BMM code structure</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./example-model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Example model file</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./add-new-model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Adding a new model</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-main-workhorse---fit_model" id="toc-the-main-workhorse---fit_model" class="nav-link active" data-scroll-target="#the-main-workhorse---fit_model"><span class="header-section-number">3.1</span> The main workhorse - <code>fit_model()</code></a></li>
+  <li><a href="#models" id="toc-models" class="nav-link" data-scroll-target="#models"><span class="header-section-number">3.2</span> Models</a></li>
+  <li><a href="#s3-methods" id="toc-s3-methods" class="nav-link" data-scroll-target="#s3-methods"><span class="header-section-number">3.3</span> S3 methods</a></li>
+  <li><a href="#file-organization" id="toc-file-organization" class="nav-link" data-scroll-target="#file-organization"><span class="header-section-number">3.4</span> File organization</a>
+  <ul class="collapse">
+  <li><a href="#rfit_model.r" id="toc-rfit_model.r" class="nav-link" data-scroll-target="#rfit_model.r"><code>R/fit_model.R</code></a></li>
+  <li><a href="#rhelpers-.r" id="toc-rhelpers-.r" class="nav-link" data-scroll-target="#rhelpers-.r"><code>R/helpers-*.R</code></a></li>
+  <li><a href="#rbmm_model_.r" id="toc-rbmm_model_.r" class="nav-link" data-scroll-target="#rbmm_model_.r"><code>R/bmm_model_*.R</code></a></li>
+  <li><a href="#rbmm_distributions.r" id="toc-rbmm_distributions.r" class="nav-link" data-scroll-target="#rbmm_distributions.r"><code>R/bmm_distributions.R</code></a></li>
+  <li><a href="#rrandom_data_generation.r" id="toc-rrandom_data_generation.r" class="nav-link" data-scroll-target="#rrandom_data_generation.r"><code>R/random_data_generation.R</code></a></li>
+  <li><a href="#rutils.r-rbrms-misc.r" id="toc-rutils.r-rbrms-misc.r" class="nav-link" data-scroll-target="#rutils.r-rbrms-misc.r"><code>R/utils.R</code>, <code>R/brms-misc.R</code></a></li>
+  <li><a href="#inststan_chunks" id="toc-inststan_chunks" class="nav-link" data-scroll-target="#inststan_chunks"><code>inst/stan_chunks/</code></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-bmm-architecture" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">BMM code structure</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Adding a new model is straightforward using the <code>use_model_template()</code> function, which will be described in the next section. You do not have to edit any of the files below, but it will be helpful to understand the structure of the package.</p>
+<section id="the-main-workhorse---fit_model" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="the-main-workhorse---fit_model"><span class="header-section-number">3.1</span> The main workhorse - <code>fit_model()</code></h2>
+<p>The main function for fitting models is <code>fit_model()</code>. This function is the main entry point for users to fit models. It is set-up to be independent of the specific models that are implemented in the package:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>fit_model <span class="ot">&lt;-</span> <span class="cf">function</span>(formula, data, model, <span class="at">parallel =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb1-2"><a href="#cb1-2"></a>                      <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">prior =</span> <span class="cn">NULL</span>, ...) {</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  <span class="co"># enable parallel sampling if parallel equals TRUE</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  opts <span class="ot">&lt;-</span> <span class="fu">configure_options</span>(<span class="fu">nlist</span>(parallel, chains))</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a>  <span class="co"># check model, formula and data, and transform data if necessary</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  model <span class="ot">&lt;-</span> <span class="fu">check_model</span>(model)</span>
+<span id="cb1-8"><a href="#cb1-8"></a>  formula <span class="ot">&lt;-</span> <span class="fu">check_formula</span>(model, formula)</span>
+<span id="cb1-9"><a href="#cb1-9"></a>  data <span class="ot">&lt;-</span> <span class="fu">check_data</span>(model, data, formula)</span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a>  <span class="co"># generate the model specification to pass to brms later</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>  config_args <span class="ot">&lt;-</span> <span class="fu">configure_model</span>(model, data, formula)</span>
+<span id="cb1-13"><a href="#cb1-13"></a></span>
+<span id="cb1-14"><a href="#cb1-14"></a>  <span class="co"># combine the default prior plus user given prior</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>  config_args <span class="ot">&lt;-</span> <span class="fu">combine_prior</span>(config_args, prior)</span>
+<span id="cb1-16"><a href="#cb1-16"></a></span>
+<span id="cb1-17"><a href="#cb1-17"></a>  <span class="co"># estimate the model</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>  dots <span class="ot">&lt;-</span> <span class="fu">list</span>(...)</span>
+<span id="cb1-19"><a href="#cb1-19"></a>  fit_args <span class="ot">&lt;-</span> <span class="fu">c</span>(config_args, opts, dots)</span>
+<span id="cb1-20"><a href="#cb1-20"></a>  fit <span class="ot">&lt;-</span> <span class="fu">call_brm</span>(fit_args)</span>
+<span id="cb1-21"><a href="#cb1-21"></a></span>
+<span id="cb1-22"><a href="#cb1-22"></a>  <span class="co"># model postprocessing</span></span>
+<span id="cb1-23"><a href="#cb1-23"></a>  fit <span class="ot">&lt;-</span> <span class="fu">postprocess_brm</span>(model, fit)</span>
+<span id="cb1-24"><a href="#cb1-24"></a></span>
+<span id="cb1-25"><a href="#cb1-25"></a>  <span class="fu">return</span>(fit)</span>
+<span id="cb1-26"><a href="#cb1-26"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It calls several subroutines, implemented as generic S3 methods, to:</p>
+<ul>
+<li><code>configure_options()</code> - to configure local options for fitting, such as parallel sampling,</li>
+<li><code>check_model()</code> - check if the model exists</li>
+<li><code>check_formula()</code> - check if the formula is specified correctly</li>
+<li><code>check_data()</code> - whether the data contains all necessary information</li>
+<li><code>configure_model()</code> - to configure the model for fitting</li>
+<li><code>combine_priors()</code> - to combine a user specified prior with the default priors we provide for each model</li>
+<li><code>call_brm()</code> - to fit the model using the <code>brm()</code> function from the <code>brms</code> package</li>
+<li><code>postprocess_brm()</code> - to postprocess the fitted model</li>
+</ul>
+</section>
+<section id="models" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="models"><span class="header-section-number">3.2</span> Models</h2>
+<p>All models in the package are defined as S3 classes and follow a strict template. This allows us to implement general methods for handling model fitting, data checking, and postprocessing. Each model has an internal function that defines the model and its parameters, and a user-facing alias. For a complete example model file and an explanation, see <a href="example-model.html" class="quarto-xref">Section&nbsp;<span>4</span></a>. The general model template looks like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>.model_modelname <span class="ot">&lt;-</span> <span class="cf">function</span>(required_arg1, required_arg2, ...) {</span>
+<span id="cb2-2"><a href="#cb2-2"></a>   out <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>      <span class="at">vars =</span> <span class="fu">nlist</span>(required_arg1, required_arg2),</span>
+<span id="cb2-4"><a href="#cb2-4"></a>      <span class="at">info =</span> <span class="fu">list</span>(</span>
+<span id="cb2-5"><a href="#cb2-5"></a>         <span class="at">domain =</span> <span class="st">''</span>,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>         <span class="at">task =</span> <span class="st">''</span>,</span>
+<span id="cb2-7"><a href="#cb2-7"></a>         <span class="at">name =</span> <span class="st">''</span>,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>         <span class="at">citation =</span> <span class="st">''</span>,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>         <span class="at">version =</span> <span class="st">''</span>,</span>
+<span id="cb2-10"><a href="#cb2-10"></a>         <span class="at">requirements =</span> <span class="st">''</span>,</span>
+<span id="cb2-11"><a href="#cb2-11"></a>         <span class="at">parameters =</span> <span class="fu">list</span>()</span>
+<span id="cb2-12"><a href="#cb2-12"></a>      ))</span>
+<span id="cb2-13"><a href="#cb2-13"></a>   <span class="fu">class</span>(out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'bmmmodel'</span>, <span class="st">'modelname'</span>)</span>
+<span id="cb2-14"><a href="#cb2-14"></a>   out</span>
+<span id="cb2-15"><a href="#cb2-15"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Each model is accompanied by a user-facing alias, the documentation of which is generated automatically based on the info list in the model definition.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># user facing alias</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="co"># information in the title and details sections will be filled in</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co"># automatically based on the information in the .model_modelname()$info</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">#' @title `r .model_modelname()$info$name`</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">#' @details `r model_info(modelname(NA,NA))`</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">#' @param required_arg1 A description of the required argument</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">#' @param required_arg2 A description of the required argument</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="co">#' @param ... used internally for testing, ignore it</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co">#' @return An object of class `bmmmodel`</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="co">#' @export</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="co">#' @examples</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co">#' \dontrun{</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="co">#' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="co">#' }</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>modelname <span class="ot">&lt;-</span> .model_modelname</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then users can fit the model using the <code>fit_model()</code> function, and the model will be automatically recognized and handled by the package:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_model</span>(formula, </span>
+<span id="cb4-2"><a href="#cb4-2"></a>                 <span class="at">data =</span> mydata, </span>
+<span id="cb4-3"><a href="#cb4-3"></a>                 <span class="at">model =</span> <span class="fu">modelname</span>(required_arg1, required_arg2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="s3-methods" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="s3-methods"><span class="header-section-number">3.3</span> S3 methods</h2>
+<p>The package uses S3 methods to handle different models. This means that the same function can behave differently depending on the class of the object it is called with. For example, the <code>configure_model(model)</code> function called by <code>fit_model()</code>, is generally defined as:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>configure_model <span class="ot">&lt;-</span> <span class="cf">function</span>(model) {</span>
+<span id="cb5-2"><a href="#cb5-2"></a>   <span class="fu">UseMethod</span>(<span class="st">'configure_model'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and it will call a function <code>configure_model.modelname()</code> that is specified for each model. The same is true for other functions, such as <code>check_data()</code>, <code>postprocess_brm()</code>, and <code>check_formula()</code>. This allows us to add new models without having to edit the main fitting function, <code>fit_model()</code>.</p>
+</section>
+<section id="file-organization" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="file-organization"><span class="header-section-number">3.4</span> File organization</h2>
+<p>The <code>bmm</code> package is organized into several files. The main files are:</p>
+<section id="rfit_model.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rfit_model.r"><code>R/fit_model.R</code></h3>
+<p>It contains the main function for fitting models, <code>fit_model()</code>. This function is the main entry point for users to fit models. It is set-up to be independent of the specific models that are implemented in the package.</p>
+<p>To add new models, you do not have to edit this file. The functions above are generic S3 methods, and they will automatically recognize new models if you add appropriate methods for them (see section <a href="#adding-new-models-to-bmm">Adding new models</a>).</p>
+</section>
+<section id="rhelpers-.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rhelpers-.r"><code>R/helpers-*.R</code></h3>
+<p><code>R/helpers-data.R</code>, <code>R/helpers-postprocess.R</code>, <code>R/helpers-model.R</code>, <code>R/helpers-formula.R</code> and <code>R/helpers-prior.R</code></p>
+<p>These files define the main generic S3 methods for checking data, postprocessing the fitted model, configuring the model, checking the model formula, and combining priors. They contain the default methods for these functions, which are called by <code>fit_model()</code> if no specific method is defined for a model. If you want to add a new model, you will need to add specific methods for these functions for your model. <em>You do not need to edit these files to add a new model.</em></p>
+</section>
+<section id="rbmm_model_.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rbmm_model_.r"><code>R/bmm_model_*.R</code></h3>
+<p>Each model and it’s methods is defined in a separate file. For example, the 3-parameter mixture model is defined in <code>bmm_model_3p.R</code>. This file contains the internal function that defines the model and its parameters, and the specific methods for the generic S3 functions. Your new model will exist in a file like this. The name of the file should be <code>bmm_model_name_of_your_model.R</code>. You don’t have to add this file manually - see section <a href="#adding-new-models-to-bmm">Adding new models</a>.</p>
+</section>
+<section id="rbmm_distributions.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rbmm_distributions.r"><code>R/bmm_distributions.R</code></h3>
+<p>This file contains the definition of the custom distributions that are used in the package. It specifies the density, random number generation, and probability functions for the custom distributions. If your model requires a custom distribution, you will need to add it to this file. These are not used during model fitting, but can be used to generate data from the model, and to plot the model fit.</p>
+</section>
+<section id="rrandom_data_generation.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rrandom_data_generation.r"><code>R/random_data_generation.R</code></h3>
+<p>Functions for generating random data from the models. This is useful for testing the models.</p>
+</section>
+<section id="rutils.r-rbrms-misc.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rutils.r-rbrms-misc.r"><code>R/utils.R</code>, <code>R/brms-misc.R</code></h3>
+<p>Various utility functions.</p>
+</section>
+<section id="inststan_chunks" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="inststan_chunks"><code>inst/stan_chunks/</code></h3>
+<p>This directory contains the Stan chunks that are passed to the <code>brms::stanvar()</code> function. These are used to define the custom distributions that are used in the package. If you add a new custom distribution, you will need to add a new Stan chunk to this directory. Each model has several files, one for each corresponding stanvar block.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./git-workflow.html" class="pagination-link  aria-label=" &lt;span="" and="" github="" workflow&lt;="" span&gt;"="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Git and Github workflow</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./example-model.html" class="pagination-link" aria-label="<span class='chapter-number'>4</span>&nbsp; <span class='chapter-title'>Example model file</span>">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Example model file</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
