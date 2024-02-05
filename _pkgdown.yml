@@ -1,6 +1,9 @@
-url: http://venpopov.com/bmm
+url: http://venpopov.com/bmm/
 template:
   bootstrap: 5
+
+development:
+  mode: auto
 
 navbar:
   structure:
