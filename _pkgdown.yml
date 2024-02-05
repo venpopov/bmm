@@ -1,0 +1,50 @@
+url: http://venpopov.com/bmm
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+     left: [intro, reference, articles, changelog, develop]
+  components:
+     reference:
+        text: Functions
+        href: reference/index.html
+     changelog:
+        text: Changelog
+        href: news/index.html
+     develop:
+        text: Develop
+        href: dev-notes/index.html
+
+
+
+reference:
+ - title: "About bmm"
+   desc: "These pages provide a summary of the functionality available in bmm"
+ - contents:
+   - "bmm"
+   - "supported_models"
+ - title: "Fitting models"
+   desc: "Main function for model fitting"
+ - contents:
+   - "fit_model"
+ - title: "Specifying models"
+   desc: "Functions for specifying which model to fit"
+ - contents:
+   - has_keyword("bmmmodel")
+ - title: "Distributions"
+   desc: "Functions for special distributions"
+ - contents:
+   - has_keyword("distribution")
+ - title: "Random data generation"
+   desc: "Functions for simulating random data from a model"
+ - contents:
+   - has_keyword("simulation")
+ - title: "Data and parameter transformations"
+   desc: "Utility functions for transforming data and parameters"
+ - contents:
+   - has_keyword("transform")
+ - title: "Developers' corner"
+   desc: "Functions to assist in developing new models"
+ - contents:
+   - has_keyword("developer")

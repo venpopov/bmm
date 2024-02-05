@@ -28,6 +28,7 @@
 #' @details `r model_info(mixture2p())`
 #' @param ... no required arguments, call as `mixture2p()`
 #' @return An object of class `bmmmodel`
+#' @keywords bmmmodel
 #' @examples
 #' \dontrun{
 #' # generate artificial data

@@ -95,3 +95,4 @@ Interference measurement model by Oberauer and Lin (2017).
 }
 }
 }
+\keyword{bmmmodel}

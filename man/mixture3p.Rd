@@ -68,3 +68,4 @@ fit <- fit_model(formula = ff,
                  backend='cmdstanr')
 }
 }
+\keyword{bmmmodel}

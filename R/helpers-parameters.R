@@ -5,6 +5,7 @@
 #'
 #' @param K numeric. A vector of kappa values.
 #' @return A vector of sd values.
+#' @keywords transform
 #' @export
 #' @examples
 #' kappas <- runif(1000, 0.01, 100)
@@ -36,13 +37,14 @@ k2sd <- function (K) {
 #'
 #' @name c_parametrizations
 #' @inheritParams SDMdist
-#' @return \code{c_bessel2sqrtexp} converts the memory strength parameter (c)
+#' @return `c_bessel2sqrtexp` converts the memory strength parameter (c)
 #'   from the bessel parametrization to the sqrtexp parametrization,
-#'   \code{c_sqrtexp2bessel} converts from the sqrtexp parametrization to the
+#'   `c_sqrtexp2bessel` converts from the sqrtexp parametrization to the
 #'   bessel parametrization.
-#' @details See \code{vignette("bmm_models")} for details on the
+#' @keywords transform
+#' @details See `vignette("bmm_models")` for details on the
 #'   parameterization. The sqrtexp parametrization is the default in the
-#'   \code{bmm} package.
+#'   `bmm` package.
 #' @export
 c_sqrtexp2bessel <- function(c, kappa) {
   if (isTRUE(any(kappa < 0))) {
@@ -57,6 +59,7 @@ c_sqrtexp2bessel <- function(c, kappa) {
 }
 
 #' @rdname c_parametrizations
+#' @keywords transform
 #' @export
 c_bessel2sqrtexp <- function(c, kappa) {
   if (isTRUE(any(kappa < 0))) {

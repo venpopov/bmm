@@ -29,3 +29,4 @@ See \code{vignette("bmm_models")} for details on the
 parameterization. The sqrtexp parametrization is the default in the
 \code{bmm} package.
 }
+\keyword{transform}

@@ -12,8 +12,6 @@ configure_model(model, data, formula)
 \item{data}{The user supplied data.frame containing the data to be checked}
 
 \item{formula}{The user supplied formula}
-
-\item{...}{Additional arguments passed to the configure_model.* functions}
 }
 \value{
 A named list containing at minimum the following elements:
@@ -115,4 +113,5 @@ configure_model.3p <- function(model, data, formula) {
 }
 
 }
-\keyword{internal}
+\keyword{developer}
+\keyword{internal,}

@@ -68,7 +68,7 @@ memory strength \code{c}, and precision \code{kappa}. Currently only a
 single activation source is supported.
 }
 \details{
-\bold{Parametrization}
+\strong{Parametrization}
 
 See \code{vignette("bmm_models")} for details on the parameterization.
 Oberauer (2023) introduced the SDM with the bessel parametrization. The
@@ -76,7 +76,7 @@ sqrtexp parametrization is the default in the \code{bmm} package for
 numerical stability and efficiency. The two parametrizations are related by
 the functions \code{c_bessel2sqrtexp()} and \code{c_sqrtexp2bessel()}.
 
-\bold{The cumulative distribution function}
+\strong{The cumulative distribution function}
 
 Since responses are on the circle, the cumulative distribution function
 requires you to choose a lower bound of integration. The default is
@@ -116,3 +116,4 @@ lines(x,d,type="l", col="red")
 Oberauer, K. (2023). Measurement models for visual working
 memory - A factorial model comparison. Psychological Review, 130(3), 841–852
 }
+\keyword{distribution}

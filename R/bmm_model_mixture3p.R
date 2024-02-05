@@ -39,6 +39,7 @@
 #'   fixed.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
+#' @keywords bmmmodel
 #' @export
 #' @examples
 #' \dontrun{

@@ -25,3 +25,4 @@ which contains the transformed response error relative to the non-targets
 Given a vector of responses, and the values of non-targets, this
 function computes the error relative to each of the non-targets.
 }
+\keyword{transform}

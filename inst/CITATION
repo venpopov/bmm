@@ -1,0 +1,8 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "A tutorial for estimating mixture models for visual working memory tasks in brms: Introducing the Bayesian Measurement Modeling (bmm) package for R",
+  author   = c(person("Gidon", "Frischkorn", "T."), person("Vencislav", "Popov")),
+  journal  = "PsyArXiv",
+  year     = "2023",
+  doi      = "10.31234/osf.io/umt57"
+)
