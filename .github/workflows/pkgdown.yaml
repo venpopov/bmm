@@ -10,7 +10,6 @@ on:
   workflow_dispatch:
 
 
-
 name: pkgdown
 
 jobs:
