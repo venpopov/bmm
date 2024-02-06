@@ -34,6 +34,7 @@ reference:
    desc: "Main function for model fitting"
  - contents:
    - "fit_model"
+   - "get_model_prior"
  - title: "Specifying models"
    desc: "Functions for specifying which model to fit"
  - contents:
