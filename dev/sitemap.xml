@@ -4,6 +4,12 @@
     <loc>https://venpopov.github.io/bmm/dev/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/dev/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/articles/sdm-simple.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/dev/authors.html</loc>
   </url>
   <url>
@@ -56,6 +62,9 @@
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/gen_imm_data.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/get_model_prior.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/index.html</loc>

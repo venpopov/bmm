@@ -32,6 +32,9 @@ model."><meta name="robots" content="noindex"><!-- mathjax --><script src="https
   <a class="nav-link" href="../reference/index.html">Functions</a>
 </li>
 <li class="nav-item">
+  <a class="nav-link" href="../articles/index.html">Articles</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
@@ -89,13 +92,8 @@ the model to be fitted.</p></dd>
 
 <dt>data</dt>
 <dd><p>An object of class data.frame, containing data of all variables
-used in the model. Response, target and lure values must be in radians.
-There must be as many lure value columns as the maximum setsize-1. For
-setsizes smaller than the maximum, values for non-existing non_targets must
-be coded as NA. The outcome variable must be response error relative to the
-target, not the raw response. Similarly, the lure values must be coded
-relative to the target. If the lure values are absolute, you must subtract
-from them the value of the target before running the model</p></dd>
+used in the model. The names of the variables must match the variable names
+passed to the <code>bmmmodel</code> object for required argurments.</p></dd>
 
 
 <dt>model</dt>
