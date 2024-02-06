@@ -35,6 +35,12 @@ You can install the development version of bmm from [GitHub](https://github.com/
 devtools::install_github("venpopov/bmm")
 ```
 
+If you want to install the package together with the vignettes, you can use:
+
+``` r
+devtools::install_github("venpopov/bmm", build_vignettes = TRUE)
+```
+
 The package was significantly updated on Feb 03, 2024. If you are following the old version of the [Tutorial preprint](https://osf.io/preprints/psyarxiv/umt57), you need to install the 0.0.1 version of the bmm package with:
 
 ``` r
