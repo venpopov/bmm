@@ -44,6 +44,13 @@ You can install the development version of bmm from
 devtools::install_github("venpopov/bmm")
 ```
 
+If you want to install the package together with the vignettes, you can
+use:
+
+``` r
+devtools::install_github("venpopov/bmm", build_vignettes = TRUE)
+```
+
 The package was significantly updated on Feb 03, 2024. If you are
 following the old version of the [Tutorial
 preprint](https://osf.io/preprints/psyarxiv/umt57), you need to install
@@ -69,13 +76,13 @@ library(bmm)
 library(tidyverse)
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
 head(dat)
-#>            y    nt1_loc    nt2_loc    nt3_loc
-#> 1 -0.3744489 -0.7745662 -1.7851322  2.6250857
-#> 2 -0.2276437 -2.9242605 -1.0636064  1.3510206
-#> 3 -0.4434759 -3.0442414  3.1308954  2.5139912
-#> 4 -0.1851510  2.9494581 -2.5852143  0.7524799
-#> 5 -0.2141779  1.3277457  2.9447087 -2.3150407
-#> 6  0.5607886  2.5964077  0.8039922  2.9028663
+#>              y    nt1_loc    nt2_loc   nt3_loc
+#> 1 -0.142526610  2.1500293 -0.6441928 0.9517516
+#> 2  0.007518355 -3.0287546 -2.9828635 2.0714670
+#> 3  0.018662539 -1.3783199  1.0946707 1.2723605
+#> 4 -0.004285611  1.7142538 -1.8425466 0.7009981
+#> 5  0.396037655 -0.7615063  1.6378873 2.8464744
+#> 6 -0.411727832 -0.9225579  2.5400559 3.0250659
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%

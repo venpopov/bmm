@@ -36,7 +36,7 @@
 #'
 #' @details **Parametrization**
 #'
-#' See `vignette("bmm_models")` for details on the parameterization.
+#' See `vignette("sdm-simple")` for details on the parameterization.
 #' Oberauer (2023) introduced the SDM with the bessel parametrization. The
 #' sqrtexp parametrization is the default in the `bmm` package for
 #' numerical stability and efficiency. The two parametrizations are related by
