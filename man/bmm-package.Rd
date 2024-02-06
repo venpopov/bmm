@@ -12,6 +12,7 @@ Wrapper functions and custom distributions that make it easier to estimate commo
 Useful links:
 \itemize{
   \item \url{https://github.com/venpopov/bmm}
+  \item \url{https://venpopov.github.io/bmm/}
   \item Report bugs at \url{https://github.com/venpopov/bmm/issues}
 }
 
