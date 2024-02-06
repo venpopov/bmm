@@ -9,13 +9,8 @@
 #' @param formula An object of class `brmsformula`. A symbolic description of
 #'   the model to be fitted.
 #' @param data An object of class data.frame, containing data of all variables
-#'   used in the model. Response, target and lure values must be in radians.
-#'   There must be as many lure value columns as the maximum setsize-1. For
-#'   setsizes smaller than the maximum, values for non-existing non_targets must
-#'   be coded as NA. The outcome variable must be response error relative to the
-#'   target, not the raw response. Similarly, the lure values must be coded
-#'   relative to the target. If the lure values are absolute, you must subtract
-#'   from them the value of the target before running the model
+#'   used in the model. The names of the variables must match the variable names
+#'   passed to the `bmmmodel` object for required argurments.
 #' @param model A description of the model to be fitted. This is a call to a
 #'   `bmmmodel` such as `mixture3p()` function. Every model function has a
 #'   number of required arguments which need to be specified within the function
@@ -91,7 +86,7 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior 
   config_args <- configure_model(model, data, formula)
 
   # combine the default prior plus user given prior
-  config_args <- combine_prior(config_args, prior)
+  config_args$prior <- combine_prior(config_args$prior, prior)
 
   # estimate the model
   dots <- list(...)
