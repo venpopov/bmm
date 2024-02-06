@@ -12,6 +12,9 @@ navbar:
      reference:
         text: Functions
         href: reference/index.html
+     articles:
+        text: Articles
+        href: articles/index.html
      changelog:
         text: Changelog
         href: news/index.html
