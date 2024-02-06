@@ -388,8 +388,8 @@ use_model_template <- function(model_name,
                                "     type = '', loop=FALSE,\n",
                                "   )\n   family <- <<model_name>>_family\n\n")
 
-
-    stan_vars_template <- "   # prepare initial stanvars to pass to brms, model formula and priors\n"
+    stan_vars_template <- paste0("   # prepare initial stanvars to pass to brms, model formula and priors\n",
+                                 "   sc_path <- system.file('stan_chunks', package='bmm')\n")
     for (stanvar_block in stanvar_blocks) {
       stan_vars_file <- paste0('inst/stan_chunks/', model_name, '_', stanvar_block, '.stan')
       if(!testing) {
@@ -399,8 +399,8 @@ use_model_template <- function(model_name,
         }
       }
       stan_vars_template <- paste0(stan_vars_template,
-                                   "   stan_", stanvar_block, " <- readChar('inst/stan_chunks/", model_name, "_", stanvar_block, ".stan',\n",
-                                   "      file.info('inst/stan_chunks/", model_name, "_", stanvar_block, ".stan')$size)\n")
+        "   stan_", stanvar_block, " <- readChar(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'),\n",
+        "      file.info(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'))$size)\n")
     }
     stan_vars_template <- paste0(stan_vars_template, "\n   stanvars <- ")
     i = 1
