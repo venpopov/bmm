@@ -19,13 +19,8 @@ fit_model(
 the model to be fitted.}
 
 \item{data}{An object of class data.frame, containing data of all variables
-used in the model. Response, target and lure values must be in radians.
-There must be as many lure value columns as the maximum setsize-1. For
-setsizes smaller than the maximum, values for non-existing non_targets must
-be coded as NA. The outcome variable must be response error relative to the
-target, not the raw response. Similarly, the lure values must be coded
-relative to the target. If the lure values are absolute, you must subtract
-from them the value of the target before running the model}
+used in the model. The names of the variables must match the variable names
+passed to the \code{bmmmodel} object for required argurments.}
 
 \item{model}{A description of the model to be fitted. This is a call to a
 \code{bmmmodel} such as \code{mixture3p()} function. Every model function has a
