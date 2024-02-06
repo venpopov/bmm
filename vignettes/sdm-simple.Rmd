@@ -8,6 +8,8 @@ vignette: >
   %\VignetteIndexEntry{The Signal Discrimination Model (SDM)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+pkgdown:
+  as_is: true
 ---
 <style type="text/css">
   div.main-container {
