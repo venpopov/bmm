@@ -18,7 +18,10 @@ Suggests:
     glue,
     usethis,
     knitr,
-    rmarkdown
+    rmarkdown,
+    bookdown,
+    tidybayes,
+    ggplot2
 Config/testthat/edition: 3
 Imports: 
     brms,
