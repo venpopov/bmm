@@ -88,12 +88,13 @@ configure_model.sdmSimple <- function(model, data, formula) {
     family <- sdm_simple
 
     # prepare initial stanvars to pass to brms, model formula and priors
-    stan_funs <- readChar('inst/stan_chunks/sdmSimple_funs.stan',
-                          file.info('inst/stan_chunks/sdmSimple_funs.stan')$size)
-    stan_tdata <- readChar('inst/stan_chunks/sdmSimple_tdata.stan',
-                           file.info('inst/stan_chunks/sdmSimple_tdata.stan')$size)
-    stan_likelihood <- readChar('inst/stan_chunks/sdmSimple_likelihood.stan',
-                               file.info('inst/stan_chunks/sdmSimple_likelihood.stan')$size)
+    sc_path <- system.file("stan_chunks", package="bmm")
+    stan_funs <- readChar(paste0(sc_path, '/sdmSimple_funs.stan'),
+                          file.info(paste0(sc_path, '/sdmSimple_funs.stan'))$size)
+    stan_tdata <- readChar(paste0(sc_path, '/sdmSimple_tdata.stan'),
+                           file.info(paste0(sc_path, '/sdmSimple_tdata.stan'))$size)
+    stan_likelihood <- readChar(paste0(sc_path, '/sdmSimple_likelihood.stan'),
+                               file.info(paste0(sc_path, '/sdmSimple_likelihood.stan'))$size)
     stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
       brms::stanvar(scode = stan_tdata, block = 'tdata') +
       brms::stanvar(scode = stan_likelihood, block = 'likelihood', position="end")
