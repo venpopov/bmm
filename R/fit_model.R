@@ -86,7 +86,7 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior 
   config_args <- configure_model(model, data, formula)
 
   # combine the default prior plus user given prior
-  config_args <- combine_prior(config_args, prior)
+  config_args$prior <- combine_prior(config_args$prior, prior)
 
   # estimate the model
   dots <- list(...)

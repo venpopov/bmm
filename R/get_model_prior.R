@@ -66,11 +66,11 @@ get_model_prior <- function(formula, data, model, ...) {
   # get priors for the model
   dots <- list(...)
   prior_args <- c(config_args, dots)
-  fit <- brms::do_call(brms::get_prior, prior_args)
+  brms_priors <- brms::do_call(brms::get_prior, prior_args)
 
-  # model postprocessing
-  # fit <- postprocess_brm(model, fit)
+  # combine the brms prior with the model default prior
+  combined_prior <- combine_prior(brms_priors, prior_args$prior)
 
-  return(fit)
+  return(combined_prior)
 }
 
