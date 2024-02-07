@@ -29,7 +29,7 @@ In research on visual working memory participants are often asked to remember an
 Most often the features used in these tasks are colors sampled from a color wheel [@Wilken_Ma_2004] or continuous orientations of a bar or a triangle [@Bays_Gorgoraptis_Wee_Marshall_Husain_2011]. The set of to-be-remembered objects typically consists of one up to eight objects spatially distributed over the screen. Thus, participants must associate the to-be-remembered features (e.g. color or orientation) with the spatial locations they are presented at. The precision of the representation of an object’s feature in visual working memory is measured as the angular deviation from the true feature presented at encoding.
 
 <div class="figure">
-<img src="../vwm-crt.png" alt="A typical continuous reproduction task" width="450" />
+<img src="vwm-crt.png" alt="A typical continuous reproduction task" width="450" />
 <p class="caption">(\#fig:vwmcrt)A typical continuous reproduction task</p>
 </div>
 
