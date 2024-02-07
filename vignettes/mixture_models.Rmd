@@ -22,6 +22,10 @@ pkgdown:
   }
 </style>
 ```
+
+
+
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -156,8 +160,9 @@ The model formula has three components:
 
 1) The response variable `error` is predicted by a constant term, which is internally fixed to have a mean of 0
 2) The precision parameter `kappa` is predicted by set size, and the effect of set size varies across participants
-3) The mixture weight^[`brms` does not directly estimate the probabilities that each response comes from each distribution (e.g. $p_{mem}$ and $p_{guess}$). Instead, brms estimates mixing proportions that are weights applied to each of the mixture distributions and they are transformed into probabilities (e.g. $p_{mem}$ and $p_{guess}$) using a softmax normalization. To get $p_{mem}$ we can use the softmax function, that is: $p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})}$] for memory responses `thetat` is predicted by set size, and the effect of set size varies across participants
+3) The mixture weight[^fn-1] for memory responses `thetat` is predicted by set size, and the effect of set size varies across participants.
 
+[^fn-1]: `brms` does not directly estimate the probabilities that each response comes from each distribution (e.g. $p_{mem}$ and $p_{guess}$). Instead, brms estimates mixing proportions that are weights applied to each of the mixture distributions and they are transformed into probabilities (e.g. $p_{mem}$ and $p_{guess}$) using a softmax normalization. To get $p_{mem}$ we can use the softmax function, that is: $p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})}$
 
 ```{r}
 ff <- brms::bf(error ~ 1, 
