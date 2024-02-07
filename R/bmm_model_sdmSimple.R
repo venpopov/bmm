@@ -28,7 +28,9 @@
 # automatically based on the information in the .model_sdmSimple()$info
 #' @title `r .model_sdmSimple()$info$name`
 #' @name SDM
-#' @details `r model_info(sdmSimple())`
+#' @details
+#' see [vignette("sdm-simple")] for a detailed description of the model and how to use it.
+#' `r model_info(sdmSimple())`
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
