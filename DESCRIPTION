@@ -21,7 +21,10 @@ Suggests:
     rmarkdown,
     bookdown,
     tidybayes,
-    ggplot2
+    ggplot2,
+    mixtur,
+    ggthemes,
+    cowplot
 Config/testthat/edition: 3
 Imports: 
     brms,
