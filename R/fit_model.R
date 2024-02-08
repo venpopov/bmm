@@ -47,18 +47,17 @@
 #' @examples
 #' \dontrun{
 #' # generate artificial data from the Bays et al (2009) 3-parameter mixture model
-#' dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
+#' dat <- rsdm(n=2000)
 #'
 #' # define formula
 #' ff <- brms::bf(y ~ 1,
-#'               kappa ~ 1,
-#'               thetat ~ 1,
-#'               thetant ~ 1)
+#'                c ~ 1,
+#'                kappa ~ 1)
 #'
 #' # fit the model
 #' fit <- fit_model(formula = ff,
 #'                  data = dat,
-#'                  model = mixture3p(non_targets = paste0('nt',1:3,'_loc'), setsize=4),
+#'                  model = sdmSimple(),
 #'                  parallel=T,
 #'                  iter=500,
 #'                  backend='cmdstanr')

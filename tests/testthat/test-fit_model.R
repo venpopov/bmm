@@ -1,7 +1,12 @@
 test_that('Available mock models run without errors',{
   skip_on_cran()
-  dat <- gen_imm_data(parms = data.frame(c=2,a=0.5,n=0,s=2,kappa=5),
-                          ntrial = 2, setsize = 5)
+  dat <- data.frame(
+    respErr = rIMM(n = 5),
+    Item2_rel = 2,
+    Item3_rel = -1.5,
+    spaD2 = 0.5,
+    spaD3 = 2
+  )
 
   # two-parameter model mock fit
   f <- brms::bf(respErr ~ 1, kappa ~ 1, thetat ~ 1)
@@ -10,10 +15,10 @@ test_that('Available mock models run without errors',{
   expect_type(mock_fit$fit_args, "list")
   expect_equal(names(mock_fit$fit_args[1:4]), c("formula", "data", "family", "prior"))
 
-
   # three-parameter model mock fit
   f <- brms::bf(respErr ~ 1, kappa ~ 1, thetat ~ 1, thetant ~ 1)
-  mock_fit <- fit_model(f, dat, mixture3p(setsize=5, non_targets = paste0('Item',2:5,'_rel')),
+  mock_fit <- fit_model(f, dat, mixture3p(setsize = 3,
+                                          non_targets = paste0('Item',2:3,'_rel')),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
@@ -21,7 +26,8 @@ test_that('Available mock models run without errors',{
 
   # IMMabc model mock fit
   f <- brms::bf(respErr ~ 1, kappa ~ 1, c ~ 1, a ~ 1)
-  mock_fit <- fit_model(f, dat, IMMabc(setsize=5, non_targets = paste0('Item',2:5,'_rel')),
+  mock_fit <- fit_model(f, dat, IMMabc(setsize =3,
+                                       non_targets = paste0('Item',2:3,'_rel')),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
@@ -29,7 +35,7 @@ test_that('Available mock models run without errors',{
 
   # IMMbsc model mock fit
   f <- brms::bf(respErr ~ 1, kappa ~ 1, c ~ 1, s ~ 1)
-  mock_fit <- fit_model(f, dat, IMMbsc(setsize=5, non_targets = paste0('Item',2:5,'_rel'), spaPos=paste0('spaD',2:5)),
+  mock_fit <- fit_model(f, dat, IMMbsc(setsize=3, non_targets = paste0('Item',2:3,'_rel'), spaPos=paste0('spaD',2:3)),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
@@ -37,7 +43,7 @@ test_that('Available mock models run without errors',{
 
   # IMMbsc model mock fit
   f <- brms::bf(respErr ~ 1, kappa ~ 1, c ~ 1, a ~ 1, s ~ 1)
-  mock_fit <- fit_model(f, dat, IMMfull(setsize=5, non_targets = paste0('Item',2:5,'_rel'), spaPos=paste0('spaD',2:5)), backend="mock", mock_fit=1, rename=FALSE)
+  mock_fit <- fit_model(f, dat, IMMfull(setsize=3, non_targets = paste0('Item',2:3,'_rel'), spaPos=paste0('spaD',2:3)), backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
   expect_equal(names(mock_fit$fit_args[1:4]), c("formula", "data", "family", "prior"))
@@ -45,8 +51,13 @@ test_that('Available mock models run without errors',{
 
 test_that('Available models produce expected errors', {
   skip_on_cran()
-  dat <- gen_imm_data(parms = data.frame(c=2,a=0.5,n=0,s=2,kappa=5),
-                      ntrial = 100, setsize = 5)
+  dat <- data.frame(
+    respErr = rIMM(n = 5),
+    Item2_rel = 2,
+    Item3_rel = -1.5,
+    spaD2 = 0.5,
+    spaD3 = 2
+  )
 
   # Missing data
   okmodels <- supported_models(print_call=FALSE)
@@ -72,5 +83,4 @@ test_that('Available models produce expected errors', {
                  "'setsize' must be either a single numeric value or a character string")
   }
 })
-
 

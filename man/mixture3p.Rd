@@ -48,7 +48,12 @@ Three-parameter mixture model by Bays et al (2009).
 \examples{
 \dontrun{
 # generate artificial data from the Bays et al (2009) 3-parameter mixture model
-dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
+dat <- data.frame(
+  y = rmixture3p(n=2000, mu = c(0,1,-1.5,2)),
+  nt1_loc = 1,
+  nt2_loc = -1.5,
+  nt3_loc = 2
+)
 
 # define formula
 ff <- brms::bf(y ~ 1,
@@ -57,14 +62,14 @@ ff <- brms::bf(y ~ 1,
               thetant ~ 1)
 
 # specify the 3-parameter model
-model <- mixture3p(non_targets = paste0('nt',1:3,'_loc'), setsize=4)
+model <- mixture3p(non_targets = paste0('nt',1:3,'_loc'), setsize = 4)
 
 # fit the model
 fit <- fit_model(formula = ff,
                  data = dat,
                  model = model,
                  parallel=T,
-                 iter=500,
+                 iter = 500,
                  backend='cmdstanr')
 }
 }

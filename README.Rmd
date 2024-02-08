@@ -58,12 +58,17 @@ responses can come from three different sources - noisy representation of the
 target, confusion with noisy representation of non-target items, or guessing
 based on a uniform distribution. To estimate these parameters for a dataset, we
 can use the `fit_model()` function. First, let's generate a dataset with known
-parameters. We can use the function `gen_3p_data()`
+parameters. We can use the function `rmixture3p()`
 
 ```{r example, message=FALSE, warning=FALSE}
 library(bmm)
 library(tidyverse)
-dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
+dat <- data.frame(
+  y = rmixture3p(n = 2000, mu = c(0,1,-1.5,2)),
+  nt1_loc = 1,
+  nt2_loc = -1.5,
+  nt3_loc = 2
+)
 head(dat)
 ```
 
@@ -82,19 +87,12 @@ tails:
 hist(dat$y, breaks = 60, xlab = "Response error relative to target")
 ```
 Another key property of the data is that some error responses are not random,
-but that they are due to confusion of the target with one of the lures. We can
-visualize this by centering the response error relative to each of the possible
-non-target locations. We do this with the helper function
-`calc_error_relative_to_nontargets()`:
-
-```{r}
-dat %>% 
-  calc_error_relative_to_nontargets('y', paste0('nt',1:3,'_loc')) %>% 
-  ggplot(aes(y_nt)) +
-  geom_histogram()
-```
+but that they are due to confusion of the target with one of the lures. This is already 
+visible by the additional peaks in the histogram. Typically these peaks are not immediately
+visible as the non-target locations vary from trial to trial.
 
 Ok, so now let's fit the three-parameter model. We only need to do two things:
+
 - Specify the model formula
 - Call fit_model()
 
@@ -105,9 +103,9 @@ proportion for correct responses and mixing proportion for non-target swaps.
 
 ```{r}
 ff <- brms::bf(y ~ 1,
-         kappa ~ 1,
-         thetat ~ 1,
-         thetant ~ 1)
+               kappa ~ 1,
+               thetat ~ 1,
+               thetant ~ 1)
 ```
 
 Then specify the model and give it information about the required arguments. In
@@ -134,4 +132,3 @@ fit <- fit_model(formula = ff,
                  iter=500,
                  backend='cmdstanr')
 ```
-
