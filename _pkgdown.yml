@@ -55,3 +55,8 @@ reference:
    desc: "Functions to assist in developing new models"
  - contents:
    - has_keyword("developer")
+ - title: "Datasets"
+   desc: "Available datasets for fitting the models"
+ - contents:
+   - "OberauerLin_2017"
+   - "ZhangLuck_2008"
