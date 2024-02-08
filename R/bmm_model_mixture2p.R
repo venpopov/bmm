@@ -32,7 +32,7 @@
 #' @examples
 #' \dontrun{
 #' # generate artificial data
-#' dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
+#' dat <- data.frame(y = rmixture2p(n=2000))
 #'
 #' # define formula
 #' ff <- brms::bf(y ~ 1,

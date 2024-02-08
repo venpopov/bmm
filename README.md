@@ -78,15 +78,20 @@ let’s generate a dataset with known parameters. We can use the function
 ``` r
 library(bmm)
 library(tidyverse)
-dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
+dat <- data.frame(
+  y = rmixture3p(n = 2000, mu = c(0,1,-1.5,2)),
+  nt1_loc = 1,
+  nt2_loc = -1.5,
+  nt3_loc = 2
+)
 head(dat)
-#>             y    nt1_loc     nt2_loc    nt3_loc
-#> 1  0.51775824  1.0020511  0.76339413 -1.2897954
-#> 2  0.03960327 -0.6206519  1.09208784 -0.8679937
-#> 3 -0.48213423  1.1447270  2.81885045 -1.4363374
-#> 4 -0.34510101  2.7482095 -0.06612305  2.0340003
-#> 5  0.09348744 -1.3952246  2.17738363  0.7796131
-#> 6  0.39001975 -0.8049496  2.07371921 -1.1887811
+#>             y nt1_loc nt2_loc nt3_loc
+#> 1 -0.21935776       1    -1.5       2
+#> 2 -0.09542148       1    -1.5       2
+#> 3 -0.46152746       1    -1.5       2
+#> 4  2.20892562       1    -1.5       2
+#> 5 -0.52996268       1    -1.5       2
+#> 6 -0.47483031       1    -1.5       2
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%
@@ -108,22 +113,15 @@ hist(dat$y, breaks = 60, xlab = "Response error relative to target")
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 Another key property of the data is that some error responses are not
 random, but that they are due to confusion of the target with one of the
-lures. We can visualize this by centering the response error relative to
-each of the possible non-target locations. We do this with the helper
-function `calc_error_relative_to_nontargets()`:
-
-``` r
-dat %>% 
-  calc_error_relative_to_nontargets('y', paste0('nt',1:3,'_loc')) %>% 
-  ggplot(aes(y_nt)) +
-  geom_histogram()
-#> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-```
-
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+lures. This is already visible by the additional peaks in the histogram.
+Typically these peaks are not immediately visible as the non-target
+locations vary from trial to trial.
 
 Ok, so now let’s fit the three-parameter model. We only need to do two
-things: - Specify the model formula - Call fit_model()
+things:
+
+- Specify the model formula
+- Call fit_model()
 
 In this example the parameters don’t vary over conditions, so we have no
 predictors. `y` is the name of the response error variable, whereas
@@ -133,9 +131,9 @@ for non-target swaps.
 
 ``` r
 ff <- brms::bf(y ~ 1,
-         kappa ~ 1,
-         thetat ~ 1,
-         thetant ~ 1)
+               kappa ~ 1,
+               thetat ~ 1,
+               thetant ~ 1)
 ```
 
 Then specify the model and give it information about the required

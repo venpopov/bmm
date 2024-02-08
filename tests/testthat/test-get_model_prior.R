@@ -1,7 +1,4 @@
 test_that("get_model_prior() returns a brmsprior object", {
-  # generate artificial data from the Bays et al (2009) 3-parameter mixture model
-  dat <- gen_3p_data(N=2, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
-
   # define formula
   ff <- brms::bf(y ~ 1,
                  kappa ~ 1,
@@ -9,7 +6,9 @@ test_that("get_model_prior() returns a brmsprior object", {
                  thetant ~ 1)
 
   # simulate data
-  dat <- gen_3p_data(N = 200)
+  dat <- data.frame(y = rmixture3p(n = 200),
+                    nt1_loc = 2,
+                    nt2_loc = -1.5)
 
   # fit the model
   prior <- get_model_prior(formula = ff,
