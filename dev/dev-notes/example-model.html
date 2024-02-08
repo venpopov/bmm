@@ -463,30 +463,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-10"><a href="#cb6-10"></a>    family <span class="ot">&lt;-</span> sdm_simple</span>
 <span id="cb6-11"><a href="#cb6-11"></a></span>
 <span id="cb6-12"><a href="#cb6-12"></a>    <span class="co"># prepare initial stanvars to pass to brms, model formula and priors</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a>    stan_funs <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="st">'inst/stan_chunks/sdmSimple_funs.stan'</span>,</span>
-<span id="cb6-14"><a href="#cb6-14"></a>                          <span class="fu">file.info</span>(<span class="st">'inst/stan_chunks/sdmSimple_funs.stan'</span>)<span class="sc">$</span>size)</span>
-<span id="cb6-15"><a href="#cb6-15"></a>    stan_tdata <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="st">'inst/stan_chunks/sdmSimple_tdata.stan'</span>,</span>
-<span id="cb6-16"><a href="#cb6-16"></a>                           <span class="fu">file.info</span>(<span class="st">'inst/stan_chunks/sdmSimple_tdata.stan'</span>)<span class="sc">$</span>size)</span>
-<span id="cb6-17"><a href="#cb6-17"></a>    stan_likelihood <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="st">'inst/stan_chunks/sdmSimple_likelihood.stan'</span>,</span>
-<span id="cb6-18"><a href="#cb6-18"></a>                               <span class="fu">file.info</span>(<span class="st">'inst/stan_chunks/sdmSimple_likelihood.stan'</span>)<span class="sc">$</span>size)</span>
-<span id="cb6-19"><a href="#cb6-19"></a>    stanvars <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">stanvar</span>(<span class="at">scode =</span> stan_funs, <span class="at">block =</span> <span class="st">"functions"</span>) <span class="sc">+</span></span>
-<span id="cb6-20"><a href="#cb6-20"></a>      brms<span class="sc">::</span><span class="fu">stanvar</span>(<span class="at">scode =</span> stan_tdata, <span class="at">block =</span> <span class="st">'tdata'</span>) <span class="sc">+</span></span>
-<span id="cb6-21"><a href="#cb6-21"></a>      brms<span class="sc">::</span><span class="fu">stanvar</span>(<span class="at">scode =</span> stan_likelihood, <span class="at">block =</span> <span class="st">'likelihood'</span>, <span class="at">position=</span><span class="st">"end"</span>)</span>
-<span id="cb6-22"><a href="#cb6-22"></a></span>
+<span id="cb6-13"><a href="#cb6-13"></a>    sc_path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"stan_chunks"</span>, <span class="at">package=</span><span class="st">"bmm"</span>)</span>
+<span id="cb6-14"><a href="#cb6-14"></a>    stan_funs <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/sdmSimple_funs.stan'</span>),</span>
+<span id="cb6-15"><a href="#cb6-15"></a>                          <span class="fu">file.info</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/sdmSimple_funs.stan'</span>))<span class="sc">$</span>size)</span>
+<span id="cb6-16"><a href="#cb6-16"></a>    stan_tdata <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/sdmSimple_tdata.stan'</span>),</span>
+<span id="cb6-17"><a href="#cb6-17"></a>                           <span class="fu">file.info</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/sdmSimple_tdata.stan'</span>))<span class="sc">$</span>size)</span>
+<span id="cb6-18"><a href="#cb6-18"></a>    stan_likelihood <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/sdmSimple_likelihood.stan'</span>),</span>
+<span id="cb6-19"><a href="#cb6-19"></a>                               <span class="fu">file.info</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/sdmSimple_likelihood.stan'</span>))<span class="sc">$</span>size)</span>
+<span id="cb6-20"><a href="#cb6-20"></a>    stanvars <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">stanvar</span>(<span class="at">scode =</span> stan_funs, <span class="at">block =</span> <span class="st">"functions"</span>) <span class="sc">+</span></span>
+<span id="cb6-21"><a href="#cb6-21"></a>      brms<span class="sc">::</span><span class="fu">stanvar</span>(<span class="at">scode =</span> stan_tdata, <span class="at">block =</span> <span class="st">'tdata'</span>) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22"></a>      brms<span class="sc">::</span><span class="fu">stanvar</span>(<span class="at">scode =</span> stan_likelihood, <span class="at">block =</span> <span class="st">'likelihood'</span>, <span class="at">position=</span><span class="st">"end"</span>)</span>
 <span id="cb6-23"><a href="#cb6-23"></a></span>
-<span id="cb6-24"><a href="#cb6-24"></a>   <span class="co"># construct the default prior</span></span>
-<span id="cb6-25"><a href="#cb6-25"></a>   <span class="co"># </span><span class="al">TODO</span><span class="co">: add a proper prior</span></span>
-<span id="cb6-26"><a href="#cb6-26"></a>   prior <span class="ot">&lt;-</span></span>
-<span id="cb6-27"><a href="#cb6-27"></a>     <span class="co"># fix mu to 0 (when I change mu to be the center, not c)</span></span>
-<span id="cb6-28"><a href="#cb6-28"></a>     brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"constant(0)"</span>, <span class="at">class =</span> <span class="st">"Intercept"</span>, <span class="at">dpar =</span> <span class="st">"mu"</span>)</span>
-<span id="cb6-29"><a href="#cb6-29"></a></span>
+<span id="cb6-24"><a href="#cb6-24"></a></span>
+<span id="cb6-25"><a href="#cb6-25"></a>   <span class="co"># construct the default prior</span></span>
+<span id="cb6-26"><a href="#cb6-26"></a>   <span class="co"># </span><span class="al">TODO</span><span class="co">: add a proper prior</span></span>
+<span id="cb6-27"><a href="#cb6-27"></a>   prior <span class="ot">&lt;-</span></span>
+<span id="cb6-28"><a href="#cb6-28"></a>     <span class="co"># fix mu to 0 (when I change mu to be the center, not c)</span></span>
+<span id="cb6-29"><a href="#cb6-29"></a>     brms<span class="sc">::</span><span class="fu">prior_</span>(<span class="st">"constant(0)"</span>, <span class="at">class =</span> <span class="st">"Intercept"</span>, <span class="at">dpar =</span> <span class="st">"mu"</span>)</span>
 <span id="cb6-30"><a href="#cb6-30"></a></span>
-<span id="cb6-31"><a href="#cb6-31"></a>   <span class="co"># return the list</span></span>
-<span id="cb6-32"><a href="#cb6-32"></a>   out <span class="ot">&lt;-</span> <span class="fu">nlist</span>(formula, data, family, prior, stanvars)</span>
-<span id="cb6-33"><a href="#cb6-33"></a>   <span class="fu">return</span>(out)</span>
-<span id="cb6-34"><a href="#cb6-34"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-31"><a href="#cb6-31"></a></span>
+<span id="cb6-32"><a href="#cb6-32"></a>   <span class="co"># return the list</span></span>
+<span id="cb6-33"><a href="#cb6-33"></a>   out <span class="ot">&lt;-</span> <span class="fu">nlist</span>(formula, data, family, prior, stanvars)</span>
+<span id="cb6-34"><a href="#cb6-34"></a>   <span class="fu">return</span>(out)</span>
+<span id="cb6-35"><a href="#cb6-35"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><strong>Lines 5-10</strong> use the <code>brms::custom_family</code> function to define a custom family for the SDM model. The <code>dpars</code> argument specifies the parameters of the model, and the <code>links</code> argument specifies the link functions for the parameters. For more information, see <a href="https://cran.r-project.org/web/packages/brms/vignettes/brms_customfamilies.html">here</a></p>
-<p><strong>Lines 13-22</strong> read the custom stan code from the <code>inst/stan_chunks</code> directory. The <code>stanvars</code> object is used to pass custom stan code to the <code>brms</code> package. The <code>stanvars</code> object is a list of <code>brms::stanvar</code> objects, each of which contains the stan code for a specific part of the model. There is a separate <code>.stan</code> file for each part of the stan code, and each file is read into a separate <code>brms::stanvar</code> object.</p>
+<p><strong>Lines 13-22</strong> read the custom stan code from the <code>inst/stan_chunks</code> directory. This has to be specified with the system.file() command to ensure that the code is found when the package is installed. The <code>stanvars</code> object is used to pass custom stan code to the <code>brms</code> package. The <code>stanvars</code> object is a list of <code>brms::stanvar</code> objects, each of which contains the stan code for a specific part of the model. There is a separate <code>.stan</code> file for each part of the stan code, and each file is read into a separate <code>brms::stanvar</code> object.</p>
 <p>The rest is the same as for the IMM model.</p>
 <p>We will now look at how to construct all these parts for a new model. Hint: you don’t have to do it manually, you can use the <code>use_model_template()</code> function to generate the template for your model.</p>
 

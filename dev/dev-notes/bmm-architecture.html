@@ -263,8 +263,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-11"><a href="#cb1-11"></a>  <span class="co"># generate the model specification to pass to brms later</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a>  config_args <span class="ot">&lt;-</span> <span class="fu">configure_model</span>(model, data, formula)</span>
 <span id="cb1-13"><a href="#cb1-13"></a></span>
-<span id="cb1-14"><a href="#cb1-14"></a>  <span class="co"># combine the default prior plus user given prior</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a>  config_args <span class="ot">&lt;-</span> <span class="fu">combine_prior</span>(config_args, prior)</span>
+<span id="cb1-14"><a href="#cb1-14"></a> <span class="co"># combine the default prior plus user given prior</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>  config_args<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="fu">combine_prior</span>(config_args<span class="sc">$</span>prior, prior)</span>
 <span id="cb1-16"><a href="#cb1-16"></a></span>
 <span id="cb1-17"><a href="#cb1-17"></a>  <span class="co"># estimate the model</span></span>
 <span id="cb1-18"><a href="#cb1-18"></a>  dots <span class="ot">&lt;-</span> <span class="fu">list</span>(...)</span>
@@ -350,7 +350,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="rbmm_model_.r" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="rbmm_model_.r"><code>R/bmm_model_*.R</code></h3>
-<p>Each model and it’s methods is defined in a separate file. For example, the 3-parameter mixture model is defined in <code>bmm_model_3p.R</code>. This file contains the internal function that defines the model and its parameters, and the specific methods for the generic S3 functions. Your new model will exist in a file like this. The name of the file should be <code>bmm_model_name_of_your_model.R</code>. You don’t have to add this file manually - see section <a href="#adding-new-models-to-bmm">Adding new models</a>.</p>
+<p>Each model and it’s methods is defined in a separate file. For example, the 3-parameter mixture model is defined in <code>bmm_model_mixture3p.R</code>. This file contains the internal function that defines the model and its parameters, and the specific methods for the generic S3 functions. Your new model will exist in a file like this. The name of the file should be <code>bmm_model_name_of_your_model.R</code>. You don’t have to add this file manually - see section <a href="#adding-new-models-to-bmm">Adding new models</a>.</p>
 </section>
 <section id="rbmm_distributions.r" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="rbmm_distributions.r"><code>R/bmm_distributions.R</code></h3>

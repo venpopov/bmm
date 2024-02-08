@@ -210,6 +210,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#function-use_model_template" id="toc-function-use_model_template" class="nav-link active" data-scroll-target="#function-use_model_template">Function <code>use_model_template()</code></a></li>
   <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example"><span class="header-section-number">5.1</span> Example</a></li>
   <li><a href="#testing" id="toc-testing" class="nav-link" data-scroll-target="#testing"><span class="header-section-number">5.2</span> Testing</a></li>
+  <li><a href="#add-an-example-dataset" id="toc-add-an-example-dataset" class="nav-link" data-scroll-target="#add-an-example-dataset"><span class="header-section-number">5.3</span> Add an example dataset</a></li>
+  <li><a href="#add-a-vignette" id="toc-add-a-vignette" class="nav-link" data-scroll-target="#add-a-vignette"><span class="header-section-number">5.4</span> Add a vignette</a></li>
   </ul>
 </nav>
     </div>
@@ -405,40 +407,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-100"><a href="#cb4-100"></a>   family <span class="ot">&lt;-</span> gcm_family</span>
 <span id="cb4-101"><a href="#cb4-101"></a></span>
 <span id="cb4-102"><a href="#cb4-102"></a>   <span class="co"># prepare initial stanvars to pass to brms, model formula and priors</span></span>
-<span id="cb4-103"><a href="#cb4-103"></a>   stan_likelihood <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="st">'inst/stan_chunks/gcm_likelihood.stan'</span>,</span>
-<span id="cb4-104"><a href="#cb4-104"></a>      <span class="fu">file.info</span>(<span class="st">'inst/stan_chunks/gcm_likelihood.stan'</span>)<span class="sc">$</span>size)</span>
-<span id="cb4-105"><a href="#cb4-105"></a>   stan_functions <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="st">'inst/stan_chunks/gcm_functions.stan'</span>,</span>
-<span id="cb4-106"><a href="#cb4-106"></a>      <span class="fu">file.info</span>(<span class="st">'inst/stan_chunks/gcm_functions.stan'</span>)<span class="sc">$</span>size)</span>
-<span id="cb4-107"><a href="#cb4-107"></a></span>
-<span id="cb4-108"><a href="#cb4-108"></a>   stanvars <span class="ot">&lt;-</span> <span class="fu">stanvar</span>(<span class="at">scode =</span> stan_likelihood, <span class="at">block =</span> <span class="st">'likelihood'</span>) <span class="sc">+</span></span>
-<span id="cb4-109"><a href="#cb4-109"></a>      <span class="fu">stanvar</span>(<span class="at">scode =</span> stan_functions, <span class="at">block =</span> <span class="st">'functions'</span>)</span>
-<span id="cb4-110"><a href="#cb4-110"></a></span>
+<span id="cb4-103"><a href="#cb4-103"></a>   sc_path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">'stan_chunks'</span>, <span class="at">package=</span><span class="st">'bmm'</span>)</span>
+<span id="cb4-104"><a href="#cb4-104"></a>   stan_likelihood <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/gcm_likelihood.stan'</span>),</span>
+<span id="cb4-105"><a href="#cb4-105"></a>      <span class="fu">file.info</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/gcm_likelihood.stan'</span>))<span class="sc">$</span>size)</span>
+<span id="cb4-106"><a href="#cb4-106"></a>   stan_functions <span class="ot">&lt;-</span> <span class="fu">readChar</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/gcm_functions.stan'</span>),</span>
+<span id="cb4-107"><a href="#cb4-107"></a>      <span class="fu">file.info</span>(<span class="fu">paste0</span>(sc_path, <span class="st">'/gcm_functions.stan'</span>))<span class="sc">$</span>size)</span>
+<span id="cb4-108"><a href="#cb4-108"></a></span>
+<span id="cb4-109"><a href="#cb4-109"></a>   stanvars <span class="ot">&lt;-</span> <span class="fu">stanvar</span>(<span class="at">scode =</span> stan_likelihood, <span class="at">block =</span> <span class="st">'likelihood'</span>) <span class="sc">+</span></span>
+<span id="cb4-110"><a href="#cb4-110"></a>      <span class="fu">stanvar</span>(<span class="at">scode =</span> stan_functions, <span class="at">block =</span> <span class="st">'functions'</span>)</span>
 <span id="cb4-111"><a href="#cb4-111"></a></span>
-<span id="cb4-112"><a href="#cb4-112"></a>   <span class="co"># construct the default prior</span></span>
-<span id="cb4-113"><a href="#cb4-113"></a>   prior <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb4-114"><a href="#cb4-114"></a></span>
+<span id="cb4-112"><a href="#cb4-112"></a></span>
+<span id="cb4-113"><a href="#cb4-113"></a>   <span class="co"># construct the default prior</span></span>
+<span id="cb4-114"><a href="#cb4-114"></a>   prior <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
 <span id="cb4-115"><a href="#cb4-115"></a></span>
-<span id="cb4-116"><a href="#cb4-116"></a>   <span class="co"># return the list</span></span>
-<span id="cb4-117"><a href="#cb4-117"></a>   out <span class="ot">&lt;-</span> <span class="fu">nlist</span>(formula, data, family, prior, stanvars)</span>
-<span id="cb4-118"><a href="#cb4-118"></a>   <span class="fu">return</span>(out)</span>
-<span id="cb4-119"><a href="#cb4-119"></a>}</span>
-<span id="cb4-120"><a href="#cb4-120"></a></span>
+<span id="cb4-116"><a href="#cb4-116"></a></span>
+<span id="cb4-117"><a href="#cb4-117"></a>   <span class="co"># return the list</span></span>
+<span id="cb4-118"><a href="#cb4-118"></a>   out <span class="ot">&lt;-</span> <span class="fu">nlist</span>(formula, data, family, prior, stanvars)</span>
+<span id="cb4-119"><a href="#cb4-119"></a>   <span class="fu">return</span>(out)</span>
+<span id="cb4-120"><a href="#cb4-120"></a>}</span>
 <span id="cb4-121"><a href="#cb4-121"></a></span>
 <span id="cb4-122"><a href="#cb4-122"></a></span>
-<span id="cb4-123"><a href="#cb4-123"></a><span class="do">#############################################################################!</span></span>
-<span id="cb4-124"><a href="#cb4-124"></a><span class="co"># POSTPROCESS METHODS                                                    ####</span></span>
-<span id="cb4-125"><a href="#cb4-125"></a><span class="do">#############################################################################!</span></span>
-<span id="cb4-126"><a href="#cb4-126"></a><span class="co"># A postprocess_brm.* function should be defined for the model class. See </span></span>
-<span id="cb4-127"><a href="#cb4-127"></a><span class="co"># ?postprocess_brm for details</span></span>
-<span id="cb4-128"><a href="#cb4-128"></a></span>
+<span id="cb4-123"><a href="#cb4-123"></a></span>
+<span id="cb4-124"><a href="#cb4-124"></a><span class="do">#############################################################################!</span></span>
+<span id="cb4-125"><a href="#cb4-125"></a><span class="co"># POSTPROCESS METHODS                                                    ####</span></span>
+<span id="cb4-126"><a href="#cb4-126"></a><span class="do">#############################################################################!</span></span>
+<span id="cb4-127"><a href="#cb4-127"></a><span class="co"># A postprocess_brm.* function should be defined for the model class. See </span></span>
+<span id="cb4-128"><a href="#cb4-128"></a><span class="co"># ?postprocess_brm for details</span></span>
 <span id="cb4-129"><a href="#cb4-129"></a></span>
-<span id="cb4-130"><a href="#cb4-130"></a><span class="co">#' @export</span></span>
-<span id="cb4-131"><a href="#cb4-131"></a>postprocess_brm.gcm <span class="ot">&lt;-</span> <span class="cf">function</span>(model, fit) {</span>
-<span id="cb4-132"><a href="#cb4-132"></a>   <span class="co"># any required postprocessing (if none, delete this section)</span></span>
-<span id="cb4-133"><a href="#cb4-133"></a></span>
+<span id="cb4-130"><a href="#cb4-130"></a></span>
+<span id="cb4-131"><a href="#cb4-131"></a><span class="co">#' @export</span></span>
+<span id="cb4-132"><a href="#cb4-132"></a>postprocess_brm.gcm <span class="ot">&lt;-</span> <span class="cf">function</span>(model, fit) {</span>
+<span id="cb4-133"><a href="#cb4-133"></a>   <span class="co"># any required postprocessing (if none, delete this section)</span></span>
 <span id="cb4-134"><a href="#cb4-134"></a></span>
-<span id="cb4-135"><a href="#cb4-135"></a>   <span class="fu">return</span>(fit)</span>
-<span id="cb4-136"><a href="#cb4-136"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-135"><a href="#cb4-135"></a></span>
+<span id="cb4-136"><a href="#cb4-136"></a>   <span class="fu">return</span>(fit)</span>
+<span id="cb4-137"><a href="#cb4-137"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Now you have to:</p>
 <ol type="1">
 <li><p>Fill the <code>.model_gcm</code> function with the appropriate code. This function should return a list with the variables that the model needs and a list with information about the model. The class of the list should be <code>c('bmmmodel', 'gcm')</code>. The information list should contain the following elements: <code>domain</code>, <code>task</code>, <code>name</code>, <code>citation</code>, <code>version</code>, <code>requirements</code>, and <code>parameters</code>. Rename the required arguments, if you have any, or delete them if you don’t. You can see an example in the <code>bmm_model_sdmSimple.R</code> file.</p></li>
@@ -476,6 +479,20 @@ Important
 <p>Additionally, you should perform a full test of the model by running it in a separate script and ensuring it gives meaningful results. At the very least, you should perform parameter recovery simulations. We are in the process of establishing guidelines for that.</p>
 </div>
 </div>
+</section>
+<section id="add-an-example-dataset" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="add-an-example-dataset"><span class="header-section-number">5.3</span> Add an example dataset</h2>
+<p>All new models should come with an example dataset, that can be loaded by users and that can be used in the examples section. This should be one of:</p>
+<ul>
+<li>A new dataset that you add to the package</li>
+<li>A dataset that already exists in the package but that can be used with the new model</li>
+<li>A dataset that exists in another package that you can load with <code>data()</code> and use with the new model</li>
+</ul>
+<p>For example, the vignettes for the <code>mixture2p</code> and <code>mixture3p</code> use an external dataset from the <code>mixtur</code> package that can be loaded with <code>data('bays2009_full', package='mixtur')</code>. The <code>IMM</code> models use a dataset included in the current package. For instructions on how to add a new dataset see <a href="https://r-pkgs.org/data.html">here</a>.</p>
+</section>
+<section id="add-a-vignette" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="add-a-vignette"><span class="header-section-number">5.4</span> Add a vignette</h2>
+<p>All new models should come with a vignette that explains some basic information about the model and how to estimate it with <code>bmm</code>. You can use the <code>use_vignette()</code> function to create a new vignette. See <a href="https://r-pkgs.org/vignettes.html">here</a> for more information. The vignettes will be published automatically on the package website under “Articles” when the pull request is approved. You can browse the source code for the existing vignettes in the <code>vignettes/</code> directory. You can see the published version of the existing vignettes <a href="../articles/">here</a>.</p>
 <p>And that’s it! You have added a new model to the <code>bmm</code> package. You can now submit your changes to the <code>bmm</code> package repository.</p>
 
 
