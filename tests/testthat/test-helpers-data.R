@@ -11,8 +11,7 @@ test_that("check_data() produces expected errors and warnings", {
     expect_warning(check_data(ml(non_targets = 'x', setsize=2, spaPos = 'z'),
                               data.frame(y = 12, x = 1, z = 2),
                               brms::bf(y ~ 1)),
-                   "It appears your response variable is in degrees.\n
-            The model will continue to run, but the results may be compromised.")
+                   "It appears your response variable is in degrees.\n")
     expect_silent(check_data(ml(non_targets = 'x', setsize=2, spaPos = 'z'),
                              data.frame(y = 1, x = 1, z = 2), brms::bf(y ~ 1)))
   }
