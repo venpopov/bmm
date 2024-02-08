@@ -1,7 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# bmm <!-- badges: start --> <!-- badges: end -->
+# bmm <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml)
+[![test-coverage](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml)
+<!-- badges: end -->
 
 The goal of bmm (Bayesian Measurement Models) is to make it easier to
 estimate common measurement models for behavioral research using
@@ -76,13 +80,13 @@ library(bmm)
 library(tidyverse)
 dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
 head(dat)
-#>              y    nt1_loc    nt2_loc   nt3_loc
-#> 1 -0.142526610  2.1500293 -0.6441928 0.9517516
-#> 2  0.007518355 -3.0287546 -2.9828635 2.0714670
-#> 3  0.018662539 -1.3783199  1.0946707 1.2723605
-#> 4 -0.004285611  1.7142538 -1.8425466 0.7009981
-#> 5  0.396037655 -0.7615063  1.6378873 2.8464744
-#> 6 -0.411727832 -0.9225579  2.5400559 3.0250659
+#>             y    nt1_loc     nt2_loc    nt3_loc
+#> 1  0.51775824  1.0020511  0.76339413 -1.2897954
+#> 2  0.03960327 -0.6206519  1.09208784 -0.8679937
+#> 3 -0.48213423  1.1447270  2.81885045 -1.4363374
+#> 4 -0.34510101  2.7482095 -0.06612305  2.0340003
+#> 5  0.09348744 -1.3952246  2.17738363  0.7796131
+#> 6  0.39001975 -0.8049496  2.07371921 -1.1887811
 ```
 
 We have a dataset of 2000 observations of response error, of which 60%

@@ -6,3 +6,5 @@
 local/
 docs
 inst/doc
+/doc/
+/Meta/
