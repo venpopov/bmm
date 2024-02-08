@@ -55,13 +55,10 @@ check_data.default <- function(model, data, formula) {
 #' @export
 check_data.vwm <- function(model, data, formula) {
   resp_name <- get_response(formula$formula)
-  if (max(abs(data[[resp_name]]), na.rm=T) > 10) {
-    data[[resp_name]] <- data[[resp_name]]*pi/180
-    warning('It appears your response variable is in degrees. We will transform it to radians.')
+  if (max(abs(data[[resp_name]]), na.rm = T) > 2*pi) {
+    warning('It appears your response variable is in degrees.\n
+            The model will continue to run, but the results may be compromised.')
   }
-
-  # wrap recoded responses around the circle (range = -pi to pi)
-  data[[resp_name]] <- wrap(data[[resp_name]])
 
   data = NextMethod("check_data")
 
@@ -72,9 +69,9 @@ check_data.vwm <- function(model, data, formula) {
 #' @export
 check_data.nontargets <- function(model, data, formula) {
   non_targets <- model$vars$non_targets
-  if (max(abs(data[,non_targets]), na.rm=T) > 10) {
-    data[,non_targets] <- data[,non_targets]*pi/180
-    warning('It appears your non_target variables are in degrees. We will transform it to radians.')
+  if (max(abs(data[,non_targets]), na.rm = T) > 2*pi) {
+    warning('It appears at least one of your non_target variables are in degrees.\n
+            The model will continue to run, but the results may be compromised.')
   }
 
   setsize <- model$vars$setsize
@@ -97,9 +94,6 @@ check_data.nontargets <- function(model, data, formula) {
     stop('The number of columns for non-target values in the argument ',
          '`non_targets` is more than max(setsize)-1')
   }
-
-  # wrap non_target variables around the circle (range = -pi to pi)
-  data[,non_targets] <- wrap(data[,non_targets])
 
   # create index variables for non_targets and correction variable for theta due to setsize
   lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
@@ -179,4 +173,29 @@ wrap <- function(x, radians=TRUE) {
   } else {
     return(((x+180) %% (2*180)) - 180)
   }
+}
+
+#' @title Convert degrees to radians or radians to degrees.
+#' @description
+#'   The helper functions `deg2rad` and `rad2deg` should add convenience in transforming
+#'   data from degrees to radians and from radians to degrees.
+#'
+#' @name circle_transform
+#' @param deg A numeric vector of values in degrees.
+#' @param rad A numeric vector of values in radians.
+#' @return A numeric vector of the same length as `deg` or `rad`.
+#' @keywords transform
+#' @export
+#' @examples
+#'   degrees <- runif(100, min = 0, max = 360)
+#'   radians <- deg2rad(degrees)
+#'   degrees_again <- rad2deg(radians)
+deg2rad <- function(deg){
+  deg * pi / 180
+}
+
+#' @rdname circle_transform
+#' @export
+rad2deg <- function(rad){
+  rad * 180 / pi
 }

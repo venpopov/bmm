@@ -11,7 +11,8 @@ test_that("check_data() produces expected errors and warnings", {
     expect_warning(check_data(ml(non_targets = 'x', setsize=2, spaPos = 'z'),
                               data.frame(y = 12, x = 1, z = 2),
                               brms::bf(y ~ 1)),
-                   "It appears your response variable is in degrees. We will transform it to radians.")
+                   "It appears your response variable is in degrees.\n
+            The model will continue to run, but the results may be compromised.")
     expect_silent(check_data(ml(non_targets = 'x', setsize=2, spaPos = 'z'),
                              data.frame(y = 1, x = 1, z = 2), brms::bf(y ~ 1)))
   }
@@ -70,4 +71,15 @@ test_that("wrap(x) returns the correct value for values over 2*pi", {
 test_that("wrap(x) returns the correct value for values between (3*pi,4*pi)", {
   x <- 3*pi+1
   expect_equal(wrap(x), -(pi-1))
+})
+
+
+test_that("deg2rad returns the correct values for 0, 180, 360", {
+  x <- c(0,90,180)
+  expect_equal(round(deg2rad(x),2),c(0.00,1.57,3.14))
+})
+
+test_that("rad2deg returns the correct values for 0, pi/2, 2*pi", {
+  x <- c(0, pi/2, 2*pi)
+  expect_equal(round(rad2deg(x),2),c(0,90,360))
 })
