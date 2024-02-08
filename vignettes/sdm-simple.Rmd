@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 
 # Introduction to the model
 
-The Signal Discrimination Model is a measurement model for contninuous reproduction tasks in the visual working memory domain. The model was originally introduced by @Oberauer_2023. As other measurement models for continuous reproduction tasks, it's goal is to model the distribution of angular response errors.
+The Signal Discrimination Model is a measurement model for continuous reproduction tasks in the visual working memory domain. The model was originally introduced by @Oberauer_2023. As other measurement models for continuous reproduction tasks, it's goal is to model the distribution of angular response errors.
 
 The model assumes that when a test probe appears, all possible responses on the circle ($\theta$) are activated with a strength that depends on the distance between the 
 feature stored in memory ($\mu$) and the response options. Formally, this is given by the following activation function:
@@ -208,7 +208,7 @@ We can now inspect the results of the model fit:
 summary(fit)
 ```
 
-We see that all Rhat values are less than 1.01, which is a good sign that the chains have converged. In principle you have to do more inspection, but let us see the estimated parameters. The mmodel uses a log-link function for the `c` and `kappa` parameters, so we have to exponentiate the coefficients to get the estimated parameters:
+We see that all Rhat values are less than 1.01, which is a good sign that the chains have converged. In principle you have to do more inspection, but let us see the estimated parameters. The model uses a log-link function for the `c` and `kappa` parameters, so we have to exponentiate the coefficients to get the estimated parameters:
 
 ```{r}
 exp(brms::fixef(fit)[2:7,1])
