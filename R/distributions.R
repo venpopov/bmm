@@ -282,8 +282,17 @@ dmixture2p <- function(x, mu=0, kappa=5, pMem = 0.6, log = FALSE) {
     stop("pMem must be smaller than one.")
   }
 
-  density <- pMem * brms::dvon_mises(x = x,mu = mu , kappa = kappa, log = log) +
-    (1 - pMem) * brms::dvon_mises(x = x,mu = 0 , kappa = 0, log = log)
+  density <- matrix(data = NaN, nrow = length(x), ncol = 2)
+
+  density[,1] <- log(pMem) + brms::dvon_mises(x = x,mu = mu , kappa = kappa, log = T)
+  density[,2] <- log(1 - pMem) + brms::dvon_mises(x = x,mu = 0 , kappa = 0, log = T)
+
+  density <- matrixStats::rowLogSumExps(density)
+
+  if (log == FALSE) {
+    return(exp(density))
+  }
+
   return(density)
 }
 
