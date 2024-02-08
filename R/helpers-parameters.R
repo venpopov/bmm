@@ -42,7 +42,7 @@ k2sd <- function (K) {
 #'   `c_sqrtexp2bessel` converts from the sqrtexp parametrization to the
 #'   bessel parametrization.
 #' @keywords transform
-#' @details See `vignette("bmm_models")` for details on the
+#' @details See `vignette("sdm-simple")` for details on the
 #'   parameterization. The sqrtexp parametrization is the default in the
 #'   `bmm` package.
 #' @export

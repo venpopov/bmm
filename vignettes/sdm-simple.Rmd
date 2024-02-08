@@ -244,3 +244,44 @@ as.data.frame(draws) %>%
              shape = "diamond", size = 2.5) +
   scale_x_continuous(lim=c(0,20))
 ```
+
+The true parameters all lie within the 50% credible intervals, which is a good sign that the model is able to recover the true parameters from the data. 
+
+As a final step, we can plot our data again, adding another line overlay with the density predicted by the estimated parameters:
+
+```{r warning=FALSE, message=FALSE}
+# generate predicted SDM density:
+ddest <- data.frame(y = rep(seq(-pi, pi, length.out=1000),3),
+                 cond = factor(rep(c('A','B','C'), each=1000)),
+                 c = rep(exp(brms::fixef(fit)[2:4,1]), each=1000),
+                 kappa = rep(exp(brms::fixef(fit)[5:7,1]), each=1000))
+
+# prepare labels for plots
+par_labels <- data.frame(cond = c('A','B','C'),
+                         c_est = exp(brms::fixef(fit)[2:4,1]),
+                         kappa_est = exp(brms::fixef(fit)[5:7,1]),
+                         c = c(2, 9, 2),
+                         kappa = c(3, 1, 8))
+par_labels$label <- paste0('c = ', par_labels$c, ' (estimate = ', round(par_labels$c_est,2), ')\n',
+                           'kappa = ', par_labels$kappa, ' (estimate = ', round(par_labels$kappa_est,2), ')')
+
+ddest$d <- dsdm(ddest$y, mu=0, c=ddest$c, kappa=ddest$kappa, parametrization = "sqrtexp")
+
+# plot the data and the predicted density
+ggplot(dat, aes(x=y, fill=cond)) +
+  geom_histogram(aes(y=..density..), binwidth = 0.1, position = "identity", alpha=0.5) +
+  theme_classic() +
+  facet_wrap(~cond) +
+  geom_line(data=dd, fun=dsdm, aes(y, d), color='black') +
+  geom_line(data=ddest, fun=dsdm, aes(y, d), color='red') +
+  scale_x_continuous(limits = c(-pi, pi)) +
+  labs(title = "Simulated data from the SDM distribution",
+       x = "Response error (radians)",
+       y = "Density") +
+  geom_text(data=par_labels, aes(x=-pi, y=0.9, label=label), hjust=0, vjust=0, size=3) +
+  scale_y_continuous(limits = c(0,1))
+```
+
+The histograms represent the data, the black lines represent the predicted density from the true parameters, and the red lines represent the predicted density from the estimated parameters. We can see that the estimated parameters are able to capture the main features of the data.
+
+# References
