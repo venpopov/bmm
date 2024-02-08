@@ -4,6 +4,9 @@
     <loc>https://venpopov.github.io/bmm/dev/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/dev/articles/IMM.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/dev/articles/index.html</loc>
   </url>
   <url>
@@ -31,10 +34,19 @@
     <loc>https://venpopov.github.io/bmm/dev/reference/IMM.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/IMMdist.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/OberauerLin_2017.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/SDM.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/SDMdist.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/ZhangLuck_2008.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/bmm-package.html</loc>
@@ -82,7 +94,13 @@
     <loc>https://venpopov.github.io/bmm/dev/reference/mixture2p.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/mixture2p_dist.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/mixture3p.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/mixture3p_dist.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/pipe.html</loc>

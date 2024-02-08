@@ -2,10 +2,11 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  IMM: IMM.html
   vwm-crt: vwm-crt.html
   mixture_models: mixture_models.html
   sdm-simple: sdm-simple.html
-last_built: 2024-02-07T19:25Z
+last_built: 2024-02-08T10:35Z
 urls:
   reference: https://venpopov.github.io/bmm/reference
   article: https://venpopov.github.io/bmm/articles
