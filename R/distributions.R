@@ -160,7 +160,6 @@ qsdm <- function(p, mu=0, c=3, kappa=3.5, parametrization = "sqrtexp") {
   .NotYetImplemented()
 }
 
-
 #' @rdname SDMdist
 #' @export
 rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
@@ -194,9 +193,6 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 
   .rsdm_inner(n, mu, c, kappa, parametrization, xa)
 }
-
-
-
 
 # helper functions for calculating the density of the SDM distribution
 .dsdm_numer_bessel <- function(x, mu, c, kappa, log=FALSE) {
@@ -241,4 +237,368 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 .dsdm_integrate_numer_v <- Vectorize(.dsdm_integrate_numer,
                                      vectorize.args = c("mu", "c", "kappa", 'lower','upper'))
 
+#' @title The two-parameter mixture model (mixture2p)
+#'
+#' @description Density, distribution, and random generation functions for the
+#'   two-parameter mixture model with the location of `mu`, precision of memory
+#'   representations `kappa` and probability of recalling items from memory `pMem`.
+#'
+#' @name mixture2p_dist
+#'
+#' @param x Vector of observed responses
+#' @param q Vector of quantiles
+#' @param p Vector of probability
+#' @param n Number of observations to generate data for
+#' @param mu Vector of locations
+#' @param kappa Vector of precision values
+#' @param pMem Vector of probabilities for memory recall
+#' @param log Logical; if `TRUE`, values are returned on the log scale.
+#'
+#' @keywords distribution
+#'
+#' @references Zhang, W., & Luck, S. J. (2008). Discrete fixed-resolution
+#'   representations in visual working memory. Nature, 453.
+#'
+#' @return `dmixture2p` gives the density of the two-parameter mixture model, `pmixture2p`
+#'   gives the cumulative distribution function of the two-parameter mixture model,
+#'   `qmixture2p` gives the quantile function of the two-parameter mixture model, and
+#'   `rmixture2p` gives the random generation function for the two-parameter mixture model.
+#'
+#' @export
+#'
+#' @examples
+#' # example code
+#'
+dmixture2p <- function(x, mu=0, kappa=5, pMem = 0.6, log = FALSE) {
+  if (isTRUE(any(kappa < 0))) {
+    stop("kappa must be non-negative")
+  }
 
+  if (isTRUE(any(pMem < 0))) {
+    stop("pMem must be larger than zero.")
+  }
+
+  if (isTRUE(any(pMem > 1))) {
+    stop("pMem must be smaller than one.")
+  }
+
+  density <- matrix(data = NaN, nrow = length(x), ncol = 2)
+
+  density[,1] <- log(pMem) + brms::dvon_mises(x = x,mu = mu , kappa = kappa, log = T)
+  density[,2] <- log(1 - pMem) + brms::dvon_mises(x = x,mu = 0 , kappa = 0, log = T)
+
+  density <- matrixStats::rowLogSumExps(density)
+
+  if (log == FALSE) {
+    return(exp(density))
+  }
+
+  return(density)
+}
+
+#' @rdname mixture2p_dist
+#' @export
+pmixture2p <- function(q, mu=0, kappa=7, pMem = 0.8) {
+  .NotYetImplemented()
+}
+
+#' @rdname mixture2p_dist
+#' @export
+qmixture2p <- function(p, mu=0, kappa=5, pMem = 0.6) {
+  .NotYetImplemented()
+}
+
+#' @rdname mixture2p_dist
+#' @export
+rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
+  if (isTRUE(any(kappa < 0))) {
+    stop("kappa must be non-negative")
+  }
+
+  if (isTRUE(any(pMem < 0))) {
+    stop("pMem must be larger than zero.")
+  }
+
+  if (isTRUE(any(pMem > 1))) {
+    stop("pMem must be smaller than one.")
+  }
+
+  maxy <- dmixture2p(0, 0, kappa, pMem)
+  xa <- c()
+
+  .rmixture2p_inner <- function(n, mu, c, kappa, pMem, xa) {
+    x <- stats::runif(n, -pi, pi)
+    y <- stats::runif(n, 0, 1) * maxy
+    accept <- y < dmixture2p(x, mu, kappa, pMem)
+    xa <- c(xa, x[accept])
+
+    if (length(xa) < n) {
+      return(.rmixture2p_inner(n, mu, c, kappa, pMem, xa))
+    }
+
+    return(xa[1:n])
+  }
+
+  .rmixture2p_inner(n, mu, c, kappa, pMem, xa)
+}
+
+
+#' @title The three-parameter mixture model (mixture3p)
+#'
+#' @description Density, distribution, and random generation functions for the
+#'   three-parameter mixture model with the location of `mu`, precision of memory
+#'   representations `kappa`, probability of recalling items from memory `pMem`,
+#'   and probability of recalling non-targets `pNT`.
+#'
+#' @name mixture3p_dist
+#'
+#' @param x Vector of observed responses
+#' @param q Vector of quantiles
+#' @param p Vector of probability
+#' @param n Number of observations to generate data for
+#' @param mu Vector of locations. First value represents the location of the target item
+#'   and any additional values indicate the location of non-target items.
+#' @param kappa Vector of precision values
+#' @param pMem Vector of probabilities for memory recall
+#' @param pNT Vector of probabilities for swap errors
+#' @param log Logical; if `TRUE`, values are returned on the log scale.
+#'
+#' @keywords distribution
+#'
+#' @references Bays, P. M., Catalao, R. F. G., & Husain, M. (2009). The precision of visual
+#'   working memory is set by allocation of a shared resource. Journal of Vision, 9(10), 7.
+#'
+#' @return `dmixture3p` gives the density of the three-parameter mixture model, `pmixture3p`
+#'   gives the cumulative distribution function of the two-parameter mixture model,
+#'   `qmixture3p` gives the quantile function of the two-parameter mixture model, and
+#'   `rmixture3p` gives the random generation function for the two-parameter mixture model.
+#'
+#' @export
+#'
+#' @examples
+#' # example code
+#'
+dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2, log = FALSE) {
+  if (isTRUE(any(kappa < 0))) {
+    stop("kappa must be non-negative")
+  }
+
+  if (isTRUE(any(pMem < 0))) {
+    stop("pMem must be larger than zero.")
+  }
+
+  if (isTRUE(any(pNT < 0))) {
+    stop("pMem must be larger than zero.")
+  }
+
+  if (isTRUE(any(pMem + pNT > 1))) {
+    stop("The sum of pMem and pNT must be smaller than one.")
+  }
+
+  density <- matrix(data = NaN, nrow = length(x), ncol = length(mu) + 1)
+  probs <- c(pMem,
+             rep(pNT/(length(mu) - 1), each = length(mu) - 1),
+             (1 - pMem - pNT))
+
+  for (i in 1:(length(mu))) {
+    density[,i] <- log(probs[i]) +
+      brms::dvon_mises(x = x, mu = mu[i], kappa = kappa, log = T)
+  }
+
+  density[,length(mu) + 1] <- log(probs[length(mu) + 1]) +
+    stats::dunif(x = x,-pi, pi, log = T)
+
+  density <- matrixStats::rowLogSumExps(density)
+
+  if (log == FALSE) {
+    return(exp(density))
+  }
+
+  # return the weighted density
+  return(density)
+}
+
+#' @rdname mixture3p_dist
+#' @export
+pmixture3p <- function(q, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
+  .NotYetImplemented()
+}
+
+#' @rdname mixture3p_dist
+#' @export
+qmixture3p <- function(p, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
+  .NotYetImplemented()
+}
+
+#' @rdname mixture3p_dist
+#' @export
+rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
+  if (isTRUE(any(kappa < 0))) {
+    stop("kappa must be non-negative")
+  }
+
+  if (isTRUE(any(pMem < 0))) {
+    stop("pMem must be larger than zero.")
+  }
+
+  if (isTRUE(any(pNT < 0))) {
+    stop("pMem must be larger than zero.")
+  }
+
+  if (isTRUE(any(pMem + pNT > 1))) {
+    stop("The sum of pMem and pNT must be smaller than one.")
+  }
+
+  maxy <- dmixture3p(mu[1], mu, kappa, pMem, pNT)
+  xa <- c()
+
+  .rmixture3p_inner <- function(n, mu, c, kappa, pMem, pNT, xa) {
+    x <- stats::runif(n, -pi, pi)
+    y <- stats::runif(n, 0, 1) * maxy
+    accept <- y < dmixture3p(x, mu, kappa, pMem, pNT)
+    xa <- c(xa, x[accept])
+
+    if (length(xa) < n) {
+      return(.rmixture3p_inner(n, mu, c, kappa, pMem, pNT, xa))
+    }
+
+    return(xa[1:n])
+  }
+
+  .rmixture3p_inner(n, mu, c, kappa, pMem, pNT, xa)
+}
+
+#' @title The Interference Measurement Model (IMM)
+#'
+#' @description Density, distribution, and random generation functions for the
+#'   interference measurement model with the location of `mu`, strength of cue-
+#'   dependent activation `c`, strength of cue-independent activation `a`, the
+#'   generalization gradient `s`, and the precision of memory representations
+#'   `kappa`.
+#'
+#' @name IMMdist
+#'
+#' @param x Vector of observed responses
+#' @param q Vector of quantiles
+#' @param p Vector of probability
+#' @param n Number of observations to generate data for
+#' @param mu Vector of locations
+#' @param dist Vector of distances of the item locations to the cued location
+#' @param kappa Vector of precision values
+#' @param c Vector of strengths for cue-dependent activation
+#' @param a Vector of strengths for cue-independent activation
+#' @param s Vector of generalization gradients
+#' @param b Vector of baseline activation
+#' @param log Logical; if `TRUE`, values are returned on the log scale.
+#'
+#' @keywords distribution
+#'
+#' @references Oberauer, K., Stoneking, C., Wabersich, D., & Lin, H.-Y. (2017).
+#'   Hierarchical Bayesian measurement models for continuous reproduction of visual
+#'   features from working memory. Journal of Vision, 17(5), 11.
+#'
+#' @return `dIMM` gives the density of the interference measurement model, `pIMM`
+#'   gives the cumulative distribution function of the interference measurement model,
+#'   `qIMM` gives the quantile function of the interference measurement model, and
+#'   `rIMM` gives the random generation function for the interference measurement model.
+#'
+#' @export
+#'
+#' @examples
+#' # example code
+#'
+dIMM <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+                 c=1, a = 0.2, b = 0, s = 2, kappa=5, log = FALSE) {
+  if (isTRUE(any(kappa < 0))) {
+    stop("kappa must be non-negative")
+  }
+
+  if (length(mu) != length(dist)) {
+    stop("The number of items does not match the distances provided from the cued location.")
+  }
+
+  if (isTRUE(any(s < 0))) {
+    stop("s must be non-negative")
+  }
+
+  if (isTRUE(any(dist < 0))) {
+    stop("all distances have to be positive.")
+  }
+
+  # compute activation for all items
+  acts <- rep(c, length(mu)) * exp(-s*dist) + rep(a, length(mu))
+
+  # add activation of background noise
+  acts <- c(acts,b)
+
+  # compute probability for responding stemming from each distribution
+  probs <- exp(acts)/sum(exp(acts))
+
+  density <- matrix(data = NaN, nrow = length(x), ncol = length(mu) + 1)
+
+  for (i in 1:(length(mu))) {
+    density[,i] <- log(probs[i]) +
+      brms::dvon_mises(x = x, mu = mu[i], kappa = kappa, log = T)
+  }
+
+  density[,length(mu) + 1] <- log(probs[length(mu) + 1]) +
+    stats::dunif(x = x,-pi, pi, log = T)
+
+  density <- matrixStats::rowLogSumExps(density)
+
+  if (log == FALSE) {
+    return(exp(density))
+  }
+
+  # return the weighted density
+  return(density)
+}
+
+#' @rdname IMMdist
+#' @export
+pIMM <- function(q, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+                 c=1, a = 0.2, b = 0, s = 2, kappa=5) {
+  .NotYetImplemented()
+}
+
+#' @rdname IMMdist
+#' @export
+qIMM <- function(p, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+                 c=1, a = 0.2, b = 0, s = 2, kappa=5) {
+  .NotYetImplemented()
+}
+
+#' @rdname IMMdist
+#' @export
+rIMM <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+                 c=1, a = 0.2, b = 0, s = 2, kappa=5) {
+  if (isTRUE(any(kappa < 0))) {
+    stop("kappa must be non-negative")
+  }
+
+  if (length(mu) != length(dist)) {
+    stop("The number of items does not match the distances provided from the cued location.")
+  }
+
+  if (isTRUE(any(s < 0))) {
+    stop("s must be non-negative")
+  }
+
+  maxy <- dIMM(mu[1], mu, dist, c, a, b, s, kappa)
+  xa <- c()
+
+  .rIMM_inner <- function(n, mu, dist, c, a, b, s, kappa, xa) {
+    x <- stats::runif(n, -pi, pi)
+    y <- stats::runif(n, 0, 1) * maxy
+    accept <- y < dIMM(x, mu, dist, c, a, b, s, kappa)
+    xa <- c(xa, x[accept])
+
+    if (length(xa) < n) {
+      return(.rIMM_inner(n, mu, dist, c, a, b, s, kappa, xa))
+    }
+
+    return(xa[1:n])
+  }
+
+  .rIMM_inner(n, mu, dist, c ,a ,b ,s ,kappa , xa)
+}

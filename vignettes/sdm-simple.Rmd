@@ -208,7 +208,7 @@ We can now inspect the results of the model fit:
 summary(fit)
 ```
 
-We see that all Rhat values are less than 1.01, which is a good sign that the chains have converged. In principle you have to do more inspection, but let us see the estimated parameters. The mmodel uses a log-link function for the `c` and `kappa` parameters, so we have to exponentiate the coefficients to get the estimated parameters:
+We see that all Rhat values are less than 1.01, which is a good sign that the chains have converged. In principle you have to do more inspection, but let us see the estimated parameters. The model uses a log-link function for the `c` and `kappa` parameters, so we have to exponentiate the coefficients to get the estimated parameters:
 
 ```{r}
 exp(brms::fixef(fit)[2:7,1])
