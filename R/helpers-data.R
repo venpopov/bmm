@@ -57,7 +57,8 @@ check_data.vwm <- function(model, data, formula) {
   resp_name <- get_response(formula$formula)
   if (max(abs(data[[resp_name]]), na.rm = T) > 2*pi) {
     warning('It appears your response variable is in degrees.\n
-            The model will continue to run, but the results may be compromised.')
+             The model requires the response variable to be in radians.\n
+             The model will continue to run, but the results may be compromised.')
   }
 
   data = NextMethod("check_data")
@@ -71,6 +72,7 @@ check_data.nontargets <- function(model, data, formula) {
   non_targets <- model$vars$non_targets
   if (max(abs(data[,non_targets]), na.rm = T) > 2*pi) {
     warning('It appears at least one of your non_target variables are in degrees.\n
+             The model requires these variable to be in radians.\n
             The model will continue to run, but the results may be compromised.')
   }
 
