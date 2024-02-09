@@ -9,11 +9,11 @@
 
 The goal of bmm (Bayesian Measurement Models) is to make it easier to
 estimate common cognitive measurement models for behavioral research
-using Bayesian hierarhical estimation via the ‘brms’ package’. Cognitive
-measurement models provide a more refined representation of the
-cognitive processes underlying observed behavior, because they decompose
-observed behavior into several theoretically meaningful parameters that
-each represent distinct cognitive processes.
+using Bayesian hierarchical estimation via the ‘brms’ package’.
+Cognitive measurement models provide a more refined representation of
+the cognitive processes underlying observed behavior, because they
+decompose observed behavior into several theoretically meaningful
+parameters that each represent distinct cognitive processes.
 
 Currently the bmm package implements mainly models used in the domain of
 visual working memory research:
@@ -76,6 +76,9 @@ use:
 devtools::install_github("venpopov/bmm", build_vignettes = TRUE)
 ```
 
+All the vignettes are also available on the [bmm
+website](https://venpopov.github.io/bmm/).
+
 The package was significantly updated on Feb 03, 2024. If you are
 following older versions (earlier than Version 6) of the [Tutorial
 preprint](https://osf.io/preprints/psyarxiv/umt57), you need to install
@@ -91,9 +94,8 @@ devtools::install_github("venpopov/bmm@v0.0.1")
 The main building block of the bmm package is that cognitive measurement
 models can often be specified as distributional models for which the
 distributional parameters of the generalized linear mixed model are a
-function of cognitive measurement model parameters (again see
-@ref(fig:bmm-logic) for an illustration). These functions that translate
-the cognitive measurement model parameters into distributional
+function of cognitive measurement model parameters. These functions that
+translate the cognitive measurement model parameters into distributional
 parameters is what we implement in the bmm package.
 
 <img src="vignettes/bmmLogic.jpg" width="600" style="display: block; margin: auto;" />
@@ -130,22 +132,16 @@ The function will then call the appropriate functions for the specified
 model and will perform several steps:
 
 1.  Configure the Sample (e.g., set up prallelization)
-2.  Check the information passed to the `fit_model` function
-
-<!-- -->
-
-1.  if the model is installed and all required arguements were provided
-2.  if a valid formula was passed
-3.  if the data contains all necessary variables
-
-<!-- -->
-
+2.  Check the information passed to the `fit_model` function:
+    - if the model is installed and all required arguments were provided
+    - if a valid formula was passed
+    - if the data contains all necessary variables
 3.  Configure the called model (including specifying priors were
     necessary)
-4.  Calling `brms` and passing the specified arguements
+4.  Calling `brms` and passing the specified arguments
 5.  Posprocessing the output and passing it to the user
 
-This process is illustrated in @ref(fig:fitModel).
+This process is illustrated in the Figure below:
 
 <img src="vignettes/fitModel_process.jpg" width="600" style="display: block; margin: auto;" />
 
@@ -161,7 +157,7 @@ data <- OberauerLin_2017
 For this quick example, we will show hot to setup fitting the
 Interference Measurement Model to this data. If you want a detailed
 description of this model and and in depth explanation of the parameters
-estimated in the model, please have a look at the IMM vignette.
+estimated in the model, please have a look at `vignette("IMM")`.
 
 ``` r
 model_formula <- brms::bf(dev_rad ~ 1,
@@ -193,10 +189,11 @@ brms::pp_check(fit)
 ```
 
 You can have a look at examples for how to fit all currently implemented
-models by reading the vignettes for each model. Currently there are
-Vignettes, for the following models:
-
-    #> [1] "IMM"            "mixture_models" "sdm-simple"
+models by reading the vignettes for each model [here for the released
+version of the
+package](https://venpopov.github.io/bmm/articles/index.html) or [here
+for the development
+version](https://venpopov.github.io/bmm/dev/articles/index.html).
 
 ### Exploring cogntive measurement models
 
@@ -234,7 +231,7 @@ ggplot(data = simData, aes(x = x)) +
   scale_x_continuous(limits = c(-pi,pi))
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="400" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="400" />
 
 ## Contributing to the `bmm` package
 
