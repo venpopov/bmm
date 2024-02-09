@@ -43,10 +43,6 @@ reference:
    desc: "Functions for special distributions"
  - contents:
    - has_keyword("distribution")
- - title: "Random data generation"
-   desc: "Functions for simulating random data from a model"
- - contents:
-   - has_keyword("simulation")
  - title: "Data and parameter transformations"
    desc: "Utility functions for transforming data and parameters"
  - contents:
