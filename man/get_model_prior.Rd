@@ -55,7 +55,7 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 \examples{
 \dontrun{
 # generate artificial data from the Signal Discrimination Model
-dat <- rsdm(n=2000)
+dat <- data.frame(y = rsdm(n=2000))
 
 # define formula
 ff <- brms::bf(y ~ 1,

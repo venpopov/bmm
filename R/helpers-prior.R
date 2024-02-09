@@ -48,7 +48,7 @@ combine_prior <- function(prior1, prior2) {
 #' @examples
 #' \dontrun{
 #' # generate artificial data from the Signal Discrimination Model
-#' dat <- rsdm(n=2000)
+#' dat <- data.frame(y = rsdm(n=2000))
 #'
 #' # define formula
 #' ff <- brms::bf(y ~ 1,
