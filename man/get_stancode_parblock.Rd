@@ -41,3 +41,4 @@ which paramters you can set initial values on
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[=get_stancode]{get_stancode()}}
 }
+\keyword{extract_stan}

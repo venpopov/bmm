@@ -567,6 +567,8 @@ get_stancode <- function(formula, data, model, prior=NULL, ...) {
 #' @param ... Further arguments passed to [brms::make_stancode()]. See the
 #'   description of [brms::make_stancode()] for more details
 #'
+#' @keywords extract_stan
+#'
 #' @returns A character string containing the parameter block of fully commented
 #'   Stan code to fit a bmm model.
 #'
