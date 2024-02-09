@@ -70,7 +70,7 @@ The main building block of the bmm package is that cognitive measurement models 
 
 
 ```{r bmm-logic, echo=F, fig.cap="", out.width=600, fig.align = 'center'}
-knitr::include_graphics("vignettes/bmmLogic.jpg")
+knitr::include_graphics("man/figures/README-bmmLogic.jpg")
 ```
 
 
@@ -104,7 +104,7 @@ The function will then call the appropriate functions for the specified model an
 This process is illustrated in the Figure below:
 
 ```{r fitModel, echo=F, fig.cap="", out.width=600, fig.align = 'center'}
-knitr::include_graphics("vignettes/fitModel_process.jpg")
+knitr::include_graphics("man/figures/README-fitModel_process.jpg")
 ```
 
 A complete call to fit a model using bmm could look like this. For this example, we are using the `OberauerLin_2017` data that is provided with the package.

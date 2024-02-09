@@ -95,7 +95,7 @@ function of cognitive measurement model parameters. These functions that
 translate the cognitive measurement model parameters into distributional
 parameters is what we implement in the bmm package.
 
-<img src="vignettes/bmmLogic.jpg" width="600" style="display: block; margin: auto;" />
+<img src="man/figures/README-bmmLogic.jpg" width="600" style="display: block; margin: auto;" />
 
 As these function can become complicated and their implementation
 changes with differences in experimental designs, the bmm package
@@ -140,7 +140,7 @@ model and will perform several steps:
 
 This process is illustrated in the Figure below:
 
-<img src="vignettes/fitModel_process.jpg" width="600" style="display: block; margin: auto;" />
+<img src="man/figures/README-fitModel_process.jpg" width="600" style="display: block; margin: auto;" />
 
 A complete call to fit a model using bmm could look like this. For this
 example, we are using the `OberauerLin_2017` data that is provided with
