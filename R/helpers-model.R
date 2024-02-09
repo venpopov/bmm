@@ -503,6 +503,8 @@ use_model_template <- function(model_name,
 #'
 #' @export
 #'
+#' @keywords extract_stan
+#'
 #' @examples
 #' \dontrun{
 #' # generate artificial data from the Signal Discrimination Model

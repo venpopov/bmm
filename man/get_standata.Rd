@@ -59,3 +59,4 @@ get_standata(formula = ff,
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[brms:make_standata]{brms::make_standata()}}
 }
+\keyword{extract_stan}

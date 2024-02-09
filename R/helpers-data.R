@@ -233,6 +233,8 @@ rad2deg <- function(rad){
 #'
 #' @export
 #'
+#' @keywords extract_stan
+#'
 #' @examples
 #' \dontrun{
 #' # generate artificial data from the Signal Discrimination Model
