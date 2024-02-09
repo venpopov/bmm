@@ -80,17 +80,25 @@
 <a class="anchor" aria-label="anchor" href="#bmm-"></a>
 </h1></div>
 <p><a href="https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml" class="external-link"><img src="https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml/badge.svg" alt="test-coverage"></a> <!-- badges: end --></p>
-<p>The goal of bmm (Bayesian Measurement Models) is to make it easier to estimate common measurement models for behavioral research using Bayesian hierarhical estimation via the ‘brms’ package’. Currently implemented models are:</p>
+<p>The goal of bmm (Bayesian Measurement Models) is to make it easier to estimate common cognitive measurement models for behavioral research using Bayesian hierarchical estimation via the ‘brms’ package’. Cognitive measurement models provide a more refined representation of the cognitive processes underlying observed behavior, because they decompose observed behavior into several theoretically meaningful parameters that each represent distinct cognitive processes.</p>
+<p>Currently the bmm package implements mainly models used in the domain of visual working memory research:</p>
 <div class="section level4">
 <h4 id="visual-working-memory">Visual working memory<a class="anchor" aria-label="anchor" href="#visual-working-memory"></a>
 </h4>
 <ul>
-<li><p>Interference measurement model by Oberauer and Lin (2017).</p></li>
-<li><p>Two-parameter mixture model by Zhang and Luck (2008).</p></li>
-<li><p>Three-parameter mixture model by Bays et al (2009).</p></li>
-<li><p>Signal Discrimination Model (SDM) by Oberauer (2023)</p></li>
+<li>Interference measurement model by Oberauer and Lin (2017).</li>
+<li>Two-parameter mixture model by Zhang and Luck (2008).</li>
+<li>Three-parameter mixture model by Bays et al (2009).</li>
+<li>Signal Discrimination Model (SDM) by Oberauer (2023)</li>
 </ul>
-<p>You can always view the latest list of supported models by running:</p>
+<p>However, the setup of the bmm package provides the foundation for the implementation of a broad range of cognitive measurement models. In fact, we are already working on implementing additional models, such as:</p>
+<ul>
+<li>Signal-Detection Models</li>
+<li>Evidence Accumulation Models</li>
+<li>Memory Models for categorical response</li>
+</ul>
+<p>If you have suggestions for models that should be added to the package, feel free to create an issue. Ideally this should describe the model, point towards literature that gives details on the model, and if possible link to code that has already implemented the model.</p>
+<p>Given the dynamic nature the bmm package is currently in, you can always view the latest list of supported models by running:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">bmm</span><span class="fu">::</span><span class="fu"><a href="reference/supported_models.html">supported_models</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; The following models are supported:</span></span>
@@ -107,67 +115,111 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of bmm from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>Currently, we are working on getting the package ready to be submitted to CRAN. For now, you have to install the development version of bmm from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"venpopov/bmm"</span><span class="op">)</span></span></code></pre></div>
 <p>If you want to install the package together with the vignettes, you can use:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"venpopov/bmm"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>The package was significantly updated on Feb 03, 2024. If you are following the old version of the <a href="https://osf.io/preprints/psyarxiv/umt57" class="external-link">Tutorial preprint</a>, you need to install the 0.0.1 version of the bmm package with:</p>
+<p>All the vignettes are also available on the <a href="https://venpopov.github.io/bmm/">bmm website</a>.</p>
+<p>The package was significantly updated on Feb 03, 2024. If you are following older versions (earlier than Version 6) of the <a href="https://osf.io/preprints/psyarxiv/umt57" class="external-link">Tutorial preprint</a>, you need to install the 0.0.1 version of the bmm package with:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"venpopov/bmm@v0.0.1"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example-1">Example 1<a class="anchor" aria-label="anchor" href="#example-1"></a>
+<h2 id="the-general-structure-of-the-bmm-package">The general structure of the bmm package<a class="anchor" aria-label="anchor" href="#the-general-structure-of-the-bmm-package"></a>
 </h2>
-<p>The three-parameter mixture model by Bays et al (2009) assumes that responses can come from three different sources - noisy representation of the target, confusion with noisy representation of non-target items, or guessing based on a uniform distribution. To estimate these parameters for a dataset, we can use the <code><a href="reference/fit_model.html">fit_model()</a></code> function. First, let’s generate a dataset with known parameters. We can use the function <code>gen_3p_data()</code></p>
+<p>The main building block of the bmm package is that cognitive measurement models can often be specified as distributional models for which the distributional parameters of the generalized linear mixed model are a function of cognitive measurement model parameters. These functions that translate the cognitive measurement model parameters into distributional parameters is what we implement in the bmm package.</p>
+<p><img src="articles/bmmLogic.jpg" width="600" style="display: block; margin: auto;"></p>
+<p>As these function can become complicated and their implementation changes with differences in experimental designs, the bmm package provides general translation functions that eases the use of the cognitive measurement models for end users. This way researchers that face challenges in writing their own STAN code to implement such models themselves can still use these models in almost any experimental design.</p>
+<div class="section level3">
+<h3 id="fitting-models-using-the-bmm">Fitting models using the bmm<a class="anchor" aria-label="anchor" href="#fitting-models-using-the-bmm"></a>
+</h3>
+<p>The core function of the bmm package is the <code>fit_model</code> function. This function takes:</p>
+<ol style="list-style-type: decimal">
+<li>a linear model formula specifying how parameters of the model should vary as a function of experimental conditions</li>
+<li>data containing the dependent variables, the variables predicting model parameters, and potentially additional variables providing information to identify the model</li>
+<li>the model that should be fit</li>
+</ol>
+<p>You can get more detailed information on the models implemented in bmm by invoking the documentation of each model typing <code>?bmmmodel</code> into your console. For example, calling the information on the full version of the Interference Measurement Model would look like this:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/venpopov/bmm" class="external-link">bmm</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  y <span class="op">=</span> <span class="fu"><a href="reference/mixture3p_dist.html">rmixture3p</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">2000</span>, mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="op">-</span><span class="fl">1.5</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  nt1_loc <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  nt2_loc <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>,</span>
-<span>  nt3_loc <span class="op">=</span> <span class="fl">2</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
-<span><span class="co">#&gt;             y nt1_loc nt2_loc nt3_loc</span></span>
-<span><span class="co">#&gt; 1 -0.21935776       1    -1.5       2</span></span>
-<span><span class="co">#&gt; 2 -0.09542148       1    -1.5       2</span></span>
-<span><span class="co">#&gt; 3 -0.46152746       1    -1.5       2</span></span>
-<span><span class="co">#&gt; 4  2.20892562       1    -1.5       2</span></span>
-<span><span class="co">#&gt; 5 -0.52996268       1    -1.5       2</span></span>
-<span><span class="co">#&gt; 6 -0.47483031       1    -1.5       2</span></span></code></pre></div>
-<p>We have a dataset of 2000 observations of response error, of which 60% (pmem=0.6) come from the target distribution, 30% (pnt=0.3) are non-target swaps, and 10% are guessing. The precision of the von Mises distribution is 10, the presented setsize is 4 (one target and three lures/non-targets), and the values are coded relative to the target value (i.e., response error for the y variable or displacement relative to the target for the lures).</p>
-<p>Just for visualization purposes, here’s a histogram of the error distribution, demonstrating a typical pattern - a normal distribution centered on 0, with long tails:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">y</span>, breaks <span class="op">=</span> <span class="fl">60</span>, xlab <span class="op">=</span> <span class="st">"Response error relative to target"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"> Another key property of the data is that some error responses are not random, but that they are due to confusion of the target with one of the lures. This is already visible by the additional peaks in the histogram. Typically these peaks are not immediately visible as the non-target locations vary from trial to trial.</p>
-<p>Ok, so now let’s fit the three-parameter model. We only need to do two things:</p>
+<code class="sourceCode R"><span><span class="op">?</span><span class="va">IMMfull</span></span></code></pre></div>
+<p>The function will then call the appropriate functions for the specified model and will perform several steps:</p>
+<ol style="list-style-type: decimal">
+<li>Configure the Sample (e.g., set up prallelization)</li>
+<li>Check the information passed to the <code>fit_model</code> function:
 <ul>
-<li>Specify the model formula</li>
-<li>Call fit_model()</li>
+<li>if the model is installed and all required arguments were provided</li>
+<li>if a valid formula was passed</li>
+<li>if the data contains all necessary variables</li>
 </ul>
-<p>In this example the parameters don’t vary over conditions, so we have no predictors. <code>y</code> is the name of the response error variable, whereas <code>kappa</code>, <code>thetat</code> and <code>thetant</code> are the parameters of the model - precision, mixing proportion for correct responses and mixing proportion for non-target swaps.</p>
+</li>
+<li>Configure the called model (including specifying priors were necessary)</li>
+<li>Calling <code>brms</code> and passing the specified arguments</li>
+<li>Posprocessing the output and passing it to the user</li>
+</ol>
+<p>This process is illustrated in the Figure below:</p>
+<p><img src="articles/fitModel_process.jpg" width="600" style="display: block; margin: auto;"></p>
+<p>A complete call to fit a model using bmm could look like this. For this example, we are using the <code>OberauerLin_2017</code> data that is provided with the package.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/venpopov/bmm" class="external-link">bmm</a></span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">OberauerLin_2017</span></span></code></pre></div>
+<p>For this quick example, we will show hot to setup fitting the Interference Measurement Model to this data. If you want a detailed description of this model and and in depth explanation of the parameters estimated in the model, please have a look at <code><a href="articles/IMM.html">vignette("IMM")</a></code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span>,</span>
-<span>               <span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span>,</span>
-<span>               <span class="va">thetat</span> <span class="op">~</span> <span class="fl">1</span>,</span>
-<span>               <span class="va">thetant</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p>Then specify the model and give it information about the required arguments. In the case of the 3-parameter model, we need to specify the names of the non-target variables and the setsize. We can do this with the <code><a href="reference/mixture3p.html">mixture3p()</a></code> function:</p>
+<code class="sourceCode R"><span><span class="va">model_formula</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">dev_rad</span> <span class="op">~</span> <span class="fl">1</span>,</span>
+<span>                          <span class="va">c</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">SetSize</span>,</span>
+<span>                          <span class="va">a</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">SetSize</span>,</span>
+<span>                          <span class="va">s</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">SetSize</span>,</span>
+<span>                          <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">SetSize</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/IMM.html">IMMfull</a></span><span class="op">(</span>non_targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Item"</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">8</span>,<span class="st">"_Col"</span><span class="op">)</span>,</span>
+<span>                 spaPos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Item"</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">8</span>,<span class="st">"_Pos"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_model.html">fit_model</a></span><span class="op">(</span></span>
+<span>  formula <span class="op">=</span> <span class="va">model_formula</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
+<span>  model <span class="op">=</span> <span class="va">model</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Using this call, the <code>fit</code> object will save all the information about the fitted model. As <code>bmm</code> calls <code>brms</code> to fit the models, these objects can be handled the same way a normal <code>brmsfit</code> object is handled:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>non_targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'nt'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="st">'_loc'</span><span class="op">)</span>, setsize<span class="op">=</span><span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<p>You can always get full help and information about the model and its required arguments, as well as examples by running <code><a href="reference/mixture3p.html">?mixture3p</a></code></p>
-<p>Finally we just run the model. The arguments to the function explained in <code><a href="reference/fit_model.html">help(fit_model)</a></code> and you can also pass any additional arguments that you would pass to <code>brm</code>.</p>
+<code class="sourceCode R"><span><span class="co"># print summary</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># plot posterior predicitive plot</span></span>
+<span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/bayesplot/reference/pp_check.html" class="external-link">pp_check</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<p>You can have a look at examples for how to fit all currently implemented models by reading the vignettes for each model <a href="https://venpopov.github.io/bmm/articles/index.html">here for the released version of the package</a> or <a href="https://venpopov.github.io/bmm/dev/articles/index.html">here for the development version</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="exploring-cogntive-measurement-models">Exploring cogntive measurement models<a class="anchor" aria-label="anchor" href="#exploring-cogntive-measurement-models"></a>
+</h3>
+<p>To aid users in improving their intuition about what different models predict for observed data given a certain parameter set, the <code>bmm</code> package also includes density and random generation function for all implemented models.</p>
+<p>These function provide an easy way to see what a model predicts for data given a certain set of parameters. For example you can easily plot the probability density function of the data for the Interference Measurement model using the <code>dIMM</code> function. In similar fashion the random generation function included for each model, generates random data based on a set of data generating parameters. For the IMM, you can use <code>rIMM</code> to generate data given a set of parameters. Plotting the random data against the density illustrates that the data follows the theoretically implied density.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_model.html">fit_model</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span>
-<span>                 data <span class="op">=</span> <span class="va">dat</span>,</span>
-<span>                 model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>                 parallel<span class="op">=</span><span class="cn">T</span>,</span>
-<span>                 iter<span class="op">=</span><span class="fl">500</span>,</span>
-<span>                 backend<span class="op">=</span><span class="st">'cmdstanr'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">simData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="fu">bmm</span><span class="fu">::</span><span class="fu"><a href="reference/IMMdist.html">rIMM</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>           mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="op">-</span><span class="fl">1.5</span>,<span class="fl">2.5</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>                            dist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                            c <span class="op">=</span> <span class="fl">1.5</span>, a <span class="op">=</span> <span class="fl">0.3</span>, b <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="fl">2</span>, kappa <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">simData</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="va">density</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_function.html" class="external-link">geom_function</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="fu">bmm</span><span class="fu">::</span><span class="va"><a href="reference/IMMdist.html">dIMM</a></span>,</span>
+<span>                args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="op">-</span><span class="fl">1.5</span>,<span class="fl">2.5</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>                            dist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                            c <span class="op">=</span> <span class="fl">1.5</span>, a <span class="op">=</span> <span class="fl">0.3</span>, b <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="fl">2</span>, kappa <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">pi</span>,<span class="va">pi</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="400"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="contributing-to-the-bmm-package">Contributing to the <code>bmm</code> package<a class="anchor" aria-label="anchor" href="#contributing-to-the-bmm-package"></a>
+</h2>
+<p>Should be interested in contributing a model to the <code>bmm</code> package, you should first look into the <a href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Developer Notes</a>. These give a more in depth description of the package architecture and the steps necessary to add your own model to the package.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
