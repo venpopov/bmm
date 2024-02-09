@@ -21,11 +21,8 @@ visual working memory research:
 #### Visual working memory
 
 - Interference measurement model by Oberauer and Lin (2017).
-
 - Two-parameter mixture model by Zhang and Luck (2008).
-
 - Three-parameter mixture model by Bays et al (2009).
-
 - Signal Discrimination Model (SDM) by Oberauer (2023)
 
 However, the setup of the bmm package provides the foundation for the

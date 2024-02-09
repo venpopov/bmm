@@ -158,8 +158,9 @@ print_pretty_models_md <- function() {
     cat('####', dom, '\n\n')
     dom_models <- unique(models[domains == dom])
     for (model in dom_models) {
-      cat('*', model, '\n\n')
+      cat('*', model, '\n')
     }
+    cat('\n')
   }
 }
 
