@@ -1,5 +1,7 @@
 [![R-CMD-check](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml)[![test-coverage](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml)
 
+<!-- ... -->  
+  
 <div style="text-align:left; padding:-40px;">
 </a><h2><strong>bmm</strong></h2>
 <h4>Bayesian Measurement Models</h4>
