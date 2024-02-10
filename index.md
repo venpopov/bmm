@@ -21,6 +21,7 @@ measurement models provide a more refined representation of the
 cognitive processes underlying observed behavior, because they decompose
 observed behavior into several theoretically meaningful parameters that
 each represent distinct cognitive processes.
+
 <br>
 
 ## Available models
@@ -112,6 +113,7 @@ provides general translation functions that eases the use of the
 cognitive measurement models for end users. This way researchers that
 face challenges in writing their own STAN code to implement such models
 themselves can still use these models in almost any experimental design.
+
 <br>
 
 ### Fitting models using the bmm
@@ -201,6 +203,7 @@ version of the
 package](https://venpopov.github.io/bmm/articles/index.html) or [here
 for the development
 version](https://venpopov.github.io/bmm/dev/articles/index.html).
+
 <br>
 
 ### Exploring cogntive measurement models
