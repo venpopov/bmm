@@ -59,7 +59,7 @@ used if no user-specified priors were passed to the fit_model() function."><meta
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Get Default priors for Measurement Models specified in BRMS</h1>
-      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/R/helpers-prior.R" class="external-link"><code>R/helpers-prior.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/R/get_model_prior.R" class="external-link"><code>R/get_model_prior.R</code></a></small>
       <div class="d-none name"><code>get_model_prior.Rd</code></div>
     </div>
 
@@ -134,7 +134,7 @@ parameters (or parameter classes) for which priors can be specified.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co"># generate artificial data from the Signal Discrimination Model</span></span></span>
-<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="SDMdist.html">rsdm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">2000</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="SDMdist.html">rsdm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">2000</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># define formula</span></span></span>
 <span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
