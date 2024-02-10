@@ -36,6 +36,7 @@ reference:
    - "fit_model"
  - title: "Extract model information"
    desc: "Utility functions for extracting default priors, generate stan code, stan data, etc."
+ - contents:
    - has_keyword("extract_stan")
  - title: "Specifying models"
    desc: "Functions for specifying which model to fit"
