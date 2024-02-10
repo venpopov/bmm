@@ -1,6 +1,6 @@
 [![R-CMD-check](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml)[![test-coverage](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml)
 
-<!-- ... -->  
+<br>
   
 <div style="text-align:left; padding:-40px;">
 </a><h2><strong>bmm</strong></h2>
@@ -21,6 +21,7 @@ measurement models provide a more refined representation of the
 cognitive processes underlying observed behavior, because they decompose
 observed behavior into several theoretically meaningful parameters that
 each represent distinct cognitive processes.
+<br>
 
 ## Available models
 
@@ -63,6 +64,7 @@ bmm::supported_models()
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
 ```
+<br> 
 
 ## Installation
 
@@ -87,6 +89,7 @@ the 0.0.1 version of the bmm package with:
 # install.packages("devtools")
 devtools::install_github("venpopov/bmm@v0.0.1")
 ```
+<br>
 
 ## The general structure of the bmm package
 
@@ -97,7 +100,11 @@ function of cognitive measurement model parameters. These functions that
 translate the cognitive measurement model parameters into distributional
 parameters is what we implement in the bmm package.
 
+<br>
+
 <img src="man/figures/README-bmmLogic.jpg" width="600" style="display: block; margin: auto;" />
+
+<br>
 
 As these function can become complicated and their implementation
 changes with differences in experimental designs, the bmm package
@@ -105,6 +112,7 @@ provides general translation functions that eases the use of the
 cognitive measurement models for end users. This way researchers that
 face challenges in writing their own STAN code to implement such models
 themselves can still use these models in almost any experimental design.
+<br>
 
 ### Fitting models using the bmm
 
@@ -121,11 +129,7 @@ function takes:
 You can get more detailed information on the models implemented in bmm
 by invoking the documentation of each model typing `?bmmmodel` into your
 console. For example, calling the information on the full version of the
-Interference Measurement Model would look like this:
-
-``` r
-?IMMfull
-```
+Interference Measurement Model would look like this: `?IMMfull`
 
 The function will then call the appropriate functions for the specified
 model and will perform several steps:
@@ -142,7 +146,11 @@ model and will perform several steps:
 
 This process is illustrated in the Figure below:
 
+<br>
+
 <img src="man/figures/README-fitModel_process.jpg" width="600" style="display: block; margin: auto;" />
+
+<br>
 
 A complete call to fit a model using bmm could look like this. For this
 example, we are using the `OberauerLin_2017` data that is provided with
@@ -193,6 +201,7 @@ version of the
 package](https://venpopov.github.io/bmm/articles/index.html) or [here
 for the development
 version](https://venpopov.github.io/bmm/dev/articles/index.html).
+<br>
 
 ### Exploring cogntive measurement models
 
@@ -231,6 +240,7 @@ ggplot(data = simData, aes(x = x)) +
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="400" />
+<br>
 
 ## Contributing to the `bmm` package
 
