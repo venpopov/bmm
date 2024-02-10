@@ -22,6 +22,8 @@ postprocess_brm <- function(model, fit) {
 
 #' @export
 postprocess_brm.bmmmodel <- function(model, fit) {
+  # save bmm version
+  fit$version$bmm <- utils::packageVersion('bmm')
   fit <- NextMethod('postprocess_brm')
   return(fit)
 }
