@@ -319,6 +319,22 @@ All possible parts for the sdmSimple are:
     -   matrix\[M_1, N_1\] z_1
     -   matrix\[M_2, N_2\] z_2
 
+## Steps for constructing an init function automatically
+
+1.  Get the names of all distributional parameters
+2.  Get priors on the parameters
+3.  Exclude any parameters that have constant priors
+4.  For every distributional parameter, determine if they have an intercept or not
+5.  Get the names of variables in the list of stan data
+6.  Check the stan data for the presence of
+    1.  Intercept\_\*
+    2.  Kc\_\*
+    3.  K\_\*
+    4.  M\_#
+    5.  N\_#
+
+alternatively maybe write a script to parse the stan code parameters block?
+
 ## How to extract the parameters
 
 I can extract the parameter names from the formula
@@ -337,17 +353,6 @@ ranef <- brms:::tidy_ranef(bterms, data=dat)
 
 data <- brms:::validate_data(dat, bterms = bterms)
 ```
-
-
-## Alternatives
-
-1) Fit a mock model and extract the parameters from the fit object?
-
-
-
-
-
-
 
 <!-- everything about the `c` parameter for example should be able to get from here: -->
 

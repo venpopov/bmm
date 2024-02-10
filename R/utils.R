@@ -131,3 +131,23 @@ call_brm <- function(fit_args) {
   }
   return(fit)
 }
+
+
+# function to ensure that if the user wants to overwrite an argument (such as
+# init), they can
+combine_args <- function(args) {
+  config_args <- args$config_args
+  opts <- args$opts
+  dots <- args$dots
+  if (is.null(dots)) {
+    return(c(config_args, opts))
+  }
+  for (i in names(dots)) {
+    if (not_in(i, c('family'))) {
+      config_args[[i]] <- dots[[i]]
+    } else {
+      stop('You cannot provide a family argument to fit_model. Please use the model argument instead.')
+    }
+  }
+  c(config_args, opts)
+}

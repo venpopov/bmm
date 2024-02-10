@@ -89,7 +89,7 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior 
 
   # estimate the model
   dots <- list(...)
-  fit_args <- c(config_args, opts, dots)
+  fit_args <- combine_args(nlist(config_args, opts, dots))
   fit <- call_brm(fit_args)
 
   # model postprocessing
@@ -97,4 +97,3 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior 
 
   return(fit)
 }
-

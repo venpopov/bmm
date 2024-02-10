@@ -3084,6 +3084,7 @@ vertical-align: -.125em;
   <li><a href="#explanation-of-stan-data-structure" id="toc-explanation-of-stan-data-structure" class="nav-link" data-scroll-target="#explanation-of-stan-data-structure">Explanation of stan data structure</a></li>
   </ul></li>
   <li><a href="#component-parts-of-parsinits" id="toc-component-parts-of-parsinits" class="nav-link" data-scroll-target="#component-parts-of-parsinits">Component parts of pars/inits</a></li>
+  <li><a href="#steps-for-constructing-an-init-function-automatically" id="toc-steps-for-constructing-an-init-function-automatically" class="nav-link" data-scroll-target="#steps-for-constructing-an-init-function-automatically">Steps for constructing an init function automatically</a></li>
   <li><a href="#how-to-extract-the-parameters" id="toc-how-to-extract-the-parameters" class="nav-link" data-scroll-target="#how-to-extract-the-parameters">How to extract the parameters</a></li>
   </ul>
 </nav>
@@ -4445,6 +4446,25 @@ Note
 </ul></li>
 </ul>
 </section>
+<section id="steps-for-constructing-an-init-function-automatically" class="level2">
+<h2 class="anchored" data-anchor-id="steps-for-constructing-an-init-function-automatically">Steps for constructing an init function automatically</h2>
+<ol type="1">
+<li>Get the names of all distributional parameters</li>
+<li>Get priors on the parameters</li>
+<li>Exclude any parameters that have constant priors</li>
+<li>For every distributional parameter, determine if they have an intercept or not</li>
+<li>Get the names of variables in the list of stan data</li>
+<li>Check the stan data for the presence of
+<ol type="1">
+<li>Intercept_*</li>
+<li>Kc_*</li>
+<li>K_*</li>
+<li>M_#</li>
+<li>N_#</li>
+</ol></li>
+</ol>
+<p>alternatively maybe write a script to parse the stan code parameters block?</p>
+</section>
 <section id="how-to-extract-the-parameters" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-extract-the-parameters">How to extract the parameters</h2>
 <p>I can extract the parameter names from the formula</p>
@@ -4462,7 +4482,7 @@ Note
 <span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> brms<span class="sc">:::</span><span class="fu">validate_data</span>(dat, <span class="at">bterms =</span> bterms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>everything about the <code>c</code> parameter for example should be able to get from here:</p>
+<!-- everything about the `c` parameter for example should be able to get from here: -->
 </section>
 
 
