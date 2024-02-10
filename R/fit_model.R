@@ -22,7 +22,7 @@
 #' @param chains Numeric. Number of Markov chains (defaults to 4)
 #' @param prior One or more `brmsprior` objects created by [brms::set_prior()]
 #'   or related functions and combined using the c method or the + operator. See
-#'   also [brms::get_prior()] for more help. Not necessary for the default model
+#'   also [get_model_prior()] for more help. Not necessary for the default model
 #'   fitting, but you can provide prior constraints to model parameters
 #' @param ... Further arguments passed to [brms::brm()] or Stan. See the
 #'   description of [brms::brm()] for more details
@@ -46,8 +46,8 @@
 #'
 #' @examples
 #' \dontrun{
-#' # generate artificial data from the Bays et al (2009) 3-parameter mixture model
-#' dat <- rsdm(n=2000)
+#' # generate artificial data from the Signal Discrimination Model
+#' dat <- data.frame(y=rsdm(n=2000))
 #'
 #' # define formula
 #' ff <- brms::bf(y ~ 1,
