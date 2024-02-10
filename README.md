@@ -7,18 +7,25 @@
 [![test-coverage](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
 
-The goal of bmm (Bayesian Measurement Models) is to make it easier to
-estimate common cognitive measurement models for behavioral research
-using Bayesian hierarchical estimation via the ‘brms’ package’.
-Cognitive measurement models provide a more refined representation of
-the cognitive processes underlying observed behavior, because they
-decompose observed behavior into several theoretically meaningful
-parameters that each represent distinct cognitive processes.
+## Overview
+
+The goal of the `bmm` (Bayesian Measurement Models) package is to make
+it easier to estimate common cognitive measurement models for behavioral
+research. It achieves this by combining the flexibility of the ‘brms’
+package for specifying linear model syntax with custom functions that
+translate cognitive measurement model into distributional families that
+can be estimated using Bayesian hierarchical estimation. Cognitive
+measurement models provide a more refined representation of the
+cognitive processes underlying observed behavior, because they decompose
+observed behavior into several theoretically meaningful parameters that
+each represent distinct cognitive processes.
+
+## Available models
 
 Currently the bmm package implements mainly models used in the domain of
 visual working memory research:
 
-#### Visual working memory
+**Visual working memory**
 
 - Interference measurement model by Oberauer and Lin (2017).
 - Two-parameter mixture model by Zhang and Luck (2008).
@@ -64,13 +71,6 @@ from [GitHub](https://github.com/) with:
 ``` r
 # install.packages("devtools")
 devtools::install_github("venpopov/bmm")
-```
-
-If you want to install the package together with the vignettes, you can
-use:
-
-``` r
-devtools::install_github("venpopov/bmm", build_vignettes = TRUE)
 ```
 
 All the vignettes are also available on the [bmm
