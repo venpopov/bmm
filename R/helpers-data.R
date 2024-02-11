@@ -40,6 +40,7 @@ check_data <- function(model, data, formula) {
   if (not_in(resp_name, colnames(data))) {
     stop(paste0("The response variable '", resp_name, "' is not present in the data."))
   }
+  attr(data, 'data_name') <- substitute_name(data, envir = eval(parent.frame()))
 
   UseMethod("check_data")
 }

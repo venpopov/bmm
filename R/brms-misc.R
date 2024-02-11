@@ -28,6 +28,16 @@ nlist <- function(...) {
   dots
 }
 
+# find the name that 'x' had in a specific environment
+substitute_name <- function(x, envir = parent.frame(), nchar = 50) {
+  out <- substitute(x)
+  out <- eval2(paste0("substitute(", out, ")"), envir = envir)
+  if (missing(out)) {
+    return(NULL)
+  }
+  substr(collapse(deparse(out)), 1, nchar)
+}
+
 # combine deparse lines into one string
 # since R 4.0 we also have base::deparse1 for this purpose
 deparse0 <- function(x, max_char = NULL, ...) {
