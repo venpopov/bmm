@@ -58,3 +58,25 @@ extract_vars <- function(formula, family = NULL, include_resp = FALSE) {
   resp <- formula$resp
   all_vars[not_in(all_vars, resp)]
 }
+
+
+# check if the data is sorted by the predictors
+is_data_ordered <- function(data, formula, ...) {
+  predictors <- extract_vars(formula, ...)
+  data <- data[,predictors]
+  gr_idx <- do.call(paste, c(data, list(sep="_")))
+  is_ordered <- !has_nonconsecutive_duplicates(gr_idx)
+  is_ordered
+}
+
+# checks if all repetitions of a given value are consecutive in a vector
+# by iterating over unique values and checking if all their positions are consecutive
+has_nonconsecutive_duplicates <- function(vec) {
+  unique_vals <- unique(vec)
+  cond <- TRUE
+  for(val in unique_vals) {
+    positions <- which(vec == val)
+    cond <- cond & all(diff(positions) == 1)
+  }
+  !cond
+}
