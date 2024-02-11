@@ -79,16 +79,17 @@ sdmSimple <- .model_sdmSimple
 # Each model should have a corresponding configure_model.* function. See
 # ?configure_model for more information.
 
+# sdm custom family
+# note - c has a log link, but I've coded it manually for computational efficiency
+sdm_simple <- brms::custom_family(
+  "sdm_simple", dpars = c("mu", "c","kappa"),
+  links = c("identity","identity", "log"), lb = c(NA, NA, NA),
+  type = "real", loop=FALSE,
+)
 
 #' @export
 configure_model.sdmSimple <- function(model, data, formula) {
   # construct the family
-  # note - c has a log link, but I've coded it manually for computational efficiency
-  sdm_simple <- brms::custom_family(
-    "sdm_simple", dpars = c("mu", "c","kappa"),
-    links = c("identity","identity", "log"), lb = c(NA, NA, NA),
-    type = "real", loop=FALSE,
-  )
   family <- sdm_simple
 
   # prepare initial stanvars to pass to brms, model formula and priors

@@ -30,6 +30,7 @@ see \code{vignette("sdm-simple")} for a detailed description of the model and ho
 \item \strong{Requirements:}
 \itemize{
 \item The response variable should be in radians and represent the angular error relative to the target
+\item Data should be sorted by all predictors to drastically speed computation of the normalizing constant. If the data is not sorted, the model will still run, but much slower.
 }
 \item \strong{Parameters:}
 \itemize{
