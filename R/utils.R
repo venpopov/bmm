@@ -131,3 +131,28 @@ call_brm <- function(fit_args) {
   }
   return(fit)
 }
+
+stop_quietly <- function() {
+  opt <- options(show.error.messages = FALSE)
+  on.exit(options(opt))
+  stop()
+}
+
+
+message_not_ordered <- function() {
+  message("\n\nData is not ordered by predictors.\nYou can speed up the model ",
+          "estimation up to several times (!) by ordering the data by all your ",
+          "predictor columns.\n\n")
+
+  if(interactive()) {
+    var <- utils::menu(c("Yes (note: you will receive code to sort your data)",
+                         "No, I want to continue with the slower estimation"),
+                       title="Do you want to stop and sort your data? (y/n): ")
+    if(var == 1) {
+      message("Please sort your data by all predictors and then re-run the model.")
+      stop_quietly()
+    }
+  }
+}
+
+
