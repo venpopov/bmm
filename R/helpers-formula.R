@@ -21,7 +21,9 @@ check_formula <- function(model, formula) {
 
 #' Extracts the name of the response variable in a formula
 #'
-#' @param formula an object of type bfformula
+#' to use this with brmsformula objects, you have to pass the internal formula object
+#' from the brmsformula object. E.g. formula$formula
+#' @param formula an object of class formula
 #' @noRd
 #' @return String. Name of the response variable
 get_response <- function(formula) {
