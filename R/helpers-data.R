@@ -26,6 +26,16 @@
 #' @export
 #' @keywords internal, developer
 check_data <- function(model, data, formula) {
+  UseMethod("check_data")
+}
+
+#' @export
+check_data.default <- function(model, data, formula) {
+  return(data)
+}
+
+#' @export
+check_data.bmmmodel <- function(model, data, formula) {
   if (missing(data)) {
     stop("Data must be specified using the 'data' argument.")
   }
@@ -42,13 +52,7 @@ check_data <- function(model, data, formula) {
   }
   attr(data, 'data_name') <- substitute_name(data, envir = eval(parent.frame()))
 
-  UseMethod("check_data")
-}
-
-
-
-#' @export
-check_data.default <- function(model, data, formula) {
+  data = NextMethod("check_data")
   return(data)
 }
 

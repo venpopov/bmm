@@ -14,6 +14,12 @@ check_formula <- function(model, formula) {
   # Check: is the formula valid for the specified model type
   ## TODO: additional checks for formula terms needed for each model type
 
+  UseMethod("check_formula")
+  return(formula)
+}
+
+#' @export
+check_formula.default <- function(model, formula) {
   return(formula)
 }
 
