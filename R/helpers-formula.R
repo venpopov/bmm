@@ -32,3 +32,29 @@ get_response <- function(formula) {
   response <- attr(tt, "response") # index of response var
   vars[response]
 }
+
+# extract vars from brmsformula
+# @param formula: brms formula
+# @param include_resp: include response variable in the output
+extract_vars <- function(formula, family = NULL, include_resp = FALSE) {
+  if (!is.null(family)) {
+    formula$family <- family
+  }
+  bterms <- tryCatch({
+    brms::brmsterms(formula)
+  }, error = function(e) {
+    if (grepl('not a valid distributional', e$message)) {
+      stop(glue::glue("brmsterms() returned the following error:\n '{e$message}'.\n\n",
+                 "You have to provide the family to the family argument. E.g. family = 'von_mises'"))
+    } else {
+      stop(e)
+    }
+  })
+
+  all_vars <- all.vars(bterms$allvars)
+  if (include_resp) {
+    return(all_vars)
+  }
+  resp <- formula$resp
+  all_vars[not_in(all_vars, resp)]
+}
