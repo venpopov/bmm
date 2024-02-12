@@ -132,9 +132,13 @@ configure_model.sdmSimple <- function(model, data, formula) {
      # fix mu to 0 (when I change mu to be the center, not c)
      brms::prior_("constant(0)", nlpar = "bias")
 
+   # set initial values to be sampled between [-1,1] to avoid extreme SDs that
+   # can cause the sampler to fail // TODO: test extensively if this works in
+   # all cases
+   init = 1
 
    # return the list
-   out <- nlist(formula, data, family, prior, stanvars)
+   out <- nlist(formula, data, family, prior, stanvars, init)
    return(out)
 }
 

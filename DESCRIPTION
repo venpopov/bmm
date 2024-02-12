@@ -24,7 +24,8 @@ Suggests:
     ggplot2,
     mixtur,
     ggthemes,
-    cowplot
+    cowplot,
+    stringr
 Config/testthat/edition: 3
 Imports: 
     brms,

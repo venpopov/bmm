@@ -36,7 +36,7 @@ by the \code{chain} argument) in parallel using the parallel package}
 
 \item{prior}{One or more \code{brmsprior} objects created by \code{\link[brms:set_prior]{brms::set_prior()}}
 or related functions and combined using the c method or the + operator. See
-also \code{\link[brms:get_prior]{brms::get_prior()}} for more help. Not necessary for the default model
+also \code{\link[=get_model_prior]{get_model_prior()}} for more help. Not necessary for the default model
 fitting, but you can provide prior constraints to model parameters}
 
 \item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See the
@@ -72,8 +72,8 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 }
 \examples{
 \dontrun{
-# generate artificial data from the Bays et al (2009) 3-parameter mixture model
-dat <- rsdm(n=2000)
+# generate artificial data from the Signal Discrimination Model
+dat <- data.frame(y=rsdm(n=2000))
 
 # define formula
 ff <- brms::bf(y ~ 1,

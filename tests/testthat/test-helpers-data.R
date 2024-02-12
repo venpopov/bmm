@@ -82,3 +82,23 @@ test_that("rad2deg returns the correct values for 0, pi/2, 2*pi", {
   x <- c(0, pi/2, 2*pi)
   expect_equal(round(rad2deg(x),2),c(0,90,360))
 })
+
+
+test_that("get_standata() returns a string", {
+  # define formula
+  ff <- brms::bf(y ~ 1,
+                 kappa ~ 1,
+                 thetat ~ 1,
+                 thetant ~ 1)
+
+  # simulate data
+  dat <- data.frame(y = rmixture3p(n = 3),
+                    nt1_loc = 2,
+                    nt2_loc = -1.5)
+
+  # fit the model
+  standata <- get_standata(formula = ff,
+                           data = dat,
+                           model = mixture3p(non_targets = paste0('nt',1,'_loc'), setsize = 2))
+  expect_equal(class(standata)[1], "standata")
+})
