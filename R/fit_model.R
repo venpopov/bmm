@@ -24,6 +24,12 @@
 #'   or related functions and combined using the c method or the + operator. See
 #'   also [get_model_prior()] for more help. Not necessary for the default model
 #'   fitting, but you can provide prior constraints to model parameters
+#' @param sort_data Logical. If TRUE, the data will be sorted by the predictor
+#'   variables for faster sampling. If FALSE, the data will not be sorted, but
+#'   sampling will be slower. If NULL (the default), `fit_model()` will check if
+#'   the data is sorted, and ask you via a console prompt if it should be
+#'   sorted. You can set the default value for this option using global
+#'   `options(bmm.sort_data = TRUE/FALSE)`
 #' @param ... Further arguments passed to [brms::brm()] or Stan. See the
 #'   description of [brms::brm()] for more details
 #'
@@ -35,10 +41,10 @@
 #'   with many other useful information about the model. Use methods(class =
 #'   "brmsfit") for an overview on available methods.
 #'
-#' @references Frischkorn, G. T., & Popov, V. (2023). A tutorial for
-#' estimating mixture models for visual working memory tasks in brms:
-#' Introducing the Bayesian Measurement Modeling  (bmm) package for R.
-#' https://doi.org/10.31234/osf.io/umt57
+#' @references Frischkorn, G. T., & Popov, V. (2023). A tutorial for estimating
+#'   mixture models for visual working memory tasks in brms: Introducing the
+#'   Bayesian Measurement Modeling  (bmm) package for R.
+#'   https://doi.org/10.31234/osf.io/umt57
 #'
 #' @seealso [supported_models()], [brms::brm()]
 #'
@@ -63,18 +69,18 @@
 #'                  backend='cmdstanr')
 #' }
 #'
-fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior = NULL, ...) {
+fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
+                      prior = NULL, sort_data = getOption('bmm.sort_data', NULL), ...) {
   # warning for using old version
   dots <- list(...)
   if ("model_type" %in% names(dots)) {
     stop('The "model_type" argument was deprecated on Feb 3, 2024. Either:
          - See ?fit_model for the new usage;
-         - or install the old version of the package with: devtools::install_github("venpopov/bmm@v0.0.1")
-         ')
+         - or install the old version of the package with: devtools::install_github("venpopov/bmm@v0.0.1")')
   }
 
-  # enable parallel sampling if parallel equals TRUE
-  opts <- configure_options(nlist(parallel, chains))
+  # set temporary global options and return modified arguments for brms
+  opts <- configure_options(nlist(parallel, chains, sort_data))
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model)

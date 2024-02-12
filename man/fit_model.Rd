@@ -11,6 +11,7 @@ fit_model(
   parallel = FALSE,
   chains = 4,
   prior = NULL,
+  sort_data = getOption("bmm.sort_data", NULL),
   ...
 )
 }
@@ -38,6 +39,13 @@ by the \code{chain} argument) in parallel using the parallel package}
 or related functions and combined using the c method or the + operator. See
 also \code{\link[=get_model_prior]{get_model_prior()}} for more help. Not necessary for the default model
 fitting, but you can provide prior constraints to model parameters}
+
+\item{sort_data}{Logical. If TRUE, the data will be sorted by the predictor
+variables for faster sampling. If FALSE, the data will not be sorted, but
+sampling will be slower. If NULL (the default), \code{fit_model()} will check if
+the data is sorted, and ask you via a console prompt if it should be
+sorted. You can set the default value for this option using global
+\code{options(bmm.sort_data = TRUE/FALSE)}}
 
 \item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See the
 description of \code{\link[brms:brm]{brms::brm()}} for more details}
@@ -91,9 +99,9 @@ fit <- fit_model(formula = ff,
 
 }
 \references{
-Frischkorn, G. T., & Popov, V. (2023). A tutorial for
-estimating mixture models for visual working memory tasks in brms:
-Introducing the Bayesian Measurement Modeling  (bmm) package for R.
+Frischkorn, G. T., & Popov, V. (2023). A tutorial for estimating
+mixture models for visual working memory tasks in brms: Introducing the
+Bayesian Measurement Modeling  (bmm) package for R.
 https://doi.org/10.31234/osf.io/umt57
 }
 \seealso{

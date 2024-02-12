@@ -78,14 +78,23 @@ softmaxinv <- function(p, lambda = 1) {
 #' @returns A list of options to pass to brm()
 configure_options <- function(opts, env=parent.frame()) {
   if (opts$parallel) {
-    withr::local_options(list(mc.cores = parallel::detectCores()), .local_envir=env)
+    cores = parallel::detectCores()
     if (opts$chains >  parallel::detectCores()) {
-      opts$chains <-  parallel::detectCores()
+      opts$chains <- parallel::detectCores()
     }
+  } else {
+    cores = NULL
   }
-  exclude <- c("parallel")
+  withr::local_options(
+    list(
+      mc.cores = parallel::detectCores(),
+      bmm.sort_data = opts$sort_data
+    ),
+    .local_envir=env)
+
   # return only options that can be passed to brms
-  opts <- opts[not_in(names(opts), exclude)]
+  brms_args <- names(formals(brms::brm))
+  opts <- opts[names(opts) %in% brms_args]
   return(opts)
 }
 
@@ -139,20 +148,46 @@ stop_quietly <- function() {
 }
 
 
-message_not_ordered <- function() {
+message_not_ordered <- function(model, data, formula) {
   message("\n\nData is not ordered by predictors.\nYou can speed up the model ",
           "estimation up to several times (!) by ordering the data by all your ",
           "predictor columns.\n\n")
+  caution_msg <- paste(strwrap("* caution: if you chose Option 2, you need to be careful
+    when using brms postprocessing methods that rely on the data order, such as
+    generating predictions. Assuming you assigned the result of fit_model to a
+    variable called `fit`, you can extract the sorted data from the fitted object
+    with:\n\n   data_sorted <- fit$fit_args$data", width=80), collapse = "\n")
+  caution_msg <- crayon::red(caution_msg)
 
   if(interactive()) {
     var <- utils::menu(c("Yes (note: you will receive code to sort your data)",
-                         "No, I want to continue with the slower estimation"),
-                       title="Do you want to stop and sort your data? (y/n): ")
+             paste0("Let bmm sort the data for you and continue with the faster model fitting ",
+                    crayon::red("(*)")),
+             paste0("No, I want to continue with the slower estimation\n\n", caution_msg, collapse = "\n")),
+             title="Do you want to stop and sort your data? (y/n): ")
     if(var == 1) {
       message("Please sort your data by all predictors and then re-run the model.")
+      data_name <- attr(data, "data_name")
+      if (is.null(data_name)) {
+        data_name <- deparse(substitute(data))
+      }
+      # TODO: maybe just write a function which given a formula and data,
+      # returns the sorted data? not necessary for now
+      message("To sort your data, use the following code:\n\n")
+      message(crayon::green("library(dplyr)"))
+      message(crayon::green(data_name, "_sorted <- ", data_name, " %>% arrange(",
+                            paste(extract_vars(formula), collapse = ", "),
+                            ")\n\n",
+                            sep=""))
+      message("Then re-run the model with the newly sorted data.")
       stop_quietly()
+    } else if (var == 2) {
+      message("Your data has been sorted by the following predictors: ", paste(extract_vars(formula), collapse = ", "),'\n')
+      preds <- extract_vars(formula)
+      data <- dplyr::arrange_at(data, preds)
     }
   }
+  data
 }
 
 
