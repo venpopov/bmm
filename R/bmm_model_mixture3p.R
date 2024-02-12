@@ -2,9 +2,9 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture3p <- function(non_targets, setsize, ...) {
+.model_mixture3p <- function(respErr, non_targets, setsize, ...) {
   out <- list(
-    vars = nlist(non_targets, setsize),
+    vars = nlist(respErr, non_targets, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -29,8 +29,9 @@
 
 
 # user facing alias
-#' @title `r .model_mixture3p(NA, NA)$info$name`
-#' @details `r model_info(mixture3p(NA, NA))`
+#' @title `r .model_mixture3p(NA, NA, NA)$info$name`
+#' @details `r model_info(mixture3p(NA, NA, NA))`
+#' @param respErr The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
 #' @param non_targets A character vector with the names of the non-target variables.
 #'   The non_target variables should be in radians and be centered relative to the
 #'   target.
@@ -81,8 +82,20 @@ configure_model.mixture3p <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
+  respErr <- model$vars$respErr
   non_targets <- model$vars$non_targets
   setsize_var <- model$vars$setsize
+
+  # extract formulas for parameters
+  pform_names <- names(formula)
+  pform <- formula
+
+  # add fixed intercept for bias if no formula was included
+  if (!"bias" %in% pform_names) {
+    bias_form <- bias ~ 1
+    pform <- c(pform, bias_form)
+    names(pform) <- c(pform_names,"bias")
+  }
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -92,13 +105,24 @@ configure_model.mixture3p <- function(model, data, formula) {
   mu_unif <- paste0('mu', max_setsize + 1)
 
   # construct formula
+  formula <- brms::bf(paste0(respErr,"~ bias"), nl = T)
+
+  # add parameter formulas to model formula
+  for (i in 1:length(pform)) {
+    predictors <- rsample::form_pred(pform[[i]])
+    if (any(predictors %in% names(pform))) {
+      formula <- formula + brms::nlf(pform[[i]])
+    } else {
+      formula <- formula + brms::lf(pform[[i]])
+    }
+  }
+
   formula <- formula +
-    brms::lf(mu1 ~ 1) +
     glue_lf(kappa_unif,' ~ 1') +
     glue_lf(mu_unif, ' ~ 1') +
     brms::nlf(theta1 ~ thetat) +
     brms::nlf(kappa1 ~ kappa)
-  for (i in 1:(max_setsize-1)) {
+  for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
       glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(thetant + log(inv_ss)) + ',
@@ -107,13 +131,13 @@ configure_model.mixture3p <- function(model, data, formula) {
   }
 
   # define mixture family
-  vm_list = lapply(1:(max_setsize+1), function(x) brms::von_mises(link="identity"))
+  vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link="identity"))
   vm_list$order = "none"
   family <- brms::do_call(brms::mixture, vm_list)
 
   # define prior
   prior <-
-    brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+    brms::prior_("constant(0)", nlpar = "bias") +
     brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
     brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
     brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +

@@ -9,15 +9,15 @@ test_that('Available mock models run without errors',{
   )
 
   # two-parameter model mock fit
-  f <- brms::bf(respErr ~ 1, kappa ~ 1, thetat ~ 1)
-  mock_fit <- fit_model(f, dat, mixture2p(), backend="mock", mock_fit=1, rename=FALSE)
+  f <- bmm_formula(kappa ~ 1, thetat ~ 1)
+  mock_fit <- fit_model(f, dat, mixture2p(respErr =  "respErr"), backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
   expect_equal(names(mock_fit$fit_args[1:4]), c("formula", "data", "family", "prior"))
 
   # three-parameter model mock fit
-  f <- brms::bf(respErr ~ 1, kappa ~ 1, thetat ~ 1, thetant ~ 1)
-  mock_fit <- fit_model(f, dat, mixture3p(setsize = 3,
+  f <- bmm_formula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
+  mock_fit <- fit_model(f, dat, mixture3p(respErr = "respErr", setsize = 3,
                                           non_targets = paste0('Item',2:3,'_rel')),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
@@ -25,8 +25,8 @@ test_that('Available mock models run without errors',{
   expect_equal(names(mock_fit$fit_args[1:4]), c("formula", "data", "family", "prior"))
 
   # IMMabc model mock fit
-  f <- brms::bf(respErr ~ 1, kappa ~ 1, c ~ 1, a ~ 1)
-  mock_fit <- fit_model(f, dat, IMMabc(setsize =3,
+  f <- bmm_formula(kappa ~ 1, c ~ 1, a ~ 1)
+  mock_fit <- fit_model(f, dat, IMMabc(respErr = "respErr", setsize =3,
                                        non_targets = paste0('Item',2:3,'_rel')),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
@@ -34,16 +34,16 @@ test_that('Available mock models run without errors',{
   expect_equal(names(mock_fit$fit_args[1:4]), c("formula", "data", "family", "prior"))
 
   # IMMbsc model mock fit
-  f <- brms::bf(respErr ~ 1, kappa ~ 1, c ~ 1, s ~ 1)
-  mock_fit <- fit_model(f, dat, IMMbsc(setsize=3, non_targets = paste0('Item',2:3,'_rel'), spaPos=paste0('spaD',2:3)),
+  f <- bmm_formula(kappa ~ 1, c ~ 1, s ~ 1)
+  mock_fit <- fit_model(f, dat, IMMbsc(respErr = "respErr", setsize=3, non_targets = paste0('Item',2:3,'_rel'), spaPos=paste0('spaD',2:3)),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
   expect_equal(names(mock_fit$fit_args[1:4]), c("formula", "data", "family", "prior"))
 
   # IMMbsc model mock fit
-  f <- brms::bf(respErr ~ 1, kappa ~ 1, c ~ 1, a ~ 1, s ~ 1)
-  mock_fit <- fit_model(f, dat, IMMfull(setsize=3, non_targets = paste0('Item',2:3,'_rel'), spaPos=paste0('spaD',2:3)), backend="mock", mock_fit=1, rename=FALSE)
+  f <- bmm_formula(kappa ~ 1, c ~ 1, a ~ 1, s ~ 1)
+  mock_fit <- fit_model(f, dat, IMMfull(respErr = "respErr", setsize=3, non_targets = paste0('Item',2:3,'_rel'), spaPos=paste0('spaD',2:3)), backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
   expect_equal(names(mock_fit$fit_args[1:4]), c("formula", "data", "family", "prior"))
@@ -66,19 +66,19 @@ test_that('Available models produce expected errors', {
     args_list <- formals(model)
     test_args <- lapply(args_list, function(x) {NULL})
     model <- brms::do_call(model, test_args)
-    expect_error(fit_model(brms::bf(y~1), model=model, backend="mock", mock_fit=1, rename=FALSE),
+    expect_error(fit_model(bmm_formula(kappa~1), model=model, backend="mock", mock_fit=1, rename=FALSE),
                  "Data must be specified using the 'data' argument.")
   }
 
 
   okmodels <- c('mixture3p','IMMabc','IMMbsc','IMMfull')
   for (model in okmodels) {
-    model1 <- get_model2(model)(non_targets='Item2_rel', setsize=5, spaPos='spaD2')
-    expect_error(fit_model(brms::bf(respErr~1), data=dat, model=model1, backend="mock",
+    model1 <- get_model2(model)(respErr = "respErr", non_targets='Item2_rel', setsize=5, spaPos='spaD2')
+    expect_error(fit_model(bmm_formula(kappa~1), data=dat, model=model1, backend="mock",
                            mock_fit=1, rename=FALSE),
                  "'non_targets' is less than max\\(setsize\\)-1")
-    model2 <- get_model2(model)(non_targets='Item2_rel', setsize=TRUE, spaPos='spaD2')
-    expect_error(fit_model(brms::bf(respErr~1), data=dat, model=model2, backend="mock",
+    model2 <- get_model2(model)(respErr = "respErr", non_targets='Item2_rel', setsize=TRUE, spaPos='spaD2')
+    expect_error(fit_model(bmm_formula(kappa~1), data=dat, model=model2, backend="mock",
                            mock_fit=1, rename=FALSE),
                  "'setsize' must be either a single numeric value or a character string")
   }

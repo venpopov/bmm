@@ -2,9 +2,9 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_sdmSimple <- function(...) {
+.model_sdmSimple <- function(respErr, ...) {
    out <- list(
-      vars = nlist(),
+      vars = nlist(respErr),
       info = list(
          domain = 'Visual working memory',
          task = 'Continuous reproduction',
@@ -25,12 +25,13 @@
 
 # user facing alias
 # information in the title and details sections will be filled in
-# automatically based on the information in the .model_sdmSimple()$info
-#' @title `r .model_sdmSimple()$info$name`
+# automatically based on the information in the .model_sdmSimple(NA)$info
+#' @title `r .model_sdmSimple(NA)$info$name`
 #' @name SDM
 #' @details
 #' see `vignette("sdm-simple")` for a detailed description of the model and how to use it.
-#' `r model_info(sdmSimple())`
+#' `r model_info(sdmSimple(NA))`
+#' @param respErr The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
@@ -99,14 +100,37 @@ configure_model.sdmSimple <- function(model, data, formula) {
                                file.info(paste0(sc_path, '/sdmSimple_likelihood.stan'))$size)
     stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
       brms::stanvar(scode = stan_tdata, block = 'tdata') +
-      brms::stanvar(scode = stan_likelihood, block = 'likelihood', position="end")
+      brms::stanvar(scode = stan_likelihood, block = 'likelihood', position ="end")
 
+    # extract response error variable
+    respErr <- model$var$respErr
+    pform_names <- names(formula)
+    pform <- formula
+
+    if (!"bias" %in% pform_names) {
+      bias_form <- bias ~ 1
+      pform <- c(pform, bias_form)
+      names(pform) <- c(pform_names,"bias")
+    }
+
+    # specify the formula for the mixture model
+    formula <- brms::bf(paste0(respErr,"~ bias"), nl = T)
+
+    # add parameter formulas to model formula
+    for (i in 1:length(pform)) {
+      predictors <- rsample::form_pred(pform[[i]])
+      if (any(predictors %in% names(pform))) {
+        formula <- formula + brms::nlf(pform[[i]])
+      } else {
+        formula <- formula + brms::lf(pform[[i]])
+      }
+    }
 
    # construct the default prior
    # TODO: add a proper prior
    prior <-
      # fix mu to 0 (when I change mu to be the center, not c)
-     brms::prior_("constant(0)", class = "Intercept", dpar = "mu")
+     brms::prior_("constant(0)", nlpar = "bias")
 
 
    # return the list

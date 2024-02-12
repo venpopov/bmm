@@ -5,9 +5,11 @@
 \alias{sdmSimple}
 \title{Signal Discrimination Model (SDM) by Oberauer (2023)}
 \usage{
-sdmSimple(...)
+sdmSimple(respErr, ...)
 }
 \arguments{
+\item{respErr}{The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
+
 \item{...}{used internally for testing, ignore it}
 }
 \value{

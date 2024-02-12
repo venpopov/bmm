@@ -1,7 +1,6 @@
 test_that("get_model_prior() returns a brmsprior object", {
   # define formula
-  ff <- brms::bf(y ~ 1,
-                 kappa ~ 1,
+  ff <- bmm_formula(kappa ~ 1,
                  thetat ~ 1,
                  thetant ~ 1)
 
@@ -13,6 +12,6 @@ test_that("get_model_prior() returns a brmsprior object", {
   # fit the model
   prior <- get_model_prior(formula = ff,
                   data = dat,
-                  model = mixture3p(non_targets = paste0('nt',1,'_loc'), setsize = 2))
+                  model = mixture3p(respErr = "y", non_targets = paste0('nt',1,'_loc'), setsize = 2))
   expect_equal(class(prior)[1], "brmsprior")
 })

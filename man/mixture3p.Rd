@@ -4,9 +4,11 @@
 \alias{mixture3p}
 \title{Three-parameter mixture model by Bays et al (2009).}
 \usage{
-mixture3p(non_targets, setsize, ...)
+mixture3p(respErr, non_targets, setsize, ...)
 }
 \arguments{
+\item{respErr}{The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
+
 \item{non_targets}{A character vector with the names of the non-target variables.
 The non_target variables should be in radians and be centered relative to the
 target.}

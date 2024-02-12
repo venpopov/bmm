@@ -2,9 +2,9 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <- function(non_targets, setsize, ...) {
+.model_IMMabc <- function(respErr, non_targets, setsize, ...) {
   out <- list(
-    vars = nlist(non_targets, setsize),
+    vars = nlist(respErr, non_targets, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -27,9 +27,9 @@
   out
 }
 
-.model_IMMbsc <- function(non_targets, setsize, spaPos, ...) {
+.model_IMMbsc <- function(respErr, non_targets, setsize, spaPos, ...) {
   out <- list(
-    vars = nlist(non_targets, setsize, spaPos),
+    vars = nlist(respErr,non_targets, setsize, spaPos),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -52,9 +52,9 @@
   out
 }
 
-.model_IMMfull <- function(non_targets, setsize, spaPos, ...) {
+.model_IMMfull <- function(respErr, non_targets, setsize, spaPos, ...) {
   out <- list(
-    vars = nlist(non_targets, setsize, spaPos),
+    vars = nlist(respErr, non_targets, setsize, spaPos),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -79,15 +79,16 @@
 }
 
 # user facing alias
-#' @title `r .model_IMMfull(NA, NA, NA)$info$name`
+#' @title `r .model_IMMfull(NA, NA, NA, NA)$info$name`
 #' @name IMM
-#' @details `r model_info(IMMfull(NA, NA, NA), components =c('domain', 'task', 'name', 'citation'))`
+#' @details `r model_info(IMMfull(NA, NA, NA, NA), components =c('domain', 'task', 'name', 'citation'))`
 #' #### Version: `IMMfull`
-#' `r model_info(IMMfull(NA, NA, NA), components =c('requirements', 'parameters'))`
+#' `r model_info(IMMfull(NA, NA, NA, NA), components =c('requirements', 'parameters'))`
 #' #### Version: `IMMbsc`
-#' `r model_info(IMMbsc(NA, NA, NA), components =c('requirements', 'parameters'))`
+#' `r model_info(IMMbsc(NA, NA, NA, NA), components =c('requirements', 'parameters'))`
 #' #### Version: `IMMabc`
 #' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters'))`
+#' @param respErr The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
 #' @param non_targets A character vector with the names of the non-target variables.
 #'   The non_target variables should be in radians and be centered relative to the
 #'   target.
@@ -130,12 +131,12 @@ check_data.IMMspatial <- function(model, data, formula) {
   if (length(spaPos) < max_setsize - 1) {
     stop(paste0("The number of columns for spatial positions in the argument",
                 "'spaPos' is less than max(setsize)-1"))
-  } else if (length(spaPos) > max_setsize-1) {
+  } else if (length(spaPos) > max_setsize - 1) {
     stop(paste0("The number of columns for spatial positions in the argument",
                 "spaPos'' is more than max(setsize)-1"))
   }
 
-  if (max(abs(data[,spaPos]), na.rm=T) > 10) {
+  if (max(abs(data[,spaPos]), na.rm = T) > 10) {
     data[,spaPos] <- data[,spaPos]*pi/180
     warning('It appears your spatial position variables are in degrees. We will transform it to radians.')
   }
@@ -157,8 +158,20 @@ configure_model.IMMabc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
+  respErr <- model$vars$respErr
   non_targets <- model$vars$non_targets
   setsize_var <- model$vars$setsize
+
+  # extract formulas for parameters
+  pform_names <- names(formula)
+  pform <- formula
+
+  # add fixed intercept for bias if no formula was included
+  if (!"bias" %in% pform_names) {
+    bias_form <- bias ~ 1
+    pform <- c(pform, bias_form)
+    names(pform) <- c(pform_names,"bias")
+  }
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -168,13 +181,24 @@ configure_model.IMMabc <- function(model, data, formula) {
   mu_unif <- paste0('mu', max_setsize + 1)
 
   # construct formula
+  formula <- brms::bf(paste0(respErr,"~ bias"), nl = T)
+
+  # add parameter formulas to model formula
+  for (i in 1:length(pform)) {
+    predictors <- rsample::form_pred(pform[[i]])
+    if (any(predictors %in% names(pform))) {
+      formula <- formula + brms::nlf(pform[[i]])
+    } else {
+      formula <- formula + brms::lf(pform[[i]])
+    }
+  }
+
   formula <- formula +
-    brms::lf(mu1 ~ 1) +
     glue_lf(kappa_unif,' ~ 1') +
     glue_lf(mu_unif, ' ~ 1') +
     brms::nlf(theta1 ~ c + a) +
     brms::nlf(kappa1 ~ kappa)
-  for (i in 1:(max_setsize-1)) {
+  for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
       glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(a) + ',
@@ -183,13 +207,13 @@ configure_model.IMMabc <- function(model, data, formula) {
   }
 
   # define mixture family
-  vm_list = lapply(1:(max_setsize+1), function(x) brms::von_mises(link="identity"))
+  vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
   vm_list$order = "none"
   family <- brms::do_call(brms::mixture, vm_list)
 
   # define prior
   prior <- # fix mean of the first von Mises to zero
-    brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+    brms::prior_("constant(0)", nlpar = "bias") +
     # fix mean of the guessing distribution to zero
     brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
     # fix kappa of the second von Mises to (alomst) zero
@@ -202,7 +226,7 @@ configure_model.IMMabc <- function(model, data, formula) {
   # if there is setsize 1 in the data, set constant prior over thetant for setsize1
   if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
     prior <- prior +
-      brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a")
+      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "a")
   }
 
   out <- nlist(formula, data, family, prior)
@@ -214,9 +238,21 @@ configure_model.IMMbsc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
+  respErr <- model$vars$respErr
   non_targets <- model$vars$non_targets
   setsize_var <- model$vars$setsize
   spaPos <- model$vars$spaPos
+
+  # extract formulas for parameters
+  pform_names <- names(formula)
+  pform <- formula
+
+  # add fixed intercept for bias if no formula was included
+  if (!"bias" %in% pform_names) {
+    bias_form <- bias ~ 1
+    pform <- c(pform, bias_form)
+    names(pform) <- c(pform_names,"bias")
+  }
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -226,14 +262,25 @@ configure_model.IMMbsc <- function(model, data, formula) {
   mu_unif <- paste0('mu', max_setsize + 1)
 
   # construct formula
+  formula <- brms::bf(paste0(respErr,"~ bias"), nl = T)
+
+  # add parameter formulas to model formula
+  for (i in 1:length(pform)) {
+    predictors <- rsample::form_pred(pform[[i]])
+    if (any(predictors %in% names(pform))) {
+      formula <- formula + brms::nlf(pform[[i]])
+    } else {
+      formula <- formula + brms::lf(pform[[i]])
+    }
+  }
+
   formula <- formula +
-    brms::lf(mu1 ~ 1) +
     glue_lf(kappa_unif,' ~ 1') +
     glue_lf(mu_unif, ' ~ 1') +
     brms::nlf(theta1 ~ c) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
-  for (i in 1:(max_setsize-1)) {
+  for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
       glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',spaPos[i],')*c) + ',
@@ -242,13 +289,13 @@ configure_model.IMMbsc <- function(model, data, formula) {
   }
 
   # define mixture family
-  vm_list = lapply(1:(max_setsize+1), function(x) brms::von_mises(link="identity"))
+  vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
   vm_list$order = "none"
   family <- brms::do_call(brms::mixture, vm_list)
 
   # define prior
   prior <- # fix mean of the first von Mises to zero
-    brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+    brms::prior_("constant(0)", nlpar = "bias") +
     # fix mean of the guessing distribution to zero
     brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
     # fix kappa of the second von Mises to (alomst) zero
@@ -261,7 +308,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
   # if there is setsize 1 in the data, set constant prior over thetant for setsize1
   if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
     prior <- prior +
-      brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s")
+      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "s")
   }
 
   out <- nlist(formula, data, family, prior)
@@ -273,9 +320,21 @@ configure_model.IMMfull <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
+  respErr <- model$vars$respErr
   non_targets <- model$vars$non_targets
   setsize_var <- model$vars$setsize
   spaPos <- model$vars$spaPos
+
+  # extract formulas for parameters
+  pform_names <- names(formula)
+  pform <- formula
+
+  # add fixed intercept for bias if no formula was included
+  if (!"bias" %in% pform_names) {
+    bias_form <- bias ~ 1
+    pform <- c(pform, bias_form)
+    names(pform) <- c(pform_names,"bias")
+  }
 
   # names for parameters
   kappa_nts <- paste0('kappa', 2:max_setsize)
@@ -285,14 +344,25 @@ configure_model.IMMfull <- function(model, data, formula) {
   mu_unif <- paste0('mu', max_setsize + 1)
 
   # construct formula
+  formula <- brms::bf(paste0(respErr,"~ bias"), nl = T)
+
+  # add parameter formulas to model formula
+  for (i in 1:length(pform)) {
+    predictors <- rsample::form_pred(pform[[i]])
+    if (any(predictors %in% names(pform))) {
+      formula <- formula + brms::nlf(pform[[i]])
+    } else {
+      formula <- formula + brms::lf(pform[[i]])
+    }
+  }
+
   formula <- formula +
-    brms::lf(mu1 ~ 1) +
     glue_lf(kappa_unif,' ~ 1') +
     glue_lf(mu_unif, ' ~ 1') +
     brms::nlf(theta1 ~ c + a) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
-  for (i in 1:(max_setsize-1)) {
+  for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
       glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',spaPos[i],')*c + a) + ',
@@ -301,13 +371,13 @@ configure_model.IMMfull <- function(model, data, formula) {
   }
 
   # define mixture family
-  vm_list = lapply(1:(max_setsize+1), function(x) brms::von_mises(link="identity"))
+  vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
   vm_list$order = "none"
   family <- brms::do_call(brms::mixture, vm_list)
 
   # define prior
   prior <- # fix mean of the first von Mises to zero
-    brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+    brms::prior_("constant(0)", nlpar = "bias") +
     # fix mean of the guessing distribution to zero
     brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
     # fix kappa of the second von Mises to (alomst) zero
@@ -321,8 +391,8 @@ configure_model.IMMfull <- function(model, data, formula) {
   # if there is setsize 1 in the data, set constant prior over thetant for setsize1
   if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
     prior <- prior +
-      brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a")+
-      brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s")
+      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "a") +
+      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "s")
   }
 
   out <- nlist(formula, data, family, prior)

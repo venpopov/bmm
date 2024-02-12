@@ -2,9 +2,9 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture2p <- function(...) {
+.model_mixture2p <- function(respErr, ...) {
   out <- list(
-      vars = list(...),
+      vars = nlist(respErr, ...),
       info = list(
         domain = "Visual working memory",
         task = "Continuous reproduction",
@@ -24,9 +24,10 @@
 }
 
 # user facing alias
-#' @title `r .model_mixture2p()$info$name`
-#' @details `r model_info(mixture2p())`
-#' @param ... no required arguments, call as `mixture2p()`
+#' @title `r .model_mixture2p(NA)$info$name`
+#' @details `r model_info(mixture2p(NA))`
+#' @param respErr The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
+#' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel
 #' @examples
@@ -36,8 +37,8 @@
 #'
 #' # define formula
 #' ff <- brms::bf(y ~ 1,
-#'               kappa ~ 1,
-#'               thetat ~ 1)
+#'                kappa ~ 1,
+#'                thetat ~ 1)
 #'
 #' model <- mixture2p()
 #'
@@ -60,9 +61,32 @@ mixture2p <- .model_mixture2p
 
 #' @export
 configure_model.mixture2p <- function(model, data, formula) {
+  respErr <- model$var$respErr
+  pform_names <- names(formula)
+  pform <- formula
+
+  if (!"bias" %in% pform_names) {
+    bias_form <- bias ~ 1
+    pform <- c(pform, bias_form)
+    names(pform) <- c(pform_names,"bias")
+  }
+
   # specify the formula for the mixture model
+  formula <- brms::bf(paste0(respErr,"~ bias"), nl = T)
+
+  # add parameter formulas to model formula
+  for (i in 1:length(pform)) {
+    predictors <- rsample::form_pred(pform[[i]])
+    if (any(predictors %in% names(pform))) {
+      formula <- formula + brms::nlf(pform[[i]])
+    } else {
+      formula <- formula + brms::lf(pform[[i]])
+    }
+  }
+
+  # provide additional formulas for implementing the mixture2p
   formula <- formula +
-    brms::lf(kappa2 ~ 1, mu1 ~ 1, mu2 ~ 1) +
+    brms::lf(kappa2 ~ 1, mu2 ~ 1) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(theta1 ~ thetat)
 
@@ -71,7 +95,7 @@ configure_model.mixture2p <- function(model, data, formula) {
 
   # set priors for the estimated parameters
   prior <- # fix mean of the first von Mises to zero
-    brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
+    brms::prior_("constant(0)", nlpar = "bias") +
     # fix mean of the second von Mises to zero
     brms::prior_("constant(0)", class = "Intercept", dpar = "mu2") +
     # fix kappa of the second von Mises to (alomst) zero
