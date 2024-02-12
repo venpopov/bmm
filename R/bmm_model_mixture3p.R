@@ -90,11 +90,11 @@ configure_model.mixture3p <- function(model, data, formula) {
   pform_names <- names(formula)
   pform <- formula
 
-  # add fixed intercept for bias if no formula was included
-  if (!"bias" %in% pform_names) {
-    bias_form <- bias ~ 1
-    pform <- c(pform, bias_form)
-    names(pform) <- c(pform_names,"bias")
+  # add fixed intercept for mu if no formula was included
+  if (!"mu" %in% pform_names) {
+    mu_form <- mu ~ 1
+    pform <- c(pform, mu_form)
+    names(pform) <- c(pform_names,"mu")
   }
 
   # names for parameters
@@ -105,7 +105,7 @@ configure_model.mixture3p <- function(model, data, formula) {
   mu_unif <- paste0('mu', max_setsize + 1)
 
   # construct formula
-  formula <- brms::bf(paste0(respErr,"~ bias"), nl = T)
+  formula <- brms::bf(paste0(respErr,"~ mu"), nl = T)
 
   # add parameter formulas to model formula
   for (i in 1:length(pform)) {
@@ -137,7 +137,7 @@ configure_model.mixture3p <- function(model, data, formula) {
 
   # define prior
   prior <-
-    brms::prior_("constant(0)", nlpar = "bias") +
+    brms::prior_("constant(0)", nlpar = "mu") +
     brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
     brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
     brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +

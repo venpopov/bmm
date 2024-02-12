@@ -65,14 +65,14 @@ configure_model.mixture2p <- function(model, data, formula) {
   pform_names <- names(formula)
   pform <- formula
 
-  if (!"bias" %in% pform_names) {
-    bias_form <- bias ~ 1
-    pform <- c(pform, bias_form)
-    names(pform) <- c(pform_names,"bias")
+  if (!"mu" %in% pform_names) {
+    mu_form <- mu ~ 1
+    pform <- c(pform, mu_form)
+    names(pform) <- c(pform_names,"mu")
   }
 
   # specify the formula for the mixture model
-  formula <- brms::bf(paste0(respErr,"~ bias"), nl = T)
+  formula <- brms::bf(paste0(respErr,"~ mu"), nl = T)
 
   # add parameter formulas to model formula
   for (i in 1:length(pform)) {
@@ -95,7 +95,7 @@ configure_model.mixture2p <- function(model, data, formula) {
 
   # set priors for the estimated parameters
   prior <- # fix mean of the first von Mises to zero
-    brms::prior_("constant(0)", nlpar = "bias") +
+    brms::prior_("constant(0)", nlpar = "mu") +
     # fix mean of the second von Mises to zero
     brms::prior_("constant(0)", class = "Intercept", dpar = "mu2") +
     # fix kappa of the second von Mises to (alomst) zero

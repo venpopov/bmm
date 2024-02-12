@@ -107,14 +107,14 @@ configure_model.sdmSimple <- function(model, data, formula) {
     pform_names <- names(formula)
     pform <- formula
 
-    if (!"bias" %in% pform_names) {
-      bias_form <- bias ~ 1
-      pform <- c(pform, bias_form)
-      names(pform) <- c(pform_names,"bias")
+    if (!"mu" %in% pform_names) {
+      mu_form <- mu ~ 1
+      pform <- c(pform, mu_form)
+      names(pform) <- c(pform_names,"mu")
     }
 
     # specify the formula for the mixture model
-    formula <- brms::bf(paste0(respErr,"~ bias"), nl = T)
+    formula <- brms::bf(paste0(respErr,"~ mu"), nl = T)
 
     # add parameter formulas to model formula
     for (i in 1:length(pform)) {
@@ -130,7 +130,7 @@ configure_model.sdmSimple <- function(model, data, formula) {
    # TODO: add a proper prior
    prior <-
      # fix mu to 0 (when I change mu to be the center, not c)
-     brms::prior_("constant(0)", nlpar = "bias")
+     brms::prior_("constant(0)", class = "Intercept", dpar = "mu")
 
    # set initial values to be sampled between [-1,1] to avoid extreme SDs that
    # can cause the sampler to fail // TODO: test extensively if this works in
