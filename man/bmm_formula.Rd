@@ -15,9 +15,52 @@ bmm_formula(formula, ...)
 A list of formulas for each parameters being predicted
 }
 \description{
-This function is used to specify the formulas predicting the different
-parameters of a \code{bmmmodel}.
+This function is used to specify the formulas predicting the
+different parameters of a \code{bmmmodel}.
 }
+\section{General formula structure}{
+The formula argument accepts formulas of the following syntax:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{parameter ~ fixed_effects + (random_effects | grouping_variable)
+}\if{html}{\out{</div>}}
+
+\code{bmm} formulas are built on \code{brms} formulas and function in nearly the same
+way, so you can use most of the \code{brms} formula syntax. The main differences
+is that in \code{bmm} formulas, the response variable is not specified in the
+formula. Instead, each parameter of the model is explicitly specified as the
+left-hand side of the formula. In \code{brms}, the response variable is always
+specified as the left-hand side of the first formula, which implicitly means
+that any predictors in the first formula are predictors of the \code{mu} parameter
+of the model. In general, measurement models do not all have a \code{mu}
+parameter, therefore it is more straigthforward to explicitely predict each
+parameter of the model.
+
+For example, in the following \code{brms} formula for the drift diffusion model,
+the first line corresponds to the drift rate parameter, but this is not
+explicitely stated.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{      brmsformula(rt | dec(response) ~ condition + (condition | id),
+                  bs ~ 1 + (1 | id),
+                  ndt ~ 1 + (1 | id),
+                  bias ~ 1 + (1 | id))
+}\if{html}{\out{</div>}}
+
+In \code{bmm}, the same formula would be written as:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{      bmmformula(drift ~ condition + (condition | id),
+                 bs ~ 1 + (1 | id),
+                 ndt ~ 1 + (1 | id),
+                 bias ~ 1 + (1 | id))
+}\if{html}{\out{</div>}}
+
+and the rt and response variables would be specified in the model argument of
+the \code{fit_model} function.
+
+Aside from that, the \code{bmm} formula syntax is the same as the \code{brms} formula
+syntax. For more information on the \code{brms} formula syntax, see
+\code{\link[brms:brmsformula]{brms::brmsformula()}}.
+}
+
 \examples{
 imm_formula <- bmm_formula(
   c ~ 0 + setsize + (0 + setsize | id),
