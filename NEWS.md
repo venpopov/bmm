@@ -1,3 +1,9 @@
+# bmm 0.2.1
+
+### Bug Fixes
+
+
+
 # bmm 0.2.0
 
 ### New features
