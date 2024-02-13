@@ -7,7 +7,7 @@
 get_model_prior(formula, data, model, ...)
 }
 \arguments{
-\item{formula}{An object of class \code{brmsformula}. A symbolic description of
+\item{formula}{An object of class \code{bmmformula}. A symbolic description of
 the model to be fitted.}
 
 \item{data}{An object of class data.frame, containing data of all variables
@@ -58,7 +58,7 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 dat <- data.frame(y = rsdm(n=2000))
 
 # define formula
-ff <- brms::bf(y ~ 1,
+ff <- b(y ~ 1,
                c ~ 1,
                kappa ~ 1)
 

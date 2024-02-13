@@ -7,9 +7,9 @@ check_formula <- function(model, formula) {
   # Pre-Check: was a valid brms formula provided
   if (inherits(formula, 'brmsformula')) {
     stop("The provided formula is a brms formula.
-        Please specify formula with the bmm_formula() function instead of
+        Please specify formula with the bmmformula() function instead of
         the brmsformula() or bf() function.
-        E.g.: bmm_formula(kappa ~ 1, thetat ~ 1")
+        E.g.: bmmformula(kappa ~ 1, thetat ~ 1")
   }
 
   # Check: is the formula valid for the specified model type
@@ -101,7 +101,7 @@ get_response <- function(formula) {
 #' @return A list of formulas for each parameters being predicted
 #' @export
 #' @examples
-#' imm_formula <- bmm_formula(
+#' imm_formula <- bmmformula(
 #'   c ~ 0 + setsize + (0 + setsize | id),
 #'   a ~ 1,
 #'   kappa ~ 0 + setsize + (0 + setsize | id)
@@ -109,7 +109,7 @@ get_response <- function(formula) {
 #'
 #' imm_formula
 #'
-bmm_formula <- function(formula, ...){
+bmmformula <- function(formula, ...){
   # paste formulas into a single list
   dots <- list(...)
   formula <- list(formula)

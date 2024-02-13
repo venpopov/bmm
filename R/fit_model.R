@@ -6,7 +6,7 @@
 #'   This is a wrapper function for [brms::brm], which is used to estimate the
 #'   model.
 #'
-#' @param formula An object of class `brmsformula`. A symbolic description of
+#' @param formula An object of class `bmmformula`. A symbolic description of
 #'   the model to be fitted.
 #' @param data An object of class data.frame, containing data of all variables
 #'   used in the model. The names of the variables must match the variable names

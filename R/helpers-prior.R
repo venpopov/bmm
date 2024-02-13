@@ -19,7 +19,7 @@ combine_prior <- function(prior1, prior2) {
 #'   return all model parameters that have no prior specified (flat priors). This can help to
 #'   get an idea about which priors need to be specified and also know which priors were
 #'   used if no user-specified priors were passed to the [fit_model()] function.
-#' @param formula An object of class `brmsformula`. A symbolic description of
+#' @param formula An object of class `bmmformula`. A symbolic description of
 #'   the model to be fitted.
 #' @param data An object of class data.frame, containing data of all variables
 #'   used in the model. The names of the variables must match the variable names
@@ -53,7 +53,7 @@ combine_prior <- function(prior1, prior2) {
 #' dat <- data.frame(y = rsdm(n=2000))
 #'
 #' # define formula
-#' ff <- brms::bf(y ~ 1,
+#' ff <- b(y ~ 1,
 #'                c ~ 1,
 #'                kappa ~ 1)
 #'

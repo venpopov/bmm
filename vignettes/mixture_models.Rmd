@@ -160,7 +160,7 @@ The model formula has three components:
 [^fn-1]: `brms` does not directly estimate the probabilities that each response comes from each distribution (e.g. $p_{mem}$ and $p_{guess}$). Instead, brms estimates mixing proportions that are weights applied to each of the mixture distributions and they are transformed into probabilities (e.g. $p_{mem}$ and $p_{guess}$) using a softmax normalization. To get $p_{mem}$ we can use the softmax function, that is: $p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})}$
 
 ```{r}
-ff <- bmm_formula(thetat ~ 0 + set_size + (0 + set_size | id),
+ff <- bmmformula(thetat ~ 0 + set_size + (0 + set_size | id),
                   kappa ~ 0 + set_size + (0 + set_size | id))
 ```
 

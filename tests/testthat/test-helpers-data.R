@@ -1,16 +1,16 @@
 test_that("check_data() produces expected errors and warnings", {
   expect_error(check_data(.model_mixture2p(respErr = "y")),
                "Data must be specified using the 'data' argument.")
-  expect_error(check_data(.model_mixture2p(respErr = "y"), data.frame(), bmm_formula(kappa ~ 1)),
+  expect_error(check_data(.model_mixture2p(respErr = "y"), data.frame(), bmmformula(kappa ~ 1)),
                "Argument 'data' does not contain observations.")
-  expect_error(check_data(.model_mixture2p(respErr = "y"), data.frame(x = 1), bmm_formula(kappa ~ 1)),
+  expect_error(check_data(.model_mixture2p(respErr = "y"), data.frame(x = 1), bmmformula(kappa ~ 1)),
                "The response variable 'y' is not present in the data.")
 
   mls <- lapply(c('mixture2p','mixture3p','IMMabc','IMMbsc','IMMfull'), get_model2)
   for (ml in mls) {
     expect_warning(check_data(ml(respErr = "y", non_targets = 'x', setsize=2, spaPos = 'z'),
                               data.frame(y = 12, x = 1, z = 2),
-                              bmm_formula(kappa ~ 1)),
+                              bmmformula(kappa ~ 1)),
                    "It appears your response variable is in degrees.\n")
     expect_silent(check_data(ml(respErr = "y", non_targets = 'x', setsize=2, spaPos = 'z'),
                              data.frame(y = 1, x = 1, z = 2), brms::bf(y ~ 1)))
@@ -18,21 +18,21 @@ test_that("check_data() produces expected errors and warnings", {
 
   mls <- lapply(c('mixture3p','IMMabc','IMMbsc','IMMfull'), get_model2)
   for (ml in mls) {
-    expect_error(check_data(ml(respErr = "y", non_targets = 'x', spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmm_formula(kappa ~ 1)),
+    expect_error(check_data(ml(respErr = "y", non_targets = 'x', spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmmformula(kappa ~ 1)),
                  'argument "setsize" is missing, with no default')
-    expect_error(check_data(ml(respErr = "y",setsize = 'x', spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmm_formula(kappa ~ 1)),
+    expect_error(check_data(ml(respErr = "y",setsize = 'x', spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmmformula(kappa ~ 1)),
                  'argument "non_targets" is missing, with no default')
-    expect_error(check_data(ml(respErr = "y",non_targets='x', setsize = TRUE, spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmm_formula(kappa ~ 1)),
+    expect_error(check_data(ml(respErr = "y",non_targets='x', setsize = TRUE, spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmmformula(kappa ~ 1)),
                  "Argument 'setsize' must be either a single numeric value or a character string.")
-    expect_error(check_data(ml(respErr = "y",non_targets='x', setsize = c(1,2,3), spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmm_formula(kappa ~ 1)),
+    expect_error(check_data(ml(respErr = "y",non_targets='x', setsize = c(1,2,3), spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmmformula(kappa ~ 1)),
                  "Argument 'setsize' must be either a single numeric value or a character string.")
-    expect_error(check_data(ml(respErr = "y",non_targets='x', setsize = 5, spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmm_formula(kappa ~ 1)),
+    expect_error(check_data(ml(respErr = "y",non_targets='x', setsize = 5, spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmmformula(kappa ~ 1)),
                  "'non_targets' is less than max\\(setsize\\)-1")
   }
 
   mls <- lapply(c('IMMbsc','IMMfull'), get_model2)
   for (ml in mls) {
-    expect_error(check_data(ml(respErr = "y",non_targets=paste0('x',1:4), setsize = 5, spaPos = 'z'), data.frame(y = 1, x1 = 1, x2=2,x3=3,x4=4, z = 2), bmm_formula(kappa ~ 1)),
+    expect_error(check_data(ml(respErr = "y",non_targets=paste0('x',1:4), setsize = 5, spaPos = 'z'), data.frame(y = 1, x1 = 1, x2=2,x3=3,x4=4, z = 2), bmmformula(kappa ~ 1)),
                  "'spaPos' is less than max\\(setsize\\)-1")
   }
 })
@@ -40,7 +40,7 @@ test_that("check_data() produces expected errors and warnings", {
 test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call=FALSE), get_model)
   for (ml in mls) {
-    expect_s3_class(check_data(ml(respErr = "y",non_targets = 'x', setsize=2, spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmm_formula(kappa ~ 1)), "data.frame")
+    expect_s3_class(check_data(ml(respErr = "y",non_targets = 'x', setsize=2, spaPos = 'z'), data.frame(y = 1, x = 1, z = 2), bmmformula(kappa ~ 1)), "data.frame")
   }
 })
 
@@ -86,7 +86,7 @@ test_that("rad2deg returns the correct values for 0, pi/2, 2*pi", {
 
 test_that("get_standata() returns a string", {
   # define formula
-  ff <- bmm_formula(kappa ~ 1,
+  ff <- bmmformula(kappa ~ 1,
                     thetat ~ 1,
                     thetant ~ 1)
 

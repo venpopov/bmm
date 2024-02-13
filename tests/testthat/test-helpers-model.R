@@ -39,7 +39,7 @@ test_that("use_model_template() prevents duplicate models", {
 
 test_that("get_stancode() returns a string", {
   # define formula
-  ff <- bmm_formula(kappa ~ 1,
+  ff <- bmmformula(kappa ~ 1,
                     thetat ~ 1,
                     thetant ~ 1)
 

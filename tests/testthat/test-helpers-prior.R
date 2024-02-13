@@ -1,6 +1,6 @@
 test_that("get_model_prior() returns a brmsprior object", {
   # define formula
-  ff <- bmm_formula(kappa ~ 1,
+  ff <- bmmformula(kappa ~ 1,
                     thetat ~ 1,
                     thetant ~ 1)
 
