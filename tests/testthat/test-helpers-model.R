@@ -39,10 +39,9 @@ test_that("use_model_template() prevents duplicate models", {
 
 test_that("get_stancode() returns a string", {
   # define formula
-  ff <- brms::bf(y ~ 1,
-                 kappa ~ 1,
-                 thetat ~ 1,
-                 thetant ~ 1)
+  ff <- bmm_formula(kappa ~ 1,
+                    thetat ~ 1,
+                    thetant ~ 1)
 
   # simulate data
   dat <- data.frame(y = rmixture3p(n = 200),
@@ -52,6 +51,6 @@ test_that("get_stancode() returns a string", {
   # fit the model
   stancode <- get_stancode(formula = ff,
                            data = dat,
-                           model = mixture3p(non_targets = paste0('nt',1,'_loc'), setsize = 2))
+                           model = mixture3p(respErr = "y", non_targets = paste0('nt',1,'_loc'), setsize = 2))
   expect_equal(class(stancode)[1], "character")
 })
