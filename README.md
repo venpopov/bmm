@@ -20,6 +20,19 @@ cognitive processes underlying observed behavior, because they decompose
 observed behavior into several theoretically meaningful parameters that
 each represent distinct cognitive processes.
 
+## Getting started
+
+See the following sections for more information on the `bmm` package:
+
+- [Available models](#available-models)
+- [Installation](#installation)
+- [Fitting models using the bmm](#fitting-models-using-the-bmm)
+- [Exploring cogntive measurement
+  models](#exploring-cogntive-measurement-models)
+- [The general structure of the bmm
+  package](#the-general-structure-of-the-bmm-package)
+- [Contributing to the `bmm` package](#contributing-to-the-bmm-package)
+
 ## Available models
 
 Currently the bmm package implements mainly models used in the domain of
@@ -65,16 +78,45 @@ bmm::supported_models()
 ## Installation
 
 Currently, we are working on getting the package ready to be submitted
-to CRAN. For now, you have to install the development version of bmm
-from [GitHub](https://github.com/) with:
+to CRAN. Until then, you can install the latest version of the package
+from GitHub.
+
+You can install the latest beta release of bmm with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("venpopov/bmm")
+if (!requireNamespace("remotes")) {
+  install.packages("remotes")
+}
+remotes::install_github("venpopov/bmm@*release")
 ```
 
-All the vignettes are also available on the [bmm
+This does not install the vignettes, which take a long time to build,
+but they are all available on the [bmm
 website](https://venpopov.github.io/bmm/).
+
+Because `bmm` is based on `brms` and `stan` it requires a working C++
+compiler. If you are already using `brms`, you are good to go and can
+install the package as described above. If you are not using `brms` yet,
+we recommend the following steps:
+
+- Install and configure a C++ compiler. Detailed instructions
+  [here](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started#configuring-c-toolchain)
+- Install
+  [rstan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started)
+  and/or
+  [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
+  recommend using `cmdstanr`.
+- Install [brms](https://paul-buerkner.github.io/brms/#installation)
+- Install `bmm` as described above
+
+You can also install the development version of bmm with:
+
+``` r
+if (!requireNamespace("remotes")) {
+  install.packages("remotes")
+}
+remotes::install_github("venpopov/bmm")
+```
 
 The package was significantly updated on Feb 03, 2024. If you are
 following older versions (earlier than Version 6) of the [Tutorial
@@ -82,31 +124,15 @@ preprint](https://osf.io/preprints/psyarxiv/umt57), you need to install
 the 0.0.1 version of the bmm package with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("venpopov/bmm@v0.0.1")
+if (!requireNamespace("remotes")) {
+  install.packages("remotes")
+}
+remotes::install_github("venpopov/bmm@v0.0.1")
 ```
 
-## The general structure of the bmm package
+## Fitting models using the bmm
 
-The main building block of the bmm package is that cognitive measurement
-models can often be specified as distributional models for which the
-distributional parameters of the generalized linear mixed model are a
-function of cognitive measurement model parameters. These functions that
-translate the cognitive measurement model parameters into distributional
-parameters is what we implement in the bmm package.
-
-<img src="man/figures/README-bmmLogic.jpg" width="600" style="display: block; margin: auto;" />
-
-As these function can become complicated and their implementation
-changes with differences in experimental designs, the bmm package
-provides general translation functions that eases the use of the
-cognitive measurement models for end users. This way researchers that
-face challenges in writing their own STAN code to implement such models
-themselves can still use these models in almost any experimental design.
-
-### Fitting models using the bmm
-
-The core function of the bmm package is the `fit_model` function. This
+The core function of the bmm package is the `fit_model()` function. This
 function takes:
 
 1.  a linear model formula specifying how parameters of the model should
@@ -125,23 +151,6 @@ Interference Measurement Model would look like this:
 ?IMMfull
 ```
 
-The function will then call the appropriate functions for the specified
-model and will perform several steps:
-
-1.  Configure the Sample (e.g., set up prallelization)
-2.  Check the information passed to the `fit_model` function:
-    - if the model is installed and all required arguments were provided
-    - if a valid formula was passed
-    - if the data contains all necessary variables
-3.  Configure the called model (including specifying priors were
-    necessary)
-4.  Calling `brms` and passing the specified arguments
-5.  Posprocessing the output and passing it to the user
-
-This process is illustrated in the Figure below:
-
-<img src="man/figures/README-fitModel_process.jpg" width="600" style="display: block; margin: auto;" />
-
 A complete call to fit a model using bmm could look like this. For this
 example, we are using the `OberauerLin_2017` data that is provided with
 the package.
@@ -151,7 +160,7 @@ library(bmm)
 data <- OberauerLin_2017
 ```
 
-For this quick example, we will show hot to setup fitting the
+For this quick example, we will show how to setup fitting the
 Interference Measurement Model to this data. If you want a detailed
 description of this model and and in depth explanation of the parameters
 estimated in the model, please have a look at `vignette("IMM")`.
@@ -192,7 +201,7 @@ package](https://venpopov.github.io/bmm/articles/index.html) or [here
 for the development
 version](https://venpopov.github.io/bmm/dev/articles/index.html).
 
-### Exploring cogntive measurement models
+## Exploring cogntive measurement models
 
 To aid users in improving their intuition about what different models
 predict for observed data given a certain parameter set, the `bmm`
@@ -214,9 +223,9 @@ library(ggplot2)
 
 simData <- data.frame(
   x = bmm::rIMM(n = 500,
-           mu = c(0,-1.5,2.5,1),
-                            dist = c(0, 2, 0.3, 1),
-                            c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)
+                mu = c(0,-1.5,2.5,1),
+                dist = c(0, 2, 0.3, 1),
+                c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)
 )
 
 ggplot(data = simData, aes(x = x)) +
@@ -229,6 +238,42 @@ ggplot(data = simData, aes(x = x)) +
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="400" />
+
+## The general structure of the bmm package
+
+The main building block of the bmm package is that cognitive measurement
+models can often be specified as distributional models for which the
+distributional parameters of the generalized linear mixed model are a
+function of cognitive measurement model parameters. These functions that
+translate the cognitive measurement model parameters into distributional
+parameters is what we implement in the bmm package.
+
+<img src="man/figures/README-bmmLogic.jpg" width="600" style="display: block; margin: auto;" />
+
+As these function can become complicated and their implementation
+changes with differences in experimental designs, the bmm package
+provides general translation functions that eases the use of the
+cognitive measurement models for end users. This way researchers that
+face challenges in writing their own STAN code to implement such models
+themselves can still use these models in almost any experimental design.
+
+Under the hood, the main `bmm` `fit_model()` function will then call the
+appropriate functions for the specified model and will perform several
+steps:
+
+1.  Configure the Sample (e.g., set up prallelization)
+2.  Check the information passed to the `fit_model()` function:
+    - if the model is installed and all required arguments were provided
+    - if a valid formula was passed
+    - if the data contains all necessary variables
+3.  Configure the called model (including specifying priors were
+    necessary)
+4.  Calling `brms` and passing the specified arguments
+5.  Posprocessing the output and passing it to the user
+
+This process is illustrated in the Figure below:
+
+<img src="man/figures/README-fitModel_process.jpg" width="600" style="display: block; margin: auto;" />
 
 ## Contributing to the `bmm` package
 

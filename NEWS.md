@@ -1,4 +1,10 @@
-# bmm 0.1.1+
+# bmm 0.2.1
+
+### Bug Fixes
+* Minor change to sdmSimple stan helper functions to avoid a harmless warning message in the stan output
+
+
+# bmm 0.2.0
 
 ### New features
 
