@@ -2,3 +2,14 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
+^cran-comments\.md$
+^local$
+^.github$
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^vignettes/articles$
+^doc$
+^Meta$
+^dev_utils$

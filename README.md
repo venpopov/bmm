@@ -1,115 +1,239 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# bmm <!-- badges: start --> <!-- badges: end -->
+# bmm <!-- badges: start -->
 
-The goal of bmm (Bayesian Measurement Models for Visual Working Memory)
-is to make it easier to estimate common mixture measurement models for
-visual working memory using the ‘brms’ package. Currently implemented
-are the two-parameter mixture model by Zhang and Luck (2008), and the
-three- parameter mixture model by Bays et al (2009).
+[![R-CMD-check](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml)
+[![test-coverage](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml)
+<!-- badges: end -->
+
+## Overview
+
+The goal of the `bmm` (Bayesian Measurement Models) package is to make
+it easier to estimate common cognitive measurement models for behavioral
+research. It achieves this by combining the flexibility of the ‘brms’
+package for specifying linear model syntax with custom functions that
+translate cognitive measurement model into distributional families that
+can be estimated using Bayesian hierarchical estimation. Cognitive
+measurement models provide a more refined representation of the
+cognitive processes underlying observed behavior, because they decompose
+observed behavior into several theoretically meaningful parameters that
+each represent distinct cognitive processes.
+
+## Available models
+
+Currently the bmm package implements mainly models used in the domain of
+visual working memory research:
+
+**Visual working memory**
+
+- Interference measurement model by Oberauer and Lin (2017).
+- Two-parameter mixture model by Zhang and Luck (2008).
+- Three-parameter mixture model by Bays et al (2009).
+- Signal Discrimination Model (SDM) by Oberauer (2023)
+
+However, the setup of the bmm package provides the foundation for the
+implementation of a broad range of cognitive measurement models. In
+fact, we are already working on implementing additional models, such as:
+
+- Signal-Detection Models
+- Evidence Accumulation Models
+- Memory Models for categorical response
+
+If you have suggestions for models that should be added to the package,
+feel free to create an issue. Ideally this should describe the model,
+point towards literature that gives details on the model, and if
+possible link to code that has already implemented the model.
+
+Given the dynamic nature the bmm package is currently in, you can always
+view the latest list of supported models by running:
+
+``` r
+bmm::supported_models()
+#> The following models are supported:
+#> 
+#> -  IMMabc(non_targets, setsize) 
+#> -  IMMbsc(non_targets, setsize, spaPos) 
+#> -  IMMfull(non_targets, setsize, spaPos) 
+#> -  mixture2p() 
+#> -  mixture3p(non_targets, setsize) 
+#> -  sdmSimple() 
+#> 
+#> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
+```
 
 ## Installation
 
-You can install the development version of bmm from
-[GitHub](https://github.com/) with:
+Currently, we are working on getting the package ready to be submitted
+to CRAN. For now, you have to install the development version of bmm
+from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("venpopov/bmm")
 ```
 
-## Example
+All the vignettes are also available on the [bmm
+website](https://venpopov.github.io/bmm/).
 
-The three-parameter mixture model by Bays et al (2009) assumes that
-responses can come from three different sources - noisy representation
-of the target, confusion with noisy representation of non-target items,
-or guessing based on a uniform distribution. To estimate these
-parameters for a dataset, we can use the `fit_model()` function. First,
-let’s generate a dataset with known parameters. We can use the function
-`gen_3p_data()`
+The package was significantly updated on Feb 03, 2024. If you are
+following older versions (earlier than Version 6) of the [Tutorial
+preprint](https://osf.io/preprints/psyarxiv/umt57), you need to install
+the 0.0.1 version of the bmm package with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("venpopov/bmm@v0.0.1")
+```
+
+## The general structure of the bmm package
+
+The main building block of the bmm package is that cognitive measurement
+models can often be specified as distributional models for which the
+distributional parameters of the generalized linear mixed model are a
+function of cognitive measurement model parameters. These functions that
+translate the cognitive measurement model parameters into distributional
+parameters is what we implement in the bmm package.
+
+<img src="man/figures/README-bmmLogic.jpg" width="600" style="display: block; margin: auto;" />
+
+As these function can become complicated and their implementation
+changes with differences in experimental designs, the bmm package
+provides general translation functions that eases the use of the
+cognitive measurement models for end users. This way researchers that
+face challenges in writing their own STAN code to implement such models
+themselves can still use these models in almost any experimental design.
+
+### Fitting models using the bmm
+
+The core function of the bmm package is the `fit_model` function. This
+function takes:
+
+1.  a linear model formula specifying how parameters of the model should
+    vary as a function of experimental conditions
+2.  data containing the dependent variables, the variables predicting
+    model parameters, and potentially additional variables providing
+    information to identify the model
+3.  the model that should be fit
+
+You can get more detailed information on the models implemented in bmm
+by invoking the documentation of each model typing `?bmmmodel` into your
+console. For example, calling the information on the full version of the
+Interference Measurement Model would look like this:
+
+``` r
+?IMMfull
+```
+
+The function will then call the appropriate functions for the specified
+model and will perform several steps:
+
+1.  Configure the Sample (e.g., set up prallelization)
+2.  Check the information passed to the `fit_model` function:
+    - if the model is installed and all required arguments were provided
+    - if a valid formula was passed
+    - if the data contains all necessary variables
+3.  Configure the called model (including specifying priors were
+    necessary)
+4.  Calling `brms` and passing the specified arguments
+5.  Posprocessing the output and passing it to the user
+
+This process is illustrated in the Figure below:
+
+<img src="man/figures/README-fitModel_process.jpg" width="600" style="display: block; margin: auto;" />
+
+A complete call to fit a model using bmm could look like this. For this
+example, we are using the `OberauerLin_2017` data that is provided with
+the package.
 
 ``` r
 library(bmm)
-library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-#> ✔ ggplot2 3.4.0     ✔ purrr   1.0.1
-#> ✔ tibble  3.1.8     ✔ dplyr   1.1.0
-#> ✔ tidyr   1.3.0     ✔ stringr 1.5.0
-#> ✔ readr   2.1.3     ✔ forcats 1.0.0
-#> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-#> ✖ dplyr::filter() masks stats::filter()
-#> ✖ dplyr::lag()    masks stats::lag()
-dat <- gen_3p_data(N=2000, pmem=0.6, pnt=0.3, kappa=10, setsize=4, relative_resp=T)
-head(dat)
-#>            y    nt1_loc    nt2_loc      nt3_loc
-#> 1  0.2569243  2.6968595  1.1011967 -2.381452975
-#> 2 -0.2995747  3.0590161 -2.6963216  2.097664573
-#> 3 -0.6496101  1.0919187 -1.1204057 -0.897425564
-#> 4  0.6172717  1.3327058  1.0317656 -0.522874907
-#> 5 -0.2693346  2.1338354  0.2148838 -0.001552538
-#> 6 -0.2150131 -0.3817029 -2.8162736  0.636291417
+data <- OberauerLin_2017
 ```
 
-We have a dataset of 2000 observations of response error, of which 60%
-(pmem=0.6) come from the target distribution, 30% (pnt=0.3) are
-non-target swaps, and 10% are guessing. The precision of the von Mises
-distribution is 10, the presented setsize is 4 (one target and three
-lures/non-targets), and the values are coded relative to the target
-value (i.e., response error for the y variable or displacement relative
-to the target for the lures).
-
-Just for visualization purposes, here’s a histogram of the error
-distribution, demonstrating a typical pattern - a normal distribution
-centered on 0, with long tails:
+For this quick example, we will show hot to setup fitting the
+Interference Measurement Model to this data. If you want a detailed
+description of this model and and in depth explanation of the parameters
+estimated in the model, please have a look at `vignette("IMM")`.
 
 ``` r
-hist(dat$y, breaks = 60, xlab = "Response error relative to target")
+model_formula <- brms::bf(dev_rad ~ 1,
+                          c ~ 0 + SetSize,
+                          a ~ 0 + SetSize,
+                          s ~ 0 + SetSize,
+                          kappa ~ 0 + SetSize)
+
+model <- IMMfull(non_targets = paste0("Item",2:8,"_Col"),
+                 spaPos = paste0("Item",2:8,"_Pos"))
+
+fit <- fit_model(
+  formula = model_formula,
+  data = data,
+  model = model
+)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
-Another key property of the data is that some error responses are not
-random, but that they are due to confusion of the target with one of the
-lures. We can visualize this by centering the response error relative to
-each of the possible non-target locations. We do this with the helper
-function `calc_error_relative_to_nontargets()`:
+Using this call, the `fit` object will save all the information about
+the fitted model. As `bmm` calls `brms` to fit the models, these objects
+can be handled the same way a normal `brmsfit` object is handled:
 
 ``` r
-dat %>% 
-  calc_error_relative_to_nontargets('y', paste0('nt',1:3,'_loc')) %>% 
-  ggplot(aes(y_nt)) +
-  geom_histogram()
-#> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+# print summary
+summary(fit)
+
+# plot posterior predicitive plot
+brms::pp_check(fit)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+You can have a look at examples for how to fit all currently implemented
+models by reading the vignettes for each model [here for the released
+version of the
+package](https://venpopov.github.io/bmm/articles/index.html) or [here
+for the development
+version](https://venpopov.github.io/bmm/dev/articles/index.html).
 
-Ok, so now let’s fit the three-parameter model. We only need to do two
-things: - Specify the model formula - Call fit_model()
+### Exploring cogntive measurement models
 
-In this example the parameters don’t vary over conditions, so we have no
-predictors. `y` is the name of the response error variable, whereas
-`kappa`, `thetat` and `thetant` are the parameters of the model -
-precision, mixing proportion for correct responses and mixing proportion
-for non-target swaps.
+To aid users in improving their intuition about what different models
+predict for observed data given a certain parameter set, the `bmm`
+package also includes density and random generation function for all
+implemented models.
+
+These function provide an easy way to see what a model predicts for data
+given a certain set of parameters. For example you can easily plot the
+probability density function of the data for the Interference
+Measurement model using the `dIMM` function. In similar fashion the
+random generation function included for each model, generates random
+data based on a set of data generating parameters. For the IMM, you can
+use `rIMM` to generate data given a set of parameters. Plotting the
+random data against the density illustrates that the data follows the
+theoretically implied density.
 
 ``` r
-ff <- brms::bf(y ~ 1,
-         kappa ~ 1,
-         thetat ~ 1,
-         thetant ~ 1)
+library(ggplot2)
+
+simData <- data.frame(
+  x = bmm::rIMM(n = 500,
+           mu = c(0,-1.5,2.5,1),
+                            dist = c(0, 2, 0.3, 1),
+                            c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)
+)
+
+ggplot(data = simData, aes(x = x)) +
+  geom_histogram(aes(y = after_stat(density))) +
+  geom_function(fun = bmm::dIMM,
+                args = list(mu = c(0,-1.5,2.5,1),
+                            dist = c(0, 2, 0.3, 1),
+                            c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)) +
+  scale_x_continuous(limits = c(-pi,pi))
 ```
 
-Finally we just run the model. The arguments to the function explained
-in `help(fit_model)` and you can also pass any additional arguments that
-you would pass to `brm`.
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="400" />
 
-``` r
-fit <- fit_model(formula = ff,
-                 data = dat,
-                 model_type = "3p",
-                 non_targets = paste0('nt',1:3,'_loc'),
-                 setsize=4,
-                 parallel=T,
-                 iter=500)
-```
+## Contributing to the `bmm` package
+
+Should be interested in contributing a model to the `bmm` package, you
+should first look into the [Developer
+Notes](https://venpopov.github.io/bmm/dev/dev-notes/index.html). These
+give a more in depth description of the package architecture and the
+steps necessary to add your own model to the package.

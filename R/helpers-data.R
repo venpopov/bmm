@@ -1,0 +1,274 @@
+#############################################################################!
+# CHECK_DATA METHODS                                                     ####
+#############################################################################!
+
+
+#' @title Generic S3 method for checking data based on model type
+#' @description Called by fit_model() to automatically perform checks on the
+#'   data depending on the model type. It will call the appropriate check_data
+#'   methods based on the list of classes defined in the .model_* functions. For
+#'   models with several classes listed, it will call the functions in the order
+#'   they are listed. Thus, any operations that are common to a group of models
+#'   should be defined in the appropriate check_data.* function, where \*
+#'   corresponds to the shared class. For example, for the .model_IMMabc model,
+#'   this corresponds to the following order of check_data.* functions:
+#'   check_data() -> check_data.vwm(), check_data.nontargets() the output of the
+#'   final function is returned to fit_model().
+#' @param model A model list object returned from check_model()
+#' @param data The user supplied data.frame containing the data to be checked
+#' @param formula The user supplied formula
+#' @return A data.frame with the same number of rows as the input data, but with
+#'   additional columns added as necessary, any necessary transformations
+#'   applied, and attributes added to the data.frame for later use. If you need
+#'   to reuse variables created by the check_data.* functions in subsequent
+#'   stages (e.g. in configure_model()), you can store and access them using the
+#'   attr() function.
+#' @export
+#' @keywords internal, developer
+check_data <- function(model, data, formula) {
+  if (missing(data)) {
+    stop("Data must be specified using the 'data' argument.")
+  }
+  data <- try(as.data.frame(data), silent = TRUE)
+  if (is_try_error(data)) {
+    stop("Argument 'data' must be coercible to a data.frame.")
+  }
+  if (!isTRUE(nrow(data) > 0L)) {
+    stop("Argument 'data' does not contain observations.")
+  }
+  resp_name <- get_response(formula$formula)
+  if (not_in(resp_name, colnames(data))) {
+    stop(paste0("The response variable '", resp_name, "' is not present in the data."))
+  }
+
+  UseMethod("check_data")
+}
+
+
+
+#' @export
+check_data.default <- function(model, data, formula) {
+  return(data)
+}
+
+
+#' @export
+check_data.vwm <- function(model, data, formula) {
+  resp_name <- get_response(formula$formula)
+  if (max(abs(data[[resp_name]]), na.rm = T) > 2*pi) {
+    warning('It appears your response variable is in degrees.\n
+             The model requires the response variable to be in radians.\n
+             The model will continue to run, but the results may be compromised.')
+  }
+
+  data = NextMethod("check_data")
+
+  return(data)
+}
+
+
+#' @export
+check_data.nontargets <- function(model, data, formula) {
+  non_targets <- model$vars$non_targets
+  if (max(abs(data[,non_targets]), na.rm = T) > 2*pi) {
+    warning('It appears at least one of your non_target variables are in degrees.\n
+             The model requires these variable to be in radians.\n
+            The model will continue to run, but the results may be compromised.')
+  }
+
+  setsize <- model$vars$setsize
+  if (is.character(setsize) && length(setsize) == 1) {
+    # Variable setsize
+    ss_numeric <- as.numeric(as.character(data[[setsize]]))
+    max_setsize <- max(ss_numeric)
+  } else if (is.numeric(setsize) && length(setsize) == 1) {
+    # Fixed setsize
+    ss_numeric <- rep(setsize, times = nrow(data))
+    max_setsize <- setsize
+  } else {
+    stop("Argument 'setsize' must be either a single numeric value or a character string.")
+  }
+
+  if (length(non_targets) < max_setsize - 1) {
+    stop("The number of columns for non-target values in the argument ",
+         "'non_targets' is less than max(setsize)-1")
+  } else if (length(non_targets) > max_setsize - 1) {
+    stop('The number of columns for non-target values in the argument ',
+         '`non_targets` is more than max(setsize)-1')
+  }
+
+  # create index variables for non_targets and correction variable for theta due to setsize
+  lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
+  for (i in 1:(max_setsize - 1)) {
+    data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
+  }
+  data$ss_numeric <- ss_numeric
+  data$inv_ss = 1/(ss_numeric - 1)
+  data$inv_ss = ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
+  data[,non_targets][is.na(data[,non_targets])] <- 0
+
+  # save some variables for later use
+  attr(data, 'max_setsize') <- max_setsize
+  attr(data, 'lure_idx_vars') <- lure_idx_vars
+
+  data = NextMethod("check_data")
+
+  return(data)
+}
+
+
+#############################################################################!
+# HELPER FUNCTIONS                                                       ####
+#############################################################################!
+
+#' Calculate response error relative to non-target values
+#'
+#' @description Given a vector of responses, and the values of non-targets, this
+#'   function computes the error relative to each of the non-targets.
+#' @param data A `data.frame` object where each row is a single observation
+#' @param response Character. The name of the column in `data` which contains
+#'   the response
+#' @param non_targets Character vector. The names of the columns in `data` which
+#'   contain the values of the non-targets
+#' @keywords transform
+#' @return A `data.frame` with n*m rows, where n is the number of rows of `data`
+#'   and m is the number of non-target variables. It preserves all other columns
+#'   of `data`, except for the non-target locations, and adds a column `y_nt`,
+#'   which contains the transformed response error relative to the non-targets
+#'
+#' @export
+#'
+calc_error_relative_to_nontargets <- function(data, response, non_targets) {
+  y <- y_nt <- non_target_name <- non_target_value <- NULL
+  data <- data %>%
+    tidyr::gather(non_target_name, non_target_value, eval(non_targets))
+
+  data$y_nt <- wrap(data[[response]]-data[["non_target_value"]])
+  return(data)
+}
+
+#' @title Wrap angles that extend beyond (-pi;pi)
+#' @description On the circular space, angles can be only in the range (-pi;pi
+#'   or -180;180). When subtracting angles, this can result in values outside of
+#'   this range. For example, when calculating the difference between a value of
+#'   10 degrees minus 340 degrees, this results in a difference of 330 degrees.
+#'   However, the true difference between these two values is -30 degrees. This
+#'   function wraps such values, so that they occur in the circle
+#' @param x A numeric vector, matrix or data.frame of angles to be wrapped. In
+#'   radians (default) or degrees.
+#' @param radians Logical. Is x in radians (default=TRUE) or degrees (FALSE)
+#' @return An object of the same type as x
+#' @keywords transform
+#' @export
+#' @examples
+#' x <- runif(1000, -pi, pi)
+#' y <- runif(1000, -pi, pi)
+#' diff <- x-y
+#' hist(diff)
+#' wrapped_diff <- wrap(x-y)
+#' hist(wrapped_diff)
+#'
+wrap <- function(x, radians=TRUE) {
+  stopifnot(is.logical(radians))
+  if (radians) {
+    return(((x+pi) %% (2*pi)) - pi)
+  } else {
+    return(((x+180) %% (2*180)) - 180)
+  }
+}
+
+#' @title Convert degrees to radians or radians to degrees.
+#' @description
+#'   The helper functions `deg2rad` and `rad2deg` should add convenience in transforming
+#'   data from degrees to radians and from radians to degrees.
+#'
+#' @name circle_transform
+#' @param deg A numeric vector of values in degrees.
+#' @param rad A numeric vector of values in radians.
+#' @return A numeric vector of the same length as `deg` or `rad`.
+#' @keywords transform
+#' @export
+#' @examples
+#'   degrees <- runif(100, min = 0, max = 360)
+#'   radians <- deg2rad(degrees)
+#'   degrees_again <- rad2deg(radians)
+deg2rad <- function(deg){
+  deg * pi / 180
+}
+
+#' @rdname circle_transform
+#' @export
+rad2deg <- function(rad){
+  rad * 180 / pi
+}
+
+
+#' @title Generate data for `bmm` models to be passed to Stan
+#' @description A wrapper around `brms::make_standata()` for models specified
+#'   with `bmm`. Given the `model`, the `data` and the `formula` for the model,
+#'   this function will return the combined stan data generated by `bmm` and
+#'   `brms`
+#' @param formula An object of class `brmsformula`. A symbolic description of
+#'   the model to be fitted.
+#' @param data An object of class data.frame, containing data of all variables
+#'   used in the model. The names of the variables must match the variable names
+#'   passed to the `bmmmodel` object for required argurments.
+#' @param model A description of the model to be fitted. This is a call to a
+#'   `bmmmodel` such as `mixture3p()` function. Every model function has a
+#'   number of required arguments which need to be specified within the function
+#'   call. Call [supported_models()] to see the list of supported models and
+#'   their required arguments
+#' @param prior One or more `brmsprior` objects created by [brms::set_prior()]
+#'   or related functions and combined using the c method or the + operator. See
+#'   also [get_model_prior()] for more help. Not necessary for the default model
+#'   fitting, but you can provide prior constraints to model parameters
+#' @param ... Further arguments passed to [brms::make_standata()]. See the
+#'   description of [brms::make_standata()] for more details
+#'
+#' @returns A named list of objects containing the required data to fit a bmm
+#'   model with Stan.
+#'
+#'
+#' @seealso [supported_models()], [brms::make_standata()]
+#'
+#' @export
+#'
+#' @keywords extract_stan
+#'
+#' @examples
+#' \dontrun{
+#' # generate artificial data from the Signal Discrimination Model
+#' dat <- data.frame(y=rsdm(n=2000))
+#'
+#' # define formula
+#' ff <- brms::bf(y ~ 1,
+#'                c ~ 1,
+#'                kappa ~ 1)
+#'
+#' # fit the model
+#' get_standata(formula = ff,
+#'              data = dat,
+#'              model = sdmSimple()
+#' )
+#' }
+#'
+get_standata <- function(formula, data, model, prior=NULL, ...) {
+
+  # check model, formula and data, and transform data if necessary
+  model <- check_model(model)
+  formula <- check_formula(model, formula)
+  data <- check_data(model, data, formula)
+
+  # generate the model specification to pass to brms later
+  config_args <- configure_model(model, data, formula)
+
+  # combine the default prior plus user given prior
+  config_args$prior <- combine_prior(config_args$prior, prior)
+
+  # extract stan code
+  dots <- list(...)
+  fit_args <- c(config_args, dots)
+  standata <- brms::do_call(brms::make_standata, fit_args)
+
+  return(standata)
+}
