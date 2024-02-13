@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.1.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,9 +51,9 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.1" id="bmm-011">bmm 0.1.1+<a class="anchor" aria-label="anchor" href="#bmm-011"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="bmm-020">bmm 0.2.0<a class="anchor" aria-label="anchor" href="#bmm-020"></a></h2>
 <div class="section level4">
-<h4 id="new-features-0-1-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1"></a></h4>
+<h4 id="new-features-0-2-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h4>
 <ul><li>New model available - The Signal Discrimination Model by Oberauer (2023) for visual working memory continuous reproduction tasks. See ?sdmSimple. The current version does not take into account non-target activation</li>
 <li>Add ability to extract information about the default priors in <code>bmm</code> models with <code><a href="../reference/get_model_prior.html">get_model_prior()</a></code> (<a href="https://github.com/venpopov/bmm/issues/53" class="external-link">#53</a>)</li>
 <li>Add ability to generate stan code and stan data for each model with <code>get_model_stancode()</code> and <code>get_model_standata()</code> (<a href="https://github.com/venpopov/bmm/issues/81" class="external-link">#81</a>)</li>
@@ -61,7 +61,7 @@
 <li>Two new datasets available: <code>ZhangLuck_2008</code> and <code>OberauerLin_2017</code> (<a href="https://github.com/venpopov/bmm/issues/22" class="external-link">#22</a>)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="documentation-0-1-1">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-1-1"></a></h4>
+<h4 id="documentation-0-2-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0"></a></h4>
 <ul><li>Website for the development version of the package is now available at <a href="https://venpopov.github.io/bmm/dev/" class="uri">https://venpopov.github.io/bmm/dev/</a> (<a href="https://github.com/venpopov/bmm/issues/18" class="external-link">#18</a>)</li>
 <li>Add vignettes for each model to the website at <a href="https://venpopov.github.io/bmm/dev/articles/" class="uri">https://venpopov.github.io/bmm/dev/articles/</a>
 </li>
@@ -69,20 +69,20 @@
 <li>Improve README with more detailed information about the package’s goals and its models (<a href="https://github.com/venpopov/bmm/issues/21" class="external-link">#21</a>)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="other-changes-0-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1"></a></h4>
+<h4 id="other-changes-0-2-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-2-0"></a></h4>
 <ul><li>Save <code>bmm</code> package version in the <code>brmsfit</code> object for reproducibility - e.g. <code>fit$version$bmm</code> (<a href="https://github.com/venpopov/bmm/issues/88" class="external-link">#88</a>)</li>
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.1" id="bmm-011-1">bmm 0.1.1<a class="anchor" aria-label="anchor" href="#bmm-011-1"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.1" id="bmm-011">bmm 0.1.1<a class="anchor" aria-label="anchor" href="#bmm-011"></a></h2>
 <div class="section level4">
-<h4 id="new-features-0-1-1-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1-1"></a></h4>
+<h4 id="new-features-0-1-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1"></a></h4>
 <ul><li>BREAKING CHANGE: Improve user interface to fit_model() ensures package stability and future development. Model specific arguments are now passed to the model functions as named arguments (e.g. <code>mixture3p(non_targets, setsize)</code>). This allows for a more flexible and intuitive way to specify model arguments. Passing model specific arguments directly to the <code><a href="../reference/fit_model.html">fit_model()</a></code> function is now deprecated (<a href="https://github.com/venpopov/bmm/issues/43" class="external-link">#43</a>).</li>
 <li>Add information about each model such as domain, task, name, version, citation, requirements and parameters (<a href="https://github.com/venpopov/bmm/issues/42" class="external-link">#42</a>)</li>
 <li>Add ability to generate a template file for adding new models to the package with <code><a href="../reference/use_model_template.html">use_model_template()</a></code> (for developers) (<a href="https://github.com/venpopov/bmm/issues/39" class="external-link">#39</a>)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="other-changes-0-1-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1-1"></a></h4>
+<h4 id="other-changes-0-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1"></a></h4>
 <ul><li>Improve documentation of model functions. You can now get help on each model by typing <code>?model_name</code> into your console. For example, calling the information on the full version of the Interference Measurement Model would look like this: <code><a href="../reference/IMM.html">?IMMfull</a></code>
 </li>
 </ul></div>
