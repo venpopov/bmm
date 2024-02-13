@@ -82,15 +82,10 @@ bmmformula <- function(formula, ...){
   formula <- c(formula, dots)
 
   # extract parameter names
-  pform_names <- character()
-  for (i in 1:length(formula)) {
-    form_line <- formula[[i]]
-    parm <- formula.tools::lhs(form_line)
-    pform_names <- c(pform_names, as.character(parm))
-  }
+  par_names <- sapply(formula, function(par) {all.vars(par)[1]})
 
   # label the different formulas according to the parameter predicted
-  names(formula) <- pform_names
+  names(formula) <- par_names
   class(formula) <- "bmmformula"
   return(formula)
 }
