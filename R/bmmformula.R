@@ -99,5 +99,5 @@ bmmformula <- function(formula, ...){
 # alias of bmmformula
 #' @export
 bmf <- function(formula, ...) {
-  brmsformula(bmmformula(formula, ...))
+  bmmformula(formula, ...)
 }

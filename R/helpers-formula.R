@@ -23,7 +23,7 @@ check_formula <- function(model, formula) {
   par_names <- names(model$info$parameters)
   for (i in length(par_names)) {
     if (!par_names[i] %in% names(formula)) {
-      warning(paste("No formula for parameter",par_names[i],"provided","\n",
+      message(paste("No formula for parameter",par_names[i],"provided","\n",
                     "For this parameter only a fixed intercept will be estimated."))
       par_formula <- stats::as.formula(paste(par_names[i],"~ 1"))
       init_names <- names(formula)
