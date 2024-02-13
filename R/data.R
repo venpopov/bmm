@@ -10,7 +10,7 @@
 #'   \item{trial}{Trial identifyier}
 #'   \item{setsize}{The setsize of the data in this row}
 #'   \item{RespErr}{The response error, that is the difference between the reponse
-#'   given and the target color.}
+#'   given and the target color in radians.}
 #'   \item{Pos_Lure1, Pos_Lure2, Pos_Lure3, Pos_Lure4, Pos_Lure5}{Position of the lure items relative to the target color.}
 #'
 #' }
@@ -25,7 +25,7 @@
 #' with set size 1 to 8 reported by Oberauer & Lin (2017).
 #'
 #' @format ## `OberauerLin_2017`
-#' A data frame with 4,000 rows and 9 columns:
+#' A data frame with 15,200 rows and 39 columns:
 #' \describe{
 #'   \item{ID}{Integer uniquely identifying different subjects}
 #'   \item{Session}{Session number}

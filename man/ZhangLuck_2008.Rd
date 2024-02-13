@@ -13,7 +13,7 @@ A data frame with 4,000 rows and 9 columns:
 \item{trial}{Trial identifyier}
 \item{setsize}{The setsize of the data in this row}
 \item{RespErr}{The response error, that is the difference between the reponse
-given and the target color.}
+given and the target color in radians.}
 \item{Pos_Lure1, Pos_Lure2, Pos_Lure3, Pos_Lure4, Pos_Lure5}{Position of the lure items relative to the target color.}
 
 }

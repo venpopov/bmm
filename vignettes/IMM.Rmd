@@ -160,17 +160,17 @@ simData$cond <- as.factor(simData$cond)
 To estimate the `IMM` we first need to specify a formula. In this formula, we directly estimate all parameters for each of the four conditions:
 
 ```{r}
-model_formula <- brms::bf(respErr ~ 1,
-                          c ~ 0 + cond,
-                          a ~ 0 + cond,
-                          s ~ 0 + cond,
-                          kappa ~ 0 + cond)
+model_formula <- bmm_formula(c ~ 0 + cond,
+                             a ~ 0 + cond,
+                             s ~ 0 + cond,
+                             kappa ~ 0 + cond)
 ```
 
 Then, we can specify the model that we want to estimate:
 
 ```{r}
-model <- IMMfull(non_target = paste0("color_item",2:setsize),
+model <- IMMfull(respErr = "respErr",
+                 non_target = paste0("color_item",2:setsize),
                  setsize = setsize,
                  spaPos = paste0("dist_item",2:setsize))
 ```
@@ -185,7 +185,8 @@ model = model,
 parallel = TRUE,
 chains = 4,
 iter = 2000,
-backend = "cmdstanr"
+backend = "cmdstanr",
+refresh = 100
 )
 ```
 
@@ -217,10 +218,10 @@ fixedFX[startsWith(rownames(fixedFX),"c_"),]
 fixedFX[startsWith(rownames(fixedFX),"a_"),]
 
 # print posterior means for the s parameter
-exp(fixedFX[grepl("s_",rownames(fixedFX)),])
+exp(fixedFX[startsWith(rownames(fixedFX),"s_"),])
 
 # print posterior means for the s parameter
-exp(fixedFX[grepl("kappa_",rownames(fixedFX)),])
+exp(fixedFX[startsWith(rownames(fixedFX),"kappa_"),])
 ```
 
 These results indicate that all parameters, except for `s` were well recovered. As already noted by @oberauerHierarchicalBayesianMeasurement2017, a good recovery of the generalization gradient `s` requires a lot of data. Thus you might consider opting for the simplified version of the IMM without the `s` parameter, the `IMMabc`.

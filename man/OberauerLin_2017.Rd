@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{OberauerLin_2017}}{
 
-A data frame with 4,000 rows and 9 columns:
+A data frame with 15,200 rows and 39 columns:
 \describe{
 \item{ID}{Integer uniquely identifying different subjects}
 \item{Session}{Session number}
