@@ -2,9 +2,9 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture2p <- function(respErr, ...) {
+.model_mixture2p <- function(resp_err, ...) {
   out <- list(
-      vars = nlist(respErr, ...),
+      vars = nlist(resp_err, ...),
       info = list(
         domain = "Visual working memory",
         task = "Continuous reproduction",
@@ -26,7 +26,7 @@
 # user facing alias
 #' @title `r .model_mixture2p(NA)$info$name`
 #' @details `r model_info(mixture2p(NA))`
-#' @param respErr The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
+#' @param resp_err The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel
@@ -61,7 +61,7 @@ mixture2p <- .model_mixture2p
 
 #' @export
 configure_model.mixture2p <- function(model, data, formula) {
-  respErr <- model$var$respErr
+  resp_err <- model$var$resp_err
   pform_names <- names(formula)
   pform <- formula
 
@@ -72,7 +72,7 @@ configure_model.mixture2p <- function(model, data, formula) {
   }
 
   # specify the formula for the mixture model
-  formula <- brms::bf(paste0(respErr,"~ mu"), nl = T)
+  formula <- brms::bf(paste0(resp_err,"~ mu"), nl = T)
 
   # add parameter formulas to model formula
   for (i in 1:length(pform)) {

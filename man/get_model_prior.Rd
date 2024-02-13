@@ -40,12 +40,12 @@ used if no user-specified priors were passed to the \code{\link[=fit_model]{fit_
 \details{
 The following models are supported:
 \itemize{
-\item \code{IMMabc(respErr, non_targets, setsize)}
-\item \code{IMMbsc(respErr, non_targets, setsize, spaPos)}
-\item \code{IMMfull(respErr, non_targets, setsize, spaPos)}
-\item \code{mixture2p(respErr)}
-\item \code{mixture3p(respErr, non_targets, setsize)}
-\item \code{sdmSimple(respErr)}
+\item \code{IMMabc(resp_err, non_targets, setsize)}
+\item \code{IMMbsc(resp_err, non_targets, setsize, spaPos)}
+\item \code{IMMfull(resp_err, non_targets, setsize, spaPos)}
+\item \code{mixture2p(resp_err)}
+\item \code{mixture3p(resp_err, non_targets, setsize)}
+\item \code{sdmSimple(resp_err)}
 }
 
 Type \code{?modelname} to get information about a specific model, e.g. \code{?IMMfull}

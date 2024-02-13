@@ -168,7 +168,7 @@ ff <- bmmformula(thetat ~ 0 + set_size + (0 + set_size | id),
 Then we specify the model as simply as:
 
 ```{r}
-model <- mixture2p(respErr = "error")
+model <- mixture2p(resp_err = "error")
 ```
 
 Finally, we fit the model with the `fit_model` function. The fit model function uses

@@ -7,14 +7,14 @@
 \alias{IMMabc}
 \title{Interference measurement model by Oberauer and Lin (2017).}
 \usage{
-IMMfull(respErr, non_targets, setsize, spaPos, ...)
+IMMfull(resp_err, non_targets, setsize, spaPos, ...)
 
-IMMbsc(respErr, non_targets, setsize, spaPos, ...)
+IMMbsc(resp_err, non_targets, setsize, spaPos, ...)
 
-IMMabc(respErr, non_targets, setsize, ...)
+IMMabc(resp_err, non_targets, setsize, ...)
 }
 \arguments{
-\item{respErr}{The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
+\item{resp_err}{The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
 
 \item{non_targets}{A character vector with the names of the non-target variables.
 The non_target variables should be in radians and be centered relative to the

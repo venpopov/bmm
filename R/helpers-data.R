@@ -36,7 +36,7 @@ check_data <- function(model, data, formula) {
   if (!isTRUE(nrow(data) > 0L)) {
     stop("Argument 'data' does not contain observations.")
   }
-  resp_name <- model$vars$respErr
+  resp_name <- model$vars$resp_err
   if (not_in(resp_name, colnames(data))) {
     stop(paste0("The response variable '", resp_name, "' is not present in the data."))
   }
@@ -54,7 +54,7 @@ check_data.default <- function(model, data, formula) {
 
 #' @export
 check_data.vwm <- function(model, data, formula) {
-  resp_name <- model$vars$respErr
+  resp_name <- model$vars$resp_err
   if (max(abs(data[[resp_name]]), na.rm = T) > 2*pi) {
     warning('It appears your response variable is in degrees.\n
              The model requires the response variable to be in radians.\n

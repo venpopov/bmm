@@ -2,9 +2,9 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <- function(respErr, non_targets, setsize, ...) {
+.model_IMMabc <- function(resp_err, non_targets, setsize, ...) {
   out <- list(
-    vars = nlist(respErr, non_targets, setsize),
+    vars = nlist(resp_err, non_targets, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -27,9 +27,9 @@
   out
 }
 
-.model_IMMbsc <- function(respErr, non_targets, setsize, spaPos, ...) {
+.model_IMMbsc <- function(resp_err, non_targets, setsize, spaPos, ...) {
   out <- list(
-    vars = nlist(respErr,non_targets, setsize, spaPos),
+    vars = nlist(resp_err,non_targets, setsize, spaPos),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -52,9 +52,9 @@
   out
 }
 
-.model_IMMfull <- function(respErr, non_targets, setsize, spaPos, ...) {
+.model_IMMfull <- function(resp_err, non_targets, setsize, spaPos, ...) {
   out <- list(
-    vars = nlist(respErr, non_targets, setsize, spaPos),
+    vars = nlist(resp_err, non_targets, setsize, spaPos),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -88,7 +88,7 @@
 #' `r model_info(IMMbsc(NA, NA, NA, NA), components =c('requirements', 'parameters'))`
 #' #### Version: `IMMabc`
 #' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters'))`
-#' @param respErr The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
+#' @param resp_err The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
 #' @param non_targets A character vector with the names of the non-target variables.
 #'   The non_target variables should be in radians and be centered relative to the
 #'   target.
@@ -158,7 +158,7 @@ configure_model.IMMabc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  respErr <- model$vars$respErr
+  resp_err <- model$vars$resp_err
   non_targets <- model$vars$non_targets
   setsize_var <- model$vars$setsize
 
@@ -181,7 +181,7 @@ configure_model.IMMabc <- function(model, data, formula) {
   mu_unif <- paste0('mu', max_setsize + 1)
 
   # construct formula
-  formula <- brms::bf(paste0(respErr,"~ mu"), nl = T)
+  formula <- brms::bf(paste0(resp_err,"~ mu"), nl = T)
 
   # add parameter formulas to model formula
   for (i in 1:length(pform)) {
@@ -238,7 +238,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  respErr <- model$vars$respErr
+  resp_err <- model$vars$resp_err
   non_targets <- model$vars$non_targets
   setsize_var <- model$vars$setsize
   spaPos <- model$vars$spaPos
@@ -262,7 +262,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
   mu_unif <- paste0('mu', max_setsize + 1)
 
   # construct formula
-  formula <- brms::bf(paste0(respErr,"~ mu"), nl = T)
+  formula <- brms::bf(paste0(resp_err,"~ mu"), nl = T)
 
   # add parameter formulas to model formula
   for (i in 1:length(pform)) {
@@ -320,7 +320,7 @@ configure_model.IMMfull <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  respErr <- model$vars$respErr
+  resp_err <- model$vars$resp_err
   non_targets <- model$vars$non_targets
   setsize_var <- model$vars$setsize
   spaPos <- model$vars$spaPos
@@ -344,7 +344,7 @@ configure_model.IMMfull <- function(model, data, formula) {
   mu_unif <- paste0('mu', max_setsize + 1)
 
   # construct formula
-  formula <- brms::bf(paste0(respErr,"~ mu"), nl = T)
+  formula <- brms::bf(paste0(resp_err,"~ mu"), nl = T)
 
   # add parameter formulas to model formula
   for (i in 1:length(pform)) {

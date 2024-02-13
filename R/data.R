@@ -9,7 +9,7 @@
 #'   \item{subID}{Integer uniquely identifying different subjects}
 #'   \item{trial}{Trial identifyier}
 #'   \item{setsize}{The setsize of the data in this row}
-#'   \item{RespErr}{The response error, that is the difference between the reponse
+#'   \item{resp_err}{The response error, that is the difference between the reponse
 #'   given and the target color.}
 #'   \item{Pos_Lure1, Pos_Lure2, Pos_Lure3, Pos_Lure4, Pos_Lure5}{Position of the lure items relative to the target color.}
 #'

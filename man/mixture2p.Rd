@@ -4,10 +4,10 @@
 \alias{mixture2p}
 \title{Two-parameter mixture model by Zhang and Luck (2008).}
 \usage{
-mixture2p(respErr, ...)
+mixture2p(resp_err, ...)
 }
 \arguments{
-\item{respErr}{The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
+\item{resp_err}{The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
 
 \item{...}{used internally for testing, ignore it}
 }

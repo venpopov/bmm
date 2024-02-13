@@ -128,7 +128,7 @@ for (i in 1:length(Cs)) {
                   b = 0, s = Ss[i], kappa = kappas[i])
   
   condData <- data.frame(
-    respErr = genData,
+    resp_err = genData,
     trialID = 1:nTrials,
     cond = i,
     color_item1 = 0,
@@ -160,7 +160,7 @@ simData$cond <- as.factor(simData$cond)
 To estimate the `IMM` we first need to specify a formula. In this formula, we directly estimate all parameters for each of the four conditions:
 
 ```{r}
-model_formula <- brms::bf(respErr ~ 1,
+model_formula <- brms::bf(resp_err ~ 1,
                           c ~ 0 + cond,
                           a ~ 0 + cond,
                           s ~ 0 + cond,

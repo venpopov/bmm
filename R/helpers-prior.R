@@ -53,9 +53,9 @@ combine_prior <- function(prior1, prior2) {
 #' dat <- data.frame(y = rsdm(n=2000))
 #'
 #' # define formula
-#' ff <- b(y ~ 1,
-#'                c ~ 1,
-#'                kappa ~ 1)
+#' ff <- bmf(y ~ 1,
+#'           c ~ 1,
+#'           kappa ~ 1)
 #'
 #' # fit the model
 #' get_model_prior(formula = ff,

@@ -51,6 +51,6 @@ test_that("get_stancode() returns a string", {
   # fit the model
   stancode <- get_stancode(formula = ff,
                            data = dat,
-                           model = mixture3p(respErr = "y", non_targets = paste0('nt',1,'_loc'), setsize = 2))
+                           model = mixture3p(resp_err = "y", non_targets = paste0('nt',1,'_loc'), setsize = 2))
   expect_equal(class(stancode)[1], "character")
 })
