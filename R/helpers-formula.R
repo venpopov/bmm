@@ -4,12 +4,18 @@
 #' @return the formula object
 #' @keywords internal, developer
 check_formula <- function(model, formula) {
-  # Pre-Check: was a valid brms formula provided
-  if (inherits(formula, 'brmsformula')) {
-    stop("The provided formula is a brms formula.
+  # Pre-Check: was a valid bmm formula provided
+  if (!inherits(formula, 'bmmformula')) {
+    if (inherits(formula, 'brmsformula')) {
+      stop("The provided formula is a brms formula.
         Please specify formula with the bmmformula() function instead of
         the brmsformula() or bf() function.
-        E.g.: bmmformula(kappa ~ 1, thetat ~ 1")
+        E.g.: bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
+    } else {
+      stop("The provided formula is not a valid bmm formula.
+        Please specify formula with the bmmformula() function.
+        E.g.: bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
+    }
   }
 
   # Check: is the formula valid for the specified model type

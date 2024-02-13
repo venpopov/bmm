@@ -91,6 +91,7 @@ bmmformula <- function(formula, ...){
 
   # label the different formulas according to the parameter predicted
   names(formula) <- pform_names
+  class(formula) <- "bmmformula"
   return(formula)
 }
 
