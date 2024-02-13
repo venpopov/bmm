@@ -65,16 +65,45 @@ bmm::supported_models()
 ## Installation
 
 Currently, we are working on getting the package ready to be submitted
-to CRAN. For now, you have to install the development version of bmm
-from [GitHub](https://github.com/) with:
+to CRAN. Until then, you can install the latest version of the package
+from GitHub.
+
+You can install the latest beta release of bmm with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("venpopov/bmm")
+if (!requireNamespace("remotes")) {
+  install.packages("remotes")
+}
+remotes::install_github("venpopov/bmm@*release")
 ```
 
-All the vignettes are also available on the [bmm
+This does not install the vignettes, which take a long time to build,
+but they are all available on the [bmm
 website](https://venpopov.github.io/bmm/).
+
+Because `bmm` is based on `brms` and `stan` it requires a working C++
+compiler. If you are already using `brms`, you are good to go and can
+install the package as described above. If you are not using `brms` yet,
+we recommend the following steps:
+
+- Install and configure a C++ compiler. Detailed instructions
+  [here](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started#configuring-c-toolchain)
+- Install
+  [rstan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started)
+  and/or
+  [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
+  recommend using `cmdstanr`.
+- Install [brms](https://paul-buerkner.github.io/brms/#installation)
+- Install `bmm` as described above
+
+You can also install the development version of bmm with:
+
+``` r
+if (!requireNamespace("remotes")) {
+  install.packages("remotes")
+}
+remotes::install_github("venpopov/bmm")
+```
 
 The package was significantly updated on Feb 03, 2024. If you are
 following older versions (earlier than Version 6) of the [Tutorial
@@ -82,8 +111,10 @@ preprint](https://osf.io/preprints/psyarxiv/umt57), you need to install
 the 0.0.1 version of the bmm package with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("venpopov/bmm@v0.0.1")
+if (!requireNamespace("remotes")) {
+  install.packages("remotes")
+}
+remotes::install_github("venpopov/bmm@v0.0.1")
 ```
 
 ## The general structure of the bmm package
@@ -104,7 +135,7 @@ cognitive measurement models for end users. This way researchers that
 face challenges in writing their own STAN code to implement such models
 themselves can still use these models in almost any experimental design.
 
-### Fitting models using the bmm
+## Fitting models using the bmm
 
 The core function of the bmm package is the `fit_model` function. This
 function takes:
@@ -192,7 +223,7 @@ package](https://venpopov.github.io/bmm/articles/index.html) or [here
 for the development
 version](https://venpopov.github.io/bmm/dev/articles/index.html).
 
-### Exploring cogntive measurement models
+## Exploring cogntive measurement models
 
 To aid users in improving their intuition about what different models
 predict for observed data given a certain parameter set, the `bmm`
