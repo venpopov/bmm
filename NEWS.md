@@ -1,4 +1,4 @@
-# bmm 0.1.1+
+# bmm 0.2.0
 
 ### New features
 
