@@ -27,6 +27,17 @@ representation of the cognitive processes underlying observed behavior, because
 they decompose observed behavior into several theoretically meaningful
 parameters that each represent distinct cognitive processes.
 
+## Getting started
+
+See the following sections for more information on the `bmm` package:
+
+- [Available models](#available-models)
+- [Installation](#installation)
+- [Fitting models using the bmm](#fitting-models-using-the-bmm)
+- [Exploring cogntive measurement models](#exploring-cogntive-measurement-models)
+- [The general structure of the bmm package](#the-general-structure-of-the-bmm-package)
+- [Contributing to the `bmm` package](#contributing-to-the-bmm-package)
+
 
 ## Available models
 
@@ -113,30 +124,9 @@ if (!requireNamespace("remotes")) {
 remotes::install_github("venpopov/bmm@v0.0.1")
 ```
 
-## The general structure of the bmm package
-
-The main building block of the bmm package is that cognitive measurement models
-can often be specified as distributional models for which the distributional
-parameters of the generalized linear mixed model are a function of cognitive
-measurement model parameters. These functions that translate the cognitive
-measurement model parameters into distributional parameters is what we
-implement in the bmm package.
-
-
-```{r bmm-logic, echo=F, fig.cap="", out.width=600, fig.align = 'center'}
-knitr::include_graphics("man/figures/README-bmmLogic.jpg")
-```
-
-As these function can become complicated and their implementation changes with
-differences in experimental designs, the bmm package provides general
-translation functions that eases the use of the cognitive measurement models for
-end users. This way researchers that face challenges in writing their own STAN
-code to implement such models themselves can still use these models in almost
-any experimental design.
-
 ## Fitting models using the bmm
 
-The core function of the bmm package is the `fit_model` function. This function
+The core function of the bmm package is the `fit_model()` function. This function
 takes:
 
 1. a linear model formula specifying how parameters of the model should vary as
@@ -155,24 +145,6 @@ Measurement Model would look like this:
 ?IMMfull
 ```
 
-The function will then call the appropriate functions for the specified model
-and will perform several steps:
-
-1. Configure the Sample (e.g., set up prallelization)
-2. Check the information passed to the `fit_model` function:
-    - if the model is installed and all required arguments were provided
-    - if a valid formula was passed
-    - if the data contains all necessary variables
-3. Configure the called model (including specifying priors were necessary)
-4. Calling `brms` and passing the specified arguments
-5. Posprocessing the output and passing it to the user
-
-This process is illustrated in the Figure below:
-
-```{r fitModel, echo=F, fig.cap="", out.width=600, fig.align = 'center'}
-knitr::include_graphics("man/figures/README-fitModel_process.jpg")
-```
-
 A complete call to fit a model using bmm could look like this. For this example,
 we are using the `OberauerLin_2017` data that is provided with the package.
 
@@ -181,7 +153,7 @@ library(bmm)
 data <- OberauerLin_2017
 ```
 
-For this quick example, we will show hot to setup fitting the Interference
+For this quick example, we will show how to setup fitting the Interference
 Measurement Model to this data. If you want a detailed description of this model
 and and in depth explanation of the parameters estimated in the model, please
 have a look at `vignette("IMM")`.
@@ -241,9 +213,9 @@ library(ggplot2)
 
 simData <- data.frame(
   x = bmm::rIMM(n = 500,
-           mu = c(0,-1.5,2.5,1),
-                            dist = c(0, 2, 0.3, 1),
-                            c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)
+                mu = c(0,-1.5,2.5,1),
+                dist = c(0, 2, 0.3, 1),
+                c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)
 )
 
 ggplot(data = simData, aes(x = x)) +
@@ -255,6 +227,44 @@ ggplot(data = simData, aes(x = x)) +
   scale_x_continuous(limits = c(-pi,pi))
 ```
 
+## The general structure of the bmm package
+
+The main building block of the bmm package is that cognitive measurement models
+can often be specified as distributional models for which the distributional
+parameters of the generalized linear mixed model are a function of cognitive
+measurement model parameters. These functions that translate the cognitive
+measurement model parameters into distributional parameters is what we
+implement in the bmm package.
+
+
+```{r bmm-logic, echo=F, fig.cap="", out.width=600, fig.align = 'center'}
+knitr::include_graphics("man/figures/README-bmmLogic.jpg")
+```
+
+As these function can become complicated and their implementation changes with
+differences in experimental designs, the bmm package provides general
+translation functions that eases the use of the cognitive measurement models for
+end users. This way researchers that face challenges in writing their own STAN
+code to implement such models themselves can still use these models in almost
+any experimental design.
+
+Under the hood, the main `bmm` `fit_model()` function will then call the appropriate functions for the specified model
+and will perform several steps:
+
+1. Configure the Sample (e.g., set up prallelization)
+2. Check the information passed to the `fit_model()` function:
+    - if the model is installed and all required arguments were provided
+    - if a valid formula was passed
+    - if the data contains all necessary variables
+3. Configure the called model (including specifying priors were necessary)
+4. Calling `brms` and passing the specified arguments
+5. Posprocessing the output and passing it to the user
+
+This process is illustrated in the Figure below:
+
+```{r fitModel, echo=F, fig.cap="", out.width=600, fig.align = 'center'}
+knitr::include_graphics("man/figures/README-fitModel_process.jpg")
+```
 
 ## Contributing to the `bmm` package
 
