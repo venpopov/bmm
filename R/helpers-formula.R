@@ -5,8 +5,8 @@
 #' @keywords internal, developer
 check_formula <- function(model, formula) {
   # Pre-Check: was a valid bmm formula provided
-  if (!inherits(formula, 'bmmformula')) {
-    if (inherits(formula, 'brmsformula')) {
+  if (!is.bmmformula(formula)) {
+    if (is.brmsformula(formula)) {
       stop("The provided formula is a brms formula.
         Please specify formula with the bmmformula() function instead of
         the brmsformula() or bf() function.
@@ -37,11 +37,10 @@ add_missing_parameters <- function(model, formula) {
     if (not_in(mpar, formula_pars)) {
       message(paste("No formula for parameter",mpar,"provided","\n",
                     "For this parameter only a fixed intercept will be estimated."))
-      formula[[mpar]] <- stats::as.formula(paste(mpar,"~ 1"))
+      formula <- formula + stats::as.formula(paste(mpar,"~ 1"))
     }
   }
-  formula <- formula[model_pars] # reorder formula to match model parameters
-  class(formula) <- "bmmformula"
+  formula <- formula[model_pars] # reorder formula to match model parameters order
   return(formula)
 }
 

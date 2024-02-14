@@ -79,15 +79,12 @@ bmmformula <- function(formula, ...){
   # paste formulas into a single list
   dots <- list(...)
   formula <- list(formula)
-  formula <- c(formula, dots)
-
-  # extract parameter names
-  par_names <- sapply(formula, function(par) {all.vars(par)[1]})
-
-  # label the different formulas according to the parameter predicted
-  names(formula) <- par_names
+  names(formula) <- all.vars(formula[[1]])[1]
   class(formula) <- "bmmformula"
-  return(formula)
+  for (f in dots) {
+    formula <- formula + f
+  }
+  formula
 }
 
 
@@ -95,4 +92,58 @@ bmmformula <- function(formula, ...){
 #' @export
 bmf <- function(formula, ...) {
   bmmformula(formula, ...)
+}
+
+
+# method for adding formulas to a bmmformula
+#' @export
+"+.bmmformula" <- function(f1,f2) {
+  if (!is.bmmformula(f1)) {
+    stop("The first argument must be a bmmformula.")
+  }
+  if (is.formula(f2)) {
+    par2 <- all.vars(f2)[1]
+    if (par2 %in% names(f1)) {
+      message(paste("The parameter", par2, "is already part of the formula.",
+                    "Overwriting the initial formula."))
+    }
+    f1[[par2]] <- f2
+  } else if (is.bmmformula(f2)) {
+    for (par2 in names(f2)) {
+      if (par2 %in% names(f1)) {
+        message(paste("The parameter", par2, "is already part of the formula.",
+                      "Overwriting the initial formula."))
+      }
+      f1[[par2]] <- f2[[par2]]
+    }
+  } else if(!is.null(f2)) {
+    stop("The second argument must be a formula or a bmmformula.")
+  }
+  return(f1)
+}
+
+
+# method for subsetting a bmmformula, ensuring the attributes are preserved
+#' @export
+'[.bmmformula' <- function(formula, pars) {
+  attrs <- attributes(formula)
+  out <- unclass(formula)
+  out <- out[pars]
+  attributes(out) <- attrs
+  names(out) <- pars
+  out
+}
+
+
+
+is.formula <- function(x) {
+  inherits(x, "formula")
+}
+
+is.bmmformula <- function(x) {
+  inherits(x, "bmmformula")
+}
+
+is.brmsformula <- function(x) {
+  inherits(x, "brmsformula")
 }
