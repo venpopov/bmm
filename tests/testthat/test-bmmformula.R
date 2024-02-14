@@ -1,4 +1,5 @@
 test_that('+.bmmformula method works', {
+  withr::local_options('bmm.silent'=2)
   f1 <- bmf(y~1)
   f2 <- bmf(kappa~1)
   f3 <- bmf(kappa~1, m ~ 1)

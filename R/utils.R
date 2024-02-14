@@ -78,14 +78,23 @@ softmaxinv <- function(p, lambda = 1) {
 #' @returns A list of options to pass to brm()
 configure_options <- function(opts, env=parent.frame()) {
   if (opts$parallel) {
-    withr::local_options(list(mc.cores = parallel::detectCores()), .local_envir=env)
+    cores = parallel::detectCores()
     if (opts$chains >  parallel::detectCores()) {
-      opts$chains <-  parallel::detectCores()
+      opts$chains <- parallel::detectCores()
     }
+  } else {
+    cores = NULL
   }
-  exclude <- c("parallel")
+  withr::local_options(
+    list(
+      mc.cores = cores,
+      bmm.silent = opts$silent
+    ),
+    .local_envir=env)
+
   # return only options that can be passed to brms
-  opts <- opts[not_in(names(opts), exclude)]
+  brms_args <- names(formals(brms::brm))
+  opts <- opts[names(opts) %in% brms_args]
   return(opts)
 }
 
@@ -150,4 +159,13 @@ combine_args <- function(args) {
     }
   }
   c(config_args, opts)
+}
+
+
+message2 <- function(...) {
+  silent <- getOption('bmm.silent', 1)
+  if (silent < 2) {
+    message(...)
+  }
+  invisible()
 }

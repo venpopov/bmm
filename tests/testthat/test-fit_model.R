@@ -1,4 +1,5 @@
 test_that('Available mock models run without errors',{
+  withr::local_options('bmm.silent'=2)
   skip_on_cran()
   dat <- data.frame(
     resp_err = rIMM(n = 5),
@@ -50,6 +51,7 @@ test_that('Available mock models run without errors',{
 })
 
 test_that('Available models produce expected errors', {
+  withr::local_options('bmm.silent'=2)
   skip_on_cran()
   dat <- data.frame(
     resp_err = rIMM(n = 5),

@@ -104,14 +104,14 @@ bmf <- function(formula, ...) {
   if (is.formula(f2)) {
     par2 <- all.vars(f2)[1]
     if (par2 %in% names(f1)) {
-      message(paste("The parameter", par2, "is already part of the formula.",
+      message2(paste("The parameter", par2, "is already part of the formula.",
                     "Overwriting the initial formula."))
     }
     f1[[par2]] <- f2
   } else if (is.bmmformula(f2)) {
     for (par2 in names(f2)) {
       if (par2 %in% names(f1)) {
-        message(paste("The parameter", par2, "is already part of the formula.",
+        message2(paste("The parameter", par2, "is already part of the formula.",
                       "Overwriting the initial formula."))
       }
       f1[[par2]] <- f2[[par2]]

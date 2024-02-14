@@ -35,8 +35,8 @@ add_missing_parameters <- function(model, formula) {
   model_pars <- names(model$info$parameters)
   for (mpar in model_pars) {
     if (not_in(mpar, formula_pars)) {
-      message(paste("No formula for parameter",mpar,"provided","\n",
-                    "For this parameter only a fixed intercept will be estimated."))
+      message2(paste("No formula for parameter",mpar,"provided","\n",
+                     "For this parameter only a fixed intercept will be estimated."))
       formula <- formula + stats::as.formula(paste(mpar,"~ 1"))
     }
   }
