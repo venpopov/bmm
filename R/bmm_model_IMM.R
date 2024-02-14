@@ -19,7 +19,6 @@
       parameters = list(
         kappa = "Concentration parameter of the von Mises distribution (log scale)",
         a = "General activation of memory items",
-        b = "Background activation (internally fixed to 0)",
         c = "Context activation"
       )
     ))
@@ -43,7 +42,6 @@
                             'centered relative to the target'),
       parameters = list(
         kappa = "Concentration parameter of the von Mises distribution (log scale)",
-        b = "Background activation (internally fixed to 0)",
         c = "Context activation",
         s = "Spatial similarity gradient"
       )
@@ -69,7 +67,6 @@
       parameters = list(
         kappa = "Concentration parameter of the von Mises distribution (log scale)",
         a = "General activation of memory items",
-        b = "Background activation (internally fixed to 0)",
         c = "Context activation",
         s = "Spatial similarity gradient"
       )
@@ -79,6 +76,7 @@
 }
 
 # user facing alias
+
 #' @title `r .model_IMMfull(NA, NA, NA, NA)$info$name`
 #' @name IMM
 #' @details `r model_info(IMMfull(NA, NA, NA, NA), components =c('domain', 'task', 'name', 'citation'))`
@@ -88,7 +86,16 @@
 #' `r model_info(IMMbsc(NA, NA, NA, NA), components =c('requirements', 'parameters'))`
 #' #### Version: `IMMabc`
 #' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters'))`
-#' @param resp_err The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
+#'
+#' Additionally, all IMM models have an internal parameter that is fixed to 0 to
+#' allow the model to be identifiable. This parameter is not estimated and is not
+#' included in the model formula. The parameter is:
+#'
+#'   - b = "Background activation (internally fixed to 0)"
+#'
+#' @param resp_err The name of the variable in the provided dataset containing the
+#'   response error. The response Error should code the response relative to the to-be-recalled
+#'   target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
 #' @param non_targets A character vector with the names of the non-target variables.
 #'   The non_target variables should be in radians and be centered relative to the
 #'   target.

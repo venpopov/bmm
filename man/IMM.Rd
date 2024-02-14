@@ -14,7 +14,9 @@ IMMbsc(resp_err, non_targets, setsize, spaPos, ...)
 IMMabc(resp_err, non_targets, setsize, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
+\item{resp_err}{The name of the variable in the provided dataset containing the
+response error. The response Error should code the response relative to the to-be-recalled
+target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
 
 \item{non_targets}{A character vector with the names of the non-target variables.
 The non_target variables should be in radians and be centered relative to the
@@ -56,7 +58,6 @@ Interference measurement model by Oberauer and Lin (2017).
 \itemize{
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{a}: General activation of memory items
-\item \code{b}: Background activation (internally fixed to 0)
 \item \code{c}: Context activation
 \item \code{s}: Spatial similarity gradient
 }
@@ -73,7 +74,6 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \strong{Parameters:}
 \itemize{
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
-\item \code{b}: Background activation (internally fixed to 0)
 \item \code{c}: Context activation
 \item \code{s}: Spatial similarity gradient
 }
@@ -91,9 +91,15 @@ Interference measurement model by Oberauer and Lin (2017).
 \itemize{
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{a}: General activation of memory items
-\item \code{b}: Background activation (internally fixed to 0)
 \item \code{c}: Context activation
 }
+}
+
+Additionally, all IMM models have an internal parameter that is fixed to 0 to
+allow the model to be identifiable. This parameter is not estimated and is not
+included in the model formula. The parameter is:
+\itemize{
+\item b = "Background activation (internally fixed to 0)"
 }
 }
 }

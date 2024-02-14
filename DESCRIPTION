@@ -37,7 +37,6 @@ Imports:
     stats,
     matrixStats,
     methods,
-    formula.tools,
     rsample
 URL: https://github.com/venpopov/bmm, https://venpopov.github.io/bmm/
 BugReports: https://github.com/venpopov/bmm/issues
