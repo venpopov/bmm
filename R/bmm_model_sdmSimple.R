@@ -114,20 +114,17 @@ configure_model.sdmSimple <- function(model, data, formula) {
     bmm_formula <- formula
     formula <- bmf2bf(model, bmm_formula)
 
-   # construct the default prior
-   # TODO: add a proper prior
-   prior <-
-     # fix mu to 0
-     brms::prior_("constant(0)", class = "Intercept", dpar = "mu")
+    # construct the default prior
+    # TODO: for now it just fixes mu to 0, I have to add proper priors
+    prior <- fixed_pars_priors(model)
 
-   # set initial values to be sampled between [-1,1] to avoid extreme SDs that
-   # can cause the sampler to fail // TODO: test extensively if this works in
-   # all cases
-   init = 1
+    # set initial values to be sampled between [-1,1] to avoid extreme SDs that
+    # can cause the sampler to fail
+    init = 1
 
-   # return the list
-   out <- nlist(formula, data, family, prior, stanvars, init)
-   return(out)
+    # return the list
+    out <- nlist(formula, data, family, prior, stanvars, init)
+    return(out)
 }
 
 

@@ -85,3 +85,29 @@ get_model_prior <- function(formula, data, model, ...) {
   return(combined_prior)
 }
 
+
+#' @title construct constant priors to fix fixed model parameters
+#' @param model a `bmmmodel` object
+#' @param additional_pars a list of name=value pairs to fix additional
+#'   parameters where the name is the parameter name and the value is the fixed
+#'   value
+#' @details This function is used to fix the parameters of a model that are
+#'   specified as fixed in the model definition. It can also be used to fix any
+#'   additional internal parameters that are not specified in the model
+#'   definition. it should be used in the configure_model.* function for the
+#'   model.
+#'
+#'   the function puts a constant(value) prior on an Intercept with
+#'   dpar=parameter_name
+#' @return an object of class brmsprior of the form prior("constant(value)",
+#'   class="Intercept", dpar=parameter_name) for all fixed parameters in the
+#'   model
+#' @noRd
+fixed_pars_priors <- function(model, additional_pars = list()) {
+  par_list <- c(model$info$fixed_parameters, additional_pars)
+  pars <- names(par_list)
+  values <- unlist(par_list)
+  priors <- glue::glue("constant({values})")
+  set_prior(priors, class = "Intercept", dpar = pars)
+}
+
