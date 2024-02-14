@@ -58,9 +58,9 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 dat <- data.frame(y = rsdm(n=2000))
 
 # define formula
-ff <- b(y ~ 1,
-               c ~ 1,
-               kappa ~ 1)
+ff <- bmf(y ~ 1,
+          c ~ 1,
+          kappa ~ 1)
 
 # fit the model
 get_model_prior(formula = ff,
