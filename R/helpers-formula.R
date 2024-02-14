@@ -33,11 +33,15 @@ check_formula <- function(model, formula) {
 add_missing_parameters <- function(model, formula) {
   formula_pars <- names(formula)
   model_pars <- names(model$info$parameters)
-  for (mpar in model_pars) {
-    if (not_in(mpar, formula_pars)) {
+  fixed_pars <- names(model$info$fixed_parameters)
+  missing_pars <- setdiff(model_pars,formula_pars)
+  is_fixed <- missing_pars %in% fixed_pars
+  names(is_fixed) <- missing_pars
+  for (mpar in missing_pars) {
+    formula <- formula + stats::as.formula(paste(mpar,"~ 1"))
+    if (!is_fixed[mpar]) {
       message2(paste("No formula for parameter",mpar,"provided","\n",
                      "For this parameter only a fixed intercept will be estimated."))
-      formula <- formula + stats::as.formula(paste(mpar,"~ 1"))
     }
   }
   formula <- formula[model_pars] # reorder formula to match model parameters order
@@ -52,5 +56,42 @@ wrong_parameters <- function(model, formula) {
   wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
   fpars[wpars]
 }
+
+
+bmf2bf <- function(model, formula) {
+  UseMethod("bmf2bf")
+}
+
+# default method for all bmmmodels with 1 response variable
+# TODO: add support for multiple response variables
+#' @export
+bmf2bf.bmmmodel <- function(model, formula) {
+  # check if the model has only one response variable and extract if TRUE
+  resp <- model$resp_vars
+  if (length(resp) > 1) {
+    NextMethod("bmf2bf")
+  }
+  resp <- resp[[1]]
+
+  # set base brms formula based on response
+  brms_formula <- brms::bf(paste0(resp, "~ 1"))
+
+  # for each dependent parameter, check if it is used as a non-linear predictor of
+  # another parameter and add the corresponding brms function
+  dpars <- names(formula)
+  for (dpar in dpars) {
+    pform <- formula[[dpar]]
+    predictors <- rhs_vars(pform)
+    if (any(predictors %in% dpars)) {
+      brms_formula <- brms_formula + brms::nlf(pform)
+    } else {
+      brms_formula <- brms_formula + brms::lf(pform)
+    }
+  }
+  brms_formula
+}
+
+
+
 
 

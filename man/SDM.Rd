@@ -39,6 +39,7 @@ and how to use it.
 }
 \item \strong{Parameters:}
 \itemize{
+\item \code{mu}: Location parameter of the SDM distribution (in radians; by default fixed internally to 0)
 \item \code{c}: Memory strength parameter of the SDM distribution
 \item \code{kappa}: Precision parameter of the SDM distribution (log scale)
 }

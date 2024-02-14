@@ -143,11 +143,16 @@ rhs_vars.bmmformula <- function(bformula) {
   lhs_vars <- names(bformula)
   rhs_vars <- list()
   for (var in lhs_vars) {
-    all_vars <- all.vars(bformula[[var]])
-    rhs_vars[[var]] <- all_vars[-1]
+    rhs_vars[[var]] <- rhs_vars.formula(bformula[[var]])
   }
   out <- unlist(rhs_vars, use.names=F)
   unique(out)
+}
+
+#' @export
+rhs_vars.formula <- function(formula) {
+  all_vars <- all.vars(formula)
+  all_vars[-1]
 }
 
 

@@ -50,7 +50,7 @@ check_data.default <- function(model, data, formula) {
 
 #' @export
 check_data.vwm <- function(model, data, formula) {
-  resp_name <- model$vars$resp_err
+  resp_name <- model$resp_vars[[1]]
   if (not_in(resp_name, colnames(data))) {
     stop(paste0("The response variable '", resp_name, "' is not present in the data."))
   }

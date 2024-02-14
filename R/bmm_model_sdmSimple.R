@@ -4,7 +4,8 @@
 
 .model_sdmSimple <- function(resp_err, ...) {
    out <- list(
-      vars = nlist(resp_err),
+      resp_vars = nlist(resp_err),
+      vars = nlist(), # TODO: change to "other_vars"
       info = list(
          domain = 'Visual working memory',
          task = 'Continuous reproduction',
@@ -17,6 +18,9 @@
             mu = 'Location parameter of the SDM distribution (in radians; by default fixed internally to 0)',
             c = 'Memory strength parameter of the SDM distribution',
             kappa = 'Precision parameter of the SDM distribution (log scale)'
+         ),
+         fixed_parameters = list(
+            mu = 0
          )),
       void_mu = FALSE
    )
@@ -106,34 +110,14 @@ configure_model.sdmSimple <- function(model, data, formula) {
       brms::stanvar(scode = stan_tdata, block = 'tdata') +
       brms::stanvar(scode = stan_likelihood, block = 'likelihood', position ="end")
 
-    # extract response error variable
-    resp_err <- model$var$resp_err
-    pform_names <- names(formula)
-    pform <- formula
-
-    if (!"mu" %in% pform_names) {
-      mu_form <- mu ~ 1
-      pform <- c(pform, mu_form)
-      names(pform) <- c(pform_names,"mu")
-    }
-
-    # specify the formula for the mixture model
-    formula <- brms::bf(paste0(resp_err,"~ mu"), nl = T)
-
-    # add parameter formulas to model formula
-    for (i in 1:length(pform)) {
-      predictors <- rsample::form_pred(pform[[i]])
-      if (any(predictors %in% names(pform))) {
-        formula <- formula + brms::nlf(pform[[i]])
-      } else {
-        formula <- formula + brms::lf(pform[[i]])
-      }
-    }
+    # construct main brms formula from the bmm formula
+    bmm_formula <- formula
+    formula <- bmf2bf(model, bmm_formula)
 
    # construct the default prior
    # TODO: add a proper prior
    prior <-
-     # fix mu to 0 (when I change mu to be the center, not c)
+     # fix mu to 0
      brms::prior_("constant(0)", class = "Intercept", dpar = "mu")
 
    # set initial values to be sampled between [-1,1] to avoid extreme SDs that
