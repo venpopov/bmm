@@ -8,7 +8,10 @@
 sdmSimple(resp_err, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
+\item{resp_err}{The name of the variable in the dataset containing the
+response error. The response error should code the response relative to the
+to-be-recalled target in radians. You can transform the response error in
+degrees to radians using the \code{deg2rad} function.}
 
 \item{...}{used internally for testing, ignore it}
 }
@@ -19,7 +22,8 @@ An object of class \code{bmmmodel}
 Signal Discrimination Model (SDM) by Oberauer (2023)
 }
 \details{
-see \code{vignette("sdm-simple")} for a detailed description of the model and how to use it.
+see \code{vignette("sdm-simple")} for a detailed description of the model
+and how to use it.
 \itemize{
 \item \strong{Domain:} Visual working memory
 \item \strong{Task:} Continuous reproduction
@@ -48,9 +52,8 @@ library(brms)
 dat <- data.frame(y = rsdm(n = 1000, c = 4, kappa = 3))
 
 # specify formula
-ff <- bf(y ~ 1,
-               c ~ 1,
-               kappa ~ 1)
+ff <- bmf(c ~ 1,
+          kappa ~ 1)
 
 # specify prior
 prior <- prior(normal(1,2), class='Intercept', dpar='c')+
@@ -59,7 +62,7 @@ prior <- prior(normal(1,2), class='Intercept', dpar='c')+
 # specify the model
 fit <- fit_model(formula = ff,
                  data = dat,
-                 model = sdmSimple(),
+                 model = sdmSimple(resp_err = 'y'),
                  prior = prior,
                  parallel=T,
                  iter=2000,

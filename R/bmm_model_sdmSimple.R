@@ -26,14 +26,16 @@
 # user facing alias
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_sdmSimple(NA)$info
+
 #' @title `r .model_sdmSimple(NA)$info$name`
 #' @name SDM
 #' @details see `vignette("sdm-simple")` for a detailed description of the model
-#' and how to use it. `r model_info(sdmSimple(NA))`
-#' @param resp_err The name of the variable in the provided dataset containing
-#'   the response error. The response error should code the response relative to
-#'   the to-be-recalled target in radians. You can transform the response error
-#'   in degrees to radians using the `deg2rad` function.
+#'   and how to use it.
+#'   `r model_info(sdmSimple(NA))`
+#' @param resp_err The name of the variable in the dataset containing the
+#'   response error. The response error should code the response relative to the
+#'   to-be-recalled target in radians. You can transform the response error in
+#'   degrees to radians using the `deg2rad` function.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
@@ -56,7 +58,7 @@
 #' # specify the model
 #' fit <- fit_model(formula = ff,
 #'                  data = dat,
-#'                  model = sdmSimple(resp_err = y),
+#'                  model = sdmSimple(resp_err = 'y'),
 #'                  prior = prior,
 #'                  parallel=T,
 #'                  iter=2000,
