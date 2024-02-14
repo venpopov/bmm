@@ -30,3 +30,28 @@ test_that('+.bmmformula method works', {
   # the first argument must be a bmmformula
   expect_error(f6 + f1, "The first argument must be a bmmformula.")
 })
+
+
+test_that('rhs_vars works', {
+  f <- bmf(y ~ 1)
+  expect_equal(rhs_vars(f),character(0))
+
+  f <- bmf(y ~ a +b, x ~ c)
+  expect_equal(rhs_vars(f),c("a","b","c"))
+
+  f <- bmf(y ~ a + b + a:b, x ~ c)
+  expect_equal(rhs_vars(f),c("a","b","c"))
+
+  f <- bmf(y ~ a + b + a:b + (a | d), x ~ c)
+  expect_equal(rhs_vars(f),c("a","b","d","c"))
+
+  f <- bmf(y ~ a + b + a:b + (a | d), x ~ c + d)
+  expect_equal(rhs_vars(f),c("a","b","d","c"))
+
+  f <- bmf(y ~ a + b + a:b + (a | d), x ~ c + d, d ~ m)
+  expect_equal(rhs_vars(f),c("a","b","d","c","m"))
+
+  # test with non-linear transformations
+  f <- bmf(y ~ a + b + a:b + (a | d), x ~ c + d, d ~ exp(m+j))
+  expect_equal(rhs_vars(f),c("a","b","d","c","m","j"))
+})

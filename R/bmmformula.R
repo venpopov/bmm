@@ -134,6 +134,21 @@ bmf <- function(formula, ...) {
   out
 }
 
+rhs_vars <- function(formula) {
+  UseMethod("rhs_vars")
+}
+
+#' @export
+rhs_vars.bmmformula <- function(bformula) {
+  lhs_vars <- names(bformula)
+  rhs_vars <- list()
+  for (var in lhs_vars) {
+    all_vars <- all.vars(bformula[[var]])
+    rhs_vars[[var]] <- all_vars[-1]
+  }
+  out <- unlist(rhs_vars, use.names=F)
+  unique(out)
+}
 
 
 is.formula <- function(x) {

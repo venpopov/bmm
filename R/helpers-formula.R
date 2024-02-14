@@ -46,8 +46,11 @@ add_missing_parameters <- function(model, formula) {
 
 
 wrong_parameters <- function(model, formula) {
-  formula_pars <- names(formula)
-  model_pars <- names(model$info$parameters)
-  wpar <- not_in(formula_pars, model_pars)
-  formula_pars[wpar]
+  fpars <- names(formula)
+  mpars <- names(model$info$parameters)
+  rhs_vars <- rhs_vars(formula)
+  wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
+  fpars[wpars]
 }
+
+
