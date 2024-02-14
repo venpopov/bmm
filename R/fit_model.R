@@ -104,3 +104,20 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
 
   return(fit)
 }
+
+
+
+#' @export
+update.bmmfit <- function(fit, ...) {
+  stop("The update method for bmmfit is not yet implemented, but is planned for a future release.", call. = FALSE)
+  # do any necessary preprocessing to accomondate bmm changes into brms
+  # ....
+
+  fit = NextMethod(fit)  # pass back to brms::update.brmsfit
+
+  # do any necessary postprocessing to convert back to bmmfit
+  # ....
+  class(fit) <- c('bmmfit', class(fit))  # reassing class
+  return(fit)
+}
+
