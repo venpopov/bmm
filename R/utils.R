@@ -92,9 +92,9 @@ configure_options <- function(opts, env=parent.frame()) {
     ),
     .local_envir=env)
 
-  # return only options that can be passed to brms
-  brms_args <- names(formals(brms::brm))
-  opts <- opts[names(opts) %in% brms_args]
+  # return only options that can be passed to brms/rstan/cmdstanr
+  exclude_args <- c('parallel')
+  opts <- opts[not_in(names(opts), exclude_args)]
   return(opts)
 }
 
