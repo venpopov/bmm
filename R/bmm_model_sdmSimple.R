@@ -14,11 +14,12 @@
          version = 'Simple (no non-targets)',
          requirements = '- The response variable should be in radians and represent the angular error relative to the target',
          parameters = list(
-            # mu = 'Location parameter of the SDM distribution (in radians; fixed internally to 0)',
+            mu = 'Location parameter of the SDM distribution (in radians; by default fixed internally to 0)',
             c = 'Memory strength parameter of the SDM distribution',
             kappa = 'Precision parameter of the SDM distribution (log scale)'
-         )
-      ))
+         )),
+      void_mu = FALSE
+   )
    class(out) <- c('bmmmodel', 'vwm', 'sdmSimple')
    out
 }

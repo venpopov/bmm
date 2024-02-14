@@ -20,8 +20,9 @@
         kappa = "Concentration parameter of the von Mises distribution (log scale)",
         a = "General activation of memory items",
         c = "Context activation"
-      )
-    ))
+      )),
+    void_mu = FALSE
+  )
   class(out) <- c("bmmmodel", "vwm","nontargets","IMMabc")
   out
 }

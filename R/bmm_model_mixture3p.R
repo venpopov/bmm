@@ -21,8 +21,9 @@
         kappa = "Concentration parameter of the von Mises distribution (log scale)",
         thetat = "Mixture weight for target responses",
         thetant = "Mixture weight for non-target responses"
-      )
-    ))
+      )),
+    void_mu = FALSE
+  )
   class(out) = c("bmmmodel", "vwm", "nontargets", "mixture3p")
   out
 }

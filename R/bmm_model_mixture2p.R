@@ -17,8 +17,9 @@
         parameters = list(
           kappa = "Concentration parameter of the von Mises distribution (log scale)",
           thetat = "Mixture weight for target responses"
-        )
-      ))
+        )),
+      void_mu = FALSE
+  )
   class(out) <- c("bmmmodel", "vwm", "mixture2p")
   out
 }
