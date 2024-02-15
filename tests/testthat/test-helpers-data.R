@@ -33,14 +33,7 @@ test_that("check_data() produces expected errors and warnings", {
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
                  'argument "non_targets" is missing, with no default')
-    expect_error(check_data(ml(resp_err = "y",non_targets='x', setsize = TRUE, spaPos = 'z'),
-                            data.frame(y = 1, x = 1, z = 2),
-                            bmmformula(kappa ~ 1)),
-                 "Argument 'setsize' must be either a single numeric value or a character string.")
-    expect_error(check_data(ml(resp_err = "y",non_targets='x', setsize = c(1,2,3), spaPos = 'z'),
-                            data.frame(y = 1, x = 1, z = 2),
-                            bmmformula(kappa ~ 1)),
-                 "Argument 'setsize' must be either a single numeric value or a character string.")
+
     expect_error(check_data(ml(resp_err = "y",non_targets='x', setsize = 5, spaPos = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
@@ -59,6 +52,102 @@ test_that("check_data() produces expected errors and warnings", {
                  "'spaPos' is less than max\\(setsize\\)-1")
   }
 })
+
+
+
+test_that("check_var_setsize accepts valid input", {
+  # Simple numeric vector is valid
+  dat <- data.frame(y = rep(c(1,2,3), each=3))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(names(check_var_setsize('y', dat)), c("max_setsize","ss_numeric"))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 3)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+  # Factor with numeric levels is valid
+  dat <- data.frame(y = factor(rep(c(1,2,3), each=3)))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 3)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+
+  # Character vector representing numbers is valid
+  dat <- data.frame(y = rep(c('1','2','3'), each=3))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 3)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+
+  # Numeric vector with NA values is valid (assuming NA is treated correctly)
+  dat <- data.frame(y = rep(c(1,5,NA), each=3))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 5)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+
+  # Factor with NA and numeric levels is valid
+  dat <- data.frame(y = factor(rep(c(1,5,NA), each=3)))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 5)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+})
+
+test_that("check_var_setsize rejects invalid input", {
+  # Factor with non-numeric levels is invalid
+  dat <- data.frame(y = factor(rep(c('A','B','C'), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Character vector with non-numeric values is invalid
+  dat <- data.frame(y = rep(c('A','B','C'), each=3))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Character vector with NA and non-numeric values is invalid
+  dat <- data.frame(y = rep(c('A',NA,'C'), each=3))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Factor with NA and non-numeric levels is invalid
+  dat <- data.frame(y = factor(rep(c('A',NA,'C'), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Character vector with numeric and non-numeric values is invalid
+  dat <- data.frame(y = rep(c('A',5,'C'), each=3))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Factor with numeric and non-numeric levels is invalid
+  dat <- data.frame(y = factor(rep(c('A',5,'C'), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Numeric vector with invalid set sizes (less than 1) is invalid
+  dat <- data.frame(y = rep(c(0,1,5), each=3))
+  expect_error(check_var_setsize('y', dat), "must be greater than 0")
+
+  # Factor with levels less than 1 are invalid
+  dat <- data.frame(y = factor(rep(c(0,4,5), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be greater than 0")
+
+  # Character vector representing set sizes with text is invalid
+  dat <- data.frame(y = rep(paste0('setsize ', c(2,3,8)), each=3))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Factor representing set sizes with text is invalid
+  dat <- data.frame(y = factor(rep(paste0('setsize ', c(2,3,8)), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Numeric vector with decimals is invalid
+  dat <- data.frame(y = c(1:8,1.3))
+  expect_error(check_var_setsize('y', dat), "must be whole numbers")
+
+  # Setsize must be of length 1
+  dat <- data.frame(y = c(1,2,3), z = c(1,2,3))
+  expect_error(check_var_setsize(c('z','y'), dat), "You provided a vector")
+  expect_error(check_var_setsize(list('z','y'), dat), "You provided a vector")
+  expect_error(check_var_setsize(setsize=TRUE, dat), "must be either a variable in your data or a single numeric value")
+})
+
+
+
+
+
 
 test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call=FALSE), get_model)
