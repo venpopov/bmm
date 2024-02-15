@@ -164,12 +164,11 @@ check_data.IMMspatial <- function(model, data, formula) {
                 "spaPos'' is more than max(setsize)-1"))
   }
 
-  if (max(abs(data[,spaPos]), na.rm = T) > 10) {
-    data[,spaPos] <- data[,spaPos]*pi/180
-    warning('It appears your spatial position variables are in degrees. We will transform it to radians.')
+  if (any(data[,spaPos] < 0)) {
+    stop('Somve values of the spatial distance variables in the data are negative.\n
+         All spatial distances to the target need to be postive.')
   }
-  # wrap spatial position variables around the circle (range = -pi to pi)
-  data[,spaPos] <- bmm::wrap(data[,spaPos])
+
   data = NextMethod("check_data")
 
   return(data)

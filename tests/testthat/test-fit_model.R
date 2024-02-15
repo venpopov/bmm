@@ -57,7 +57,7 @@ test_that('Available models produce expected errors', {
     resp_err = rIMM(n = 5),
     Item2_rel = 2,
     Item3_rel = -1.5,
-    spaD2 = 0.5,
+    spaD2 = -0.5,
     spaD3 = 2
   )
 
@@ -83,6 +83,15 @@ test_that('Available models produce expected errors', {
     expect_error(fit_model(bmmformula(kappa~1), data=dat, model=model2, backend="mock",
                            mock_fit=1, rename=FALSE),
                  "'setsize' must be either a single numeric value or a character string")
+  }
+
+  spamodels <- c('IMMbsc','IMMfull')
+  for(model in spamodels){
+    model1 <- get_model2(model)(resp_err = "resp_err", non_targets= paste0("Item",2:3,"_rel"), setsize=3, spaPos=paste0("spaD",2:3))
+    expect_error(fit_model(bmmformula(kappa~1), data=dat, model=model1, backend="mock",
+                           mock_fit=1, rename=FALSE),
+                 "Somve values of the spatial distance variables in the data are negative.\n
+         All spatial distances to the target need to be postive.")
   }
 })
 
