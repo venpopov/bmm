@@ -5,7 +5,7 @@
 .model_sdmSimple <- function(resp_err, ...) {
    out <- list(
       resp_vars = nlist(resp_err),
-      vars = nlist(), # TODO: change to "other_vars"
+      other_vars = nlist(),
       info = list(
          domain = 'Visual working memory',
          task = 'Continuous reproduction',
@@ -100,12 +100,9 @@ configure_model.sdmSimple <- function(model, data, formula) {
 
     # prepare initial stanvars to pass to brms, model formula and priors
     sc_path <- system.file("stan_chunks", package="bmm")
-    stan_funs <- readChar(paste0(sc_path, '/sdmSimple_funs.stan'),
-                          file.info(paste0(sc_path, '/sdmSimple_funs.stan'))$size)
-    stan_tdata <- readChar(paste0(sc_path, '/sdmSimple_tdata.stan'),
-                           file.info(paste0(sc_path, '/sdmSimple_tdata.stan'))$size)
-    stan_likelihood <- readChar(paste0(sc_path, '/sdmSimple_likelihood.stan'),
-                               file.info(paste0(sc_path, '/sdmSimple_likelihood.stan'))$size)
+    stan_funs <- read_lines2(paste0(sc_path, '/sdmSimple_funs.stan'))
+    stan_tdata <- read_lines2(paste0(sc_path, '/sdmSimple_tdata.stan'))
+    stan_likelihood <- read_lines2(paste0(sc_path, '/sdmSimple_likelihood.stan'))
     stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
       brms::stanvar(scode = stan_tdata, block = 'tdata') +
       brms::stanvar(scode = stan_likelihood, block = 'likelihood', position ="end")

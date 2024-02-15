@@ -68,14 +68,14 @@ check_data.vwm <- function(model, data, formula) {
 
 #' @export
 check_data.nontargets <- function(model, data, formula) {
-  non_targets <- model$vars$non_targets
+  non_targets <- model$other_vars$non_targets
   if (max(abs(data[,non_targets]), na.rm = T) > 2*pi) {
     warning('It appears at least one of your non_target variables are in degrees.\n
              The model requires these variable to be in radians.\n
             The model will continue to run, but the results may be compromised.')
   }
 
-  setsize <- model$vars$setsize
+  setsize <- model$other_vars$setsize
   if (is.character(setsize) && length(setsize) == 1) {
     # Variable setsize
     ss_numeric <- as.numeric(as.character(data[[setsize]]))

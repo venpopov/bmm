@@ -169,3 +169,24 @@ message2 <- function(...) {
   }
   invisible()
 }
+
+
+# function to ensure proper reading of stan files
+read_lines2 <- function (con) {
+  lines <- readLines(con, n = -1L, warn = FALSE)
+  paste(lines, collapse = "\n")
+}
+
+
+# for testing purposes
+install_and_load_bmm_version <- function(version) {
+  if ("package:bmm" %in% search()) {
+    detach("package:bmm", unload=TRUE)
+  }
+  path <- paste0(.libPaths()[1], "/bmm-", version)
+  if (!dir.exists(path) || length(list.files(path)) == 0 || length(list.files(paste0(path, "/bmm"))) == 0) {
+    dir.create(path)
+    remotes::install_github(paste0("venpopov/bmm@",version), lib=path)
+  }
+  library(bmm, lib.loc=path)
+}

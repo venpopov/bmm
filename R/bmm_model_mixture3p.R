@@ -4,7 +4,8 @@
 
 .model_mixture3p <- function(resp_err, non_targets, setsize, ...) {
   out <- list(
-    vars = nlist(resp_err, non_targets, setsize),
+    resp_vars = nlist(resp_err),
+    other_vars = nlist(non_targets, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -18,9 +19,14 @@
                             '- The non-target variables should be in radians and be ',
                             'centered relative to the target'),
       parameters = list(
+        mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
+                     "(in radians). Fixed internally to 0 by default."),
         kappa = "Concentration parameter of the von Mises distribution (log scale)",
         thetat = "Mixture weight for target responses",
         thetant = "Mixture weight for non-target responses"
+      ),
+      fixed_parameters = list(
+        mu1 = 0
       )),
     void_mu = FALSE
   )
@@ -32,10 +38,13 @@
 # user facing alias
 #' @title `r .model_mixture3p(NA, NA, NA)$info$name`
 #' @details `r model_info(mixture3p(NA, NA, NA))`
-#' @param resp_err The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
-#' @param non_targets A character vector with the names of the non-target variables.
-#'   The non_target variables should be in radians and be centered relative to the
-#'   target.
+#' @param resp_err The name of the variable in the provided dataset containing
+#'   the response error. The response Error should code the response relative to
+#'   the to-be-recalled target in radians. You can transform the response error
+#'   in degrees to radian using the `deg2rad` function.
+#' @param non_targets A character vector with the names of the non-target
+#'   variables. The non_target variables should be in radians and be centered
+#'   relative to the target.
 #' @param setsize Name of the column containing the set size variable (if
 #'   setsize varies) or a numeric value for the setsize, if the setsize is
 #'   fixed.
@@ -83,46 +92,26 @@ configure_model.mixture3p <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  resp_err <- model$vars$resp_err
-  non_targets <- model$vars$non_targets
-  setsize_var <- model$vars$setsize
+  non_targets <- model$other_vars$non_targets
+  setsize_var <- model$other_vars$setsize
 
-  # extract formulas for parameters
-  pform_names <- names(formula)
-  pform <- formula
+  # construct main brms formula from the bmm formula
+  bmm_formula <- formula
+  formula <- bmf2bf(model, bmm_formula)
 
-  # add fixed intercept for mu if no formula was included
-  if (!"mu" %in% pform_names) {
-    mu_form <- mu ~ 1
-    pform <- c(pform, mu_form)
-    names(pform) <- c(pform_names,"mu")
-  }
-
-  # names for parameters
+  # additional internal terms for the mixture model formula
   kappa_nts <- paste0('kappa', 2:max_setsize)
   kappa_unif <- paste0('kappa',max_setsize + 1)
   theta_nts <- paste0('theta',2:max_setsize)
   mu_nts <- paste0('mu', 2:max_setsize)
   mu_unif <- paste0('mu', max_setsize + 1)
 
-  # construct formula
-  formula <- brms::bf(paste0(resp_err,"~ mu"), nl = T)
-
-  # add parameter formulas to model formula
-  for (i in 1:length(pform)) {
-    predictors <- rsample::form_pred(pform[[i]])
-    if (any(predictors %in% names(pform))) {
-      formula <- formula + brms::nlf(pform[[i]])
-    } else {
-      formula <- formula + brms::lf(pform[[i]])
-    }
-  }
-
   formula <- formula +
     glue_lf(kappa_unif,' ~ 1') +
     glue_lf(mu_unif, ' ~ 1') +
     brms::nlf(theta1 ~ thetat) +
     brms::nlf(kappa1 ~ kappa)
+
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
@@ -137,10 +126,10 @@ configure_model.mixture3p <- function(model, data, formula) {
   family <- brms::do_call(brms::mixture, vm_list)
 
   # define prior
-  prior <-
-    brms::prior_("constant(0)", nlpar = "mu") +
-    brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
-    brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
+  additional_constants <- list()
+  additional_constants[[kappa_unif]] <- -100
+  additional_constants[[mu_unif]] <- 0
+  prior <- fixed_pars_priors(model, additional_constants) +
     brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
     brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat") +
     brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetant")
