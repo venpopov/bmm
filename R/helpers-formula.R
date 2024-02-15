@@ -4,7 +4,6 @@
 #' @return the formula object
 #' @keywords internal, developer
 check_formula <- function(model, formula) {
-  # Pre-Check: was a valid bmm formula provided
   if (!is.bmmformula(formula)) {
     if (is.brmsformula(formula)) {
       stop("The provided formula is a brms formula.

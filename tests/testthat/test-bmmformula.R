@@ -29,6 +29,9 @@ test_that('+.bmmformula method works', {
 
   # the first argument must be a bmmformula
   expect_error(f6 + f1, "The first argument must be a bmmformula.")
+
+  # the second argument must be a formula or a bmmformula
+  expect_error(f1 + 1, "The second argument must be a formula or a bmmformula.")
 })
 
 

@@ -108,7 +108,7 @@ dsdm <- function(x, mu = 0, c = 3, kappa = 3.5, log = FALSE,
   if(!log) {
     return(exp(lnumerator)/denom)
   }
-  return(lnumerator - log(denom))
+  lnumerator - log(denom)
 }
 
 #' @rdname SDMdist
@@ -188,7 +188,7 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
       return(.rsdm_inner(n, mu, c, kappa, parametrization, xa))
     }
 
-    return(xa[1:n])
+    xa[1:n]
   }
 
   .rsdm_inner(n, mu, c, kappa, parametrization, xa)
@@ -289,11 +289,11 @@ dmixture2p <- function(x, mu=0, kappa=5, pMem = 0.6, log = FALSE) {
 
   density <- matrixStats::rowLogSumExps(density)
 
-  if (log == FALSE) {
+  if (!log) {
     return(exp(density))
   }
 
-  return(density)
+  density
 }
 
 #' @rdname mixture2p_dist
@@ -336,7 +336,7 @@ rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
       return(.rmixture2p_inner(n, mu, c, kappa, pMem, xa))
     }
 
-    return(xa[1:n])
+    xa[1:n]
   }
 
   .rmixture2p_inner(n, mu, c, kappa, pMem, xa)
@@ -410,12 +410,12 @@ dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2, log 
 
   density <- matrixStats::rowLogSumExps(density)
 
-  if (log == FALSE) {
+  if (!log) {
     return(exp(density))
   }
 
   # return the weighted density
-  return(density)
+  density
 }
 
 #' @rdname mixture3p_dist
@@ -462,7 +462,7 @@ rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
       return(.rmixture3p_inner(n, mu, c, kappa, pMem, pNT, xa))
     }
 
-    return(xa[1:n])
+    xa[1:n]
   }
 
   .rmixture3p_inner(n, mu, c, kappa, pMem, pNT, xa)
@@ -546,12 +546,12 @@ dIMM <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
 
   density <- matrixStats::rowLogSumExps(density)
 
-  if (log == FALSE) {
+  if (!log) {
     return(exp(density))
   }
 
   # return the weighted density
-  return(density)
+  density
 }
 
 #' @rdname IMMdist
@@ -597,7 +597,7 @@ rIMM <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
       return(.rIMM_inner(n, mu, dist, c, a, b, s, kappa, xa))
     }
 
-    return(xa[1:n])
+    xa[1:n]
   }
 
   .rIMM_inner(n, mu, dist, c ,a ,b ,s ,kappa , xa)

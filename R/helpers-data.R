@@ -26,6 +26,16 @@
 #' @export
 #' @keywords internal, developer
 check_data <- function(model, data, formula) {
+  UseMethod("check_data")
+}
+
+#' @export
+check_data.default <- function(model, data, formula) {
+  return(data)
+}
+
+#' @export
+check_data.bmmmodel <- function(model, data, formula) {
   if (missing(data)) {
     stop("Data must be specified using the 'data' argument.")
   }
@@ -37,14 +47,8 @@ check_data <- function(model, data, formula) {
     stop("Argument 'data' does not contain observations.")
   }
 
-  UseMethod("check_data")
-}
-
-
-
-#' @export
-check_data.default <- function(model, data, formula) {
-  return(data)
+  attr(data, 'checked') <- TRUE
+  NextMethod("check_data")
 }
 
 
