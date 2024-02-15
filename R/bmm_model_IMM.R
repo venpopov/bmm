@@ -4,7 +4,8 @@
 
 .model_IMMabc <- function(resp_err, non_targets, setsize, ...) {
   out <- list(
-    vars = nlist(resp_err, non_targets, setsize),
+    resp_vars = nlist(resp_err),
+    other_vars = nlist(non_targets, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -17,9 +18,14 @@
                             '- The non-target variables should be in radians and be ',
                             'centered relative to the target'),
       parameters = list(
+        mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
+                     "(in radians). Fixed internally to 0 by default."),
         kappa = "Concentration parameter of the von Mises distribution (log scale)",
         a = "General activation of memory items",
         c = "Context activation"
+      ),
+      fixed_parameters = list(
+        mu1 = 0
       )),
     void_mu = FALSE
   )
@@ -29,7 +35,8 @@
 
 .model_IMMbsc <- function(resp_err, non_targets, setsize, spaPos, ...) {
   out <- list(
-    vars = nlist(resp_err,non_targets, setsize, spaPos),
+    resp_vars = nlist(resp_err),
+    other_vars = nlist(non_targets, setsize, spaPos),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -42,18 +49,25 @@
                             '- The non-target variables should be in radians and be ',
                             'centered relative to the target'),
       parameters = list(
+        mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
+                     "(in radians). Fixed internally to 0 by default."),
         kappa = "Concentration parameter of the von Mises distribution (log scale)",
         c = "Context activation",
         s = "Spatial similarity gradient"
-      )
-    ))
+      ),
+      fixed_parameters = list(
+        mu1 = 0
+      )),
+    void_mu = FALSE
+  )
   class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMbsc")
   out
 }
 
 .model_IMMfull <- function(resp_err, non_targets, setsize, spaPos, ...) {
   out <- list(
-    vars = nlist(resp_err, non_targets, setsize, spaPos),
+    resp_vars = nlist(resp_err),
+    other_vars = nlist(non_targets, setsize, spaPos),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -66,12 +80,18 @@
                             '- The non-target variables should be in radians and be ',
                             'centered relative to the target'),
       parameters = list(
+        mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
+                     "(in radians). Fixed internally to 0 by default."),
         kappa = "Concentration parameter of the von Mises distribution (log scale)",
         a = "General activation of memory items",
         c = "Context activation",
         s = "Spatial similarity gradient"
-      )
-    ))
+      ),
+      fixed_parameters = list(
+        mu1 = 0
+      )),
+    void_mu = FALSE
+    )
   class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMfull")
   out
 }
@@ -133,7 +153,7 @@ IMMabc <- .model_IMMabc
 
 #' @export
 check_data.IMMspatial <- function(model, data, formula) {
-  spaPos <- model$vars$spaPos
+  spaPos <- model$other_vars$spaPos
   max_setsize <- attr(data, 'max_setsize')
 
   if (length(spaPos) < max_setsize - 1) {
@@ -166,46 +186,26 @@ configure_model.IMMabc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  resp_err <- model$vars$resp_err
-  non_targets <- model$vars$non_targets
-  setsize_var <- model$vars$setsize
+  non_targets <- model$other_vars$non_targets
+  setsize_var <- model$other_vars$setsize
 
-  # extract formulas for parameters
-  pform_names <- names(formula)
-  pform <- formula
+  # construct main brms formula from the bmm formula
+  bmm_formula <- formula
+  formula <- bmf2bf(model, bmm_formula)
 
-  # add fixed intercept for mu if no formula was included
-  if (!"mu" %in% pform_names) {
-    mu_form <- mu ~ 1
-    pform <- c(pform, mu_form)
-    names(pform) <- c(pform_names,"mu")
-  }
-
-  # names for parameters
+  # additional internal terms for the mixture model formula
   kappa_nts <- paste0('kappa', 2:max_setsize)
   kappa_unif <- paste0('kappa',max_setsize + 1)
   theta_nts <- paste0('theta',2:max_setsize)
   mu_nts <- paste0('mu', 2:max_setsize)
   mu_unif <- paste0('mu', max_setsize + 1)
 
-  # construct formula
-  formula <- brms::bf(paste0(resp_err,"~ mu"), nl = T)
-
-  # add parameter formulas to model formula
-  for (i in 1:length(pform)) {
-    predictors <- rsample::form_pred(pform[[i]])
-    if (any(predictors %in% names(pform))) {
-      formula <- formula + brms::nlf(pform[[i]])
-    } else {
-      formula <- formula + brms::lf(pform[[i]])
-    }
-  }
-
   formula <- formula +
     glue_lf(kappa_unif,' ~ 1') +
     glue_lf(mu_unif, ' ~ 1') +
     brms::nlf(theta1 ~ c + a) +
     brms::nlf(kappa1 ~ kappa)
+
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
@@ -220,13 +220,10 @@ configure_model.IMMabc <- function(model, data, formula) {
   family <- brms::do_call(brms::mixture, vm_list)
 
   # define prior
-  prior <- # fix mean of the first von Mises to zero
-    brms::prior_("constant(0)", nlpar = "mu") +
-    # fix mean of the guessing distribution to zero
-    brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
-    # fix kappa of the second von Mises to (alomst) zero
-    brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
-    # set reasonable priors fpr the to be estimated parameters
+  additional_constants <- list()
+  additional_constants[[kappa_unif]] <- -100
+  additional_constants[[mu_unif]] <- 0
+  prior <- fixed_pars_priors(model, additional_constants) +
     brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
     brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
     brms::prior_("normal(0, 1)", class = "b", nlpar = "a")
@@ -246,41 +243,20 @@ configure_model.IMMbsc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  resp_err <- model$vars$resp_err
-  non_targets <- model$vars$non_targets
-  setsize_var <- model$vars$setsize
-  spaPos <- model$vars$spaPos
+  non_targets <- model$other_vars$non_targets
+  setsize_var <- model$other_vars$setsize
+  spaPos <- model$other_vars$spaPos
 
-  # extract formulas for parameters
-  pform_names <- names(formula)
-  pform <- formula
+  # construct main brms formula from the bmm formula
+  bmm_formula <- formula
+  formula <- bmf2bf(model, bmm_formula)
 
-  # add fixed intercept for mu if no formula was included
-  if (!"mu" %in% pform_names) {
-    mu_form <- mu ~ 1
-    pform <- c(pform, mu_form)
-    names(pform) <- c(pform_names,"mu")
-  }
-
-  # names for parameters
+  # additional internal terms for the mixture model formula
   kappa_nts <- paste0('kappa', 2:max_setsize)
   kappa_unif <- paste0('kappa',max_setsize + 1)
   theta_nts <- paste0('theta',2:max_setsize)
   mu_nts <- paste0('mu', 2:max_setsize)
   mu_unif <- paste0('mu', max_setsize + 1)
-
-  # construct formula
-  formula <- brms::bf(paste0(resp_err,"~ mu"), nl = T)
-
-  # add parameter formulas to model formula
-  for (i in 1:length(pform)) {
-    predictors <- rsample::form_pred(pform[[i]])
-    if (any(predictors %in% names(pform))) {
-      formula <- formula + brms::nlf(pform[[i]])
-    } else {
-      formula <- formula + brms::lf(pform[[i]])
-    }
-  }
 
   formula <- formula +
     glue_lf(kappa_unif,' ~ 1') +
@@ -288,6 +264,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
     brms::nlf(theta1 ~ c) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
+
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
@@ -302,13 +279,10 @@ configure_model.IMMbsc <- function(model, data, formula) {
   family <- brms::do_call(brms::mixture, vm_list)
 
   # define prior
-  prior <- # fix mean of the first von Mises to zero
-    brms::prior_("constant(0)", nlpar = "mu") +
-    # fix mean of the guessing distribution to zero
-    brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
-    # fix kappa of the second von Mises to (alomst) zero
-    brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
-    # set reasonable priors fpr the to be estimated parameters
+  additional_constants <- list()
+  additional_constants[[kappa_unif]] <- -100
+  additional_constants[[mu_unif]] <- 0
+  prior <- fixed_pars_priors(model, additional_constants) +
     brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
     brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
     brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
@@ -328,41 +302,20 @@ configure_model.IMMfull <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  resp_err <- model$vars$resp_err
-  non_targets <- model$vars$non_targets
-  setsize_var <- model$vars$setsize
-  spaPos <- model$vars$spaPos
+  non_targets <- model$other_vars$non_targets
+  setsize_var <- model$other_vars$setsize
+  spaPos <- model$other_vars$spaPos
 
-  # extract formulas for parameters
-  pform_names <- names(formula)
-  pform <- formula
+  # construct main brms formula from the bmm formula
+  bmm_formula <- formula
+  formula <- bmf2bf(model, bmm_formula)
 
-  # add fixed intercept for mu if no formula was included
-  if (!"mu" %in% pform_names) {
-    mu_form <- mu ~ 1
-    pform <- c(pform, mu_form)
-    names(pform) <- c(pform_names,"mu")
-  }
-
-  # names for parameters
+  # additional internal terms for the mixture model formula
   kappa_nts <- paste0('kappa', 2:max_setsize)
   kappa_unif <- paste0('kappa',max_setsize + 1)
   theta_nts <- paste0('theta',2:max_setsize)
   mu_nts <- paste0('mu', 2:max_setsize)
   mu_unif <- paste0('mu', max_setsize + 1)
-
-  # construct formula
-  formula <- brms::bf(paste0(resp_err,"~ mu"), nl = T)
-
-  # add parameter formulas to model formula
-  for (i in 1:length(pform)) {
-    predictors <- rsample::form_pred(pform[[i]])
-    if (any(predictors %in% names(pform))) {
-      formula <- formula + brms::nlf(pform[[i]])
-    } else {
-      formula <- formula + brms::lf(pform[[i]])
-    }
-  }
 
   formula <- formula +
     glue_lf(kappa_unif,' ~ 1') +
@@ -370,6 +323,7 @@ configure_model.IMMfull <- function(model, data, formula) {
     brms::nlf(theta1 ~ c + a) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
+
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
@@ -384,13 +338,10 @@ configure_model.IMMfull <- function(model, data, formula) {
   family <- brms::do_call(brms::mixture, vm_list)
 
   # define prior
-  prior <- # fix mean of the first von Mises to zero
-    brms::prior_("constant(0)", nlpar = "mu") +
-    # fix mean of the guessing distribution to zero
-    brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
-    # fix kappa of the second von Mises to (alomst) zero
-    brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
-    # set reasonable priors fpr the to be estimated parameters
+  additional_constants <- list()
+  additional_constants[[kappa_unif]] <- -100
+  additional_constants[[mu_unif]] <- 0
+  prior <- fixed_pars_priors(model, additional_constants) +
     brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
     brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
     brms::prior_("normal(0, 1)", class = "b", nlpar = "a") +

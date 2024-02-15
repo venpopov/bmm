@@ -56,6 +56,7 @@ Interference measurement model by Oberauer and Lin (2017).
 }
 \item \strong{Parameters:}
 \itemize{
+\item \code{mu1}: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{a}: General activation of memory items
 \item \code{c}: Context activation
@@ -73,6 +74,7 @@ Interference measurement model by Oberauer and Lin (2017).
 }
 \item \strong{Parameters:}
 \itemize{
+\item \code{mu1}: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{c}: Context activation
 \item \code{s}: Spatial similarity gradient
@@ -89,6 +91,7 @@ Interference measurement model by Oberauer and Lin (2017).
 }
 \item \strong{Parameters:}
 \itemize{
+\item \code{mu1}: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{a}: General activation of memory items
 \item \code{c}: Context activation
