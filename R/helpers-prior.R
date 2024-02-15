@@ -108,6 +108,6 @@ fixed_pars_priors <- function(model, additional_pars = list()) {
   pars <- names(par_list)
   values <- unlist(par_list)
   priors <- glue::glue("constant({values})")
-  set_prior(priors, class = "Intercept", dpar = pars)
+  brms::set_prior(priors, class = "Intercept", dpar = pars)
 }
 
