@@ -190,3 +190,34 @@ install_and_load_bmm_version <- function(version) {
   }
   library(bmm, lib.loc=path)
 }
+
+
+#' Extract information from a brmsfit object
+#' @param fit A brmsfit object, or a list of brmsfit objects
+#' @param what String. What to return:
+#'  - "time" for the sampling time per chain
+#'  - "time_mean" for the mean sampling time
+#' @return Depends on `what` and the class of `fit`. For `brmsfit` objects,
+#'   information about the single fit is returned. For `brmsfit_list` objects, a
+#'   list or data.frame with the information for each fit is returned.
+#'  - "time": A data.frame with the sampling time per chain
+#'  - "time_mean": A named numeric vector with the mean sampling time
+#' @export
+fit_info <- function(fit, what) {
+  UseMethod("fit_info")
+}
+
+#' @export
+fit_info.brmsfit <- function(fit, what) {
+  fit_attr <- attributes(fit$fit)
+  metadata <- fit_attr$metadata
+  switch(what,
+         time = metadata$time$chains,
+         time_mean = colMeans(metadata$time$chains),
+  )
+}
+
+#' @export
+fit_info.brmsfit_list <- function(fit, what) {
+  .NotYetImplemented()
+}

@@ -16,6 +16,7 @@ install_and_load_bmm_version <- function(version) {
 }
 
 # Load data for vwm models (Participant 1-10, SetSize 1-4, from OberauerLin_2017)
+# TODO: generalize in the future to allow for different datasets for different models
 ref_data <- function() {
   withr::local_package('dplyr')
   dat <- OberauerLin_2017
@@ -149,6 +150,71 @@ run_IMMabc <- function(...) {
 }
 
 
+run_IMMbsc <- function(...) {
+  cat(paste0("\n##########################################################################\n",
+             "# Running IMMbsc \n",
+             "##########################################################################\n\n"))
+  date <- format(Sys.time(), "%Y%m%d")
+  hash <- paste0(sample(c(letters[1:6],0:9), 10, replace = TRUE), collapse="")
+  file <- paste0(date,"_", bmm_version, "_IMMbsc_seed-", seed, "_",hash,".rds")
+  dir  <- here::here("tests/internal/ref_fits")
+  if (!dir.exists(dir)) {
+    dir.create(dir, recursive = TRUE)
+  }
+  path <- paste0(dir, "/", file)
+  dat <- ref_data()
+  formula <- brms::bf(dev_rad ~ 1,
+                      c ~ 0 + SetSize,
+                      s ~ 0 + SetSize,
+                      kappa ~ 0 + SetSize)
+  model <- IMMbsc(non_targets = paste0("Item", 2:4,"_Col_rad"),
+                  spaPos = paste0("Item", 2:4,"_Pos_rad"),
+                  setsize = "SetSize")
+  fit <- fit_model(formula, dat, model,
+                   parallel = TRUE,
+                   chains = 4,
+                   iter = 1000,
+                   refresh = 500,
+                   init = 1,
+                   silent = 1,
+                   backend = 'cmdstanr',
+                   seed = seed)
+  saveRDS(fit, path)
+}
+
+run_IMMfull <- function(...) {
+  cat(paste0("\n##########################################################################\n",
+             "# Running IMMfull \n",
+             "##########################################################################\n\n"))
+  date <- format(Sys.time(), "%Y%m%d")
+  hash <- paste0(sample(c(letters[1:6],0:9), 10, replace = TRUE), collapse="")
+  file <- paste0(date,"_", bmm_version, "_IMMfull_seed-", seed, "_",hash,".rds")
+  dir  <- here::here("tests/internal/ref_fits")
+  if (!dir.exists(dir)) {
+    dir.create(dir, recursive = TRUE)
+  }
+  path <- paste0(dir, "/", file)
+  dat <- ref_data()
+  formula <- brms::bf(dev_rad ~ 1,
+                      a ~ 0 + SetSize,
+                      c ~ 0 + SetSize,
+                      s ~ 0 + SetSize,
+                      kappa ~ 0 + SetSize)
+  model <- IMMfull(non_targets = paste0("Item", 2:4,"_Col_rad"),
+                   spaPos = paste0("Item", 2:4,"_Pos_rad"),
+                   setsize = "SetSize")
+  fit <- fit_model(formula, dat, model,
+                   parallel = TRUE,
+                   chains = 4,
+                   iter = 1000,
+                   refresh = 500,
+                   init = 1,
+                   silent = 1,
+                   backend = 'cmdstanr',
+                   seed = seed)
+  saveRDS(fit, path)
+}
+
 ###############################################################################!
 # SETUP                                                                    ####
 ###############################################################################!
@@ -168,3 +234,5 @@ run_sdmSimple(seed=seed, bmm_version=bmm_version)
 run_mixture2p(seed=seed, bmm_version=bmm_version)
 run_mixture3p(seed=seed, bmm_version=bmm_version)
 run_IMMabc(seed=seed, bmm_version=bmm_version)
+run_IMMbsc(seed=seed, bmm_version=bmm_version)
+run_IMMfull(seed=seed, bmm_version=bmm_version)
