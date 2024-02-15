@@ -1,3 +1,19 @@
+# bmm 0.3.0
+
+### New features
+
+* BREAKING CHANGE: The `fit_model` function now requires a `bmmformula` to be passed. The  syntax of the `bmmformula` or its short form `bmf` is equal to specifying a `brmsformula`. However, as of this version the `bmmformula` only specifies how parameters of a `bmmmodel` change across experimental conditions or continuous predictors. The response variables that the model is fit to now have to be specified when the model is defined using `model = bmmmodel()`. (#79)
+* This release includes reference fits for all implemented models to ensure that future changes to the package do not compromise the included models and change the results that their implementations produce.
+* All vignettes have been update to the new `bmmformula` syntax.
+* The `check_formula` methods have been adapted to match the new `bmmformula` syntax. It now evaluates if formulas have been specified using the `bmmformula` function, if formulas for all parameters of a `bmmmodel` have been specified and warns the user that only a fixed intercept will be estimated if no formula for one of the parameters was provided. Additionally, `check_formula` throws an error should formulas be provided that do not match a parameter of the called `bmmmodel` unless they are part of a non-linear transformation.
+* there is now an option `bmm.silent` that allows to suppress messages
+* the baseline activation `b` was removed from the `IMM` models, as this is internally fixed
+to zero for scaling and as of now cannot be predicted by independent variables.
+
+### Bug Fixes
+* an error with the treatment of distances in the `IMMfull` and the `IMMbsc` has been corrected. This versions ensures that only positive distances can be passed to any of the two models.
+* removed a warning regarding the scaling of the distances in the `IMMfull` and the `IMMbsc` that was specific only for circular distances.
+
 # bmm 0.2.2
 
 ### Bug Fixes
