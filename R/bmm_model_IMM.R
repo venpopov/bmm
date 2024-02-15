@@ -157,11 +157,11 @@ check_data.IMMspatial <- function(model, data, formula) {
   max_setsize <- attr(data, 'max_setsize')
 
   if (length(spaPos) < max_setsize - 1) {
-    stop(paste0("The number of columns for spatial positions in the argument",
+    stop(paste0("The number of columns for spatial positions in the argument ",
                 "'spaPos' is less than max(setsize)-1"))
   } else if (length(spaPos) > max_setsize - 1) {
-    stop(paste0("The number of columns for spatial positions in the argument",
-                "spaPos'' is more than max(setsize)-1"))
+    stop(paste0("The number of columns for spatial positions in the argument ",
+                "'spaPos' is more than max(setsize)-1"))
   }
 
   if (any(data[,spaPos] < 0)) {
