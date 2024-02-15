@@ -151,3 +151,21 @@ combine_args <- function(args) {
   }
   c(config_args, opts)
 }
+
+
+# if x is a variable present in the data, return x, else error
+is_data_var <- function(x, data) {
+  is.character(x) && length(x) == 1 && x %in% names(data)
+}
+
+is_try_warning <- function(x) {
+  inherits(x, "warning")
+}
+
+as_numeric_vector <- function(x) {
+  out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
+  if (is_try_warning(out)) {
+    stop2("Cannot coerce '", x, "' to a numeric vector")
+  }
+  out
+}

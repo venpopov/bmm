@@ -73,21 +73,12 @@ check_data.nontargets <- function(model, data, formula) {
   if (max(abs(data[,non_targets]), na.rm = T) > 2*pi) {
     warning('It appears at least one of your non_target variables are in degrees.\n
              The model requires these variable to be in radians.\n
-            The model will continue to run, but the results may be compromised.')
+             The model will continue to run, but the results may be compromised.')
   }
 
-  setsize <- model$vars$setsize
-  if (is.character(setsize) && length(setsize) == 1) {
-    # Variable setsize
-    ss_numeric <- as.numeric(as.character(data[[setsize]]))
-    max_setsize <- max(ss_numeric)
-  } else if (is.numeric(setsize) && length(setsize) == 1) {
-    # Fixed setsize
-    ss_numeric <- rep(setsize, times = nrow(data))
-    max_setsize <- setsize
-  } else {
-    stop("Argument 'setsize' must be either a single numeric value or a character string.")
-  }
+  ss <- check_var_setsize(model$vars$setsize, data)
+  max_setsize <- ss$max_setsize
+  ss_numeric <- ss$ss_numeric
 
   if (length(non_targets) < max_setsize - 1) {
     stop("The number of columns for non-target values in the argument ",
@@ -96,6 +87,7 @@ check_data.nontargets <- function(model, data, formula) {
     stop('The number of columns for non-target values in the argument ',
          '`non_targets` is more than max(setsize)-1')
   }
+
 
   # create index variables for non_targets and correction variable for theta due to setsize
   lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
@@ -114,6 +106,40 @@ check_data.nontargets <- function(model, data, formula) {
   data = NextMethod("check_data")
 
   return(data)
+}
+
+
+check_var_setsize <- function(setsize, data) {
+  if (length(setsize) > 1) {
+    stop2("The setsize variable '", setsize, "' must be a single numeric value or a single variable in your data",
+          " You provided a vector of length ", length(setsize))
+  }
+  # class check - is setsize a single numeric value or a variable in the data
+  # coericble to a numeric vector?
+  if (is_data_var(setsize, data)) {
+    ss_numeric <- try(as_numeric_vector(data[[setsize]]), silent=T)
+    if (is_try_error(ss_numeric)) {
+      stop2("The setsize variable '", setsize, "' must be coercible to a numeric vector.\n",
+            "Did you code your set size as a character vector?")
+    }
+    max_setsize <- max(ss_numeric, na.rm = T)
+  } else {
+    max_setsize <- try(as_one_integer(setsize), silent=T)
+    if (is_try_error(max_setsize) | is.logical(setsize)) {
+      stop2("The setsize variable '", setsize, "' must be either a variable in your data or ",
+            "a single numeric value")
+    }
+    ss_numeric <- rep(max_setsize, nrow(data))
+  }
+  # value check
+  if (any(ss_numeric < 1, na.rm = T)) {
+    stop2("Values of the setsize variable '", setsize, "' must be greater than 0")
+  }
+  if (any(ss_numeric %% 1 != 0, na.rm = T)) {
+    stop2("Values of the setsize variable '", setsize, "' must be whole numbers")
+  }
+
+  return(list(max_setsize = max_setsize, ss_numeric = ss_numeric))
 }
 
 
@@ -272,3 +298,6 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
 
   return(standata)
 }
+
+
+
