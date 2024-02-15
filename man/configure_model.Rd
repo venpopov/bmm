@@ -61,7 +61,7 @@ A bare bones configure_model.* method should look like this:
 configure_model.3p <- function(model, data, formula) {
    # retrieve arguments from the data check
    max_setsize <- attr(data, "max_setsize")
-   non_targets <- attr(data, "non_targets")
+   nt_features <- attr(data, "nt_features")
    lure_idx_vars <- attr(data, "lure_idx_vars")
    setsize_var <- attr(data, "setsize_var")
 
@@ -84,7 +84,7 @@ configure_model.3p <- function(model, data, formula) {
        glue_nlf(kappa_nts[i], ' ~ kappa') +
        glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(thetant + log(inv_ss)) + ',
                 '(1-', lure_idx_vars[i], ')*(-100)') +
-       glue_nlf(mu_nts[i], ' ~ ', non_targets[i])
+       glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
    }
 
    # define mixture family

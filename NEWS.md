@@ -3,6 +3,7 @@
 ### New features
 
 * BREAKING CHANGE: The `fit_model` function now requires a `bmmformula` to be passed. The  syntax of the `bmmformula` or its short form `bmf` is equal to specifying a `brmsformula`. However, as of this version the `bmmformula` only specifies how parameters of a `bmmmodel` change across experimental conditions or continuous predictors. The response variables that the model is fit to now have to be specified when the model is defined using `model = bmmmodel()`. (#79)
+* BREAKING CHANGE: The `non_target` and `spaPos` variables for the `mixture3p` and `IMM` models were relabled to `nt_features` and `nt_distance` for consistency. This is also to communicate that distance is not limited to spatial distance but distances on any feature dimensions of the retrieval cues. Currently, still only a single generalization gradient for the cue features is possible. 
 * This release includes reference fits for all implemented models to ensure that future changes to the package do not compromise the included models and change the results that their implementations produce.
 * All vignettes have been update to the new `bmmformula` syntax.
 * The `check_formula` methods have been adapted to match the new `bmmformula` syntax. It now evaluates if formulas have been specified using the `bmmformula` function, if formulas for all parameters of a `bmmmodel` have been specified and warns the user that only a fixed intercept will be estimated if no formula for one of the parameters was provided. Additionally, `check_formula` throws an error should formulas be provided that do not match a parameter of the called `bmmmodel` unless they are part of a non-linear transformation.
@@ -51,7 +52,7 @@ to zero for scaling and as of now cannot be predicted by independent variables.
 
 ### New features
 
-* BREAKING CHANGE: Improve user interface to fit_model() ensures package stability and future development. Model specific arguments are now passed to the model functions as named arguments (e.g. `mixture3p(non_targets, setsize)`). This allows for a more flexible and intuitive way to specify model arguments. Passing model specific arguments directly to the `fit_model()` function is now deprecated (#43).
+* BREAKING CHANGE: Improve user interface to fit_model() ensures package stability and future development. Model specific arguments are now passed to the model functions as named arguments (e.g. `mixture3p(nt_features, setsize)`). This allows for a more flexible and intuitive way to specify model arguments. Passing model specific arguments directly to the `fit_model()` function is now deprecated (#43).
 * Add information about each model such as domain, task, name, version, citation, requirements and parameters (#42)
 * Add ability to generate a template file for adding new models to the package with `use_model_template()` (for developers) (#39)
 

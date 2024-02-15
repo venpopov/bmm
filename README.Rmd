@@ -165,8 +165,8 @@ model_formula <- brms::bf(dev_rad ~ 1,
                           s ~ 0 + SetSize,
                           kappa ~ 0 + SetSize)
 
-model <- IMMfull(non_targets = paste0("Item",2:8,"_Col"),
-                 spaPos = paste0("Item",2:8,"_Pos"))
+model <- IMMfull(nt_features = paste0("Item",2:8,"_Col"),
+                 nt_distance = paste0("Item",2:8,"_Pos"))
 
 fit <- fit_model(
   formula = model_formula,

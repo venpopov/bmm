@@ -168,13 +168,13 @@ model_formula <- bmf(
 )
 ```
 
-Then, we can specify the model that we want to estimate. This includes specifying the name of the variable containing the dependent variable `resp_err` in our simulated data set. Additionally, we also need to provide the information of the `non_target` locations, the name of the variable coding the spatial distances of the non_targets to the target `spaDist`, and the `setsize` used in our data. The `setsize` can either be a fixed integer, if there is only one setsize in your data, or the name of the variable coding the `setsize` in your data:
+Then, we can specify the model that we want to estimate. This includes specifying the name of the variable containing the dependent variable `resp_err` in our simulated data set. Additionally, we also need to provide the information of the `non_target` locations, the name of the variable coding the spatial distances of the nt_features to the target `spaDist`, and the `setsize` used in our data. The `setsize` can either be a fixed integer, if there is only one setsize in your data, or the name of the variable coding the `setsize` in your data:
 
 ```{r}
 model <- IMMfull(resp_err = "resp_err",
-                 non_target = paste0("color_item",2:setsize),
+                 nt_features = paste0("color_item",2:setsize),
                  setsize = setsize,
-                 spaPos = paste0("dist_item",2:setsize))
+                 nt_distance = paste0("dist_item",2:setsize))
 ```
 
 Finally, we can fit the model by passing all the relevant arguments to the `fit_model` function:

@@ -4,16 +4,16 @@
 \alias{mixture3p}
 \title{Three-parameter mixture model by Bays et al (2009).}
 \usage{
-mixture3p(resp_err, non_targets, setsize, ...)
+mixture3p(resp_err, nt_features, setsize, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the provided dataset containing
-the response error. The response Error should code the response relative to
+\item{resp_err}{The name of the variable in the dataset containing
+the response error. The response error should code the response relative to
 the to-be-recalled target in radians. You can transform the response error
-in degrees to radian using the \code{deg2rad} function.}
+in degrees to radians using the \code{deg2rad} function.}
 
-\item{non_targets}{A character vector with the names of the non-target
-variables. The non_target variables should be in radians and be centered
+\item{nt_features}{A character vector with the names of the non-target
+feature values. The non_target feature values should be in radians and centered
 relative to the target.}
 
 \item{setsize}{Name of the column containing the set size variable (if
@@ -40,7 +40,7 @@ Three-parameter mixture model by Bays et al (2009).
 \item \strong{Requirements:}
 \itemize{
 \item The response vairable should be in radians and represent the angular error relative to the target
-\item The non-target variables should be in radians and be centered relative to the target
+\item The non-target features should be in radians and be centered relative to the target
 }
 \item \strong{Parameters:}
 \itemize{
@@ -62,13 +62,14 @@ dat <- data.frame(
 )
 
 # define formula
-ff <- brms::bf(y ~ 1,
-              kappa ~ 1,
-              thetat ~ 1,
-              thetant ~ 1)
+ff <- bmmformula(
+  kappa ~ 1,
+  thetat ~ 1,
+  thetant ~ 1
+)
 
 # specify the 3-parameter model
-model <- mixture3p(non_targets = paste0('nt',1:3,'_loc'), setsize = 4)
+model <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), setsize = 4)
 
 # fit the model
 fit <- fit_model(formula = ff,

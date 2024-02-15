@@ -2,10 +2,10 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <- function(resp_err, non_targets, setsize, ...) {
+.model_IMMabc <- function(resp_err, nt_features, setsize, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
-    other_vars = nlist(non_targets, setsize),
+    other_vars = nlist(nt_features, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -15,7 +15,7 @@
                         "of visual working memory. Psychological Review, 124(1), 21-59"),
       requirements = paste0('- The response vairable should be in radians and ',
                             'represent the angular error relative to the target\n  ',
-                            '- The non-target variables should be in radians and be ',
+                            '- The non-target features should be in radians and be ',
                             'centered relative to the target'),
       parameters = list(
         mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
@@ -33,10 +33,10 @@
   out
 }
 
-.model_IMMbsc <- function(resp_err, non_targets, setsize, spaPos, ...) {
+.model_IMMbsc <- function(resp_err, nt_features, nt_distance, setsize, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
-    other_vars = nlist(non_targets, setsize, spaPos),
+    other_vars = nlist(nt_features, nt_distance, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -64,10 +64,10 @@
   out
 }
 
-.model_IMMfull <- function(resp_err, non_targets, setsize, spaPos, ...) {
+.model_IMMfull <- function(resp_err,  nt_features, nt_distance, setsize, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
-    other_vars = nlist(non_targets, setsize, spaPos),
+    other_vars = nlist( nt_features, nt_distance, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -77,7 +77,7 @@
                         "of visual working memory. Psychological Review, 124(1), 21-59"),
       requirements = paste0('- The response vairable should be in radians and ',
                             'represent the angular error relative to the target\n  ',
-                            '- The non-target variables should be in radians and be ',
+                            '- The non-target features should be in radians and be ',
                             'centered relative to the target'),
       parameters = list(
         mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
@@ -91,7 +91,7 @@
         mu1 = 0
       )),
     void_mu = FALSE
-    )
+  )
   class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMfull")
   out
 }
@@ -117,14 +117,14 @@
 #' @param resp_err The name of the variable in the provided dataset containing the
 #'   response error. The response Error should code the response relative to the to-be-recalled
 #'   target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
-#' @param non_targets A character vector with the names of the non-target variables.
+#' @param nt_features A character vector with the names of the non-target variables.
 #'   The non_target variables should be in radians and be centered relative to the
 #'   target.
+#' @param nt_distance A vector of names of the columns containing the distances of
+#'   non-target items to the target item. Only necessary for the `IMMbsc` and `IMMfull` models
 #' @param setsize Name of the column containing the set size variable (if
 #'   setsize varies) or a numeric value for the setsize, if the setsize is
 #'   fixed.
-#' @param spaPos A vector of names of the columns containing the spatial distances of
-#'   non-target items to the target item. Only necessary for the `IMMbsc` and `IMMfull` models
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel
@@ -141,8 +141,6 @@ IMMbsc <- .model_IMMbsc
 #' @export
 IMMabc <- .model_IMMabc
 
-
-
 #############################################################################!
 # CHECK_DATA S3 methods                                                  ####
 #############################################################################!
@@ -153,18 +151,18 @@ IMMabc <- .model_IMMabc
 
 #' @export
 check_data.IMMspatial <- function(model, data, formula) {
-  spaPos <- model$other_vars$spaPos
+  nt_distance <- model$other_vars$nt_distance
   max_setsize <- attr(data, 'max_setsize')
 
-  if (length(spaPos) < max_setsize - 1) {
+  if (length(nt_distance) < max_setsize - 1) {
     stop(paste0("The number of columns for spatial positions in the argument ",
-                "'spaPos' is less than max(setsize)-1"))
-  } else if (length(spaPos) > max_setsize - 1) {
+                "'nt_distance' is less than max(setsize)-1"))
+  } else if (length(nt_distance) > max_setsize - 1) {
     stop(paste0("The number of columns for spatial positions in the argument ",
-                "'spaPos' is more than max(setsize)-1"))
+                "'nt_distance' is more than max(setsize)-1"))
   }
 
-  if (any(data[,spaPos] < 0)) {
+  if (any(data[,nt_distance] < 0)) {
     stop('Somve values of the spatial distance variables in the data are negative.\n
          All spatial distances to the target need to be postive.')
   }
@@ -185,7 +183,7 @@ configure_model.IMMabc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  non_targets <- model$other_vars$non_targets
+  nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
 
   # construct main brms formula from the bmm formula
@@ -210,7 +208,7 @@ configure_model.IMMabc <- function(model, data, formula) {
       glue_nlf(kappa_nts[i], ' ~ kappa') +
       glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(a) + ',
                '(1-', lure_idx_vars[i], ')*(-100)') +
-      glue_nlf(mu_nts[i], ' ~ ', non_targets[i])
+      glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
   }
 
   # define mixture family
@@ -242,9 +240,9 @@ configure_model.IMMbsc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  non_targets <- model$other_vars$non_targets
+  nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
-  spaPos <- model$other_vars$spaPos
+  nt_distance <- model$other_vars$nt_distance
 
   # construct main brms formula from the bmm formula
   bmm_formula <- formula
@@ -267,9 +265,9 @@ configure_model.IMMbsc <- function(model, data, formula) {
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
-      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',spaPos[i],')*c) + ',
+      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distance[i],')*c) + ',
                '(1-', lure_idx_vars[i], ')*(-100)') +
-      glue_nlf(mu_nts[i], ' ~ ', non_targets[i])
+      glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
   }
 
   # define mixture family
@@ -301,9 +299,9 @@ configure_model.IMMfull <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
   lure_idx_vars <- attr(data, "lure_idx_vars")
-  non_targets <- model$other_vars$non_targets
+  nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
-  spaPos <- model$other_vars$spaPos
+  nt_distance <- model$other_vars$nt_distance
 
   # construct main brms formula from the bmm formula
   bmm_formula <- formula
@@ -326,9 +324,9 @@ configure_model.IMMfull <- function(model, data, formula) {
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
-      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',spaPos[i],')*c + a) + ',
+      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distance[i],')*c + a) + ',
                '(1-', lure_idx_vars[i], ')*(-100)') +
-      glue_nlf(mu_nts[i], ' ~ ', non_targets[i])
+      glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
   }
 
   # define mixture family

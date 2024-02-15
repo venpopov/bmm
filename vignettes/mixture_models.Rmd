@@ -281,7 +281,7 @@ ff <- bmf(
   kappa ~ 0 + set_size + (0 + set_size | id)
 )
 
-model <- mixture3p(resp_err = "error",non_targets = paste0('non_target_',1:5), setsize = 'set_size')
+model <- mixture3p(resp_err = "error", nt_features = paste0('non_target_',1:5), setsize = 'set_size')
 ```
 
 Then we run the model just like before:

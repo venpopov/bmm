@@ -72,8 +72,8 @@ check_data.vwm <- function(model, data, formula) {
 
 #' @export
 check_data.nontargets <- function(model, data, formula) {
-  non_targets <- model$other_vars$non_targets
-  if (max(abs(data[,non_targets]), na.rm = T) > 2*pi) {
+  nt_features <- model$other_vars$nt_features
+  if (max(abs(data[,nt_features]), na.rm = T) > 2*pi) {
     warning('It appears at least one of your non_target variables are in degrees.\n
              The model requires these variable to be in radians.\n
              The model will continue to run, but the results may be compromised.')
@@ -83,16 +83,16 @@ check_data.nontargets <- function(model, data, formula) {
   max_setsize <- ss$max_setsize
   ss_numeric <- ss$ss_numeric
 
-  if (length(non_targets) < max_setsize - 1) {
+  if (length(nt_features) < max_setsize - 1) {
     stop("The number of columns for non-target values in the argument ",
-         "'non_targets' is less than max(setsize)-1")
-  } else if (length(non_targets) > max_setsize - 1) {
+         "'nt_features' is less than max(setsize)-1")
+  } else if (length(nt_features) > max_setsize - 1) {
     stop('The number of columns for non-target values in the argument ',
-         '`non_targets` is more than max(setsize)-1')
+         '`nt_features` is more than max(setsize)-1')
   }
 
 
-  # create index variables for non_targets and correction variable for theta due to setsize
+  # create index variables for nt_features and correction variable for theta due to setsize
   lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
   for (i in 1:(max_setsize - 1)) {
     data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
@@ -100,7 +100,7 @@ check_data.nontargets <- function(model, data, formula) {
   data$ss_numeric <- ss_numeric
   data$inv_ss = 1/(ss_numeric - 1)
   data$inv_ss = ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
-  data[,non_targets][is.na(data[,non_targets])] <- 0
+  data[,nt_features][is.na(data[,nt_features])] <- 0
 
   # save some variables for later use
   attr(data, 'max_setsize') <- max_setsize
@@ -157,7 +157,7 @@ check_var_setsize <- function(setsize, data) {
 #' @param data A `data.frame` object where each row is a single observation
 #' @param response Character. The name of the column in `data` which contains
 #'   the response
-#' @param non_targets Character vector. The names of the columns in `data` which
+#' @param nt_features Character vector. The names of the columns in `data` which
 #'   contain the values of the non-targets
 #' @keywords transform
 #' @return A `data.frame` with n*m rows, where n is the number of rows of `data`
@@ -167,10 +167,10 @@ check_var_setsize <- function(setsize, data) {
 #'
 #' @export
 #'
-calc_error_relative_to_nontargets <- function(data, response, non_targets) {
+calc_error_relative_to_nontargets <- function(data, response, nt_features) {
   y <- y_nt <- non_target_name <- non_target_value <- NULL
   data <- data %>%
-    tidyr::gather(non_target_name, non_target_value, eval(non_targets))
+    tidyr::gather(non_target_name, non_target_value, eval(nt_features))
 
   data$y_nt <- wrap(data[[response]]-data[["non_target_value"]])
   return(data)

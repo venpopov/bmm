@@ -75,7 +75,7 @@ run_mixture3p <- function(...) {
                       thetat ~ 0 + SetSize,
                       thetant ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
-  model <- mixture3p(non_targets = paste0("Item", 2:4,"_Col_rad"),
+  model <- mixture3p(nt_features = paste0("Item", 2:4,"_Col_rad"),
                      setsize = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,
@@ -135,7 +135,7 @@ run_IMMabc <- function(...) {
                       a ~ 0 + SetSize,
                       c ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
-  model <- IMMabc(non_targets = paste0("Item", 2:4,"_Col_rad"),
+  model <- IMMabc(nt_features = paste0("Item", 2:4,"_Col_rad"),
                   setsize = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,
@@ -167,8 +167,8 @@ run_IMMbsc <- function(...) {
                       c ~ 0 + SetSize,
                       s ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
-  model <- IMMbsc(non_targets = paste0("Item", 2:4,"_Col_rad"),
-                  spaPos = paste0("Item", 2:4,"_Pos_rad"),
+  model <- IMMbsc(nt_features = paste0("Item", 2:4,"_Col_rad"),
+                  nt_distance = paste0("Item", 2:4,"_Pos_rad"),
                   setsize = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,
@@ -200,8 +200,8 @@ run_IMMfull <- function(...) {
                       c ~ 0 + SetSize,
                       s ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
-  model <- IMMfull(non_targets = paste0("Item", 2:4,"_Col_rad"),
-                   spaPos = paste0("Item", 2:4,"_Pos_rad"),
+  model <- IMMfull(nt_features = paste0("Item", 2:4,"_Col_rad"),
+                   nt_distance = paste0("Item", 2:4,"_Pos_rad"),
                    setsize = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,
