@@ -80,7 +80,7 @@ test_that('Available models produce expected errors', {
     model2 <- get_model2(model)(non_targets='Item2_rel', setsize=TRUE, spaPos='spaD2')
     expect_error(fit_model(brms::bf(respErr~1), data=dat, model=model2, backend="mock",
                            mock_fit=1, rename=FALSE),
-                 "'setsize' must be either a single numeric value or a character string")
+                 "must be either a variable in your data or ")
   }
 })
 

@@ -1,3 +1,8 @@
+# bmm 0.2.2
+
+### Bug Fixes
+* fixed a bug where passing a character vector or negative values to setsize argument of visual working memory models caused an error or incorrect behavior (#97)
+
 # bmm 0.2.1
 
 ### Bug Fixes
