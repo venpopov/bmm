@@ -69,6 +69,7 @@ The following models are supported:
 \item \code{IMMabc(resp_err, non_targets, setsize)}
 \item \code{IMMbsc(resp_err, non_targets, setsize, spaPos)}
 \item \code{IMMfull(resp_err, non_targets, setsize, spaPos)}
+\item \code{ezDM(meanRT, varRT, nCorr, nTrials)}
 \item \code{mixture2p(resp_err)}
 \item \code{mixture3p(resp_err, non_targets, setsize)}
 \item \code{sdmSimple(resp_err)}

@@ -68,7 +68,8 @@ bmf2bf.bmmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE
   resp <- model$resp_vars
   if (length(resp) > 1) {
-    NextMethod("bmf2bf")
+    formula <- NextMethod("bmf2bf")
+    return(formula)
   }
   resp <- resp[[1]]
 
