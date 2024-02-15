@@ -7,11 +7,14 @@
 mixture3p(resp_err, non_targets, setsize, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
+\item{resp_err}{The name of the variable in the provided dataset containing
+the response error. The response Error should code the response relative to
+the to-be-recalled target in radians. You can transform the response error
+in degrees to radian using the \code{deg2rad} function.}
 
-\item{non_targets}{A character vector with the names of the non-target variables.
-The non_target variables should be in radians and be centered relative to the
-target.}
+\item{non_targets}{A character vector with the names of the non-target
+variables. The non_target variables should be in radians and be centered
+relative to the target.}
 
 \item{setsize}{Name of the column containing the set size variable (if
 setsize varies) or a numeric value for the setsize, if the setsize is
@@ -41,6 +44,7 @@ Three-parameter mixture model by Bays et al (2009).
 }
 \item \strong{Parameters:}
 \itemize{
+\item \code{mu1}: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{thetat}: Mixture weight for target responses
 \item \code{thetant}: Mixture weight for non-target responses
