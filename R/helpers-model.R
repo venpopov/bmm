@@ -445,8 +445,7 @@ use_model_template <- function(model_name,
         }
       }
       stan_vars_template <- paste0(stan_vars_template,
-                                   "   stan_", stanvar_block, " <- readChar(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'),\n",
-                                   "      file.info(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'))$size)\n")
+                                   "   stan_", stanvar_block, " <- read_lines2(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'))\n")
     }
     stan_vars_template <- paste0(stan_vars_template, "\n   stanvars <- ")
     i = 1
