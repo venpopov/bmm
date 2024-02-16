@@ -65,11 +65,11 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  IMMabc(non_targets, setsize) 
-#> -  IMMbsc(non_targets, setsize, spaPos) 
-#> -  IMMfull(non_targets, setsize, spaPos) 
+#> -  IMMabc(nt_features, setsize) 
+#> -  IMMbsc(nt_features, nt_distances, setsize) 
+#> -  IMMfull(nt_features, nt_distances, setsize) 
 #> -  mixture2p() 
-#> -  mixture3p(non_targets, setsize) 
+#> -  mixture3p(nt_features, setsize) 
 #> -  sdmSimple() 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
@@ -166,14 +166,15 @@ description of this model and and in depth explanation of the parameters
 estimated in the model, please have a look at `vignette("IMM")`.
 
 ``` r
-model_formula <- brms::bf(dev_rad ~ 1,
-                          c ~ 0 + SetSize,
-                          a ~ 0 + SetSize,
-                          s ~ 0 + SetSize,
-                          kappa ~ 0 + SetSize)
+model_formula <- bmmformula(c ~ 0 + SetSize,
+                            a ~ 0 + SetSize,
+                            s ~ 0 + SetSize,
+                            kappa ~ 0 + SetSize)
 
-model <- IMMfull(non_targets = paste0("Item",2:8,"_Col"),
-                 spaPos = paste0("Item",2:8,"_Pos"))
+model <- IMMfull(resp_err = "dev_rad",
+                 nt_features = paste0("Item",2:8,"_Col"),
+                 nt_distances = paste0("Item",2:8,"_Pos"),
+                 setsize = "SetSize")
 
 fit <- fit_model(
   formula = model_formula,

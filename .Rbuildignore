@@ -14,3 +14,5 @@
 ^Meta$
 ^dev_utils$
 ^index.md$
+^tests/internal-.*$
+^tests/internal$
