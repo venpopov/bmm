@@ -42,7 +42,7 @@ A bare bones configure_model.* method should look like this:
    <preprocessing code>
 
    # construct the formula
-   formula <- formula + <new terms>
+   formula <- bmf2bf(formula, model)
 
    # construct the family
    family <- <code for new family>
@@ -72,13 +72,17 @@ configure_model.3p <- function(model, data, formula) {
    mu_nts <- paste0('mu', 2:max_setsize)
    mu_unif <- paste0('mu', max_setsize + 1)
 
+   # construct main brms formula from the bmm formula
+   bmm_formula <- formula
+   formula <- bmf2bf(model, bmm_formula)
+
    # construct formula
    formula <- formula +
-     brms::lf(mu1 ~ 1) +
      glue_lf(kappa_unif,' ~ 1') +
      glue_lf(mu_unif, ' ~ 1') +
      brms::nlf(theta1 ~ thetat) +
      brms::nlf(kappa1 ~ kappa)
+
    for (i in 1:(max_setsize-1)) {
      formula <- formula +
        glue_nlf(kappa_nts[i], ' ~ kappa') +

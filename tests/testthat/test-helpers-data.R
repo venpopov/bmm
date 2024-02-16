@@ -20,7 +20,7 @@ test_that("check_data() produces expected errors and warnings", {
                               bmmformula(kappa ~ 1)),
                    "It appears your response variable is in degrees.\n")
     expect_silent(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distance = 'z'),
-                             data.frame(y = 1, x = 1, z = 2), brms::bf(y ~ 1)))
+                             data.frame(y = 1, x = 1, z = 2), bmmformula(y ~ 1)))
   }
 
   mls <- lapply(c('mixture3p','IMMabc','IMMbsc','IMMfull'), get_model2)

@@ -56,13 +56,30 @@ wrong_parameters <- function(model, formula) {
   fpars[wpars]
 }
 
-
+#' @title Convert `bmmformula` objects to `brmsformula` objects
+#' @description
+#'  Called by configure_model() inside fit_model() to convert the `bmmformula` into a
+#'  `brmsformula` based on information in the model object. It will call the
+#'  appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
+#' @param model The model object defining one of the supported `bmmmodels``
+#' @param formula The `bmmformula` that should be converted to a `brmsformula`
+#' @returns A `brmsformula` defining the response variables and the additional parameter
+#'   formulas for the specified `bmmmodel`
+#' @examples
+#'   model <- mixture2p(resp_err = "error")
+#'
+#'   formula <- bmmformula(
+#'     thetat ~ 0 + setsize + (0 + setsize | id),
+#'     kappa ~ 1 + (1 | id)
+#'   )
+#'
+#'   brms_formula <- bmf2bf(model, formula)
+#' @export
 bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
 }
 
 # default method for all bmmmodels with 1 response variable
-# TODO: add support for multiple response variables
 #' @export
 bmf2bf.bmmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE

@@ -46,11 +46,10 @@
 #' dat <- data.frame(y = rmixture2p(n=2000))
 #'
 #' # define formula
-#' ff <- brms::bf(y ~ 1,
-#'                kappa ~ 1,
-#'                thetat ~ 1)
+#' ff <- bmmformula(kappa ~ 1,
+#'                  thetat ~ 1)
 #'
-#' model <- mixture2p()
+#' model <- mixture2p(resp_err = "y")
 #'
 #' # fit the model
 #' fit <- fit_model(formula = ff,

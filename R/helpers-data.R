@@ -270,14 +270,13 @@ rad2deg <- function(rad){
 #' dat <- data.frame(y=rsdm(n=2000))
 #'
 #' # define formula
-#' ff <- brms::bf(y ~ 1,
-#'                c ~ 1,
-#'                kappa ~ 1)
+#' ff <- bmf(c ~ 1,
+#'           kappa ~ 1)
 #'
 #' # fit the model
 #' get_standata(formula = ff,
 #'              data = dat,
-#'              model = sdmSimple()
+#'              model = sdmSimple(resp_err = "y")
 #' )
 #' }
 #'

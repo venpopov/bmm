@@ -159,14 +159,15 @@ and and in depth explanation of the parameters estimated in the model, please
 have a look at `vignette("IMM")`.
 
 ``` r
-model_formula <- brms::bf(dev_rad ~ 1,
-                          c ~ 0 + SetSize,
-                          a ~ 0 + SetSize,
-                          s ~ 0 + SetSize,
-                          kappa ~ 0 + SetSize)
+model_formula <- bmmformula(c ~ 0 + SetSize,
+                            a ~ 0 + SetSize,
+                            s ~ 0 + SetSize,
+                            kappa ~ 0 + SetSize)
 
-model <- IMMfull(nt_features = paste0("Item",2:8,"_Col"),
-                 nt_distance = paste0("Item",2:8,"_Pos"))
+model <- IMMfull(resp_err = "dev_rad",
+                 nt_features = paste0("Item",2:8,"_Col"),
+                 nt_distance = paste0("Item",2:8,"_Pos"),
+                 setsize = "SetSize")
 
 fit <- fit_model(
   formula = model_formula,
