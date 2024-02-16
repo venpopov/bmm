@@ -56,14 +56,13 @@
 #' dat <- data.frame(y=rsdm(n=2000))
 #'
 #' # define formula
-#' ff <- brms::bf(y ~ 1,
-#'                c ~ 1,
-#'                kappa ~ 1)
+#' ff <- bmmformula(c ~ 1,
+#'                  kappa ~ 1)
 #'
 #' # fit the model
 #' fit <- fit_model(formula = ff,
 #'                  data = dat,
-#'                  model = sdmSimple(),
+#'                  model = sdmSimple(resp_err = "y"),
 #'                  parallel=T,
 #'                  iter=500,
 #'                  backend='cmdstanr')

@@ -27,7 +27,7 @@
 #'     <preprocessing code>
 #'
 #'     # construct the formula
-#'     formula <- formula + <new terms>
+#'     formula <- bmf2bf(formula, model)
 #'
 #'     # construct the family
 #'     family <- <code for new family>
@@ -45,7 +45,7 @@
 #' configure_model.3p <- function(model, data, formula) {
 #'    # retrieve arguments from the data check
 #'    max_setsize <- attr(data, "max_setsize")
-#'    non_targets <- attr(data, "non_targets")
+#'    nt_features <- attr(data, "nt_features")
 #'    lure_idx_vars <- attr(data, "lure_idx_vars")
 #'    setsize_var <- attr(data, "setsize_var")
 #'
@@ -56,19 +56,23 @@
 #'    mu_nts <- paste0('mu', 2:max_setsize)
 #'    mu_unif <- paste0('mu', max_setsize + 1)
 #'
+#'    # construct main brms formula from the bmm formula
+#'    bmm_formula <- formula
+#'    formula <- bmf2bf(model, bmm_formula)
+#'
 #'    # construct formula
 #'    formula <- formula +
-#'      brms::lf(mu1 ~ 1) +
 #'      glue_lf(kappa_unif,' ~ 1') +
 #'      glue_lf(mu_unif, ' ~ 1') +
 #'      brms::nlf(theta1 ~ thetat) +
 #'      brms::nlf(kappa1 ~ kappa)
+#'
 #'    for (i in 1:(max_setsize-1)) {
 #'      formula <- formula +
 #'        glue_nlf(kappa_nts[i], ' ~ kappa') +
 #'        glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(thetant + log(inv_ss)) + ',
 #'                 '(1-', lure_idx_vars[i], ')*(-100)') +
-#'        glue_nlf(mu_nts[i], ' ~ ', non_targets[i])
+#'        glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
 #'    }
 #'
 #'    # define mixture family
@@ -295,7 +299,7 @@ use_model_template <- function(model_name,
                                testing = FALSE) {
   file_name <- paste0('bmm_model_', model_name, '.R')
   # check if model exists
-  if (model_name %in% supported_models(print_call=FALSE)) {
+  if (model_name %in% supported_models(print_call = FALSE)) {
     stop(paste0("Model ", model_name, " already exists"))
   }
   if (file.exists(paste0('R/', file_name))) {
@@ -303,34 +307,43 @@ use_model_template <- function(model_name,
   }
 
   model_header <- paste0(
-  "#############################################################################!\n",
-  "# MODELS                                                                 ####\n",
-  "#############################################################################!\n",
-  "# see file 'R/bmm_model_mixture3p.R' for an example\n\n")
+    "#############################################################################!\n",
+    "# MODELS                                                                 ####\n",
+    "#############################################################################!\n",
+    "# see file 'R/bmm_model_mixture3p.R' for an example\n\n")
 
 
   check_data_header <- paste0(
-  "\n\n\n#############################################################################!\n",
-  "# CHECK_DATA S3 methods                                                  ####\n",
-  "#############################################################################!\n",
-  "# A check_data.* function should be defined for each class of the model.\n",
-  "# If a model shares methods with other models, the shared methods should be\n",
-  "# defined in data-helpers.R. Put here only the methods that are specific to\n",
-  "# the model. See ?check_data for details\n\n\n")
+    "\n\n#############################################################################!\n",
+    "# CHECK_DATA S3 methods                                                  ####\n",
+    "#############################################################################!\n",
+    "# A check_data.* function should be defined for each class of the model.\n",
+    "# If a model shares methods with other models, the shared methods should be\n",
+    "# defined in data-helpers.R. Put here only the methods that are specific to\n",
+    "# the model. See ?check_data for details\n\n")
+
+  bmf2bf_header <- paste0(
+    "\n\n#############################################################################!\n",
+    "# Convert bmmformula to brmsformla methods                               ####\n",
+    "#############################################################################!\n",
+    "# A bmf2bf.* function should be defined if the default method for consructing\n",
+    "# the brmsformula from the bmmformula does not apply\n",
+    "# The shared method for all `bmmmodels` is defined in helpers-formula.R.\n",
+    "# See ?bmf2bf for details.\n\n")
 
   configure_model_header <- paste0(
-  "\n\n\n#############################################################################!\n",
-  "# CONFIGURE_MODEL S3 METHODS                                             ####\n",
-  "#############################################################################!\n",
-  "# Each model should have a corresponding configure_model.* function. See\n",
-  "# ?configure_model for more information.\n\n\n")
+    "\n\n#############################################################################!\n",
+    "# CONFIGURE_MODEL S3 METHODS                                             ####\n",
+    "#############################################################################!\n",
+    "# Each model should have a corresponding configure_model.* function. See\n",
+    "# ?configure_model for more information.\n\n")
 
   postprocess_brm_header <- paste0(
-  "\n\n\n#############################################################################!\n",
-  "# POSTPROCESS METHODS                                                    ####\n",
-  "#############################################################################!\n",
-  "# A postprocess_brm.* function should be defined for the model class. See \n",
-  "# ?postprocess_brm for details\n\n\n")
+    "\n\n#############################################################################!\n",
+    "# POSTPROCESS METHODS                                                    ####\n",
+    "#############################################################################!\n",
+    "# A postprocess_brm.* function should be defined for the model class. See \n",
+    "# ?postprocess_brm for details\n\n")
 
 
   model_object <- glue::glue(".model_<<model_name>> <- function(resp_var1, required_arg1, required_arg2, ...) {\n",
@@ -344,19 +357,21 @@ use_model_template <- function(model_name,
                              "         citation = '',\n",
                              "         version = '',\n",
                              "         requirements = '',\n",
-                             "         parameters = list()\n",
+                             "         parameters = list(),\n",
+                             "         fixed_parameters = list()\n",
                              "      ),\n",
                              "      void_mu = FALSE\n",
                              "   )\n",
                              "   class(out) <- c('bmmmodel', '<<model_name>>')\n",
                              "   out\n",
-                             "}\n\n\n",
+                             "}\n\n",
                              .open = "<<", .close = ">>")
 
   user_facing_alias <- glue::glue("# user facing alias\n",
                                   "# information in the title and details sections will be filled in\n",
-                                  "# automatically based on the information in the .model_<<model_name>>()$info\n",
+                                  "# automatically based on the information in the .model_<<model_name>>()$info\n \n",
                                   "#' @title `r .model_<<model_name>>()$info$name`\n",
+                                  "#' @name Model Name",
                                   "#' @details `r model_info(<<model_name>>(NA,NA))`\n",
                                   "#' @param resp_var1 A description of the response variable\n",
                                   "#' @param required_arg1 A description of the required argument\n",
@@ -375,23 +390,52 @@ use_model_template <- function(model_name,
                                   "check_data.<<model_name>> <- function(model, data, formula) {\n",
                                   "   # retrieve required arguments\n",
                                   "   required_arg1 <- model$other_vars$required_arg1\n",
-                                  "   required_arg2 <- model$other_vars$required_arg2\n\n\n",
+                                  "   required_arg2 <- model$other_vars$required_arg2\n\n",
                                   "   # check the data (required)\n\n\n",
-                                  "   # compute any necessary transformations (optional)\n\n\n",
-                                  "   # save some variables as attributes of the data for later use (optional)\n\n\n",
+                                  "   # compute any necessary transformations (optional)\n\n",
+                                  "   # save some variables as attributes of the data for later use (optional)\n\n",
                                   "   data = NextMethod('check_data')\n\n",
                                   "   return(data)\n",
                                   "}\n\n",
                                   .open = "<<", .close = ">>")
 
+  # add bmf2bf method if necessary
+  bmf2bf_method <- glue::glue("#' @export\n",
+                              "bmf2bf.<<model_name>> <- function(model, formula) {\n",
+                              "   # retrieve required response arguments\n",
+                              "   resp_var1 <- model$resp_vars$resp_var1\n",
+                              "   resp_var2 <- model$resp_vars$resp_arg2\n\n",
+                              "   # set the base brmsformula based \n",
+                              "   brms_formula <- brms::bf(paste0(resp_var1,\" | \", vreal(resp_var2), \" ~ 1\" ),)\n\n",
+                              "   # add bmmformula to the brms_formula\n",
+                              "   # check if parameters are used as non-linear predictors in other formulas\n",
+                              "   # and use the brms::lf() or brms::nlf() accordingly.\n",
+                              "   dpars <- names(formula)\n",
+                              "   for (dpar in dpars) {\n",
+                              "     pform <- formula[[dpar]]\n",
+                              "     predictors <- rhs_vars(pform)\n",
+                              "     if (any(predictors %in% dpars)) {\n",
+                              "       brms_formula <- brms_formula + brms::nlf(pform)\n",
+                              "     } else {\n",
+                              "       brms_formula <- brms_formula + brms::lf(pform)\n",
+                              "     }\n",
+                              "   }\n\n",
+                              "   return(brms_formula)\n",
+                              "}\n\n",
+                              .open = "<<", .close = ">>")
+
 
   # add custom family section if custom_family is TRUE
   if (custom_family) {
     family_template <- paste0("   <<model_name>>_family <- brms::custom_family(\n",
-                               "     '<<model_name>>', dpars = c(),\n",
-                               "     links = c(), lb = c(), ub = c(),\n",
-                               "     type = '', loop=FALSE,\n",
-                               "   )\n   family <- <<model_name>>_family\n\n")
+                              "     '<<model_name>>',\n",
+                              "     dpars = c(),\n",
+                              "     links = c(),\n",
+                              "     lb = c(), # upper bounds for parameters\n",
+                              "     ub = c(), # lower bounds for parameters\n",
+                              "     type = '', # real for continous dv, int for discrete dv\n",
+                              "     loop = TRUE, # is the likelihood vectorized\n",
+                              "   )\n   family <- <<model_name>>_family\n\n")
 
     stan_vars_template <- paste0("   # prepare initial stanvars to pass to brms, model formula and priors\n",
                                  "   sc_path <- system.file('stan_chunks', package='bmm')\n")
@@ -404,8 +448,8 @@ use_model_template <- function(model_name,
         }
       }
       stan_vars_template <- paste0(stan_vars_template,
-        "   stan_", stanvar_block, " <- readChar(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'),\n",
-        "      file.info(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'))$size)\n")
+                                   "   stan_", stanvar_block, " <- readChar(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'),\n",
+                                   "      file.info(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'))$size)\n")
     }
     stan_vars_template <- paste0(stan_vars_template, "\n   stanvars <- ")
     i = 1
@@ -414,12 +458,12 @@ use_model_template <- function(model_name,
         stan_vars_template <- paste0(stan_vars_template, "stanvar(scode = stan_", stanvar_block, ", block = '", stanvar_block, "') +\n      ")
         i = i + 1
       } else {
-        stan_vars_template <- paste0(stan_vars_template, "stanvar(scode = stan_", stanvar_block, ", block = '", stanvar_block, "')\n\n\n")
+        stan_vars_template <- paste0(stan_vars_template, "stanvar(scode = stan_", stanvar_block, ", block = '", stanvar_block, "')\n\n")
       }
     }
   } else {
     stan_vars_template <- ""
-    family_template <- "   family <- NULL\n\n\n"
+    family_template <- "   family <- NULL\n\n"
   }
 
   if (custom_family) {
@@ -433,16 +477,17 @@ use_model_template <- function(model_name,
                                        "configure_model.<<model_name>> <- function(model, data, formula) {\n",
                                        "   # retrieve required arguments\n",
                                        "   required_arg1 <- model$other_vars$required_arg1\n",
-                                       "   required_arg2 <- model$other_vars$required_arg2\n\n\n",
+                                       "   required_arg2 <- model$other_vars$required_arg2\n\n",
                                        "   # retrieve arguments from the data check\n",
-                                       "   my_precomputed_var <- attr(data, 'my_precomputed_var')\n\n\n",
-                                       "   # construct the formula\n",
-                                       "   formula <- formula + brms::lf()\n\n\n",
+                                       "   my_precomputed_var <- attr(data, 'my_precomputed_var')\n\n",
+                                       "   # construct brms formula from the bmm formula\n",
+                                       "   bmm_formula <- formula\n",
+                                       "   formula <- bmf2bf(model, bmm_formula)\n\n",
                                        "   # construct the family\n",
                                        family_template,
                                        stan_vars_template,
                                        "   # construct the default prior\n",
-                                       "   prior <- NULL\n\n\n",
+                                       "   prior <- NULL\n\n",
                                        "   # return the list\n",
                                        out_template,
                                        "   return(out)\n",
@@ -451,20 +496,22 @@ use_model_template <- function(model_name,
 
   postprocess_brm_method <- glue::glue("#' @export\n",
                                        "postprocess_brm.<<model_name>> <- function(model, fit) {\n",
-                                       "   # any required postprocessing (if none, delete this section)\n\n\n",
+                                       "   # any required postprocessing (if none, delete this section)\n\n",
                                        "   return(fit)\n",
                                        "}\n\n",
                                        .open = "<<", .close = ">>")
 
   file_content <- paste0(model_header,
-                             model_object,
-                             user_facing_alias,
-                             check_data_header,
-                             check_data_method,
-                             configure_model_header,
-                             configure_model_method,
-                             postprocess_brm_header,
-                             postprocess_brm_method)
+                         model_object,
+                         user_facing_alias,
+                         check_data_header,
+                         check_data_method,
+                         bmf2bf_header,
+                         bmf2bf_method,
+                         configure_model_header,
+                         configure_model_method,
+                         postprocess_brm_header,
+                         postprocess_brm_method)
 
   if (!testing) {
     writeLines(file_content, paste0('R/', file_name))
@@ -475,7 +522,6 @@ use_model_template <- function(model_name,
     cat(file_content)
   }
 }
-
 
 
 #' @title Generate Stan code for bmm models
@@ -515,14 +561,13 @@ use_model_template <- function(model_name,
 #' dat <- data.frame(y=rsdm(n=2000))
 #'
 #' # define formula
-#' ff <- brms::bf(y ~ 1,
-#'                c ~ 1,
-#'                kappa ~ 1)
+#' ff <- bmmformula(c ~ 1,
+#'                  kappa ~ 1)
 #'
 #' # fit the model
 #' get_stancode(formula = ff,
 #'              data = dat,
-#'              model = sdmSimple()
+#'              model = sdmSimple(resp_err = "y")
 #' )
 #' }
 #'

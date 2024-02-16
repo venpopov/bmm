@@ -19,7 +19,7 @@ test_that('Available mock models run without errors',{
   # three-parameter model mock fit
   f <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
   mock_fit <- fit_model(f, dat, mixture3p(resp_err = "resp_err", setsize = 3,
-                                          non_targets = paste0('Item',2:3,'_rel')),
+                                          nt_features = paste0('Item',2:3,'_rel')),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
@@ -28,7 +28,7 @@ test_that('Available mock models run without errors',{
   # IMMabc model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, a ~ 1)
   mock_fit <- fit_model(f, dat, IMMabc(resp_err = "resp_err", setsize =3,
-                                       non_targets = paste0('Item',2:3,'_rel')),
+                                       nt_features = paste0('Item',2:3,'_rel')),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
@@ -36,7 +36,7 @@ test_that('Available mock models run without errors',{
 
   # IMMbsc model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, s ~ 1)
-  mock_fit <- fit_model(f, dat, IMMbsc(resp_err = "resp_err", setsize=3, non_targets = paste0('Item',2:3,'_rel'), spaPos=paste0('spaD',2:3)),
+  mock_fit <- fit_model(f, dat, IMMbsc(resp_err = "resp_err", setsize=3, nt_features = paste0('Item',2:3,'_rel'), nt_distance=paste0('spaD',2:3)),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
@@ -44,7 +44,7 @@ test_that('Available mock models run without errors',{
 
   # IMMbsc model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, a ~ 1, s ~ 1)
-  mock_fit <- fit_model(f, dat, IMMfull(resp_err = "resp_err", setsize=3, non_targets = paste0('Item',2:3,'_rel'), spaPos=paste0('spaD',2:3)), backend="mock", mock_fit=1, rename=FALSE)
+  mock_fit <- fit_model(f, dat, IMMfull(resp_err = "resp_err", setsize=3, nt_features = paste0('Item',2:3,'_rel'), nt_distance=paste0('spaD',2:3)), backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
   expect_type(mock_fit$fit_args, "list")
   expect_equal(names(mock_fit$fit_args[1:4]), c("formula", "data", "family", "prior"))
@@ -75,12 +75,12 @@ test_that('Available models produce expected errors', {
 
   okmodels <- c('mixture3p','IMMabc','IMMbsc','IMMfull')
   for (model in okmodels) {
-    model1 <- get_model2(model)(resp_err = "resp_err", non_targets='Item2_rel', setsize=5, spaPos='spaD2')
+    model1 <- get_model2(model)(resp_err = "resp_err", nt_features='Item2_rel', setsize=5, nt_distance='spaD2')
     expect_error(fit_model(bmmformula(kappa~1), data=dat, model=model1, backend="mock",
                            mock_fit=1, rename=FALSE),
-                 "'non_targets' should equal max\\(setsize\\)-1")
+                 "'nt_features' should equal max\\(setsize\\)-1")
 
-    model2 <- get_model2(model)(resp_err = "resp_err", non_targets='Item2_rel', setsize=TRUE, spaPos='spaD2')
+    model2 <- get_model2(model)(resp_err = "resp_err", nt_features='Item2_rel', setsize=TRUE, nt_distance='spaD2')
     expect_error(fit_model(bmmformula(kappa~1), data=dat, model=model2, backend="mock",
                            mock_fit=1, rename=FALSE),
                  "must be either a variable in your data or ")
@@ -88,10 +88,10 @@ test_that('Available models produce expected errors', {
 
   spamodels <- c('IMMbsc','IMMfull')
   for(model in spamodels){
-    model1 <- get_model2(model)(resp_err = "resp_err", non_targets= paste0("Item",2:3,"_rel"), setsize=3, spaPos=paste0("spaD",2:3))
+    model1 <- get_model2(model)(resp_err = "resp_err", nt_features= paste0("Item",2:3,"_rel"), setsize=3, nt_distance=paste0("spaD",2:3))
     expect_error(fit_model(bmmformula(kappa~1), data=dat, model=model1, backend="mock",
                            mock_fit=1, rename=FALSE),
-                 "All spatial distances to the target need to be postive.")
+                 "All non-target distances to the target need to be postive.")
   }
 })
 

@@ -234,7 +234,7 @@ formula <- bmf(thetat ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
 model <- mixture3p(resp_err = 'dev_rad',
-                   non_targets = paste0("Item", 2:4,"_Col_rad"),
+                   nt_features = paste0("Item", 2:4,"_Col_rad"),
                    setsize = "SetSize")
 
 fit$mixture3p <- fit_model(formula, data, model,
@@ -552,8 +552,8 @@ formula <- bmf(a ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
 model <- IMMfull(resp_err = 'dev_rad',
-                 non_targets = paste0("Item", 2:4,"_Col_rad"),
-                 spaPos = paste0("Item", 2:4,"_Pos_rad"),
+                 nt_features = paste0("Item", 2:4,"_Col_rad"),
+                 nt_distance = paste0("Item", 2:4,"_Pos_rad"),
                  setsize = "SetSize")
 
 fit$IMMfull <- fit_model(formula, data, model,
@@ -745,8 +745,8 @@ formula <- bmf(c ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
 model <- IMMbsc(resp_err = 'dev_rad',
-                non_targets = paste0("Item", 2:4,"_Col_rad"),
-                spaPos = paste0("Item", 2:4,"_Pos_rad"),
+                nt_features = paste0("Item", 2:4,"_Col_rad"),
+                nt_distance = paste0("Item", 2:4,"_Pos_rad"),
                 setsize = "SetSize")
 
 fit$IMMbsc <- fit_model(formula, data, model,
@@ -924,7 +924,7 @@ formula <- bmf(a ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
 model <- IMMabc(resp_err = 'dev_rad',
-                non_targets = paste0("Item", 2:4,"_Col_rad"),
+                nt_features = paste0("Item", 2:4,"_Col_rad"),
                 setsize = "SetSize")
 
 fit$IMMabc <- fit_model(formula, data, model,

@@ -4,7 +4,7 @@
 \alias{calc_error_relative_to_nontargets}
 \title{Calculate response error relative to non-target values}
 \usage{
-calc_error_relative_to_nontargets(data, response, non_targets)
+calc_error_relative_to_nontargets(data, response, nt_features)
 }
 \arguments{
 \item{data}{A \code{data.frame} object where each row is a single observation}
@@ -12,7 +12,7 @@ calc_error_relative_to_nontargets(data, response, non_targets)
 \item{response}{Character. The name of the column in \code{data} which contains
 the response}
 
-\item{non_targets}{Character vector. The names of the columns in \code{data} which
+\item{nt_features}{Character vector. The names of the columns in \code{data} which
 contain the values of the non-targets}
 }
 \value{

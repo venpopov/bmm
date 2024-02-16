@@ -66,11 +66,11 @@ model.
 \details{
 The following models are supported:
 \itemize{
-\item \code{IMMabc(resp_err, non_targets, setsize)}
-\item \code{IMMbsc(resp_err, non_targets, setsize, spaPos)}
-\item \code{IMMfull(resp_err, non_targets, setsize, spaPos)}
+\item \code{IMMabc(resp_err, nt_features, setsize)}
+\item \code{IMMbsc(resp_err, nt_features, nt_distance, setsize)}
+\item \code{IMMfull(resp_err, nt_features, nt_distance, setsize)}
 \item \code{mixture2p(resp_err)}
-\item \code{mixture3p(resp_err, non_targets, setsize)}
+\item \code{mixture3p(resp_err, nt_features, setsize)}
 \item \code{sdmSimple(resp_err)}
 }
 
@@ -84,14 +84,13 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 dat <- data.frame(y=rsdm(n=2000))
 
 # define formula
-ff <- brms::bf(y ~ 1,
-               c ~ 1,
-               kappa ~ 1)
+ff <- bmmformula(c ~ 1,
+                 kappa ~ 1)
 
 # fit the model
 fit <- fit_model(formula = ff,
                  data = dat,
-                 model = sdmSimple(),
+                 model = sdmSimple(resp_err = "y"),
                  parallel=T,
                  iter=500,
                  backend='cmdstanr')
