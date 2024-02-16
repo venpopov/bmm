@@ -62,6 +62,7 @@ wrong_parameters <- function(model, formula) {
 #' @param formula The `bmmformula` that should be converted to a `brmsformula`
 #' @returns A `brmsformula` defining the response variables and the additional parameter
 #'   formulas for the specified `bmmmodel`
+#' @keywords internal, developer
 #' @examples
 #'   model <- mixture2p(resp_err = "error")
 #'

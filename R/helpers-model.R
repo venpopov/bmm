@@ -317,7 +317,8 @@ use_model_template <- function(model_name,
     "# A check_data.* function should be defined for each class of the model.\n",
     "# If a model shares methods with other models, the shared methods should be\n",
     "# defined in data-helpers.R. Put here only the methods that are specific to\n",
-    "# the model. See ?check_data for details\n\n")
+    "# the model. See ?check_data for details.\n",
+    "# (YOU CAN DELETE THIS SECTION IF YOU DO NOT REQUIRE ADDITIONAL DATA CHECKS)\n\n")
 
   bmf2bf_header <- paste0(
     "\n\n#############################################################################!\n",
@@ -326,7 +327,8 @@ use_model_template <- function(model_name,
     "# A bmf2bf.* function should be defined if the default method for consructing\n",
     "# the brmsformula from the bmmformula does not apply\n",
     "# The shared method for all `bmmmodels` is defined in helpers-formula.R.\n",
-    "# See ?bmf2bf for details.\n\n")
+    "# See ?bmf2bf for details.\n",
+    "# (YOU CAN DELETE THIS SECTION IF YOUR MODEL USES A STANDARD FORMULA WITH 1 RESPONSE VARIABLE)\n\n")
 
   configure_model_header <- paste0(
     "\n\n#############################################################################!\n",
