@@ -62,6 +62,10 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \code{c}: Context activation
 \item \code{s}: Spatial similarity gradient
 }
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu1} = 0
+}
 }
 }
 
@@ -79,6 +83,10 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \code{c}: Context activation
 \item \code{s}: Spatial similarity gradient
 }
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu1} = 0
+}
 }
 }
 
@@ -95,6 +103,10 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{a}: General activation of memory items
 \item \code{c}: Context activation
+}
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu1} = 0
 }
 }
 

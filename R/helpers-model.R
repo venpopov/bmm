@@ -183,6 +183,14 @@ model_info.bmmmodel <- function(model, components = 'all') {
     }
   }
 
+  fixed_pars <- model$info$fixed_parameters
+  fixed_par_info <- ""
+  if (length(fixed_pars) > 0) {
+    for (fixed_par in names(fixed_pars)) {
+      fixed_par_info <- paste0(fixed_par_info, "   - `", fixed_par, "` = ", fixed_pars[[fixed_par]], "\n")
+    }
+  }
+
   info_all <-   list(
     domain = paste0("* **Domain:** ", model$info$domain, "\n\n"),
     task = paste0("* **Task:** ", model$info$task, "\n\n"),
@@ -190,7 +198,8 @@ model_info.bmmmodel <- function(model, components = 'all') {
     citation = paste0("* **Citation:** \n\n   - ", model$info$citation, "\n\n"),
     version = paste0("* **Version:** ", model$info$version, "\n\n"),
     requirements = paste0("* **Requirements:** \n\n  ", model$info$requirements, "\n\n"),
-    parameters = paste0("* **Parameters:** \n\n  ", par_info, "\n\n")
+    parameters = paste0("* **Parameters:** \n\n  ", par_info, "\n\n"),
+    fixed_parameters = paste0("* **Fixed parameters:** \n\n  ", fixed_par_info, "\n\n")
   )
 
   if (length(components) == 1 && components == 'all') {

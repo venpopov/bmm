@@ -43,6 +43,10 @@ and how to use it.
 \item \code{c}: Memory strength parameter of the SDM distribution
 \item \code{kappa}: Precision parameter of the SDM distribution (log scale)
 }
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu} = 0
+}
 }
 }
 \examples{

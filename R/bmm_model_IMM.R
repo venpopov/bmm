@@ -102,11 +102,11 @@
 #' @name IMM
 #' @details `r model_info(IMMfull(NA, NA, NA, NA), components =c('domain', 'task', 'name', 'citation'))`
 #' #### Version: `IMMfull`
-#' `r model_info(IMMfull(NA, NA, NA, NA), components =c('requirements', 'parameters'))`
+#' `r model_info(IMMfull(NA, NA, NA, NA), components =c('requirements', 'parameters', 'fixed_parameters'))`
 #' #### Version: `IMMbsc`
-#' `r model_info(IMMbsc(NA, NA, NA, NA), components =c('requirements', 'parameters'))`
+#' `r model_info(IMMbsc(NA, NA, NA, NA), components =c('requirements', 'parameters', 'fixed_parameters'))`
 #' #### Version: `IMMabc`
-#' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters'))`
+#' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters', 'fixed_parameters'))`
 #'
 #' Additionally, all IMM models have an internal parameter that is fixed to 0 to
 #' allow the model to be identifiable. This parameter is not estimated and is not

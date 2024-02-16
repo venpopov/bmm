@@ -39,6 +39,10 @@ Two-parameter mixture model by Zhang and Luck (2008).
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{thetat}: Mixture weight for target responses
 }
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu1} = 0
+}
 }
 }
 \examples{

@@ -30,3 +30,5 @@ appropriate bmf2bf.\* methods based on the classes defined in the model_\* funct
 
   brms_formula <- bmf2bf(model, formula)
 }
+\keyword{developer}
+\keyword{internal,}
