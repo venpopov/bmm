@@ -67,7 +67,7 @@
 .model_IMMfull <- function(resp_err,  nt_features, nt_distance, setsize, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
-    other_vars = nlist( nt_features, nt_distance, setsize),
+    other_vars = nlist(nt_features, nt_distance, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
