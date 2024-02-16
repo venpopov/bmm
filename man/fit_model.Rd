@@ -67,8 +67,8 @@ model.
 The following models are supported:
 \itemize{
 \item \code{IMMabc(resp_err, nt_features, setsize)}
-\item \code{IMMbsc(resp_err, nt_features, nt_distance, setsize)}
-\item \code{IMMfull(resp_err, nt_features, nt_distance, setsize)}
+\item \code{IMMbsc(resp_err, nt_features, nt_distances, setsize)}
+\item \code{IMMfull(resp_err, nt_features, nt_distances, setsize)}
 \item \code{mixture2p(resp_err)}
 \item \code{mixture3p(resp_err, nt_features, setsize)}
 \item \code{sdmSimple(resp_err)}

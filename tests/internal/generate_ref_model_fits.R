@@ -168,7 +168,7 @@ run_IMMbsc <- function(...) {
                       s ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
   model <- IMMbsc(nt_features = paste0("Item", 2:4,"_Col_rad"),
-                  nt_distance = paste0("Item", 2:4,"_Pos_rad"),
+                  nt_distances = paste0("Item", 2:4,"_Pos_rad"),
                   setsize = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,
@@ -201,7 +201,7 @@ run_IMMfull <- function(...) {
                       s ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
   model <- IMMfull(nt_features = paste0("Item", 2:4,"_Col_rad"),
-                   nt_distance = paste0("Item", 2:4,"_Pos_rad"),
+                   nt_distances = paste0("Item", 2:4,"_Pos_rad"),
                    setsize = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,

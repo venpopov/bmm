@@ -41,8 +41,8 @@ bmm::supported_models()
 #> The following models are supported:
 #> 
 #> -  IMMabc(nt_features, setsize) 
-#> -  IMMbsc(nt_features, nt_distance, setsize) 
-#> -  IMMfull(nt_features, nt_distance, setsize) 
+#> -  IMMbsc(nt_features, nt_distances, setsize) 
+#> -  IMMfull(nt_features, nt_distances, setsize) 
 #> -  mixture2p() 
 #> -  mixture3p(nt_features, setsize) 
 #> -  sdmSimple() 
@@ -131,7 +131,7 @@ model_formula <- bmmformula(c ~ 0 + SetSize,
 
 model <- IMMfull(resp_err = "dev_rad", 
                  nt_features = paste0("Item",2:8,"_Col"),
-                 nt_distance = paste0("Item",2:8,"_Pos"),
+                 nt_distances = paste0("Item",2:8,"_Pos"),
                  setsize = "SetSize")
 
 fit <- fit_model(

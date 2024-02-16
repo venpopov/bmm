@@ -174,7 +174,7 @@ Then, we can specify the model that we want to estimate. This includes specifyin
 model <- IMMfull(resp_err = "resp_err",
                  nt_features = paste0("color_item",2:setsize),
                  setsize = setsize,
-                 nt_distance = paste0("dist_item",2:setsize))
+                 nt_distances = paste0("dist_item",2:setsize))
 ```
 
 Finally, we can fit the model by passing all the relevant arguments to the `fit_model` function:

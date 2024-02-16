@@ -15,30 +15,30 @@ test_that("check_data() produces expected errors and warnings", {
 
   mls <- lapply(c('mixture2p','mixture3p','IMMabc','IMMbsc','IMMfull'), get_model2)
   for (ml in mls) {
-    expect_warning(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distance = 'z'),
+    expect_warning(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distances = 'z'),
                               data.frame(y = 12, x = 1, z = 2),
                               bmmformula(kappa ~ 1)),
                    "It appears your response variable is in degrees.\n")
-    expect_silent(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distance = 'z'),
+    expect_silent(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distances = 'z'),
                              data.frame(y = 1, x = 1, z = 2), bmmformula(y ~ 1)))
   }
 
   mls <- lapply(c('mixture3p','IMMabc','IMMbsc','IMMfull'), get_model2)
   for (ml in mls) {
-    expect_error(check_data(ml(resp_err = "y", nt_features = 'x', nt_distance = 'z'),
+    expect_error(check_data(ml(resp_err = "y", nt_features = 'x', nt_distances = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
                  'argument "setsize" is missing, with no default')
-    expect_error(check_data(ml(resp_err = "y",setsize = 'x', nt_distance = 'z'),
+    expect_error(check_data(ml(resp_err = "y",setsize = 'x', nt_distances = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
                  'argument "nt_features" is missing, with no default')
 
-    expect_error(check_data(ml(resp_err = "y",nt_features='x', setsize = 5, nt_distance = 'z'),
+    expect_error(check_data(ml(resp_err = "y",nt_features='x', setsize = 5, nt_distances = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
                  "'nt_features' should equal max\\(setsize\\)-1")
-    expect_warning(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distance = 'z'),
+    expect_warning(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distances = 'z'),
                               data.frame(y = 1, x = 2*pi+1, z = 2),
                               bmmformula(kappa ~ 1)),
                    "at least one of your non_target variables are in degrees")
@@ -46,10 +46,10 @@ test_that("check_data() produces expected errors and warnings", {
 
   mls <- lapply(c('IMMbsc','IMMfull'), get_model2)
   for (ml in mls) {
-    expect_error(check_data(ml(resp_err = "y",nt_features=paste0('x',1:4), setsize = 5, nt_distance = 'z'),
+    expect_error(check_data(ml(resp_err = "y",nt_features=paste0('x',1:4), setsize = 5, nt_distances = 'z'),
                             data.frame(y = 1, x1 = 1, x2=2,x3=3,x4=4, z = 2),
                             bmmformula(kappa ~ 1)),
-                 "'nt_distance' should equal max\\(setsize\\)-1")
+                 "'nt_distances' should equal max\\(setsize\\)-1")
   }
 })
 
@@ -152,7 +152,7 @@ test_that("check_var_setsize rejects invalid input", {
 test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call=FALSE), get_model)
   for (ml in mls) {
-    expect_s3_class(check_data(ml(resp_err = "y",nt_features = 'x', setsize=2, nt_distance = 'z'),
+    expect_s3_class(check_data(ml(resp_err = "y",nt_features = 'x', setsize=2, nt_distances = 'z'),
                                data.frame(y = 1, x = 1, z = 2),
                                bmmformula(kappa ~ 1)), "data.frame")
   }

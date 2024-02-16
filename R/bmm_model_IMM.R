@@ -33,10 +33,10 @@
   out
 }
 
-.model_IMMbsc <- function(resp_err, nt_features, nt_distance, setsize, ...) {
+.model_IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
-    other_vars = nlist(nt_features, nt_distance, setsize),
+    other_vars = nlist(nt_features, nt_distances, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -64,10 +64,10 @@
   out
 }
 
-.model_IMMfull <- function(resp_err,  nt_features, nt_distance, setsize, ...) {
+.model_IMMfull <- function(resp_err,  nt_features, nt_distances, setsize, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
-    other_vars = nlist(nt_features, nt_distance, setsize),
+    other_vars = nlist(nt_features, nt_distances, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -120,7 +120,7 @@
 #' @param nt_features A character vector with the names of the non-target variables.
 #'   The non_target variables should be in radians and be centered relative to the
 #'   target.
-#' @param nt_distance A vector of names of the columns containing the distances of
+#' @param nt_distances A vector of names of the columns containing the distances of
 #'   non-target items to the target item. Only necessary for the `IMMbsc` and `IMMfull` models
 #' @param setsize Name of the column containing the set size variable (if
 #'   setsize varies) or a numeric value for the setsize, if the setsize is
@@ -151,15 +151,15 @@ IMMabc <- .model_IMMabc
 
 #' @export
 check_data.IMMspatial <- function(model, data, formula) {
-  nt_distance <- model$other_vars$nt_distance
+  nt_distances <- model$other_vars$nt_distances
   max_setsize <- attr(data, 'max_setsize')
 
-  if (!isTRUE(all.equal(length(nt_distance), max_setsize - 1))) {
+  if (!isTRUE(all.equal(length(nt_distances), max_setsize - 1))) {
     stop("The number of columns for non-target distances in the argument ",
-         "'nt_distance' should equal max(setsize)-1")
+         "'nt_distances' should equal max(setsize)-1")
   }
 
-  if (any(data[,nt_distance] < 0)) {
+  if (any(data[,nt_distances] < 0)) {
     stop('All non-target distances to the target need to be postive.')
   }
 
@@ -238,7 +238,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
   lure_idx_vars <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
-  nt_distance <- model$other_vars$nt_distance
+  nt_distances <- model$other_vars$nt_distances
 
   # construct main brms formula from the bmm formula
   bmm_formula <- formula
@@ -261,7 +261,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
-      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distance[i],')*c) + ',
+      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distances[i],')*c) + ',
                '(1-', lure_idx_vars[i], ')*(-100)') +
       glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
   }
@@ -297,7 +297,7 @@ configure_model.IMMfull <- function(model, data, formula) {
   lure_idx_vars <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
-  nt_distance <- model$other_vars$nt_distance
+  nt_distances <- model$other_vars$nt_distances
 
   # construct main brms formula from the bmm formula
   bmm_formula <- formula
@@ -320,7 +320,7 @@ configure_model.IMMfull <- function(model, data, formula) {
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
-      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distance[i],')*c + a) + ',
+      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distances[i],')*c + a) + ',
                '(1-', lure_idx_vars[i], ')*(-100)') +
       glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
   }
