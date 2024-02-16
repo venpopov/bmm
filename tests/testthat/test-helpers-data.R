@@ -37,7 +37,7 @@ test_that("check_data() produces expected errors and warnings", {
     expect_error(check_data(ml(resp_err = "y",non_targets='x', setsize = 5, spaPos = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
-                 "'non_targets' is less than max\\(setsize\\)-1")
+                 "'non_targets' should equal max\\(setsize\\)-1")
     expect_warning(check_data(ml(resp_err = "y", non_targets = 'x', setsize=2, spaPos = 'z'),
                               data.frame(y = 1, x = 2*pi+1, z = 2),
                               bmmformula(kappa ~ 1)),
@@ -49,7 +49,7 @@ test_that("check_data() produces expected errors and warnings", {
     expect_error(check_data(ml(resp_err = "y",non_targets=paste0('x',1:4), setsize = 5, spaPos = 'z'),
                             data.frame(y = 1, x1 = 1, x2=2,x3=3,x4=4, z = 2),
                             bmmformula(kappa ~ 1)),
-                 "'spaPos' is less than max\\(setsize\\)-1")
+                 "'spaPos' should equal max\\(setsize\\)-1")
   }
 })
 

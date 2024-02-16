@@ -156,17 +156,13 @@ check_data.IMMspatial <- function(model, data, formula) {
   spaPos <- model$other_vars$spaPos
   max_setsize <- attr(data, 'max_setsize')
 
-  if (length(spaPos) < max_setsize - 1) {
-    stop(paste0("The number of columns for spatial positions in the argument ",
-                "'spaPos' is less than max(setsize)-1"))
-  } else if (length(spaPos) > max_setsize - 1) {
-    stop(paste0("The number of columns for spatial positions in the argument ",
-                "'spaPos' is more than max(setsize)-1"))
+  if (!isTRUE(all.equal(length(spaPos), max_setsize - 1))) {
+    stop("The number of columns for spatial positions in the argument ",
+         "'spaPos' should equal max(setsize)-1")
   }
 
   if (any(data[,spaPos] < 0)) {
-    stop('Somve values of the spatial distance variables in the data are negative.\n
-         All spatial distances to the target need to be postive.')
+    stop('All spatial distances to the target need to be postive.')
   }
 
   data = NextMethod("check_data")

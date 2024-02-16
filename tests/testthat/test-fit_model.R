@@ -78,7 +78,7 @@ test_that('Available models produce expected errors', {
     model1 <- get_model2(model)(resp_err = "resp_err", non_targets='Item2_rel', setsize=5, spaPos='spaD2')
     expect_error(fit_model(bmmformula(kappa~1), data=dat, model=model1, backend="mock",
                            mock_fit=1, rename=FALSE),
-                 "'non_targets' is less than max\\(setsize\\)-1")
+                 "'non_targets' should equal max\\(setsize\\)-1")
 
     model2 <- get_model2(model)(resp_err = "resp_err", non_targets='Item2_rel', setsize=TRUE, spaPos='spaD2')
     expect_error(fit_model(bmmformula(kappa~1), data=dat, model=model2, backend="mock",
@@ -91,7 +91,7 @@ test_that('Available models produce expected errors', {
     model1 <- get_model2(model)(resp_err = "resp_err", non_targets= paste0("Item",2:3,"_rel"), setsize=3, spaPos=paste0("spaD",2:3))
     expect_error(fit_model(bmmformula(kappa~1), data=dat, model=model1, backend="mock",
                            mock_fit=1, rename=FALSE),
-                 "Somve values of the spatial distance variables in the data are negative.")
+                 "All spatial distances to the target need to be postive.")
   }
 })
 

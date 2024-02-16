@@ -83,14 +83,10 @@ check_data.nontargets <- function(model, data, formula) {
   max_setsize <- ss$max_setsize
   ss_numeric <- ss$ss_numeric
 
-  if (length(non_targets) < max_setsize - 1) {
+  if (!isTRUE(all.equal(length(non_targets), max_setsize - 1))) {
     stop("The number of columns for non-target values in the argument ",
-         "'non_targets' is less than max(setsize)-1")
-  } else if (length(non_targets) > max_setsize - 1) {
-    stop('The number of columns for non-target values in the argument ',
-         '`non_targets` is more than max(setsize)-1')
+         "'non_targets' should equal max(setsize)-1")
   }
-
 
   # create index variables for non_targets and correction variable for theta due to setsize
   lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
