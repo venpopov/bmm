@@ -135,7 +135,7 @@ check_var_setsize <- function(setsize, data) {
     stop2("Values of the setsize variable '", setsize, "' must be whole numbers")
   }
 
-  return(list(max_setsize = max_setsize, ss_numeric = ss_numeric))
+  list(max_setsize = max_setsize, ss_numeric = ss_numeric)
 }
 
 
@@ -166,7 +166,7 @@ calc_error_relative_to_nontargets <- function(data, response, nt_features) {
     tidyr::gather(non_target_name, non_target_value, eval(nt_features))
 
   data$y_nt <- wrap(data[[response]]-data[["non_target_value"]])
-  return(data)
+  data
 }
 
 #' @title Wrap angles that extend beyond (-pi;pi)
@@ -194,9 +194,8 @@ wrap <- function(x, radians=TRUE) {
   stopifnot(is.logical(radians))
   if (radians) {
     return(((x+pi) %% (2*pi)) - pi)
-  } else {
-    return(((x+180) %% (2*180)) - 180)
   }
+  ((x+180) %% (2*180)) - 180
 }
 
 #' @title Convert degrees to radians or radians to degrees.
@@ -289,9 +288,7 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
   # extract stan code
   dots <- list(...)
   fit_args <- c(config_args, dots)
-  standata <- brms::do_call(brms::make_standata, fit_args)
-
-  return(standata)
+  brms::do_call(brms::make_standata, fit_args)
 }
 
 

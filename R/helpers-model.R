@@ -36,8 +36,7 @@
 #'     prior <- <code for new prior>
 #'
 #'     # return the list
-#'     out <- nlist(formula, data, family, prior)
-#'     return(out)
+#'     nlist(formula, data, family, prior)
 #'  }
 #'  ```
 #' @examples
@@ -95,8 +94,7 @@
 #'        brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
 #'    }
 #'
-#'    out <- nlist(formula, data, family, prior)
-#'    return(out)
+#'    nlist(formula, data, family, prior)
 #' }
 #' }
 #'
@@ -137,7 +135,7 @@ supported_models <- function(print_call=TRUE) {
     cat(gsub("`", " ", out))
     return(invisible(out))
   }
-  return(supported_models)
+  supported_models
 }
 
 #' @title Generate a markdown list of the measurement models available in `bmm`
@@ -204,7 +202,7 @@ model_info.bmmmodel <- function(model, components = 'all') {
   }
 
   # return only the specified components
-  return(collapse(info_all[components]))
+  collapse(info_all[components])
 }
 
 #' Checks if the model is supported, and returns the model function
@@ -218,8 +216,7 @@ check_model <- function(model) {
     stop(model_label, " is not a supported model. Supported ",
          "models are:\n", collapse_comma(ok_models))
   }
-
-  return(model)
+  model
 }
 
 
@@ -587,9 +584,7 @@ get_stancode <- function(formula, data, model, prior=NULL, ...) {
   # extract stan code
   dots <- list(...)
   fit_args <- c(config_args, dots)
-  stancode <- brms::do_call(brms::make_stancode, fit_args)
-
-  return(stancode)
+  brms::do_call(brms::make_stancode, fit_args)
 }
 
 
@@ -627,8 +622,7 @@ get_stancode <- function(formula, data, model, prior=NULL, ...) {
 #' @export
 get_stancode_parblock <- function(formula, data, model, prior=NULL, ...) {
   stancode <- get_stancode(formula, data, model, prior, ...)
-  parblock <- .extract_parblock(stancode)
-  return(parblock)
+  .extract_parblock(stancode)
 }
 
 
@@ -641,5 +635,5 @@ get_stancode_parblock <- function(formula, data, model, prior=NULL, ...) {
   parblock <- stringr::str_match(as.character(stancode),
                                  "(?s)parameters \\{\\n(.*?)\\}\\ntransformed")[,2]
   class(parblock) <- class(stancode)
-  return(parblock)
+  parblock
 }

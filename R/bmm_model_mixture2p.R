@@ -89,6 +89,5 @@ configure_model.mixture2p <- function(model, data, formula) {
     brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
     brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat")
 
-  out <- nlist(formula, data, family, prior)
-  return(out)
+  nlist(formula, data, family, prior)
 }

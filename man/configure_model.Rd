@@ -51,8 +51,7 @@ A bare bones configure_model.* method should look like this:
    prior <- <code for new prior>
 
    # return the list
-   out <- nlist(formula, data, family, prior)
-   return(out)
+   nlist(formula, data, family, prior)
 \}
 }\if{html}{\out{</div>}}
 }
@@ -111,8 +110,7 @@ configure_model.3p <- function(model, data, formula) {
        brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
    }
 
-   out <- nlist(formula, data, family, prior)
-   return(out)
+   nlist(formula, data, family, prior)
 }
 }
 

@@ -99,9 +99,7 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
   fit <- call_brm(fit_args)
 
   # model postprocessing
-  fit <- postprocess_brm(model, fit)
-
-  return(fit)
+  postprocess_brm(model, fit)
 }
 
 

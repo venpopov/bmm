@@ -141,6 +141,5 @@ configure_model.mixture3p <- function(model, data, formula) {
       brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
   }
 
-  out <- nlist(formula, data, family, prior)
-  return(out)
+  nlist(formula, data, family, prior)
 }

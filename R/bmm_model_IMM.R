@@ -163,9 +163,7 @@ check_data.IMMspatial <- function(model, data, formula) {
     stop('All non-target distances to the target need to be postive.')
   }
 
-  data = NextMethod("check_data")
-
-  return(data)
+  NextMethod("check_data")
 }
 
 #############################################################################!
@@ -227,8 +225,7 @@ configure_model.IMMabc <- function(model, data, formula) {
       brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "a")
   }
 
-  out <- nlist(formula, data, family, prior)
-  return(out)
+  nlist(formula, data, family, prior)
 }
 
 #' @export
@@ -286,8 +283,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
       brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "s")
   }
 
-  out <- nlist(formula, data, family, prior)
-  return(out)
+  nlist(formula, data, family, prior)
 }
 
 #' @export
@@ -347,6 +343,5 @@ configure_model.IMMfull <- function(model, data, formula) {
       brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "s")
   }
 
-  out <- nlist(formula, data, family, prior)
-  return(out)
+  nlist(formula, data, family, prior)
 }

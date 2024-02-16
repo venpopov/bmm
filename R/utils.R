@@ -41,27 +41,21 @@ NULL
 #' softmax(5:7)
 #' softmaxinv(softmax(5:7))
 softmax <- function(eta, lambda = 1) {
-
   stopifnot(requireNamespace("matrixStats", quietly = TRUE))
-
-  #Compute the softmax function
   m     <- length(eta)+1
   DEN   <- matrixStats::logSumExp(c(lambda*eta, 0))
   LSOFT <- c(lambda*eta, 0) - DEN
-  SOFT  <- exp(LSOFT)
-  SOFT
+  exp(LSOFT)
 }
 
 #' @rdname softmax
 #' @export
 softmaxinv <- function(p, lambda = 1) {
-
-  #Compute the inverse-softmax function
   m <- length(p)
   if (m > 1) {
-    SOFTINV <- (base::log(p) - base::log(p[m]))[1:(m-1)]/lambda } else {
-      SOFTINV <- numeric(0) }
-  SOFTINV
+    return((log(p) - log(p[m]))[1:(m-1)]/lambda)
+  }
+  numeric(0)
 }
 
 #' @title Configure local options during model fitting
@@ -94,8 +88,7 @@ configure_options <- function(opts, env=parent.frame()) {
 
   # return only options that can be passed to brms/rstan/cmdstanr
   exclude_args <- c('parallel')
-  opts <- opts[not_in(names(opts), exclude_args)]
-  return(opts)
+  opts[not_in(names(opts), exclude_args)]
 }
 
 # ------------------------------------------------------------------------------
@@ -135,10 +128,9 @@ glue_lf <- function(...) {
 #' @noRd
 call_brm <- function(fit_args) {
   fit <- brms::do_call(brms::brm, fit_args)
-  if (!is.null(fit_args$backend) && fit_args$backend == "mock") {
-    fit$fit_args <- fit_args
-  }
-  return(fit)
+  fit$bmm_fit_args <- fit_args
+  class(fit) <- c('bmmfit','brmsfit')
+  fit
 }
 
 

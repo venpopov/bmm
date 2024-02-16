@@ -120,8 +120,7 @@ configure_model.sdmSimple <- function(model, data, formula) {
     init = 1
 
     # return the list
-    out <- nlist(formula, data, family, prior, stanvars, init)
-    return(out)
+    nlist(formula, data, family, prior, stanvars, init)
 }
 
 
@@ -134,5 +133,5 @@ postprocess_brm.sdmSimple <- function(model, fit) {
   # manually set link_c to "log" since I coded it manually
   fit$family$link_c <- "log"
   fit$formula$family$link_c <- "log"
-  return(fit)
+  fit
 }

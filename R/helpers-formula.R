@@ -23,9 +23,7 @@ check_formula <- function(model, formula) {
          collapse_comma(wpar))
   }
 
-  formula <- add_missing_parameters(model, formula)
-
-  return(formula)
+  add_missing_parameters(model, formula)
 }
 
 
@@ -43,8 +41,7 @@ add_missing_parameters <- function(model, formula) {
                      "For this parameter only a fixed intercept will be estimated."))
     }
   }
-  formula <- formula[model_pars] # reorder formula to match model parameters order
-  return(formula)
+  formula[model_pars] # reorder formula to match model parameters order
 }
 
 

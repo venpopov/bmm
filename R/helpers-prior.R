@@ -65,24 +65,16 @@ combine_prior <- function(prior1, prior2) {
 #' }
 #'
 get_model_prior <- function(formula, data, model, ...) {
-
-  # check model, formula and data, and transform data if necessary
   model <- check_model(model)
   formula <- check_formula(model, formula)
   data <- check_data(model, data, formula)
-
-  # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
 
-  # get priors for the model
   dots <- list(...)
   prior_args <- c(config_args, dots)
   brms_priors <- brms::do_call(brms::get_prior, prior_args)
 
-  # combine the brms prior with the model default prior
-  combined_prior <- combine_prior(brms_priors, prior_args$prior)
-
-  return(combined_prior)
+  combine_prior(brms_priors, prior_args$prior)
 }
 
 
