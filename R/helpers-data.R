@@ -295,7 +295,9 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
 
 # check if the data is sorted by the predictors
 is_data_ordered <- function(data, formula) {
+  dpars <- names(formula)
   predictors <- rhs_vars(formula)
+  predictors <- predictors[not_in(predictors, dpars)]
   data <- data[,predictors]
   if (length(predictors) > 1) {
     gr_idx <- do.call(paste, c(data, list(sep="_")))

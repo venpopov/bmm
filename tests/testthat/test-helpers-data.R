@@ -319,6 +319,7 @@ test_that('is_data_ordered works when there are non-linear predictors', {
   expect_true(is_data_ordered(data, formula1))
 
   # Test with a data frame that is not ordered
-  data2 <- rbind(data1, data1[1, ])
-  expect_false(is_data_ordered(data2, formula1))
+  formula2 <- bmf(y ~ nlD,
+                  nlD ~ C)
+  expect_false(is_data_ordered(data, formula2))
 })
