@@ -80,50 +80,15 @@ sdmSimple <- .model_sdmSimple
 
 
 #############################################################################!
-# CHECK_FORMULA S3 METHODS                                                  ####
-#############################################################################!
-
-#' @export
-check_formula.sdmSimple <- function(model, formula) {
-  # add the sdm_simple family to allow some special brms function to work properly
-  formula$family <- sdm_simple
-
-  formula = NextMethod("check_formula")
-  return(formula)
-}
-
-#############################################################################!
 # CHECK_DATA S3 METHODS                                                  ####
 #############################################################################!
 
 #' @export
 check_data.sdmSimple <- function(model, data, formula) {
   # data sorted by predictors is necessary for speedy computation of normalizing constant
-  sort_data <- getOption("bmm.sort_data", NULL)
-  if(is.null(sort_data)) {
-    if(!is_data_ordered(data, formula, family=sdm_simple)) {
-      data = message_not_ordered(model, data, formula)
-    }
-  } else if (sort_data) {
-    # TODO: maybe abstract this into a function
-    preds <- rhs_vars(formula)
-    data <- dplyr::arrange_at(data, preds)
-    message("\nYour data has been sorted by the following predictors: ", paste(rhs_vars(formula), collapse = ", "),'\n')
-    caution_msg <- paste(strwrap("* caution: you have set `sort_data=TRUE`. You need to be careful
-        when using brms postprocessing methods that rely on the data order, such as
-        generating predictions. Assuming you assigned the result of fit_model to a
-        variable called `fit`, you can extract the sorted data from the fitted object
-        with:\n\n   data_sorted <- fit$fit_args$data", width=80), collapse = "\n")
-    caution_msg <- crayon::red(caution_msg)
-    message(caution_msg)
-  }
-
-  data = NextMethod("check_data")
-  return(data)
+  data <- order_data_query(model, data, formula)
+  NextMethod("check_data")
 }
-
-
-
 
 
 #############################################################################!

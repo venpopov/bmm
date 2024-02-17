@@ -294,7 +294,7 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
 
 
 # check if the data is sorted by the predictors
-is_data_ordered <- function(data, formula, family=NULL) {
+is_data_ordered <- function(data, formula) {
   predictors <- rhs_vars(formula)
   data <- data[,predictors]
   if (length(predictors) > 1) {
@@ -317,4 +317,7 @@ has_nonconsecutive_duplicates <- function(vec) {
   }
   !cond
 }
+
+
+
 

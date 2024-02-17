@@ -291,16 +291,16 @@ test_that('is_data_ordered works when there is only one predictor', {
                       C = factor(rep(1:3, each=2)),
                       D = rep(1:3, times=2),
                       E = factor(rep(1:3, times=2)))
-  expect_true(is_data_ordered(data1, y ~ B))
+  expect_true(is_data_ordered(data, y ~ B))
 
   # Test with a data frame that is not ordered
-  expect_false(is_data_ordered(data1, y ~ D))
+  expect_false(is_data_ordered(data, y ~ D))
 
   # Test with a data frame that is ordered and predictor is a factor
-  expect_true(is_data_ordered(data1, y ~ C))
+  expect_true(is_data_ordered(data, y ~ C))
 
   # Test with a data frame that is not ordered and predictor is a factor
-  expect_false(is_data_ordered(data1, y ~ E))
+  expect_false(is_data_ordered(data, y ~ E))
 })
 
 test_that('is_data_ordered works when there are no predictors', {

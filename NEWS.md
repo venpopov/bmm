@@ -1,3 +1,9 @@
+# bmm 0.3.0+
+
+### New features
+
+* add a check for the sdmSimple model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the `sort_data` argument (#72)
+
 # bmm 0.3.0
 
 ### New features
