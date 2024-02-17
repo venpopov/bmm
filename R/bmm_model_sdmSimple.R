@@ -106,9 +106,9 @@ check_data.sdmSimple <- function(model, data, formula) {
     }
   } else if (sort_data) {
     # TODO: maybe abstract this into a function
-    preds <- extract_vars(formula)
+    preds <- rhs_vars(formula)
     data <- dplyr::arrange_at(data, preds)
-    message("\nYour data has been sorted by the following predictors: ", paste(extract_vars(formula), collapse = ", "),'\n')
+    message("\nYour data has been sorted by the following predictors: ", paste(rhs_vars(formula), collapse = ", "),'\n')
     caution_msg <- paste(strwrap("* caution: you have set `sort_data=TRUE`. You need to be careful
         when using brms postprocessing methods that rely on the data order, such as
         generating predictions. Assuming you assigned the result of fit_model to a

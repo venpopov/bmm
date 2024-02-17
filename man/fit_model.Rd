@@ -47,7 +47,7 @@ sampling will be slower. If NULL (the default), \code{fit_model()} will check if
 the data is sorted, and ask you via a console prompt if it should be
 sorted. You can set the default value for this option using global
 \code{options(bmm.sort_data = TRUE/FALSE)}}
-  
+
 \item{silent}{Verbosity level between 0 and 2. If 1 (the default), most of the
 informational messages of compiler and sampler are suppressed. If 2, even
 more messages are suppressed. The actual sampling progress is still

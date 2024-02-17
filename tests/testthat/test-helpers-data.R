@@ -268,7 +268,7 @@ test_that('has_nonconsecutive_duplicates works', {
 test_that('is_data_ordered works', {
   # Test with a data frame that is ordered
   data1 <- expand.grid(y = 1:3, B = 1:3, C = 1:3)
-  formula1 <- brms::bf(y ~ B + C)
+  formula1 <- bmf(y ~ B + C)
   expect_true(is_data_ordered(data1, formula1))
 
   # Test with a data frame that is not ordered
@@ -279,7 +279,7 @@ test_that('is_data_ordered works', {
   data3 <- data1
   data3$A <- c(3, 2, 1)
   data3$A <- sample(data3$A)
-  formula2 <- brms::bf(y ~ A + B + C)
+  formula2 <- bmf(y ~ A + B + C)
   expect_true(is_data_ordered(data3, formula1))
   expect_false(is_data_ordered(data3, formula2))
 })

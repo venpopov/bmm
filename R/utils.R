@@ -82,7 +82,7 @@ configure_options <- function(opts, env=parent.frame()) {
   withr::local_options(
     list(
       mc.cores = cores,
-      bmm.silent = opts$silent
+      bmm.silent = opts$silent,
       bmm.sort_data = opts$sort_data
     ),
     .local_envir=env)
@@ -269,14 +269,14 @@ message_not_ordered <- function(model, data, formula) {
       message("To sort your data, use the following code:\n\n")
       message(crayon::green("library(dplyr)"))
       message(crayon::green(data_name, "_sorted <- ", data_name, " %>% arrange(",
-                            paste(extract_vars(formula), collapse = ", "),
+                            paste(rhs_vars(formula), collapse = ", "),
                             ")\n\n",
                             sep=""))
       message("Then re-run the model with the newly sorted data.")
       stop_quietly()
     } else if (var == 2) {
-      message("Your data has been sorted by the following predictors: ", paste(extract_vars(formula), collapse = ", "),'\n')
-      preds <- extract_vars(formula)
+      message("Your data has been sorted by the following predictors: ", paste(rhs_vars(formula), collapse = ", "),'\n')
+      preds <- rhs_vars(formula)
       data <- dplyr::arrange_at(data, preds)
     }
   }
