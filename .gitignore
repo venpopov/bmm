@@ -8,3 +8,5 @@ docs
 inst/doc
 /doc/
 /Meta/
+/tests/internal/cmdstanr_output/
+/tests/internal/*cache*

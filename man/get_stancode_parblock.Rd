@@ -7,7 +7,7 @@
 get_stancode_parblock(formula, data, model, prior = NULL, ...)
 }
 \arguments{
-\item{formula}{An object of class \code{brmsformula}. A symbolic description of
+\item{formula}{An object of class \code{bmmformula}. A symbolic description of
 the model to be fitted.}
 
 \item{data}{An object of class data.frame, containing data of all variables
@@ -41,4 +41,4 @@ which paramters you can set initial values on
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[=get_stancode]{get_stancode()}}
 }
-\keyword{extract_stan}
+\keyword{extract_info}

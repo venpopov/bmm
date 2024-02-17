@@ -1,6 +1,6 @@
 Package: bmm
 Title: Easy and Accesible Bayesian Measurement Models using 'brms'
-Version: 0.2.2
+Version: 0.3.0
 Authors@R: c(
     person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph")),
     person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")))
@@ -25,7 +25,8 @@ Suggests:
     mixtur,
     ggthemes,
     cowplot,
-    stringr
+    stringr,
+    remotes
 Config/testthat/edition: 3
 Imports: 
     brms,
