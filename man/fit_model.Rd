@@ -11,12 +11,13 @@ fit_model(
   parallel = FALSE,
   chains = 4,
   prior = NULL,
+  silent = getOption("bmm.silent", 1),
   ...
 )
 }
 \arguments{
-\item{formula}{An object of class \code{brmsformula}. A symbolic description of
-the model to be fitted.}
+\item{formula}{An object of class \code{bmmformula}. A symbolic description of the
+model to be fitted.}
 
 \item{data}{An object of class data.frame, containing data of all variables
 used in the model. The names of the variables must match the variable names
@@ -39,6 +40,13 @@ or related functions and combined using the c method or the + operator. See
 also \code{\link[=get_model_prior]{get_model_prior()}} for more help. Not necessary for the default model
 fitting, but you can provide prior constraints to model parameters}
 
+\item{silent}{Verbosity level between 0 and 2. If 1 (the default), most of the
+informational messages of compiler and sampler are suppressed. If 2, even
+more messages are suppressed. The actual sampling progress is still
+printed. Set refresh = 0 to turn this off as well. If using backend =
+"rstan" you can also set open_progress = FALSE to prevent opening
+additional progress bars.}
+
 \item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See the
 description of \code{\link[brms:brm]{brms::brm()}} for more details}
 }
@@ -58,12 +66,12 @@ model.
 \details{
 The following models are supported:
 \itemize{
-\item \code{IMMabc(respErr, non_targets, setsize)}
-\item \code{IMMbsc(respErr, non_targets, setsize, spaPos)}
-\item \code{IMMfull(respErr, non_targets, setsize, spaPos)}
-\item \code{mixture2p(respErr)}
-\item \code{mixture3p(respErr, non_targets, setsize)}
-\item \code{sdmSimple(respErr)}
+\item \code{IMMabc(resp_err, nt_features, setsize)}
+\item \code{IMMbsc(resp_err, nt_features, nt_distances, setsize)}
+\item \code{IMMfull(resp_err, nt_features, nt_distances, setsize)}
+\item \code{mixture2p(resp_err)}
+\item \code{mixture3p(resp_err, nt_features, setsize)}
+\item \code{sdmSimple(resp_err)}
 }
 
 Type \code{?modelname} to get information about a specific model, e.g. \code{?IMMfull}
@@ -76,14 +84,13 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 dat <- data.frame(y=rsdm(n=2000))
 
 # define formula
-ff <- brms::bf(y ~ 1,
-               c ~ 1,
-               kappa ~ 1)
+ff <- bmmformula(c ~ 1,
+                 kappa ~ 1)
 
 # fit the model
 fit <- fit_model(formula = ff,
                  data = dat,
-                 model = sdmSimple(),
+                 model = sdmSimple(resp_err = "y"),
                  parallel=T,
                  iter=500,
                  backend='cmdstanr')
@@ -91,9 +98,9 @@ fit <- fit_model(formula = ff,
 
 }
 \references{
-Frischkorn, G. T., & Popov, V. (2023). A tutorial for
-estimating mixture models for visual working memory tasks in brms:
-Introducing the Bayesian Measurement Modeling  (bmm) package for R.
+Frischkorn, G. T., & Popov, V. (2023). A tutorial for estimating
+mixture models for visual working memory tasks in brms: Introducing the
+Bayesian Measurement Modeling  (bmm) package for R.
 https://doi.org/10.31234/osf.io/umt57
 }
 \seealso{

@@ -3,10 +3,10 @@ title: "Mixture models for visual working memory"
 output: bookdown::html_document2
 bibliography: REFERENCES.bib
 vignette: >
-%\VignetteIndexEntry{Mixture models for visual working memory}
+  %\VignetteIndexEntry{Mixture models for visual working memory}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  pkgdown:
+pkgdown:
   as_is: true
 ---
 
@@ -22,9 +22,6 @@ margin-bottom: 1.5em ;
 }
 </style>
 ```
-
-
-
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -133,7 +130,7 @@ dat_preprocessed <- dat %>%
          non_target_3 = wrap(non_target_3 - target),
          non_target_4 = wrap(non_target_4 - target),
          non_target_5 = wrap(non_target_5 - target),
-         set_size = paste0('Set size ', set_size))
+         set_size = as.factor(set_size))
 
 ggplot(dat_preprocessed, aes(error)) +
   geom_histogram(bins=60, fill = "lightblue", color = "black") +
@@ -160,28 +157,30 @@ The model formula has three components:
 [^fn-1]: `brms` does not directly estimate the probabilities that each response comes from each distribution (e.g. $p_{mem}$ and $p_{guess}$). Instead, brms estimates mixing proportions that are weights applied to each of the mixture distributions and they are transformed into probabilities (e.g. $p_{mem}$ and $p_{guess}$) using a softmax normalization. To get $p_{mem}$ we can use the softmax function, that is: $p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})}$
 
 ```{r}
-ff <- bmm_formula(thetat ~ 0 + set_size + (0 + set_size | id),
-                  kappa ~ 0 + set_size + (0 + set_size | id))
+ff <- bmmformula(thetat ~ 0 + set_size + (0 + set_size | id),
+                 kappa ~ 0 + set_size + (0 + set_size | id))
 ```
 
 
 Then we specify the model as simply as:
 
 ```{r}
-model <- mixture2p(respErr = "error")
+model <- mixture2p(resp_err = "error")
 ```
 
 Finally, we fit the model with the `fit_model` function. The fit model function uses
 the `brms` package to fit the model, so you can pass to it any argument that you would pass to the `brm` function. 
 
 ``` r
-fit <- fit_model(formula = ff,
-                 data = dat_preprocessed,
-                 model = model,
-                 parallel=T,
-                 iter=2000,
-                 refresh=100,
-                 backend='cmdstanr')
+fit <- fit_model(
+  formula = ff,
+  data = dat_preprocessed,
+  model = model,
+  parallel=T,
+  iter=2000,
+  refresh=100,
+  backend='cmdstanr'
+)
 ```
 
 ```{r, include=FALSE, warning=FALSE, message=FALSE}
@@ -249,7 +248,7 @@ draws_theta <- select(draws, b_thetat_set_size1:b_thetat_set_size6)
 draws_kappa <- select(draws, b_kappa_set_size1:b_kappa_set_size6)
 
 # transform parameters because brms uses special link functions
-draws_theta <- exp(draws_theta)/(exp(draws_theta)+1)
+draws_theta <- exp(draws_theta)/(exp(draws_theta) + 1)
 draws_kappa <- exp(draws_kappa)
 
 # plot posterior
@@ -257,7 +256,7 @@ as.data.frame(draws_theta) %>%
   gather(par, value) %>%
   mutate(par = gsub("b_thetat_set_size", "", par)) %>%
   ggplot(aes(par, value)) +
-  tidybayes::stat_halfeyeh(normalize="groups", orientation="vertical") +
+  tidybayes::stat_halfeyeh(normalize = "groups", orientation = "vertical") +
   labs(y = "Probability of memory response", x = "Set size", parse = TRUE)
 
 as.data.frame(draws_kappa) %>% 
@@ -265,7 +264,7 @@ as.data.frame(draws_kappa) %>%
   mutate(value = k2sd(value)) %>% 
   mutate(par = gsub("b_kappa_set_size", "Set size ", par)) %>%
   ggplot(aes(par,value)) +
-  tidybayes::stat_halfeyeh(normalize="groups", orientation="vertical") +
+  tidybayes::stat_halfeyeh(normalize = "groups", orientation = "vertical") +
   labs(y = "Memory imprecision (SD)", x = "Set size", parse = TRUE)
 ```
 
@@ -276,24 +275,27 @@ where the black dot represents the median of the posterior distribution, the thi
 Fitting the 3-parameter mixture model is very similar. We have an extra parameter `thetant` that represents the mixture weight for non-target responses^[because now we have three mixture weights, you will need later to calculate the probability of target responses as $p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}$, the probability of non-target responses as $p_{nt} =\frac{exp(\theta_{nontarget})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}$, and the probability of guessing as $p_{guess} = 1-p_{mem}-p_{nt}$]. We also need to specify the names of the non-target variables and the setsize^[When the setsize varies in an experiment, provide the name of the variable containing the setsize information. If the set size is the same for all trials, provide a number, e.g. `setsize=4`] variable in the `mixture3p` function. 
 
 ```{r}
-ff <- brms::bf(error ~ 1, 
-               thetat ~ 0 + set_size + (0 + set_size | id),
-               thetant ~ 0 + set_size + (0 + set_size | id),
-               kappa ~ 0 + set_size + (0 + set_size | id))
+ff <- bmf(
+  thetat ~ 0 + set_size + (0 + set_size | id),
+  thetant ~ 0 + set_size + (0 + set_size | id),
+  kappa ~ 0 + set_size + (0 + set_size | id)
+)
 
-model <- mixture3p(non_targets = paste0('non_target_',1:5), setsize='set_size')
+model <- mixture3p(resp_err = "error", nt_features = paste0('non_target_',1:5), setsize = 'set_size')
 ```
 
 Then we run the model just like before:
 
 ``` r
-fit3p <- fit_model(formula = ff,
-data = dat_preprocessed,
-model = model,
-parallel=T,
-iter=2000,
-refresh=100,
-backend='cmdstanr')
+fit3p <- fit_model(
+  formula = ff,
+  data = dat_preprocessed,
+  model = model,
+  parallel=T,
+  iter=2000,
+  refresh=100,
+  backend='cmdstanr'
+)
 ```                 
 
 The rest of the analysis is the same as for the 2-parameter model. We can inspect the model fit, extract the parameter estimates, and visualize the posterior distributions.

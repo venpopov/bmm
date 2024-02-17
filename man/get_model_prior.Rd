@@ -7,7 +7,7 @@
 get_model_prior(formula, data, model, ...)
 }
 \arguments{
-\item{formula}{An object of class \code{brmsformula}. A symbolic description of
+\item{formula}{An object of class \code{bmmformula}. A symbolic description of
 the model to be fitted.}
 
 \item{data}{An object of class data.frame, containing data of all variables
@@ -40,12 +40,12 @@ used if no user-specified priors were passed to the \code{\link[=fit_model]{fit_
 \details{
 The following models are supported:
 \itemize{
-\item \code{IMMabc(respErr, non_targets, setsize)}
-\item \code{IMMbsc(respErr, non_targets, setsize, spaPos)}
-\item \code{IMMfull(respErr, non_targets, setsize, spaPos)}
-\item \code{mixture2p(respErr)}
-\item \code{mixture3p(respErr, non_targets, setsize)}
-\item \code{sdmSimple(respErr)}
+\item \code{IMMabc(resp_err, nt_features, setsize)}
+\item \code{IMMbsc(resp_err, nt_features, nt_distances, setsize)}
+\item \code{IMMfull(resp_err, nt_features, nt_distances, setsize)}
+\item \code{mixture2p(resp_err)}
+\item \code{mixture3p(resp_err, nt_features, setsize)}
+\item \code{sdmSimple(resp_err)}
 }
 
 Type \code{?modelname} to get information about a specific model, e.g. \code{?IMMfull}
@@ -58,9 +58,9 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 dat <- data.frame(y = rsdm(n=2000))
 
 # define formula
-ff <- brms::bf(y ~ 1,
-               c ~ 1,
-               kappa ~ 1)
+ff <- bmf(y ~ 1,
+          c ~ 1,
+          kappa ~ 1)
 
 # fit the model
 get_model_prior(formula = ff,

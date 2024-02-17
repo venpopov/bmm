@@ -19,7 +19,7 @@ combine_prior <- function(prior1, prior2) {
 #'   return all model parameters that have no prior specified (flat priors). This can help to
 #'   get an idea about which priors need to be specified and also know which priors were
 #'   used if no user-specified priors were passed to the [fit_model()] function.
-#' @param formula An object of class `brmsformula`. A symbolic description of
+#' @param formula An object of class `bmmformula`. A symbolic description of
 #'   the model to be fitted.
 #' @param data An object of class data.frame, containing data of all variables
 #'   used in the model. The names of the variables must match the variable names
@@ -53,9 +53,9 @@ combine_prior <- function(prior1, prior2) {
 #' dat <- data.frame(y = rsdm(n=2000))
 #'
 #' # define formula
-#' ff <- brms::bf(y ~ 1,
-#'                c ~ 1,
-#'                kappa ~ 1)
+#' ff <- bmf(y ~ 1,
+#'           c ~ 1,
+#'           kappa ~ 1)
 #'
 #' # fit the model
 #' get_model_prior(formula = ff,
@@ -65,23 +65,41 @@ combine_prior <- function(prior1, prior2) {
 #' }
 #'
 get_model_prior <- function(formula, data, model, ...) {
-
-  # check model, formula and data, and transform data if necessary
   model <- check_model(model)
   formula <- check_formula(model, formula)
   data <- check_data(model, data, formula)
-
-  # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
 
-  # get priors for the model
   dots <- list(...)
   prior_args <- c(config_args, dots)
   brms_priors <- brms::do_call(brms::get_prior, prior_args)
 
-  # combine the brms prior with the model default prior
-  combined_prior <- combine_prior(brms_priors, prior_args$prior)
+  combine_prior(brms_priors, prior_args$prior)
+}
 
-  return(combined_prior)
+
+#' @title construct constant priors to fix fixed model parameters
+#' @param model a `bmmmodel` object
+#' @param additional_pars a list of name=value pairs to fix additional
+#'   parameters where the name is the parameter name and the value is the fixed
+#'   value
+#' @details This function is used to fix the parameters of a model that are
+#'   specified as fixed in the model definition. It can also be used to fix any
+#'   additional internal parameters that are not specified in the model
+#'   definition. it should be used in the configure_model.* function for the
+#'   model.
+#'
+#'   the function puts a constant(value) prior on an Intercept with
+#'   dpar=parameter_name
+#' @return an object of class brmsprior of the form prior("constant(value)",
+#'   class="Intercept", dpar=parameter_name) for all fixed parameters in the
+#'   model
+#' @noRd
+fixed_pars_priors <- function(model, additional_pars = list()) {
+  par_list <- c(model$info$fixed_parameters, additional_pars)
+  pars <- names(par_list)
+  values <- unlist(par_list)
+  priors <- glue::glue("constant({values})")
+  brms::set_prior(priors, class = "Intercept", dpar = pars)
 }
 

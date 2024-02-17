@@ -6,6 +6,11 @@ test_that("sdm distribution functions run without errors", {
   expect_true(length(res) == n)
   res <- rsdm(n, mu = rnorm(n), c = 0:(n-1), kappa = 0:(n-1))
   expect_true(length(res) == n)
+
+  x <- runif(n, -pi, pi)
+  res <- dsdm(x, mu = 1, c = 3, kappa = 1:n)
+  res_log <- dsdm(x, mu = 1, c = 3, kappa = 1:n, log = TRUE)
+  expect_true(all.equal(res,exp(res_log)))
 })
 
 test_that("dsdm integrates to 1", {

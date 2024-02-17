@@ -4,7 +4,7 @@
       int L = min_val;
       int R = max_val;
       while(L < R) {
-        mid_p = (R-L)/2;
+        mid_p = (R-L) %/% 2;
         if (L + mid_p < x) {
           L += mid_p + 1;
         } else if (L + mid_p > x) {

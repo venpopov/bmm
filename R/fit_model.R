@@ -6,8 +6,8 @@
 #'   This is a wrapper function for [brms::brm], which is used to estimate the
 #'   model.
 #'
-#' @param formula An object of class `brmsformula`. A symbolic description of
-#'   the model to be fitted.
+#' @param formula An object of class `bmmformula`. A symbolic description of the
+#'   model to be fitted.
 #' @param data An object of class data.frame, containing data of all variables
 #'   used in the model. The names of the variables must match the variable names
 #'   passed to the `bmmmodel` object for required argurments.
@@ -24,6 +24,12 @@
 #'   or related functions and combined using the c method or the + operator. See
 #'   also [get_model_prior()] for more help. Not necessary for the default model
 #'   fitting, but you can provide prior constraints to model parameters
+#' @param silent Verbosity level between 0 and 2. If 1 (the default), most of the
+#'   informational messages of compiler and sampler are suppressed. If 2, even
+#'   more messages are suppressed. The actual sampling progress is still
+#'   printed. Set refresh = 0 to turn this off as well. If using backend =
+#'   "rstan" you can also set open_progress = FALSE to prevent opening
+#'   additional progress bars.
 #' @param ... Further arguments passed to [brms::brm()] or Stan. See the
 #'   description of [brms::brm()] for more details
 #'
@@ -35,10 +41,10 @@
 #'   with many other useful information about the model. Use methods(class =
 #'   "brmsfit") for an overview on available methods.
 #'
-#' @references Frischkorn, G. T., & Popov, V. (2023). A tutorial for
-#' estimating mixture models for visual working memory tasks in brms:
-#' Introducing the Bayesian Measurement Modeling  (bmm) package for R.
-#' https://doi.org/10.31234/osf.io/umt57
+#' @references Frischkorn, G. T., & Popov, V. (2023). A tutorial for estimating
+#'   mixture models for visual working memory tasks in brms: Introducing the
+#'   Bayesian Measurement Modeling  (bmm) package for R.
+#'   https://doi.org/10.31234/osf.io/umt57
 #'
 #' @seealso [supported_models()], [brms::brm()]
 #'
@@ -50,20 +56,20 @@
 #' dat <- data.frame(y=rsdm(n=2000))
 #'
 #' # define formula
-#' ff <- brms::bf(y ~ 1,
-#'                c ~ 1,
-#'                kappa ~ 1)
+#' ff <- bmmformula(c ~ 1,
+#'                  kappa ~ 1)
 #'
 #' # fit the model
 #' fit <- fit_model(formula = ff,
 #'                  data = dat,
-#'                  model = sdmSimple(),
+#'                  model = sdmSimple(resp_err = "y"),
 #'                  parallel=T,
 #'                  iter=500,
 #'                  backend='cmdstanr')
 #' }
 #'
-fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior = NULL, ...) {
+fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
+                      prior = NULL, silent = getOption('bmm.silent', 1), ...) {
   # warning for using old version
   dots <- list(...)
   if ("model_type" %in% names(dots)) {
@@ -73,8 +79,8 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior 
          ')
   }
 
-  # enable parallel sampling if parallel equals TRUE
-  opts <- configure_options(nlist(parallel, chains))
+  # set temporary global options and return modified arguments for brms
+  opts <- configure_options(nlist(parallel, chains, silent))
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model)
@@ -93,7 +99,22 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4, prior 
   fit <- call_brm(fit_args)
 
   # model postprocessing
-  fit <- postprocess_brm(model, fit)
+  postprocess_brm(model, fit)
+}
 
+
+
+#' @export
+update.bmmfit <- function(fit, ...) {
+  stop("The update method for bmmfit is not yet implemented, but is planned for a future release.", call. = FALSE)
+  # do any necessary preprocessing to accomondate bmm changes into brms
+  # ....
+
+  fit = NextMethod(fit)  # pass back to brms::update.brmsfit
+
+  # do any necessary postprocessing to convert back to bmmfit
+  # ....
+  class(fit) <- c('bmmfit', class(fit))  # reassing class
   return(fit)
 }
+

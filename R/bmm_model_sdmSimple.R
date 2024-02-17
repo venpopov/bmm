@@ -2,9 +2,10 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_sdmSimple <- function(respErr, ...) {
+.model_sdmSimple <- function(resp_err, ...) {
    out <- list(
-      vars = nlist(respErr),
+      resp_vars = nlist(resp_err),
+      other_vars = nlist(),
       info = list(
          domain = 'Visual working memory',
          task = 'Continuous reproduction',
@@ -14,11 +15,15 @@
          version = 'Simple (no non-targets)',
          requirements = '- The response variable should be in radians and represent the angular error relative to the target',
          parameters = list(
-            # mu = 'Location parameter of the SDM distribution (in radians; fixed internally to 0)',
+            mu = 'Location parameter of the SDM distribution (in radians; by default fixed internally to 0)',
             c = 'Memory strength parameter of the SDM distribution',
             kappa = 'Precision parameter of the SDM distribution (log scale)'
-         )
-      ))
+         ),
+         fixed_parameters = list(
+            mu = 0
+         )),
+      void_mu = FALSE
+   )
    class(out) <- c('bmmmodel', 'vwm', 'sdmSimple')
    out
 }
@@ -26,12 +31,16 @@
 # user facing alias
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_sdmSimple(NA)$info
+
 #' @title `r .model_sdmSimple(NA)$info$name`
 #' @name SDM
-#' @details
-#' see `vignette("sdm-simple")` for a detailed description of the model and how to use it.
-#' `r model_info(sdmSimple(NA))`
-#' @param respErr The name of the variable in the provided dataset containing the response error. The response Error should code the response relative to the to-be-recalled target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
+#' @details see `vignette("sdm-simple")` for a detailed description of the model
+#'   and how to use it.
+#'   `r model_info(sdmSimple(NA))`
+#' @param resp_err The name of the variable in the dataset containing the
+#'   response error. The response error should code the response relative to the
+#'   to-be-recalled target in radians. You can transform the response error in
+#'   degrees to radians using the `deg2rad` function.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
@@ -44,9 +53,8 @@
 #' dat <- data.frame(y = rsdm(n = 1000, c = 4, kappa = 3))
 #'
 #' # specify formula
-#' ff <- bf(y ~ 1,
-#'                c ~ 1,
-#'                kappa ~ 1)
+#' ff <- bmf(c ~ 1,
+#'           kappa ~ 1)
 #'
 #' # specify prior
 #' prior <- prior(normal(1,2), class='Intercept', dpar='c')+
@@ -55,7 +63,7 @@
 #' # specify the model
 #' fit <- fit_model(formula = ff,
 #'                  data = dat,
-#'                  model = sdmSimple(),
+#'                  model = sdmSimple(resp_err = 'y'),
 #'                  prior = prior,
 #'                  parallel=T,
 #'                  iter=2000,
@@ -92,54 +100,27 @@ configure_model.sdmSimple <- function(model, data, formula) {
 
     # prepare initial stanvars to pass to brms, model formula and priors
     sc_path <- system.file("stan_chunks", package="bmm")
-    stan_funs <- readChar(paste0(sc_path, '/sdmSimple_funs.stan'),
-                          file.info(paste0(sc_path, '/sdmSimple_funs.stan'))$size)
-    stan_tdata <- readChar(paste0(sc_path, '/sdmSimple_tdata.stan'),
-                           file.info(paste0(sc_path, '/sdmSimple_tdata.stan'))$size)
-    stan_likelihood <- readChar(paste0(sc_path, '/sdmSimple_likelihood.stan'),
-                               file.info(paste0(sc_path, '/sdmSimple_likelihood.stan'))$size)
+    stan_funs <- read_lines2(paste0(sc_path, '/sdmSimple_funs.stan'))
+    stan_tdata <- read_lines2(paste0(sc_path, '/sdmSimple_tdata.stan'))
+    stan_likelihood <- read_lines2(paste0(sc_path, '/sdmSimple_likelihood.stan'))
     stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
       brms::stanvar(scode = stan_tdata, block = 'tdata') +
       brms::stanvar(scode = stan_likelihood, block = 'likelihood', position ="end")
 
-    # extract response error variable
-    respErr <- model$var$respErr
-    pform_names <- names(formula)
-    pform <- formula
+    # construct main brms formula from the bmm formula
+    bmm_formula <- formula
+    formula <- bmf2bf(model, bmm_formula)
 
-    if (!"mu" %in% pform_names) {
-      mu_form <- mu ~ 1
-      pform <- c(pform, mu_form)
-      names(pform) <- c(pform_names,"mu")
-    }
+    # construct the default prior
+    # TODO: for now it just fixes mu to 0, I have to add proper priors
+    prior <- fixed_pars_priors(model)
 
-    # specify the formula for the mixture model
-    formula <- brms::bf(paste0(respErr,"~ mu"), nl = T)
+    # set initial values to be sampled between [-1,1] to avoid extreme SDs that
+    # can cause the sampler to fail
+    init = 1
 
-    # add parameter formulas to model formula
-    for (i in 1:length(pform)) {
-      predictors <- rsample::form_pred(pform[[i]])
-      if (any(predictors %in% names(pform))) {
-        formula <- formula + brms::nlf(pform[[i]])
-      } else {
-        formula <- formula + brms::lf(pform[[i]])
-      }
-    }
-
-   # construct the default prior
-   # TODO: add a proper prior
-   prior <-
-     # fix mu to 0 (when I change mu to be the center, not c)
-     brms::prior_("constant(0)", class = "Intercept", dpar = "mu")
-
-   # set initial values to be sampled between [-1,1] to avoid extreme SDs that
-   # can cause the sampler to fail // TODO: test extensively if this works in
-   # all cases
-   init = 1
-
-   # return the list
-   out <- nlist(formula, data, family, prior, stanvars, init)
-   return(out)
+    # return the list
+    nlist(formula, data, family, prior, stanvars, init)
 }
 
 
@@ -152,5 +133,5 @@ postprocess_brm.sdmSimple <- function(model, fit) {
   # manually set link_c to "log" since I coded it manually
   fit$family$link_c <- "log"
   fit$formula$family$link_c <- "log"
-  return(fit)
+  fit
 }
