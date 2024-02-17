@@ -27,3 +27,4 @@ list or data.frame with the information for each fit is returned.
 \description{
 Extract information from a brmsfit object
 }
+\keyword{extract_info}

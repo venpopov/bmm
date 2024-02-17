@@ -43,7 +43,7 @@ combine_prior <- function(prior1, prior2) {
 #'
 #' @seealso [supported_models()], [brms::get_prior()]
 #'
-#' @keywords extract_stan
+#' @keywords extract_info
 #'
 #' @export
 #'
