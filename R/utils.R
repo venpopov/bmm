@@ -41,27 +41,21 @@ NULL
 #' softmax(5:7)
 #' softmaxinv(softmax(5:7))
 softmax <- function(eta, lambda = 1) {
-
   stopifnot(requireNamespace("matrixStats", quietly = TRUE))
-
-  #Compute the softmax function
   m     <- length(eta)+1
   DEN   <- matrixStats::logSumExp(c(lambda*eta, 0))
   LSOFT <- c(lambda*eta, 0) - DEN
-  SOFT  <- exp(LSOFT)
-  SOFT
+  exp(LSOFT)
 }
 
 #' @rdname softmax
 #' @export
 softmaxinv <- function(p, lambda = 1) {
-
-  #Compute the inverse-softmax function
   m <- length(p)
   if (m > 1) {
-    SOFTINV <- (base::log(p) - base::log(p[m]))[1:(m-1)]/lambda } else {
-      SOFTINV <- numeric(0) }
-  SOFTINV
+    return((log(p) - log(p[m]))[1:(m-1)]/lambda)
+  }
+  numeric(0)
 }
 
 #' @title Configure local options during model fitting
@@ -87,15 +81,15 @@ configure_options <- function(opts, env=parent.frame()) {
   }
   withr::local_options(
     list(
-      mc.cores = parallel::detectCores(),
+      mc.cores = cores,
+      bmm.silent = opts$silent
       bmm.sort_data = opts$sort_data
     ),
     .local_envir=env)
 
-  # return only options that can be passed to brms
-  brms_args <- names(formals(brms::brm))
-  opts <- opts[names(opts) %in% brms_args]
-  return(opts)
+  # return only options that can be passed to brms/rstan/cmdstanr
+  exclude_args <- c('parallel', 'sort_data')
+  opts[not_in(names(opts), exclude_args)]
 }
 
 # ------------------------------------------------------------------------------
@@ -135,10 +129,109 @@ glue_lf <- function(...) {
 #' @noRd
 call_brm <- function(fit_args) {
   fit <- brms::do_call(brms::brm, fit_args)
-  if (!is.null(fit_args$backend) && fit_args$backend == "mock") {
-    fit$fit_args <- fit_args
+  fit$bmm_fit_args <- fit_args
+  class(fit) <- c('bmmfit','brmsfit')
+  fit
+}
+
+
+# function to ensure that if the user wants to overwrite an argument (such as
+# init), they can
+combine_args <- function(args) {
+  config_args <- args$config_args
+  opts <- args$opts
+  dots <- args$dots
+  if (is.null(dots)) {
+    return(c(config_args, opts))
   }
-  return(fit)
+  for (i in names(dots)) {
+    if (not_in(i, c('family'))) {
+      config_args[[i]] <- dots[[i]]
+    } else {
+      stop('You cannot provide a family argument to fit_model. Please use the model argument instead.')
+    }
+  }
+  c(config_args, opts)
+}
+
+
+
+message2 <- function(...) {
+  silent <- getOption('bmm.silent', 1)
+  if (silent < 2) {
+    message(...)
+  }
+  invisible()
+}
+
+
+# function to ensure proper reading of stan files
+read_lines2 <- function (con) {
+  lines <- readLines(con, n = -1L, warn = FALSE)
+  paste(lines, collapse = "\n")
+}
+
+
+# for testing purposes
+install_and_load_bmm_version <- function(version) {
+  if ("package:bmm" %in% search()) {
+    detach("package:bmm", unload=TRUE)
+  }
+  path <- paste0(.libPaths()[1], "/bmm-", version)
+  if (!dir.exists(path) || length(list.files(path)) == 0 || length(list.files(paste0(path, "/bmm"))) == 0) {
+    dir.create(path)
+    remotes::install_github(paste0("venpopov/bmm@",version), lib=path)
+  }
+  library(bmm, lib.loc=path)
+}
+
+
+#' Extract information from a brmsfit object
+#' @param fit A brmsfit object, or a list of brmsfit objects
+#' @param what String. What to return:
+#'  - "time" for the sampling time per chain
+#'  - "time_mean" for the mean sampling time
+#' @return Depends on `what` and the class of `fit`. For `brmsfit` objects,
+#'   information about the single fit is returned. For `brmsfit_list` objects, a
+#'   list or data.frame with the information for each fit is returned.
+#'  - "time": A data.frame with the sampling time per chain
+#'  - "time_mean": A named numeric vector with the mean sampling time
+#' @keywords extract_info
+#' @export
+fit_info <- function(fit, what) {
+  UseMethod("fit_info")
+}
+
+#' @export
+fit_info.brmsfit <- function(fit, what) {
+  fit_attr <- attributes(fit$fit)
+  metadata <- fit_attr$metadata
+  switch(what,
+         time = metadata$time$chains,
+         time_mean = colMeans(metadata$time$chains),
+  )
+}
+
+#' @export
+fit_info.brmsfit_list <- function(fit, what) {
+  .NotYetImplemented()
+}
+
+# if x is a variable present in the data, return x, else error
+is_data_var <- function(x, data) {
+  is.character(x) && length(x) == 1 && x %in% names(data)
+}
+
+is_try_warning <- function(x) {
+  inherits(x, "warning")
+}
+
+as_numeric_vector <- function(x) {
+  out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
+  if (is_try_warning(out)) {
+    stop2("Cannot coerce '", x, "' to a numeric vector")
+  }
+  out
 }
 
 stop_quietly <- function() {

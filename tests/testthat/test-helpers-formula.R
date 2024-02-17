@@ -1,35 +1,34 @@
-test_that('extract vars returns the correct variables with one formula', {
-  formula <- brms::bf(y ~ A + B + C + (1|D) + (F*G|E))
-  vars <- extract_vars(formula)
-  vars <- sort(vars)
-  expect_equal(vars, LETTERS[1:7])
-
-  vars <- extract_vars(formula, include_resp = T)
-  vars <- sort(vars)
-  expect_equal(vars, c(LETTERS[1:7],'y'))
+test_that('wrong_parameters works', {
+  f <- bmmformula(c ~ 1,
+                  a ~ 1,
+                  s ~ 1,
+                  kappa ~ 1)
+  expect_equal(length(wrong_parameters(IMMfull(NA,NA, NA,NA), f)), 0)
+  expect_equal(wrong_parameters(IMMbsc(NA,NA, NA,NA), f), 'a')
+  expect_equal(wrong_parameters(sdmSimple(NA), f), c('a','s'))
 })
 
-test_that('extract vars returns the correct variables with more than one formula', {
-  formula <- brms::bf(y ~ A,
-                      sigma ~ B + C + (1|D) + (F*G|E))
-  vars <- extract_vars(formula)
-  vars <- sort(vars)
-  expect_equal(vars, LETTERS[1:7])
-
-  vars <- extract_vars(formula, include_resp = T)
-  vars <- sort(vars)
-  expect_equal(vars, c(LETTERS[1:7],'y'))
+test_that('wrong_parameters doesnt reject non-linear transformations', {
+  f <- bmmformula(c ~ 1,
+                  a ~ 1,
+                  s ~ 1,
+                  kappa ~ exp(logkappa),
+                  logkappa ~ 1)
+  expect_equal(length(wrong_parameters(IMMfull(NA,NA, NA,NA), f)), 0)
+  expect_equal(wrong_parameters(IMMbsc(NA,NA, NA,NA), f), 'a')
+  expect_equal(wrong_parameters(sdmSimple(NA), f), c('a','s'))
 })
 
-test_that('extract vars returns the correct variables with different family', {
-  formula <- brms::bf(y ~ A,
-                      kappa ~ B + C + (1|D) + (F*G|E))
-  vars <- extract_vars(formula, brms::von_mises())
-  vars <- sort(vars)
-  expect_equal(vars, LETTERS[1:7])
 
-  vars <- extract_vars(formula, brms::von_mises(), include_resp = T)
-  vars <- sort(vars)
-  expect_equal(vars, c(LETTERS[1:7],'y'))
+test_that("add_missing_parameters works", {
+  f <- bmmformula(c ~ 1)
+  model_pars <- names(IMMfull(NA,NA, NA,NA)$info$parameters)
+  expect_equal(names(suppressMessages(add_missing_parameters(IMMfull(NA,NA, NA,NA), f))), model_pars)
+
+  f <- bmmformula(c ~ 1,
+                  s ~ 1,
+                  a ~ 1,
+                  kappa ~ 1)
+  model_pars <- names(IMMfull(NA,NA, NA,NA)$info$parameters)
+  expect_equal(names(suppressMessages(add_missing_parameters(IMMfull(NA,NA, NA,NA), f))), model_pars)
 })
-

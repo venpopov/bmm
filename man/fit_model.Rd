@@ -12,12 +12,13 @@ fit_model(
   chains = 4,
   prior = NULL,
   sort_data = getOption("bmm.sort_data", NULL),
+  silent = getOption("bmm.silent", 1),
   ...
 )
 }
 \arguments{
-\item{formula}{An object of class \code{brmsformula}. A symbolic description of
-the model to be fitted.}
+\item{formula}{An object of class \code{bmmformula}. A symbolic description of the
+model to be fitted.}
 
 \item{data}{An object of class data.frame, containing data of all variables
 used in the model. The names of the variables must match the variable names
@@ -46,6 +47,13 @@ sampling will be slower. If NULL (the default), \code{fit_model()} will check if
 the data is sorted, and ask you via a console prompt if it should be
 sorted. You can set the default value for this option using global
 \code{options(bmm.sort_data = TRUE/FALSE)}}
+  
+\item{silent}{Verbosity level between 0 and 2. If 1 (the default), most of the
+informational messages of compiler and sampler are suppressed. If 2, even
+more messages are suppressed. The actual sampling progress is still
+printed. Set refresh = 0 to turn this off as well. If using backend =
+"rstan" you can also set open_progress = FALSE to prevent opening
+additional progress bars.}
 
 \item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See the
 description of \code{\link[brms:brm]{brms::brm()}} for more details}
@@ -66,12 +74,12 @@ model.
 \details{
 The following models are supported:
 \itemize{
-\item \code{IMMabc(non_targets, setsize)}
-\item \code{IMMbsc(non_targets, setsize, spaPos)}
-\item \code{IMMfull(non_targets, setsize, spaPos)}
-\item \code{mixture2p()}
-\item \code{mixture3p(non_targets, setsize)}
-\item \code{sdmSimple()}
+\item \code{IMMabc(resp_err, nt_features, setsize)}
+\item \code{IMMbsc(resp_err, nt_features, nt_distances, setsize)}
+\item \code{IMMfull(resp_err, nt_features, nt_distances, setsize)}
+\item \code{mixture2p(resp_err)}
+\item \code{mixture3p(resp_err, nt_features, setsize)}
+\item \code{sdmSimple(resp_err)}
 }
 
 Type \code{?modelname} to get information about a specific model, e.g. \code{?IMMfull}
@@ -84,14 +92,13 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 dat <- data.frame(y=rsdm(n=2000))
 
 # define formula
-ff <- brms::bf(y ~ 1,
-               c ~ 1,
-               kappa ~ 1)
+ff <- bmmformula(c ~ 1,
+                 kappa ~ 1)
 
 # fit the model
 fit <- fit_model(formula = ff,
                  data = dat,
-                 model = sdmSimple(),
+                 model = sdmSimple(resp_err = "y"),
                  parallel=T,
                  iter=500,
                  backend='cmdstanr')

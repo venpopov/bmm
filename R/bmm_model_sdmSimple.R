@@ -2,37 +2,45 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_sdmSimple <- function(...) {
-  out <- list(
-    vars = nlist(),
-    info = list(
-      domain = 'Visual working memory',
-      task = 'Continuous reproduction',
-      name = 'Signal Discrimination Model (SDM) by Oberauer (2023)',
-      citation = paste0('Oberauer, K. (2023). Measurement models for visual working memory - ',
-                        'A factorial model comparison. Psychological Review, 130(3), 841-852'),
-      version = 'Simple (no non-targets)',
-      requirements = paste0('- The response variable should be in radians and represent the angular error relative to the target\n  ',
-                            '- Data should be sorted by all predictors to drastically speed computation of the normalizing constant. ',
-                            'If the data is not sorted, the model will still run, but much slower.'),
-      parameters = list(
-        # mu = 'Location parameter of the SDM distribution (in radians; fixed internally to 0)',
-        c = 'Memory strength parameter of the SDM distribution',
-        kappa = 'Precision parameter of the SDM distribution (log scale)'
-      )
-    ))
-  class(out) <- c('bmmmodel', 'vwm', 'sdmSimple')
-  out
+.model_sdmSimple <- function(resp_err, ...) {
+   out <- list(
+      resp_vars = nlist(resp_err),
+      other_vars = nlist(),
+      info = list(
+         domain = 'Visual working memory',
+         task = 'Continuous reproduction',
+         name = 'Signal Discrimination Model (SDM) by Oberauer (2023)',
+         citation = paste0('Oberauer, K. (2023). Measurement models for visual working memory - ',
+                           'A factorial model comparison. Psychological Review, 130(3), 841-852'),
+         version = 'Simple (no non-targets)',
+         requirements = '- The response variable should be in radians and represent the angular error relative to the target',
+         parameters = list(
+            mu = 'Location parameter of the SDM distribution (in radians; by default fixed internally to 0)',
+            c = 'Memory strength parameter of the SDM distribution',
+            kappa = 'Precision parameter of the SDM distribution (log scale)'
+         ),
+         fixed_parameters = list(
+            mu = 0
+         )),
+      void_mu = FALSE
+   )
+   class(out) <- c('bmmmodel', 'vwm', 'sdmSimple')
+   out
 }
 
 # user facing alias
 # information in the title and details sections will be filled in
-# automatically based on the information in the .model_sdmSimple()$info
-#' @title `r .model_sdmSimple()$info$name`
+# automatically based on the information in the .model_sdmSimple(NA)$info
+
+#' @title `r .model_sdmSimple(NA)$info$name`
 #' @name SDM
-#' @details
-#' see `vignette("sdm-simple")` for a detailed description of the model and how to use it.
-#' `r model_info(sdmSimple())`
+#' @details see `vignette("sdm-simple")` for a detailed description of the model
+#'   and how to use it.
+#'   `r model_info(sdmSimple(NA))`
+#' @param resp_err The name of the variable in the dataset containing the
+#'   response error. The response error should code the response relative to the
+#'   to-be-recalled target in radians. You can transform the response error in
+#'   degrees to radians using the `deg2rad` function.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
@@ -45,9 +53,8 @@
 #' dat <- data.frame(y = rsdm(n = 1000, c = 4, kappa = 3))
 #'
 #' # specify formula
-#' ff <- bf(y ~ 1,
-#'                c ~ 1,
-#'                kappa ~ 1)
+#' ff <- bmf(c ~ 1,
+#'           kappa ~ 1)
 #'
 #' # specify prior
 #' prior <- prior(normal(1,2), class='Intercept', dpar='c')+
@@ -56,7 +63,7 @@
 #' # specify the model
 #' fit <- fit_model(formula = ff,
 #'                  data = dat,
-#'                  model = sdmSimple(),
+#'                  model = sdmSimple(resp_err = 'y'),
 #'                  prior = prior,
 #'                  parallel=T,
 #'                  iter=2000,
@@ -71,13 +78,6 @@
 #' }
 sdmSimple <- .model_sdmSimple
 
-# sdm custom family
-# note - c has a log link, but I've coded it manually for computational efficiency
-sdm_simple <- brms::custom_family(
-  "sdm_simple", dpars = c("mu", "c","kappa"),
-  links = c("identity","identity", "log"), lb = c(NA, NA, NA),
-  type = "real", loop=FALSE,
-)
 
 #############################################################################!
 # CHECK_FORMULA S3 METHODS                                                  ####
@@ -135,32 +135,38 @@ check_data.sdmSimple <- function(model, data, formula) {
 
 #' @export
 configure_model.sdmSimple <- function(model, data, formula) {
-  # construct the family
-  family <- sdm_simple
+    # construct the family
+    # note - c has a log link, but I've coded it manually for computational efficiency
+    sdm_simple <- brms::custom_family(
+      "sdm_simple", dpars = c("mu", "c","kappa"),
+      links = c("identity","identity", "log"), lb = c(NA, NA, NA),
+      type = "real", loop=FALSE,
+    )
+    family <- sdm_simple
 
-  # prepare initial stanvars to pass to brms, model formula and priors
-  sc_path <- system.file("stan_chunks", package="bmm")
-  stan_funs <- readChar(paste0(sc_path, '/sdmSimple_funs.stan'),
-                        file.info(paste0(sc_path, '/sdmSimple_funs.stan'))$size)
-  stan_tdata <- readChar(paste0(sc_path, '/sdmSimple_tdata.stan'),
-                         file.info(paste0(sc_path, '/sdmSimple_tdata.stan'))$size)
-  stan_likelihood <- readChar(paste0(sc_path, '/sdmSimple_likelihood.stan'),
-                              file.info(paste0(sc_path, '/sdmSimple_likelihood.stan'))$size)
-  stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
-    brms::stanvar(scode = stan_tdata, block = 'tdata') +
-    brms::stanvar(scode = stan_likelihood, block = 'likelihood', position="end")
+    # prepare initial stanvars to pass to brms, model formula and priors
+    sc_path <- system.file("stan_chunks", package="bmm")
+    stan_funs <- read_lines2(paste0(sc_path, '/sdmSimple_funs.stan'))
+    stan_tdata <- read_lines2(paste0(sc_path, '/sdmSimple_tdata.stan'))
+    stan_likelihood <- read_lines2(paste0(sc_path, '/sdmSimple_likelihood.stan'))
+    stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
+      brms::stanvar(scode = stan_tdata, block = 'tdata') +
+      brms::stanvar(scode = stan_likelihood, block = 'likelihood', position ="end")
 
+    # construct main brms formula from the bmm formula
+    bmm_formula <- formula
+    formula <- bmf2bf(model, bmm_formula)
 
-  # construct the default prior
-  # TODO: add a proper prior
-  prior <-
-    # fix mu to 0 (when I change mu to be the center, not c)
-    brms::prior_("constant(0)", class = "Intercept", dpar = "mu")
+    # construct the default prior
+    # TODO: for now it just fixes mu to 0, I have to add proper priors
+    prior <- fixed_pars_priors(model)
 
+    # set initial values to be sampled between [-1,1] to avoid extreme SDs that
+    # can cause the sampler to fail
+    init = 1
 
-  # return the list
-  out <- nlist(formula, data, family, prior, stanvars)
-  return(out)
+    # return the list
+    nlist(formula, data, family, prior, stanvars, init)
 }
 
 
@@ -173,5 +179,5 @@ postprocess_brm.sdmSimple <- function(model, fit) {
   # manually set link_c to "log" since I coded it manually
   fit$family$link_c <- "log"
   fit$formula$family$link_c <- "log"
-  return(fit)
+  fit
 }

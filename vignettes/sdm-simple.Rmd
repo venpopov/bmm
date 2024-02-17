@@ -12,14 +12,14 @@ pkgdown:
   as_is: true
 ---
 <style type="text/css">
-  div.main-container {
-    max-width: 800px !important;
-  }
-  
-  p {
-    margin-top: 1.5em ;
-    margin-bottom: 1.5em ;
-  }
+div.main-container {
+max-width: 800px !important;
+}
+
+p {
+margin-top: 1.5em ;
+margin-bottom: 1.5em ;
+}
 </style>
 
 ```{r, include = FALSE}
@@ -75,9 +75,9 @@ To address these issues, we use the following parametrization of the SDM distrib
 
 \begin{align}
 
-   \Large{f(\theta\ |\ \mu,c,\kappa) = \frac{
-        e^{c \ \sqrt{\frac{k}{2\pi}} e^{k \ (cos(\theta-\mu)-1)}}
-        }{Z}}
+\Large{f(\theta\ |\ \mu,c,\kappa) = \frac{
+e^{c \ \sqrt{\frac{k}{2\pi}} e^{k \ (cos(\theta-\mu)-1)}}
+}{Z}}
 (\#eq:dsdm-bmm)
 \end{align}
 
@@ -152,7 +152,7 @@ par_labels <- data.frame(cond = c('A','B','C'),
                          c = c(2, 9, 2),
                          kappa = c(3, 1, 8))
 par_labels$label <- paste0('c = ', par_labels$c, '\nkappa = ', par_labels$kappa)
-                 
+
 # plot the data and the predicted density
 library(ggplot2)
 ggplot(dat, aes(x=y, fill=cond)) +
@@ -172,28 +172,32 @@ ggplot(dat, aes(x=y, fill=cond)) +
 To estimate the parameters of the SDM distribution, we can use the `fit_model()` function. First, let's specify the model formula. We want `c` and `kappa` to vary over conditions. By default, the first line of the formula specifies the response variable and it should be `y ~ 1` - this fixes the location parameter $\mu$ to 0. The next two lines of the formula specify how the parameters vary over conditions. In this case, we want them to vary over the `cond` variable, so we use `c ~ 0 + cond` and `kappa ~ 0 + cond`:
 
 ```{r}
-ff <- brms::bf(y ~ 1,
-               c ~ 0 + cond,
-               kappa ~ 0 + cond)
+ff <- bmf(
+  c ~ 0 + cond,
+  kappa ~ 0 + cond
+)
 ```
 
 Then we specify the model, which in this case is just `sdmSimple()`
 
 ```{r}
-model <- sdmSimple()
+model <- sdmSimple(resp_err = "y")
 ```
 
 Finally, we can fit the model. We strongly recommend using `cmdstanr` as a backend for fitting the SDM model, as it is much faster and more stable than the default `rstan` backend for this particular model. Here's how to fit the model with `cmdstanr`:
 
 
 ``` r
-fit <- fit_model(formula = ff,
-                 data = dat,
-                 model = model,
-                 parallel = T,
-                 chains = 4,
-                 iter=2000,
-                 backend='cmdstanr')
+fit <- fit_model(
+  formula = ff,
+  data = dat,
+  model = model,
+  parallel = T,
+  chains = 4,
+  init = 0.5,
+  iter=2000,
+  backend='cmdstanr'
+)
 ```
 
 The model takes about 30 seconds to fit after it is compiled. Here we just preload the results of the model fit, but in practice you would have to wait for the model to finish fitting.
@@ -239,7 +243,7 @@ as.data.frame(draws) %>%
   tidybayes::stat_halfeyeh(normalize = "groups") +
   geom_point(data = data.frame(par = c('b_c_condA','b_c_condB','b_c_condC',
                                        'b_kappa_condA','b_kappa_condB','b_kappa_condC'),
-                                value = c(cs, kappas)),
+                               value = c(cs, kappas)),
              aes(value,par), color = "red",
              shape = "diamond", size = 2.5) +
   scale_x_continuous(lim=c(0,20))
@@ -252,9 +256,9 @@ As a final step, we can plot our data again, adding another line overlay with th
 ```{r warning=FALSE, message=FALSE}
 # generate predicted SDM density:
 ddest <- data.frame(y = rep(seq(-pi, pi, length.out=1000),3),
-                 cond = factor(rep(c('A','B','C'), each=1000)),
-                 c = rep(exp(brms::fixef(fit)[2:4,1]), each=1000),
-                 kappa = rep(exp(brms::fixef(fit)[5:7,1]), each=1000))
+                    cond = factor(rep(c('A','B','C'), each=1000)),
+                    c = rep(exp(brms::fixef(fit)[2:4,1]), each=1000),
+                    kappa = rep(exp(brms::fixef(fit)[5:7,1]), each=1000))
 
 # prepare labels for plots
 par_labels <- data.frame(cond = c('A','B','C'),

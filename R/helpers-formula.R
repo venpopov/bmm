@@ -4,63 +4,104 @@
 #' @return the formula object
 #' @keywords internal, developer
 check_formula <- function(model, formula) {
-  # Pre-Check: was a valid brms formula provided
-  if (!inherits(formula, 'brmsformula')) {
-    stop("The provided formula is not a brms formula.
-        Please specify formula with the bf() function.
-        E.g.: bf(y ~ 1, kappa ~ 1, thetat ~ 1")
-  }
-
-  # Check: is the formula valid for the specified model type
-  ## TODO: additional checks for formula terms needed for each model type
-
-  UseMethod("check_formula")
-  return(formula)
-}
-
-#' @export
-check_formula.default <- function(model, formula) {
-  return(formula)
-}
-
-
-
-#' Extracts the name of the response variable in a formula
-#'
-#' to use this with brmsformula objects, you have to pass the internal formula object
-#' from the brmsformula object. E.g. formula$formula
-#' @param formula an object of class formula
-#' @noRd
-#' @return String. Name of the response variable
-get_response <- function(formula) {
-  tt <- stats::terms(formula)
-  vars <- as.character(attr(tt, "variables"))[-1] ## [1] is the list call
-  response <- attr(tt, "response") # index of response var
-  vars[response]
-}
-
-# extract vars from brmsformula
-# @param formula: brms formula
-# @param include_resp: include response variable in the output
-extract_vars <- function(formula, family = NULL, include_resp = FALSE) {
-  if (!is.null(family)) {
-    formula$family <- family
-  }
-  bterms <- tryCatch({
-    brms::brmsterms(formula)
-  }, error = function(e) {
-    if (grepl('not a valid distributional', e$message)) {
-      stop(glue::glue("brmsterms() returned the following error:\n '{e$message}'.\n\n",
-                 "You have to provide the family to the family argument. E.g. family = 'von_mises'"))
+  if (!is.bmmformula(formula)) {
+    if (is.brmsformula(formula)) {
+      stop("The provided formula is a brms formula.
+        Please specify formula with the bmmformula() function instead of
+        the brmsformula() or bf() function.
+        E.g.: bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
     } else {
-      stop(e)
+      stop("The provided formula is not a valid bmm formula.
+        Please specify formula with the bmmformula() function.
+        E.g.: bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
     }
-  })
-
-  all_vars <- all.vars(bterms$allvars)
-  if (include_resp) {
-    return(all_vars)
   }
-  resp <- formula$resp
-  all_vars[not_in(all_vars, resp)]
+
+  wpar <- wrong_parameters(model, formula)
+  if (length(wpar) > 0) {
+    stop("The formula contains parameters that are not part of the model: ",
+         collapse_comma(wpar))
+  }
+
+  add_missing_parameters(model, formula)
+}
+
+
+add_missing_parameters <- function(model, formula) {
+  formula_pars <- names(formula)
+  model_pars <- names(model$info$parameters)
+  fixed_pars <- names(model$info$fixed_parameters)
+  missing_pars <- setdiff(model_pars,formula_pars)
+  is_fixed <- missing_pars %in% fixed_pars
+  names(is_fixed) <- missing_pars
+  for (mpar in missing_pars) {
+    formula <- formula + stats::as.formula(paste(mpar,"~ 1"))
+    if (!is_fixed[mpar]) {
+      message2(paste("No formula for parameter",mpar,"provided","\n",
+                     "For this parameter only a fixed intercept will be estimated."))
+    }
+  }
+  formula[model_pars] # reorder formula to match model parameters order
+}
+
+
+wrong_parameters <- function(model, formula) {
+  fpars <- names(formula)
+  mpars <- names(model$info$parameters)
+  rhs_vars <- rhs_vars(formula)
+  wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
+  fpars[wpars]
+}
+
+#' @title Convert `bmmformula` objects to `brmsformula` objects
+#' @description
+#'  Called by configure_model() inside fit_model() to convert the `bmmformula` into a
+#'  `brmsformula` based on information in the model object. It will call the
+#'  appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
+#' @param model The model object defining one of the supported `bmmmodels``
+#' @param formula The `bmmformula` that should be converted to a `brmsformula`
+#' @returns A `brmsformula` defining the response variables and the additional parameter
+#'   formulas for the specified `bmmmodel`
+#' @keywords internal, developer
+#' @examples
+#'   model <- mixture2p(resp_err = "error")
+#'
+#'   formula <- bmmformula(
+#'     thetat ~ 0 + setsize + (0 + setsize | id),
+#'     kappa ~ 1 + (1 | id)
+#'   )
+#'
+#'   brms_formula <- bmf2bf(model, formula)
+#' @export
+bmf2bf <- function(model, formula) {
+  UseMethod("bmf2bf")
+}
+
+# default method for all bmmmodels with 1 response variable
+#' @export
+bmf2bf.bmmmodel <- function(model, formula) {
+  # check if the model has only one response variable and extract if TRUE
+  resp <- model$resp_vars
+  if (length(resp) > 1) {
+    formula <- NextMethod("bmf2bf")
+    return(formula)
+  }
+  resp <- resp[[1]]
+
+  # set base brms formula based on response
+  brms_formula <- brms::bf(paste0(resp, "~ 1"))
+
+  # for each dependent parameter, check if it is used as a non-linear predictor of
+  # another parameter and add the corresponding brms function
+  dpars <- names(formula)
+  for (dpar in dpars) {
+    pform <- formula[[dpar]]
+    predictors <- rhs_vars(pform)
+    if (any(predictors %in% dpars)) {
+      brms_formula <- brms_formula + brms::nlf(pform)
+    } else {
+      brms_formula <- brms_formula + brms::lf(pform)
+    }
+  }
+  brms_formula
 }
