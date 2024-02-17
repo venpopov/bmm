@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +28,7 @@
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -83,12 +83,12 @@ models</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">supported_models</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> The following models are supported:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  IMMabc(non_targets, setsize) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  IMMbsc(non_targets, setsize, spaPos) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  IMMfull(non_targets, setsize, spaPos) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  mixture2p() </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  mixture3p(non_targets, setsize) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  sdmSimple() </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  IMMabc(resp_err, nt_features, setsize) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  IMMbsc(resp_err, nt_features, nt_distances, setsize) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  IMMfull(resp_err, nt_features, nt_distances, setsize) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  mixture2p(resp_err) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  mixture3p(resp_err, nt_features, setsize) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  sdmSimple(resp_err) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull </span>
 </code></pre></div>

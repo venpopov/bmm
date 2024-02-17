@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +28,7 @@
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -57,30 +57,36 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">IMMfull</span><span class="op">(</span><span class="va">non_targets</span>, <span class="va">setsize</span>, <span class="va">spaPos</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">IMMfull</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">nt_distances</span>, <span class="va">setsize</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">IMMbsc</span><span class="op">(</span><span class="va">non_targets</span>, <span class="va">setsize</span>, <span class="va">spaPos</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">IMMbsc</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">nt_distances</span>, <span class="va">setsize</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">IMMabc</span><span class="op">(</span><span class="va">non_targets</span>, <span class="va">setsize</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">IMMabc</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">setsize</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>non_targets</dt>
+    <dl><dt>resp_err</dt>
+<dd><p>The name of the variable in the provided dataset containing the
+response error. The response Error should code the response relative to the to-be-recalled
+target in radians. You can transform the response error in degrees to radian using the <code>deg2rad</code> function.</p></dd>
+
+
+<dt>nt_features</dt>
 <dd><p>A character vector with the names of the non-target variables.
 The non_target variables should be in radians and be centered relative to the
 target.</p></dd>
+
+
+<dt>nt_distances</dt>
+<dd><p>A vector of names of the columns containing the distances of
+non-target items to the target item. Only necessary for the <code>IMMbsc</code> and <code>IMMfull</code> models</p></dd>
 
 
 <dt>setsize</dt>
 <dd><p>Name of the column containing the set size variable (if
 setsize varies) or a numeric value for the setsize, if the setsize is
 fixed.</p></dd>
-
-
-<dt>spaPos</dt>
-<dd><p>A vector of names of the columns containing the spatial distances of
-non-target items to the target item. Only necessary for the <code>IMMbsc</code> and <code>IMMfull</code> models</p></dd>
 
 
 <dt>...</dt>
@@ -107,13 +113,15 @@ non-target items to the target item. Only necessary for the <code>IMMbsc</code> 
 <h3 id="version-immfull">Version: <code>IMMfull</code><a class="anchor" aria-label="anchor" href="#version-immfull"></a></h3>
 
 <ul><li><p><strong>Requirements:</strong></p><ul><li><p>The response vairable should be in radians and represent the angular error relative to the target</p></li>
-<li><p>The non-target variables should be in radians and be centered relative to the target</p></li>
+<li><p>The non-target features should be in radians and be centered relative to the target</p></li>
 </ul></li>
-<li><p><strong>Parameters:</strong></p><ul><li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
+<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.</p></li>
+<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
 <li><p><code>a</code>: General activation of memory items</p></li>
-<li><p><code>b</code>: Background activation (internally fixed to 0)</p></li>
 <li><p><code>c</code>: Context activation</p></li>
 <li><p><code>s</code>: Spatial similarity gradient</p></li>
+</ul></li>
+<li><p><strong>Fixed parameters:</strong></p><ul><li><p><code>mu1</code> = 0</p></li>
 </ul></li>
 </ul></div>
 
@@ -123,10 +131,12 @@ non-target items to the target item. Only necessary for the <code>IMMbsc</code> 
 <ul><li><p><strong>Requirements:</strong></p><ul><li><p>The response vairable should be in radians and represent the angular error relative to the target</p></li>
 <li><p>The non-target variables should be in radians and be centered relative to the target</p></li>
 </ul></li>
-<li><p><strong>Parameters:</strong></p><ul><li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
-<li><p><code>b</code>: Background activation (internally fixed to 0)</p></li>
+<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.</p></li>
+<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
 <li><p><code>c</code>: Context activation</p></li>
 <li><p><code>s</code>: Spatial similarity gradient</p></li>
+</ul></li>
+<li><p><strong>Fixed parameters:</strong></p><ul><li><p><code>mu1</code> = 0</p></li>
 </ul></li>
 </ul></div>
 
@@ -134,13 +144,18 @@ non-target items to the target item. Only necessary for the <code>IMMbsc</code> 
 <h3 id="version-immabc">Version: <code>IMMabc</code><a class="anchor" aria-label="anchor" href="#version-immabc"></a></h3>
 
 <ul><li><p><strong>Requirements:</strong></p><ul><li><p>The response vairable should be in radians and represent the angular error relative to the target</p></li>
-<li><p>The non-target variables should be in radians and be centered relative to the target</p></li>
+<li><p>The non-target features should be in radians and be centered relative to the target</p></li>
 </ul></li>
-<li><p><strong>Parameters:</strong></p><ul><li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
+<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.</p></li>
+<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
 <li><p><code>a</code>: General activation of memory items</p></li>
-<li><p><code>b</code>: Background activation (internally fixed to 0)</p></li>
 <li><p><code>c</code>: Context activation</p></li>
 </ul></li>
+<li><p><strong>Fixed parameters:</strong></p><ul><li><p><code>mu1</code> = 0</p></li>
+</ul></li>
+</ul><p>Additionally, all IMM models have an internal parameter that is fixed to 0 to
+allow the model to be identifiable. This parameter is not estimated and is not
+included in the model formula. The parameter is:</p><ul><li><p>b = "Background activation (internally fixed to 0)"</p></li>
 </ul></div>
 
     </div>

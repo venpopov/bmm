@@ -12,7 +12,7 @@ function computes the error relative to each of the non-targets."><!-- mathjax -
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,7 +30,7 @@ function computes the error relative to each of the non-targets."><!-- mathjax -
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -60,7 +60,7 @@ function computes the error relative to each of the non-targets.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_error_relative_to_nontargets</span><span class="op">(</span><span class="va">data</span>, <span class="va">response</span>, <span class="va">non_targets</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_error_relative_to_nontargets</span><span class="op">(</span><span class="va">data</span>, <span class="va">response</span>, <span class="va">nt_features</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,7 +74,7 @@ function computes the error relative to each of the non-targets.</p>
 the response</p></dd>
 
 
-<dt>non_targets</dt>
+<dt>nt_features</dt>
 <dd><p>Character vector. The names of the columns in <code>data</code> which
 contain the values of the non-targets</p></dd>
 

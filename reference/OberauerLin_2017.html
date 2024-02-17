@@ -12,7 +12,7 @@ with set size 1 to 8 reported by Oberauer &amp;amp; Lin (2017)."><!-- mathjax --
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,7 +30,7 @@ with set size 1 to 8 reported by Oberauer &amp;amp; Lin (2017)."><!-- mathjax --
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -70,38 +70,27 @@ with set size 1 to 8 reported by Oberauer &amp; Lin (2017).</p>
 <h3 id="oberauerlin-"><code>OberauerLin_2017</code><a class="anchor" aria-label="anchor" href="#oberauerlin-"></a></h3>
 
 
-<p>A data frame with 4,000 rows and 9 columns:</p><dl><dt>ID</dt>
+<p>A data frame with 15,200 rows and 39 columns:</p><dl><dt>ID</dt>
 <dd><p>Integer uniquely identifying different subjects</p></dd>
 
-<dt>Session</dt>
+<dt>session</dt>
 <dd><p>Session number</p></dd>
 
-<dt>Trial</dt>
+<dt>trial</dt>
 <dd><p>Trial number within each session</p></dd>
 
-<dt>SetSize</dt>
+<dt>set_size</dt>
 <dd><p>The setsize of the data in this row</p></dd>
 
-<dt>Response</dt>
-<dd><p>The response in degrees given on the color wheel</p></dd>
-
-<dt>deviation</dt>
-<dd><p>The response error or deviation of the <code>Response</code> from the target color (i.e., <code>Item1_Col</code>) in degrees.</p></dd>
-
 <dt>dev_rad</dt>
-<dd><p>The response error converted from degrees to radians.</p></dd>
+<dd><p>The response error, that is the difference between the response
+given and the target color in radians.</p></dd>
 
-<dt>Item1_Col,Item2_Col,Item3_Col,Item4_Col,Item5_Col,Item6_Col,Item7_Col,Item8_Col</dt>
-<dd><p>The absolute colors of all items in degrees of the color wheel. Although there are always eight values given even for set sizes smaller than 8, only the colors from item 1 to the respective set size were shown.</p></dd>
+<dt>col_nt1,col_nt2,col_nt3,col_nt4,col_nt5,col_nt6_Col,col_nt7</dt>
+<dd><p>The non-target items' color value relative to the target.</p></dd>
 
-<dt>Item1_Pos,Item2_Pos,Item3_Pos,Item4_Pos,Item5_Pos,Item6_Pos,Item7_Pos,Item8_Pos</dt>
-<dd><p>The position of all items in clockwise order around the circle. There were 12 possible positions, thus each position was 30 degrees apart from each other. Although positions are always given for all items, only item 1 to the respective set size was shown.</p></dd>
-
-<dt>Item1_Col_rad,Item2_Col_rad,Item3_Col_rad,Item4_Col_rad,Item5_Col_rad,Item6_Col,Item7_Col_rad,Item8_Col_rad</dt>
-<dd><p>The relative position of colors to the target item (i.e. <code>Item1_Col</code>) of all items in radians. Although there are always eight values given even for set sizes smaller than 8, only the colors from item 1 to the respective set size were shown.</p></dd>
-
-<dt>Item1_Pos_rad,Item2_Pos_rad,Item3_Pos_rad,Item4_Pos_rad,Item5_Pos_rad,Item6_Pos,Item7_Pos_rad,Item8_Pos_rad</dt>
-<dd><p>The relative position of all items to the position of the target item (i.e. <code>Item1_Pos</code>) in radians. Although there are always eight values given even for set sizes smaller than 8, only the colors from item 1 to the respective set size were shown.</p></dd>
+<dt>dist_nt1,dist_nt2,dist_nt3,dist_nt4,dist_nt5,dist_nt6_Pos,dist_nt7,dist_nt8</dt>
+<dd><p>The spatial distance between all non-target items and the target item in radians.</p></dd>
 
 
 

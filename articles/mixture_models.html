@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,7 +45,7 @@
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -79,14 +79,14 @@
     
     
 <style type="text/css">
-  div.main-container {
-    max-width: 850px !important;
-  }
-  
-  p {
-    margin-top: 1.5em ;
-    margin-bottom: 1.5em ;
-  }
+div.main-container {
+max-width: 850px !important;
+}
+
+p {
+margin-top: 1.5em ;
+margin-bottom: 1.5em ;
+}
 </style>
 <div class="section level2" number="1">
 <h2 id="introduction-to-the-models">
@@ -278,7 +278,7 @@ p(\theta) &amp;= p_{mem} \cdot \text{vM}(\theta; 0, \kappa) + p_{nt} \cdot \frac
 <span>         non_target_3 <span class="op">=</span> <span class="fu"><a href="../reference/wrap.html">wrap</a></span><span class="op">(</span><span class="va">non_target_3</span> <span class="op">-</span> <span class="va">target</span><span class="op">)</span>,</span>
 <span>         non_target_4 <span class="op">=</span> <span class="fu"><a href="../reference/wrap.html">wrap</a></span><span class="op">(</span><span class="va">non_target_4</span> <span class="op">-</span> <span class="va">target</span><span class="op">)</span>,</span>
 <span>         non_target_5 <span class="op">=</span> <span class="fu"><a href="../reference/wrap.html">wrap</a></span><span class="op">(</span><span class="va">non_target_5</span> <span class="op">-</span> <span class="va">target</span><span class="op">)</span>,</span>
-<span>         set_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'Set size '</span>, <span class="va">set_size</span><span class="op">)</span><span class="op">)</span></span>
+<span>         set_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">set_size</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">dat_preprocessed</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">error</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>bins<span class="op">=</span><span class="fl">60</span>, fill <span class="op">=</span> <span class="st">"lightblue"</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -302,22 +302,23 @@ the effect of set size to vary across participants.</p>
 <li>The mixture weight<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;&lt;code&gt;brms&lt;/code&gt; does not directly estimate the probabilities that each response comes from each distribution (e.g. &lt;span class="math inline"&gt;\(p_{mem}\)&lt;/span&gt; and &lt;span class="math inline"&gt;\(p_{guess}\)&lt;/span&gt;). Instead, brms estimates mixing proportions that are weights applied to each of the mixture distributions and they are transformed into probabilities (e.g. &lt;span class="math inline"&gt;\(p_{mem}\)&lt;/span&gt; and &lt;span class="math inline"&gt;\(p_{guess}\)&lt;/span&gt;) using a softmax normalization. To get &lt;span class="math inline"&gt;\(p_{mem}\)&lt;/span&gt; we can use the softmax function, that is: &lt;span class="math inline"&gt;\(p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})}\)&lt;/span&gt;&lt;/p&gt;'><sup>1</sup></a> for memory responses <code>thetat</code> is predicted by set size, and the effect of set size varies across participants.</li>
 </ol>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">error</span> <span class="op">~</span> <span class="fl">1</span>, </span>
-<span>               <span class="va">thetat</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span>,</span>
-<span>               <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmmformula.html">bmmformula</a></span><span class="op">(</span><span class="va">thetat</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span>,</span>
+<span>                 <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Then we specify the model as simply as:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, we fit the model with the <code>fit_model</code> function. The fit model function uses
 the <code>brms</code> package to fit the model, so you can pass to it any argument that you would pass to the <code>brm</code> function.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_model.html">fit_model</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span>
-<span>                 data <span class="op">=</span> <span class="va">dat_preprocessed</span>,</span>
-<span>                 model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>                 parallel<span class="op">=</span><span class="cn">T</span>,</span>
-<span>                 iter<span class="op">=</span><span class="fl">2000</span>,</span>
-<span>                 refresh<span class="op">=</span><span class="fl">100</span>,</span>
-<span>                 backend<span class="op">=</span><span class="st">'cmdstanr'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_model.html">fit_model</a></span><span class="op">(</span></span>
+<span>  formula <span class="op">=</span> <span class="va">ff</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">dat_preprocessed</span>,</span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  parallel<span class="op">=</span><span class="cn">T</span>,</span>
+<span>  iter<span class="op">=</span><span class="fl">2000</span>,</span>
+<span>  refresh<span class="op">=</span><span class="fl">100</span>,</span>
+<span>  backend<span class="op">=</span><span class="st">'cmdstanr'</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2" number="4">
 <h2 id="results-of-the-2-parameter-mixture-model">
@@ -329,10 +330,10 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <span><span class="co">#&gt;  Family: mixture(von_mises, von_mises) </span></span>
 <span><span class="co">#&gt;   Links: mu1 = tan_half; kappa1 = log; mu2 = tan_half; kappa2 = log; theta1 = identity; theta2 = identity </span></span>
 <span><span class="co">#&gt; Formula: error ~ 1 </span></span>
-<span><span class="co">#&gt;          thetat ~ 0 + set_size + (0 + set_size | id)</span></span>
-<span><span class="co">#&gt;          kappa ~ 0 + set_size + (0 + set_size | id)</span></span>
-<span><span class="co">#&gt;          kappa2 ~ 1</span></span>
 <span><span class="co">#&gt;          mu1 ~ 1</span></span>
+<span><span class="co">#&gt;          kappa ~ 0 + set_size + (0 + set_size | id)</span></span>
+<span><span class="co">#&gt;          thetat ~ 0 + set_size + (0 + set_size | id)</span></span>
+<span><span class="co">#&gt;          kappa2 ~ 1</span></span>
 <span><span class="co">#&gt;          mu2 ~ 1</span></span>
 <span><span class="co">#&gt;          kappa1 ~ kappa</span></span>
 <span><span class="co">#&gt;          theta1 ~ thetat</span></span>
@@ -343,40 +344,40 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <span><span class="co">#&gt; Group-Level Effects: </span></span>
 <span><span class="co">#&gt; ~id (Number of levels: 12) </span></span>
 <span><span class="co">#&gt;                                        Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(thetat_set_size1)                       0.65      0.45     0.03     1.72 1.00     1062     1097</span></span>
-<span><span class="co">#&gt; sd(thetat_set_size2)                       0.84      0.24     0.47     1.37 1.00     2565     2873</span></span>
-<span><span class="co">#&gt; sd(thetat_set_size4)                       0.83      0.22     0.50     1.34 1.00     1912     2245</span></span>
-<span><span class="co">#&gt; sd(thetat_set_size6)                       0.60      0.16     0.36     0.98 1.00     2200     2819</span></span>
-<span><span class="co">#&gt; sd(kappa_set_size1)                        0.34      0.09     0.21     0.54 1.00     1181     2071</span></span>
-<span><span class="co">#&gt; sd(kappa_set_size2)                        0.22      0.07     0.11     0.37 1.00     1923     2780</span></span>
-<span><span class="co">#&gt; sd(kappa_set_size4)                        0.35      0.11     0.18     0.63 1.00     2056     3001</span></span>
-<span><span class="co">#&gt; sd(kappa_set_size6)                        0.37      0.13     0.17     0.66 1.00     2275     2594</span></span>
-<span><span class="co">#&gt; cor(thetat_set_size1,thetat_set_size2)     0.38      0.36    -0.48     0.91 1.00      776     1145</span></span>
-<span><span class="co">#&gt; cor(thetat_set_size1,thetat_set_size4)     0.26      0.39    -0.56     0.87 1.01      673     1177</span></span>
-<span><span class="co">#&gt; cor(thetat_set_size2,thetat_set_size4)     0.58      0.25    -0.04     0.94 1.00     1601     2284</span></span>
-<span><span class="co">#&gt; cor(thetat_set_size1,thetat_set_size6)     0.24      0.37    -0.55     0.86 1.01      719     1078</span></span>
-<span><span class="co">#&gt; cor(thetat_set_size2,thetat_set_size6)     0.65      0.23     0.09     0.96 1.00     1866     2329</span></span>
-<span><span class="co">#&gt; cor(thetat_set_size4,thetat_set_size6)     0.68      0.21     0.16     0.95 1.00     2680     2988</span></span>
-<span><span class="co">#&gt; cor(kappa_set_size1,kappa_set_size2)       0.69      0.22     0.16     0.96 1.00     2183     3037</span></span>
-<span><span class="co">#&gt; cor(kappa_set_size1,kappa_set_size4)       0.38      0.29    -0.23     0.84 1.00     2407     2663</span></span>
-<span><span class="co">#&gt; cor(kappa_set_size2,kappa_set_size4)       0.29      0.34    -0.41     0.85 1.00     1495     2421</span></span>
-<span><span class="co">#&gt; cor(kappa_set_size1,kappa_set_size6)       0.44      0.29    -0.20     0.89 1.00     2725     2690</span></span>
-<span><span class="co">#&gt; cor(kappa_set_size2,kappa_set_size6)       0.49      0.29    -0.18     0.92 1.00     2204     3195</span></span>
-<span><span class="co">#&gt; cor(kappa_set_size4,kappa_set_size6)       0.49      0.30    -0.18     0.93 1.00     2539     3036</span></span>
+<span><span class="co">#&gt; sd(kappa_set_size1)                        0.34      0.09     0.21     0.55 1.00     1368     2540</span></span>
+<span><span class="co">#&gt; sd(kappa_set_size2)                        0.22      0.07     0.10     0.38 1.00     2143     2214</span></span>
+<span><span class="co">#&gt; sd(kappa_set_size4)                        0.35      0.11     0.18     0.62 1.00     1914     2637</span></span>
+<span><span class="co">#&gt; sd(kappa_set_size6)                        0.38      0.13     0.18     0.70 1.00     2155     2110</span></span>
+<span><span class="co">#&gt; sd(thetat_set_size1)                       0.66      0.47     0.05     1.78 1.00     1238     1214</span></span>
+<span><span class="co">#&gt; sd(thetat_set_size2)                       0.85      0.25     0.48     1.43 1.00     1893     2665</span></span>
+<span><span class="co">#&gt; sd(thetat_set_size4)                       0.83      0.22     0.50     1.36 1.00     2100     2965</span></span>
+<span><span class="co">#&gt; sd(thetat_set_size6)                       0.60      0.16     0.36     0.99 1.00     2016     2843</span></span>
+<span><span class="co">#&gt; cor(kappa_set_size1,kappa_set_size2)       0.68      0.22     0.11     0.96 1.00     2456     2681</span></span>
+<span><span class="co">#&gt; cor(kappa_set_size1,kappa_set_size4)       0.39      0.29    -0.23     0.86 1.00     2208     2598</span></span>
+<span><span class="co">#&gt; cor(kappa_set_size2,kappa_set_size4)       0.28      0.34    -0.43     0.85 1.00     1552     2585</span></span>
+<span><span class="co">#&gt; cor(kappa_set_size1,kappa_set_size6)       0.45      0.29    -0.19     0.90 1.00     1767     1953</span></span>
+<span><span class="co">#&gt; cor(kappa_set_size2,kappa_set_size6)       0.48      0.30    -0.20     0.93 1.00     1665     2209</span></span>
+<span><span class="co">#&gt; cor(kappa_set_size4,kappa_set_size6)       0.49      0.30    -0.19     0.92 1.00     2549     3424</span></span>
+<span><span class="co">#&gt; cor(thetat_set_size1,thetat_set_size2)     0.38      0.38    -0.51     0.91 1.01      811      891</span></span>
+<span><span class="co">#&gt; cor(thetat_set_size1,thetat_set_size4)     0.25      0.38    -0.56     0.86 1.01      674      867</span></span>
+<span><span class="co">#&gt; cor(thetat_set_size2,thetat_set_size4)     0.57      0.25    -0.02     0.94 1.00     1465     2404</span></span>
+<span><span class="co">#&gt; cor(thetat_set_size1,thetat_set_size6)     0.22      0.37    -0.59     0.82 1.01      858      948</span></span>
+<span><span class="co">#&gt; cor(thetat_set_size2,thetat_set_size6)     0.65      0.22     0.11     0.95 1.00     2192     3272</span></span>
+<span><span class="co">#&gt; cor(thetat_set_size4,thetat_set_size6)     0.68      0.21     0.14     0.95 1.00     2687     3137</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Population-Level Effects: </span></span>
 <span><span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
 <span><span class="co">#&gt; mu1_Intercept        0.00      0.00     0.00     0.00   NA       NA       NA</span></span>
 <span><span class="co">#&gt; mu2_Intercept        0.00      0.00     0.00     0.00   NA       NA       NA</span></span>
 <span><span class="co">#&gt; kappa2_Intercept  -100.00      0.00  -100.00  -100.00   NA       NA       NA</span></span>
-<span><span class="co">#&gt; thetat_set_size1     4.48      0.37     3.83     5.27 1.00     2705     2346</span></span>
-<span><span class="co">#&gt; thetat_set_size2     2.55      0.28     2.01     3.12 1.00     1792     2418</span></span>
-<span><span class="co">#&gt; thetat_set_size4     1.04      0.25     0.53     1.54 1.00     1615     1855</span></span>
-<span><span class="co">#&gt; thetat_set_size6     0.26      0.19    -0.11     0.62 1.00     1708     2478</span></span>
-<span><span class="co">#&gt; kappa_set_size1      2.89      0.10     2.68     3.10 1.00     1066     1740</span></span>
-<span><span class="co">#&gt; kappa_set_size2      2.39      0.07     2.24     2.54 1.00     1450     2062</span></span>
-<span><span class="co">#&gt; kappa_set_size4      2.05      0.12     1.81     2.30 1.00     1955     2210</span></span>
-<span><span class="co">#&gt; kappa_set_size6      1.94      0.14     1.66     2.22 1.00     2138     2552</span></span>
+<span><span class="co">#&gt; kappa_set_size1      2.89      0.10     2.68     3.11 1.00     1040     1459</span></span>
+<span><span class="co">#&gt; kappa_set_size2      2.39      0.08     2.24     2.54 1.00     1678     1810</span></span>
+<span><span class="co">#&gt; kappa_set_size4      2.06      0.12     1.82     2.32 1.00     1797     2254</span></span>
+<span><span class="co">#&gt; kappa_set_size6      1.94      0.14     1.66     2.22 1.00     2167     2474</span></span>
+<span><span class="co">#&gt; thetat_set_size1     4.49      0.38     3.81     5.33 1.00     2450     2196</span></span>
+<span><span class="co">#&gt; thetat_set_size2     2.57      0.30     1.99     3.18 1.00     1461     1931</span></span>
+<span><span class="co">#&gt; thetat_set_size4     1.05      0.26     0.53     1.59 1.00     1553     1798</span></span>
+<span><span class="co">#&gt; thetat_set_size6     0.27      0.19    -0.12     0.66 1.00     1591     1859</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -405,25 +406,25 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">kappa</span></span>
 <span><span class="co">#&gt;                  Estimate Est.Error      Q2.5     Q97.5</span></span>
-<span><span class="co">#&gt; kappa_set_size1 17.993196  1.109357 14.645780 22.238905</span></span>
-<span><span class="co">#&gt; kappa_set_size2 10.920192  1.077711  9.398398 12.698324</span></span>
-<span><span class="co">#&gt; kappa_set_size4  7.792398  1.132074  6.103363 10.013994</span></span>
-<span><span class="co">#&gt; kappa_set_size6  6.939708  1.149710  5.256719  9.197328</span></span></code></pre></div>
+<span><span class="co">#&gt; kappa_set_size1 18.071106  1.109868 14.621540 22.350820</span></span>
+<span><span class="co">#&gt; kappa_set_size2 10.952056  1.077957  9.407307 12.670849</span></span>
+<span><span class="co">#&gt; kappa_set_size4  7.834605  1.131517  6.170123 10.155392</span></span>
+<span><span class="co">#&gt; kappa_set_size6  6.950459  1.149041  5.273423  9.221514</span></span></code></pre></div>
 <p>Standard deviation:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sd</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Set size "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sd</span>,<span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Set size 1 Set size 2 Set size 4 Set size 6 </span></span>
-<span><span class="co">#&gt;      0.239      0.310      0.371      0.395</span></span></code></pre></div>
+<span><span class="co">#&gt;      0.239      0.310      0.370      0.395</span></span></code></pre></div>
 <p>Probability that responses comes from memory:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pmem</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Set size "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">pmem</span>,<span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt;            Estimate Est.Error  Q2.5 Q97.5</span></span>
-<span><span class="co">#&gt; Set size 1    0.989     0.590 0.979 0.995</span></span>
-<span><span class="co">#&gt; Set size 2    0.928     0.570 0.882 0.958</span></span>
-<span><span class="co">#&gt; Set size 4    0.738     0.563 0.628 0.823</span></span>
-<span><span class="co">#&gt; Set size 6    0.565     0.547 0.471 0.651</span></span></code></pre></div>
+<span><span class="co">#&gt; Set size 1    0.989     0.593 0.978 0.995</span></span>
+<span><span class="co">#&gt; Set size 2    0.929     0.574 0.880 0.960</span></span>
+<span><span class="co">#&gt; Set size 4    0.740     0.565 0.629 0.830</span></span>
+<span><span class="co">#&gt; Set size 6    0.566     0.548 0.471 0.659</span></span></code></pre></div>
 <p>It is even better to visualize the entire posterior distribution of the parameters.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mjskay.github.io/tidybayes/" class="external-link">tidybayes</a></span><span class="op">)</span></span>
@@ -435,7 +436,7 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <span><span class="va">draws_kappa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">draws</span>, <span class="va">b_kappa_set_size1</span><span class="op">:</span><span class="va">b_kappa_set_size6</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># transform parameters because brms uses special link functions</span></span>
-<span><span class="va">draws_theta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">draws_theta</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">draws_theta</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">draws_theta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">draws_theta</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">draws_theta</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">draws_kappa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">draws_kappa</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># plot posterior</span></span>
@@ -443,7 +444,7 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html" class="external-link">gather</a></span><span class="op">(</span><span class="va">par</span>, <span class="va">value</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"b_thetat_set_size"</span>, <span class="st">""</span>, <span class="va">par</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">par</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="http://mjskay.github.io/tidybayes/reference/tidybayes-deprecated.html" class="external-link">stat_halfeyeh</a></span><span class="op">(</span>normalize<span class="op">=</span><span class="st">"groups"</span>, orientation<span class="op">=</span><span class="st">"vertical"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="http://mjskay.github.io/tidybayes/reference/tidybayes-deprecated.html" class="external-link">stat_halfeyeh</a></span><span class="op">(</span>normalize <span class="op">=</span> <span class="st">"groups"</span>, orientation <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Probability of memory response"</span>, x <span class="op">=</span> <span class="st">"Set size"</span>, parse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">draws_kappa</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -451,7 +452,7 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="../reference/k2sd.html">k2sd</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"b_kappa_set_size"</span>, <span class="st">"Set size "</span>, <span class="va">par</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">par</span>,<span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="http://mjskay.github.io/tidybayes/reference/tidybayes-deprecated.html" class="external-link">stat_halfeyeh</a></span><span class="op">(</span>normalize<span class="op">=</span><span class="st">"groups"</span>, orientation<span class="op">=</span><span class="st">"vertical"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="http://mjskay.github.io/tidybayes/reference/tidybayes-deprecated.html" class="external-link">stat_halfeyeh</a></span><span class="op">(</span>normalize <span class="op">=</span> <span class="st">"groups"</span>, orientation <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Memory imprecision (SD)"</span>, x <span class="op">=</span> <span class="st">"Set size"</span>, parse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mixture_models_files/figure-html/unnamed-chunk-15-1.png" width="384"><img src="mixture_models_files/figure-html/unnamed-chunk-15-2.png" width="384"></p>
 <p>where the black dot represents the median of the posterior distribution, the thick line represents the 50% credible interval, and the thin line represents the 95% credible interval.</p>
@@ -462,21 +463,24 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 </h2>
 <p>Fitting the 3-parameter mixture model is very similar. We have an extra parameter <code>thetant</code> that represents the mixture weight for non-target responses<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;because now we have three mixture weights, you will need later to calculate the probability of target responses as &lt;span class="math inline"&gt;\(p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}\)&lt;/span&gt;, the probability of non-target responses as &lt;span class="math inline"&gt;\(p_{nt} =\frac{exp(\theta_{nontarget})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}\)&lt;/span&gt;, and the probability of guessing as &lt;span class="math inline"&gt;\(p_{guess} = 1-p_{mem}-p_{nt}\)&lt;/span&gt;&lt;/p&gt;'><sup>2</sup></a>. We also need to specify the names of the non-target variables and the setsize<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;When the setsize varies in an experiment, provide the name of the variable containing the setsize information. If the set size is the same for all trials, provide a number, e.g. &lt;code&gt;setsize=4&lt;/code&gt;&lt;/p&gt;"><sup>3</sup></a> variable in the <code>mixture3p</code> function.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">error</span> <span class="op">~</span> <span class="fl">1</span>, </span>
-<span>               <span class="va">thetat</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span>,</span>
-<span>               <span class="va">thetant</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span>,</span>
-<span>               <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmmformula.html">bmf</a></span><span class="op">(</span></span>
+<span>  <span class="va">thetat</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span>,</span>
+<span>  <span class="va">thetant</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span>,</span>
+<span>  <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>non_targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'non_target_'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>, setsize<span class="op">=</span><span class="st">'set_size'</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span>, nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'non_target_'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>, setsize <span class="op">=</span> <span class="st">'set_size'</span><span class="op">)</span></span></code></pre></div>
 <p>Then we run the model just like before:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit3p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_model.html">fit_model</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span>
-<span>                   data <span class="op">=</span> <span class="va">dat_preprocessed</span>,</span>
-<span>                   model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>                   parallel<span class="op">=</span><span class="cn">T</span>,</span>
-<span>                   iter<span class="op">=</span><span class="fl">2000</span>,</span>
-<span>                   refresh<span class="op">=</span><span class="fl">100</span>,</span>
-<span>                   backend<span class="op">=</span><span class="st">'cmdstanr'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit3p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_model.html">fit_model</a></span><span class="op">(</span></span>
+<span>  formula <span class="op">=</span> <span class="va">ff</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">dat_preprocessed</span>,</span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  parallel<span class="op">=</span><span class="cn">T</span>,</span>
+<span>  iter<span class="op">=</span><span class="fl">2000</span>,</span>
+<span>  refresh<span class="op">=</span><span class="fl">100</span>,</span>
+<span>  backend<span class="op">=</span><span class="st">'cmdstanr'</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>The rest of the analysis is the same as for the 2-parameter model. We can inspect the model fit, extract the parameter estimates, and visualize the posterior distributions.</p>
 </div>
 <div class="section level2">

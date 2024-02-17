@@ -52,7 +52,13 @@
     <loc>https://venpopov.github.io/bmm/reference/ZhangLuck_2008.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/reference/bmf2bf.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/reference/bmm-package.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/reference/bmmformula.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/c_parametrizations.html</loc>
@@ -77,6 +83,9 @@
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/configure_options.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/reference/fit_info.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/fit_model.html</loc>
