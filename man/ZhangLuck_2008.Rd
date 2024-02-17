@@ -12,9 +12,9 @@ A data frame with 4,000 rows and 9 columns:
 \item{subID}{Integer uniquely identifying different subjects}
 \item{trial}{Trial identifyier}
 \item{setsize}{The setsize of the data in this row}
-\item{RespErr}{The response error, that is the difference between the reponse
+\item{response_error}{The response error, that is the difference between the response
 given and the target color in radians.}
-\item{Pos_Lure1, Pos_Lure2, Pos_Lure3, Pos_Lure4, Pos_Lure5}{Position of the lure items relative to the target color.}
+\item{col_lure1, col_Lure2, col_Lure3, col_Lure4, col_Lure5}{Color value of the lure items coded relative to the target color.}
 
 }
 }

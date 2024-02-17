@@ -12,6 +12,7 @@
 to zero for scaling and as of now cannot be predicted by independent variables because the model would be unidentifiable.
 * the arguments used to fit the bmm model are now accessible in the `bmmfit` object via the `fit$bmm_fit_args` list.
 * add class('bmmfit') to the object returned from fit_model() allowing for more flexible postprocessing of the underlying `brmsfit` object. The object is now of class('bmmfit', 'brmsfit')
+* changes to column names of datasets `ZhangLuck_2008` and `OberauerLin_2017` to make them more consistent
 
 ### Bug Fixes
 * an error with the treatment of distances in the `IMMfull` and the `IMMbsc` has been corrected. This versions ensures that only positive distances can be passed to any of the two models.
