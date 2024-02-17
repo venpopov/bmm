@@ -25,8 +25,8 @@ each represent distinct cognitive processes.
 See the following sections for more information on the `bmm` package:
 
 - [Available models](#available-models)
-- [Installation](#installation)
-- [Fitting models using the bmm](#fitting-models-using-the-bmm)
+- [How to install bmm](#how-to-install-bmm)
+- [Fitting models using bmm](#fitting-models-using-bmm)
 - [Exploring cogntive measurement
   models](#exploring-cogntive-measurement-models)
 - [The general structure of the bmm
@@ -65,23 +65,51 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  IMMabc(nt_features, setsize) 
-#> -  IMMbsc(nt_features, nt_distances, setsize) 
-#> -  IMMfull(nt_features, nt_distances, setsize) 
-#> -  mixture2p() 
-#> -  mixture3p(nt_features, setsize) 
-#> -  sdmSimple() 
+#> -  IMMabc(resp_err, nt_features, setsize) 
+#> -  IMMbsc(resp_err, nt_features, nt_distances, setsize) 
+#> -  IMMfull(resp_err, nt_features, nt_distances, setsize) 
+#> -  mixture2p(resp_err) 
+#> -  mixture3p(resp_err, nt_features, setsize) 
+#> -  sdmSimple(resp_err) 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
 ```
 
-## Installation
+## How to install bmm
 
 Currently, we are working on getting the package ready to be submitted
 to CRAN. Until then, you can install the latest version of the package
 from GitHub.
 
-You can install the latest beta release of bmm with:
+Because `bmm` is based on `brms` and `stan` it requires a working C++
+compiler. If you are have not used `brms` before, you will need to first
+install the dependencies. If you are already using `brms`, you can skip
+this step.
+
+<details>
+<summary>
+<b>Install dependencies</b>
+</summary>
+
+- Install and configure a C++ compiler. Detailed instructions
+  [here](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started#configuring-c-toolchain)
+- Install
+  [rstan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started)
+  and/or
+  [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
+  recommend using `cmdstanr`.
+- Install [brms](https://paul-buerkner.github.io/brms/#installation)
+- Install `bmm` as described above
+
+</details>
+
+If you are already using `brms`, you are good to go and can install the
+package as described in one of the options below:
+
+<details>
+<summary>
+<b>Install the latest beta release of bmm</b>
+</summary>
 
 ``` r
 if (!requireNamespace("remotes")) {
@@ -94,22 +122,11 @@ This does not install the vignettes, which take a long time to build,
 but they are all available on the [bmm
 website](https://venpopov.github.io/bmm/).
 
-Because `bmm` is based on `brms` and `stan` it requires a working C++
-compiler. If you are already using `brms`, you are good to go and can
-install the package as described above. If you are not using `brms` yet,
-we recommend the following steps:
-
-- Install and configure a C++ compiler. Detailed instructions
-  [here](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started#configuring-c-toolchain)
-- Install
-  [rstan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started)
-  and/or
-  [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
-  recommend using `cmdstanr`.
-- Install [brms](https://paul-buerkner.github.io/brms/#installation)
-- Install `bmm` as described above
-
-You can also install the development version of bmm with:
+</details>
+<details>
+<summary>
+<b>Install the latest development version of bmm</b>
+</summary>
 
 ``` r
 if (!requireNamespace("remotes")) {
@@ -117,6 +134,13 @@ if (!requireNamespace("remotes")) {
 }
 remotes::install_github("venpopov/bmm")
 ```
+
+</details>
+<details>
+<summary>
+<b>Install the 0.0.1 version of bmm (if following version 6 of the
+tutorial paper on OSF)</b>
+</summary>
 
 The package was significantly updated on Feb 03, 2024. If you are
 following older versions (earlier than Version 6) of the [Tutorial
@@ -130,7 +154,9 @@ if (!requireNamespace("remotes")) {
 remotes::install_github("venpopov/bmm@v0.0.1")
 ```
 
-## Fitting models using the bmm
+</details>
+
+## Fitting models using bmm
 
 The core function of the bmm package is the `fit_model()` function. This
 function takes:
