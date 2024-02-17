@@ -82,14 +82,16 @@ to CRAN. Until then, you can install the latest version of the package
 from GitHub.
 
 Because `bmm` is based on `brms` and `stan` it requires a working C++
-compiler. If you are have not used `brms` before, you will need to first
+compiler. If you have not used `brms` before, you will need to first
 install the dependencies. If you are already using `brms`, you can skip
 this step.
 
 <details>
 <summary>
-<b>Install dependencies</b>
+<b> Install dependencies</b>
 </summary>
+
+</br>
 
 - Install and configure a C++ compiler. Detailed instructions
   [here](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started#configuring-c-toolchain)
@@ -99,7 +101,7 @@ this step.
   [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
   recommend using `cmdstanr`.
 - Install [brms](https://paul-buerkner.github.io/brms/#installation)
-- Install `bmm` as described above
+- Install `bmm` as described next
 
 </details>
 
@@ -110,6 +112,8 @@ package as described in one of the options below:
 <summary>
 <b>Install the latest beta release of bmm</b>
 </summary>
+
+</br>
 
 ``` r
 if (!requireNamespace("remotes")) {
@@ -128,6 +132,8 @@ website](https://venpopov.github.io/bmm/).
 <b>Install the latest development version of bmm</b>
 </summary>
 
+</br>
+
 ``` r
 if (!requireNamespace("remotes")) {
   install.packages("remotes")
@@ -141,6 +147,8 @@ remotes::install_github("venpopov/bmm")
 <b>Install the 0.0.1 version of bmm (if following version 6 of the
 tutorial paper on OSF)</b>
 </summary>
+
+</br>
 
 The package was significantly updated on Feb 03, 2024. If you are
 following older versions (earlier than Version 6) of the [Tutorial
