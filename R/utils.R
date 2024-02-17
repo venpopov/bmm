@@ -195,6 +195,7 @@ install_and_load_bmm_version <- function(version) {
 #'   list or data.frame with the information for each fit is returned.
 #'  - "time": A data.frame with the sampling time per chain
 #'  - "time_mean": A named numeric vector with the mean sampling time
+#' @keywords extract_info
 #' @export
 fit_info <- function(fit, what) {
   UseMethod("fit_info")

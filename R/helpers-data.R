@@ -254,7 +254,7 @@ rad2deg <- function(rad){
 #'
 #' @export
 #'
-#' @keywords extract_stan
+#' @keywords extract_info
 #'
 #' @examples
 #' \dontrun{

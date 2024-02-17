@@ -560,7 +560,7 @@ use_model_template <- function(model_name,
 #'
 #' @export
 #'
-#' @keywords extract_stan
+#' @keywords extract_info
 #'
 #' @examples
 #' \dontrun{
@@ -621,7 +621,7 @@ get_stancode <- function(formula, data, model, prior=NULL, ...) {
 #' @param ... Further arguments passed to [brms::make_stancode()]. See the
 #'   description of [brms::make_stancode()] for more details
 #'
-#' @keywords extract_stan
+#' @keywords extract_info
 #'
 #' @returns A character string containing the parameter block of fully commented
 #'   Stan code to fit a bmm model.

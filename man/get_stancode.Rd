@@ -57,4 +57,4 @@ get_stancode(formula = ff,
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[brms:make_stancode]{brms::make_stancode()}}
 }
-\keyword{extract_stan}
+\keyword{extract_info}
