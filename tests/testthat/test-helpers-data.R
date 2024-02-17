@@ -286,16 +286,25 @@ test_that('is_data_ordered works', {
 
 test_that('is_data_ordered works when there is only one predictor', {
   # Test with a data frame that is ordered
-  data1 <- data.frame(y = 1:3, B = 1:3)
-  formula1 <- bmf(y ~ B)
-  expect_true(is_data_ordered(data1, formula1))
+  data <- data.frame(y = rep(1:3, each=2),
+                      B = rep(1:3, each=2),
+                      C = factor(rep(1:3, each=2)),
+                      D = rep(1:3, times=2),
+                      E = factor(rep(1:3, times=2)))
+  expect_true(is_data_ordered(data1, y ~ B))
 
   # Test with a data frame that is not ordered
-  data2 <- rbind(data1, data1[1, ])
-  expect_false(is_data_ordered(data2, formula1))
+  expect_false(is_data_ordered(data1, y ~ D))
 
   # Test with a data frame that is ordered and predictor is a factor
-  data1 <- data.frame(y = 1:3, B = factor(1:3))
-  formula1 <- bmf(y ~ B)
-  expect_true(is_data_ordered(data1, formula1))
+  expect_true(is_data_ordered(data1, y ~ C))
+
+  # Test with a data frame that is not ordered and predictor is a factor
+  expect_false(is_data_ordered(data1, y ~ E))
+})
+
+test_that('is_data_ordered works when there are no predictors', {
+  # Test with a data frame that is ordered
+  data <- data.frame(y = 1:3)
+  expect_true(is_data_ordered(data, y ~ 1))
 })

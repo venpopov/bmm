@@ -297,7 +297,11 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
 is_data_ordered <- function(data, formula, family=NULL) {
   predictors <- rhs_vars(formula)
   data <- data[,predictors]
-  gr_idx <- do.call(paste, c(data, list(sep="_")))
+  if (length(predictors) > 1) {
+    gr_idx <- do.call(paste, c(data, list(sep="_")))
+  } else {
+    gr_idx <- data
+  }
   is_ordered <- !has_nonconsecutive_duplicates(gr_idx)
   is_ordered
 }
