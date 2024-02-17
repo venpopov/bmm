@@ -200,15 +200,15 @@ description of this model and and in depth explanation of the parameters
 estimated in the model, please have a look at `vignette("IMM")`.
 
 ``` r
-model_formula <- bmmformula(c ~ 0 + SetSize,
-                            a ~ 0 + SetSize,
-                            s ~ 0 + SetSize,
-                            kappa ~ 0 + SetSize)
+model_formula <- bmmformula(c ~ 0 + set_size,
+                            a ~ 0 + set_size,
+                            s ~ 0 + set_size,
+                            kappa ~ 0 + set_size)
 
 model <- IMMfull(resp_err = "dev_rad",
-                 nt_features = paste0("Item",2:8,"_Col"),
-                 nt_distances = paste0("Item",2:8,"_Pos"),
-                 setsize = "SetSize")
+                 nt_features = paste0("col_nt", 1:7),
+                 nt_distances = paste0("dist_nt",1:7),
+                 setsize = "set_size")
 
 fit <- fit_model(
   formula = model_formula,
