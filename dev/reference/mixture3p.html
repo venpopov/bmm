@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +28,7 @@
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -57,15 +57,22 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mixture3p</span><span class="op">(</span><span class="va">non_targets</span>, <span class="va">setsize</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mixture3p</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">setsize</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>non_targets</dt>
-<dd><p>A character vector with the names of the non-target variables.
-The non_target variables should be in radians and be centered relative to the
-target.</p></dd>
+    <dl><dt>resp_err</dt>
+<dd><p>The name of the variable in the dataset containing
+the response error. The response error should code the response relative to
+the to-be-recalled target in radians. You can transform the response error
+in degrees to radians using the <code>deg2rad</code> function.</p></dd>
+
+
+<dt>nt_features</dt>
+<dd><p>A character vector with the names of the non-target
+feature values. The non_target feature values should be in radians and centered
+relative to the target.</p></dd>
 
 
 <dt>setsize</dt>
@@ -95,11 +102,14 @@ fixed.</p></dd>
 <li><p><strong>Citation:</strong></p><ul><li><p>Bays, P. M., Catalao, R. F. G., &amp; Husain, M. (2009). The precision of visual working memory is set by allocation of a shared resource. Journal of Vision, 9(10), 1-11</p></li>
 </ul></li>
 <li><p><strong>Requirements:</strong></p><ul><li><p>The response vairable should be in radians and represent the angular error relative to the target</p></li>
-<li><p>The non-target variables should be in radians and be centered relative to the target</p></li>
+<li><p>The non-target features should be in radians and be centered relative to the target</p></li>
 </ul></li>
-<li><p><strong>Parameters:</strong></p><ul><li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
+<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.</p></li>
+<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
 <li><p><code>thetat</code>: Mixture weight for target responses</p></li>
 <li><p><code>thetant</code>: Mixture weight for non-target responses</p></li>
+</ul></li>
+<li><p><strong>Fixed parameters:</strong></p><ul><li><p><code>mu1</code> = 0</p></li>
 </ul></li>
 </ul></div>
 
@@ -115,13 +125,14 @@ fixed.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># define formula</span></span></span>
-<span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>              <span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>              <span class="va">thetat</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>              <span class="va">thetant</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="bmmformula.html">bmmformula</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  <span class="va">thetat</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  <span class="va">thetant</span> <span class="op">~</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># specify the 3-parameter model</span></span></span>
-<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mixture3p</span><span class="op">(</span>non_targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'nt'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="st">'_loc'</span><span class="op">)</span>, setsize <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mixture3p</span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"y"</span>, nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'nt'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="st">'_loc'</span><span class="op">)</span>, setsize <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit the model</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="fit_model.html">fit_model</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span></span>

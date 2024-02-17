@@ -20,7 +20,7 @@ model."><meta name="robots" content="noindex"><!-- mathjax --><script src="https
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ model."><meta name="robots" content="noindex"><!-- mathjax --><script src="https
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -79,6 +79,7 @@ model.</p>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  prior <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  silent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"bmm.silent"</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -86,8 +87,8 @@ model.</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>formula</dt>
-<dd><p>An object of class <code>brmsformula</code>. A symbolic description of
-the model to be fitted.</p></dd>
+<dd><p>An object of class <code>bmmformula</code>. A symbolic description of the
+model to be fitted.</p></dd>
 
 
 <dt>data</dt>
@@ -121,6 +122,15 @@ also <code><a href="get_model_prior.html">get_model_prior()</a></code> for more 
 fitting, but you can provide prior constraints to model parameters</p></dd>
 
 
+<dt>silent</dt>
+<dd><p>Verbosity level between 0 and 2. If 1 (the default), most of the
+informational messages of compiler and sampler are suppressed. If 2, even
+more messages are suppressed. The actual sampling progress is still
+printed. Set refresh = 0 to turn this off as well. If using backend =
+"rstan" you can also set open_progress = FALSE to prevent opening
+additional progress bars.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to <code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brms::brm()</a></code> or Stan. See the
 description of <code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brms::brm()</a></code> for more details</p></dd>
@@ -136,20 +146,20 @@ with many other useful information about the model. Use methods(class =
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The following models are supported:</p><ul><li><p><code>IMMabc(non_targets, setsize)</code></p></li>
-<li><p><code>IMMbsc(non_targets, setsize, spaPos)</code></p></li>
-<li><p><code>IMMfull(non_targets, setsize, spaPos)</code></p></li>
-<li><p><code><a href="mixture2p.html">mixture2p()</a></code></p></li>
-<li><p><code>mixture3p(non_targets, setsize)</code></p></li>
-<li><p><code><a href="SDM.html">sdmSimple()</a></code></p></li>
+    <p>The following models are supported:</p><ul><li><p><code>IMMabc(resp_err, nt_features, setsize)</code></p></li>
+<li><p><code>IMMbsc(resp_err, nt_features, nt_distances, setsize)</code></p></li>
+<li><p><code>IMMfull(resp_err, nt_features, nt_distances, setsize)</code></p></li>
+<li><p><code>mixture2p(resp_err)</code></p></li>
+<li><p><code>mixture3p(resp_err, nt_features, setsize)</code></p></li>
+<li><p><code>sdmSimple(resp_err)</code></p></li>
 </ul><p>Type <code>?modelname</code> to get information about a specific model, e.g. <code><a href="IMM.html">?IMMfull</a></code></p>
 <p>Type <code><a href="https://venpopov.github.io/bmm/reference">help(package=bmm)</a></code> for a full list of available help topics.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Frischkorn, G. T., &amp; Popov, V. (2023). A tutorial for
-estimating mixture models for visual working memory tasks in brms:
-Introducing the Bayesian Measurement Modeling  (bmm) package for R.
+    <p>Frischkorn, G. T., &amp; Popov, V. (2023). A tutorial for estimating
+mixture models for visual working memory tasks in brms: Introducing the
+Bayesian Measurement Modeling  (bmm) package for R.
 https://doi.org/10.31234/osf.io/umt57</p>
     </div>
     <div class="section level2">
@@ -164,14 +174,13 @@ https://doi.org/10.31234/osf.io/umt57</p>
 <span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>y<span class="op">=</span><span class="fu"><a href="SDMdist.html">rsdm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">2000</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># define formula</span></span></span>
-<span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>               <span class="va">c</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>               <span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="bmmformula.html">bmmformula</a></span><span class="op">(</span><span class="va">c</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                 <span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit the model</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">fit_model</span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span></span>
 <span class="r-in"><span>                 data <span class="op">=</span> <span class="va">dat</span>,</span></span>
-<span class="r-in"><span>                 model <span class="op">=</span> <span class="fu"><a href="SDM.html">sdmSimple</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 model <span class="op">=</span> <span class="fu"><a href="SDM.html">sdmSimple</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                 parallel<span class="op">=</span><span class="cn">T</span>,</span></span>
 <span class="r-in"><span>                 iter<span class="op">=</span><span class="fl">500</span>,</span></span>
 <span class="r-in"><span>                 backend<span class="op">=</span><span class="st">'cmdstanr'</span><span class="op">)</span></span></span>

@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -176,7 +176,7 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span>                  b <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="va">Ss</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, kappa <span class="op">=</span> <span class="va">kappas</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="va">condData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    respErr <span class="op">=</span> <span class="va">genData</span>,</span>
+<span>    resp_err <span class="op">=</span> <span class="va">genData</span>,</span>
 <span>    trialID <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">nTrials</span>,</span>
 <span>    cond <span class="op">=</span> <span class="va">i</span>,</span>
 <span>    color_item1 <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -205,28 +205,30 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <h3 id="estimating-the-model-with-bmm">
 <span class="header-section-number">3.2</span> Estimating the model with <code>bmm</code><a class="anchor" aria-label="anchor" href="#estimating-the-model-with-bmm"></a>
 </h3>
-<p>To estimate the <code>IMM</code> we first need to specify a formula. In this formula, we directly estimate all parameters for each of the four conditions:</p>
+<p>To estimate the <code>IMM</code> we first need to specify a formula. We specify the formula using the <code>bmmformula</code> function (or <code>bmf</code>). In this formula, we directly estimate all parameters for each of the four conditions. Unlike for <code>brmsformula</code> we do not provide the dependent variable in this formula.:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_formula</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">respErr</span> <span class="op">~</span> <span class="fl">1</span>,</span>
-<span>                          <span class="va">c</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span>,</span>
-<span>                          <span class="va">a</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span>,</span>
-<span>                          <span class="va">s</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span>,</span>
-<span>                          <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span><span class="op">)</span></span></code></pre></div>
-<p>Then, we can specify the model that we want to estimate:</p>
+<code class="sourceCode R"><span><span class="va">model_formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmmformula.html">bmf</a></span><span class="op">(</span></span>
+<span>  <span class="va">c</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span>,</span>
+<span>  <span class="va">a</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span>,</span>
+<span>  <span class="va">s</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span>,</span>
+<span>  <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Then, we can specify the model that we want to estimate. This includes specifying the name of the variable containing the dependent variable <code>resp_err</code> in our simulated data set. Additionally, we also need to provide the information of the <code>non_target</code> locations, the name of the variable coding the spatial distances of the nt_features to the target <code>spaDist</code>, and the <code>setsize</code> used in our data. The <code>setsize</code> can either be a fixed integer, if there is only one setsize in your data, or the name of the variable coding the <code>setsize</code> in your data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IMM.html">IMMfull</a></span><span class="op">(</span>non_target <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"color_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="va">setsize</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IMM.html">IMMfull</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"resp_err"</span>,</span>
+<span>                 nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"color_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="va">setsize</span><span class="op">)</span>,</span>
 <span>                 setsize <span class="op">=</span> <span class="va">setsize</span>,</span>
-<span>                 spaPos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dist_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="va">setsize</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>                 nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dist_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="va">setsize</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, we can fit the model by passing all the relevant arguments to the <code>fit_model</code> function:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_model.html">fit_model</a></span><span class="op">(</span></span>
-<span>formula <span class="op">=</span> <span class="va">model_formula</span>,</span>
-<span>data <span class="op">=</span> <span class="va">simData</span>,</span>
-<span>model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>chains <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>iter <span class="op">=</span> <span class="fl">2000</span>,</span>
-<span>backend <span class="op">=</span> <span class="st">"cmdstanr"</span></span>
+<span>  formula <span class="op">=</span> <span class="va">model_formula</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">simData</span>,</span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  chains <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  iter <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">"cmdstanr"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Running this model takes about 2 to 5 minutes (depending on the speed of your computer). Here we load an already saved fit object, but on your machine you will have to wait until the model finishes sampling. Both <code>brms</code> and <code>cmdstanr</code> typically print out some information on the sampling progress.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -236,12 +238,12 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Family: mixture(von_mises, von_mises, von_mises, von_mises, von_mises, von_mises) </span></span>
 <span><span class="co">#&gt;   Links: mu1 = identity; kappa1 = log; mu2 = identity; kappa2 = log; mu3 = identity; kappa3 = log; mu4 = identity; kappa4 = log; mu5 = identity; kappa5 = log; mu6 = identity; kappa6 = log; theta1 = identity; theta2 = identity; theta3 = identity; theta4 = identity; theta5 = identity; theta6 = identity </span></span>
-<span><span class="co">#&gt; Formula: respErr ~ 1 </span></span>
-<span><span class="co">#&gt;          c ~ 0 + cond</span></span>
-<span><span class="co">#&gt;          a ~ 0 + cond</span></span>
-<span><span class="co">#&gt;          s ~ 0 + cond</span></span>
-<span><span class="co">#&gt;          kappa ~ 0 + cond</span></span>
+<span><span class="co">#&gt; Formula: resp_err ~ 1 </span></span>
 <span><span class="co">#&gt;          mu1 ~ 1</span></span>
+<span><span class="co">#&gt;          kappa ~ 0 + cond</span></span>
+<span><span class="co">#&gt;          a ~ 0 + cond</span></span>
+<span><span class="co">#&gt;          c ~ 0 + cond</span></span>
+<span><span class="co">#&gt;          s ~ 0 + cond</span></span>
 <span><span class="co">#&gt;          kappa6 ~ 1</span></span>
 <span><span class="co">#&gt;          mu6 ~ 1</span></span>
 <span><span class="co">#&gt;          theta1 ~ c + a</span></span>
@@ -268,22 +270,22 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span><span class="co">#&gt; mu1_Intercept        0.00      0.00     0.00     0.00   NA       NA       NA</span></span>
 <span><span class="co">#&gt; mu6_Intercept        0.00      0.00     0.00     0.00   NA       NA       NA</span></span>
 <span><span class="co">#&gt; kappa6_Intercept  -100.00      0.00  -100.00  -100.00   NA       NA       NA</span></span>
-<span><span class="co">#&gt; c_cond1              4.01      0.16     3.71     4.34 1.00     4433     3135</span></span>
-<span><span class="co">#&gt; c_cond2              4.23      0.26     3.78     4.80 1.00     3275     2418</span></span>
-<span><span class="co">#&gt; c_cond3              2.17      0.10     1.99     2.39 1.00     3959     2885</span></span>
-<span><span class="co">#&gt; c_cond4              1.90      0.12     1.68     2.16 1.00     4613     2873</span></span>
-<span><span class="co">#&gt; a_cond1              0.48      0.52    -0.50     1.57 1.00     4147     3088</span></span>
-<span><span class="co">#&gt; a_cond2              0.08      0.59    -1.00     1.30 1.00     3623     3212</span></span>
-<span><span class="co">#&gt; a_cond3              0.54      0.63    -0.50     2.00 1.00     2360     2231</span></span>
-<span><span class="co">#&gt; a_cond4              0.56      0.24     0.11     1.05 1.00     4694     2991</span></span>
-<span><span class="co">#&gt; s_cond1              2.61      0.37     2.02     3.43 1.00     4119     2519</span></span>
-<span><span class="co">#&gt; s_cond2              1.70      0.30     1.24     2.43 1.00     2806     1992</span></span>
-<span><span class="co">#&gt; s_cond3              1.37      0.13     1.12     1.64 1.00     4962     3184</span></span>
-<span><span class="co">#&gt; s_cond4              1.85      0.41     1.27     2.86 1.00     3393     2512</span></span>
-<span><span class="co">#&gt; kappa_cond1          2.65      0.05     2.55     2.75 1.00     6247     2861</span></span>
-<span><span class="co">#&gt; kappa_cond2          2.40      0.06     2.29     2.50 1.00     4482     3029</span></span>
-<span><span class="co">#&gt; kappa_cond3          2.69      0.07     2.56     2.82 1.00     4157     3303</span></span>
-<span><span class="co">#&gt; kappa_cond4          2.25      0.12     1.98     2.46 1.00     4618     2991</span></span>
+<span><span class="co">#&gt; kappa_cond1          2.65      0.05     2.55     2.75 1.00     5592     2606</span></span>
+<span><span class="co">#&gt; kappa_cond2          2.40      0.06     2.29     2.51 1.00     5322     3325</span></span>
+<span><span class="co">#&gt; kappa_cond3          2.69      0.07     2.56     2.83 1.00     4160     2846</span></span>
+<span><span class="co">#&gt; kappa_cond4          2.24      0.12     2.00     2.47 1.00     4301     2852</span></span>
+<span><span class="co">#&gt; a_cond1              0.47      0.51    -0.47     1.54 1.00     4334     3240</span></span>
+<span><span class="co">#&gt; a_cond2              0.09      0.62    -1.05     1.39 1.00     4118     2629</span></span>
+<span><span class="co">#&gt; a_cond3              0.55      0.62    -0.49     1.95 1.00     3434     2704</span></span>
+<span><span class="co">#&gt; a_cond4              0.57      0.24     0.12     1.06 1.00     5028     2743</span></span>
+<span><span class="co">#&gt; c_cond1              4.01      0.16     3.72     4.33 1.00     3598     2918</span></span>
+<span><span class="co">#&gt; c_cond2              4.23      0.27     3.75     4.80 1.00     3748     2647</span></span>
+<span><span class="co">#&gt; c_cond3              2.17      0.10     2.00     2.38 1.00     3666     2945</span></span>
+<span><span class="co">#&gt; c_cond4              1.90      0.12     1.68     2.14 1.00     4141     2718</span></span>
+<span><span class="co">#&gt; s_cond1              2.61      0.38     2.03     3.48 1.00     3621     2327</span></span>
+<span><span class="co">#&gt; s_cond2              1.71      0.31     1.23     2.47 1.00     3321     2287</span></span>
+<span><span class="co">#&gt; s_cond3              1.37      0.13     1.12     1.64 1.00     4572     2761</span></span>
+<span><span class="co">#&gt; s_cond4              1.84      0.40     1.29     2.84 1.00     3163     1885</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -297,34 +299,34 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span><span class="co"># print posterior means for the s parameter</span></span>
 <span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span>,<span class="st">"c_"</span><span class="op">)</span>,<span class="op">]</span></span>
 <span><span class="co">#&gt;         Estimate  Est.Error     Q2.5    Q97.5</span></span>
-<span><span class="co">#&gt; c_cond1 4.009065 0.16228718 3.712424 4.341776</span></span>
-<span><span class="co">#&gt; c_cond2 4.230107 0.26159354 3.777040 4.802361</span></span>
-<span><span class="co">#&gt; c_cond3 2.174946 0.09946977 1.987287 2.387866</span></span>
-<span><span class="co">#&gt; c_cond4 1.897037 0.12056248 1.679840 2.159184</span></span>
+<span><span class="co">#&gt; c_cond1 4.012462 0.15836617 3.719861 4.332995</span></span>
+<span><span class="co">#&gt; c_cond2 4.228149 0.26676563 3.747774 4.802395</span></span>
+<span><span class="co">#&gt; c_cond3 2.173904 0.09743776 1.996452 2.378122</span></span>
+<span><span class="co">#&gt; c_cond4 1.895900 0.11708231 1.682690 2.135075</span></span>
 <span></span>
 <span><span class="co"># print posterior means for the s parameter</span></span>
 <span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span>,<span class="st">"a_"</span><span class="op">)</span>,<span class="op">]</span></span>
 <span><span class="co">#&gt;           Estimate Est.Error       Q2.5    Q97.5</span></span>
-<span><span class="co">#&gt; a_cond1 0.47987530 0.5208763 -0.5038172 1.569234</span></span>
-<span><span class="co">#&gt; a_cond2 0.07818879 0.5888166 -1.0037167 1.304360</span></span>
-<span><span class="co">#&gt; a_cond3 0.54412603 0.6330249 -0.5013562 1.995754</span></span>
-<span><span class="co">#&gt; a_cond4 0.56442213 0.2387276  0.1109007 1.048604</span></span>
+<span><span class="co">#&gt; a_cond1 0.46999481 0.5074066 -0.4742546 1.540851</span></span>
+<span><span class="co">#&gt; a_cond2 0.09354965 0.6160964 -1.0495725 1.392102</span></span>
+<span><span class="co">#&gt; a_cond3 0.54726549 0.6240536 -0.4881612 1.952763</span></span>
+<span><span class="co">#&gt; a_cond4 0.56573692 0.2425880  0.1158614 1.056425</span></span>
 <span></span>
 <span><span class="co"># print posterior means for the s parameter</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"s_"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;          Estimate Est.Error     Q2.5     Q97.5</span></span>
-<span><span class="co">#&gt; s_cond1 13.595806  1.449047 7.529412 30.886185</span></span>
-<span><span class="co">#&gt; s_cond2  5.450170  1.351615 3.463338 11.318123</span></span>
-<span><span class="co">#&gt; s_cond3  3.933775  1.140493 3.051862  5.168997</span></span>
-<span><span class="co">#&gt; s_cond4  6.364689  1.501557 3.573037 17.415977</span></span>
+<span><span class="co">#&gt; s_cond1 13.593814  1.463169 7.650729 32.583939</span></span>
+<span><span class="co">#&gt; s_cond2  5.502626  1.366229 3.432698 11.796286</span></span>
+<span><span class="co">#&gt; s_cond3  3.940115  1.141465 3.052264  5.138603</span></span>
+<span><span class="co">#&gt; s_cond4  6.326804  1.485378 3.630883 17.035076</span></span>
 <span></span>
 <span><span class="co"># print posterior means for the s parameter</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"kappa_"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              Estimate Est.Error      Q2.5    Q97.5</span></span>
-<span><span class="co">#&gt; kappa_cond1 14.142684  1.053534 12.762392 15.65602</span></span>
-<span><span class="co">#&gt; kappa_cond2 10.978578  1.057474  9.857696 12.21859</span></span>
-<span><span class="co">#&gt; kappa_cond3 14.684509  1.070786 12.896423 16.78497</span></span>
-<span><span class="co">#&gt; kappa_cond4  9.470469  1.127680  7.275862 11.76137</span></span></code></pre></div>
+<span><span class="co">#&gt; kappa_cond1 14.146652  1.051153 12.829244 15.61609</span></span>
+<span><span class="co">#&gt; kappa_cond2 10.974421  1.058337  9.838101 12.25941</span></span>
+<span><span class="co">#&gt; kappa_cond3 14.683366  1.069195 12.943306 16.87006</span></span>
+<span><span class="co">#&gt; kappa_cond4  9.424614  1.128771  7.366675 11.78818</span></span></code></pre></div>
 <p>These results indicate that all parameters, except for <code>s</code> were well recovered. As already noted by <span class="citation">Oberauer et al. (2017)</span>, a good recovery of the generalization gradient <code>s</code> requires a lot of data. Thus you might consider opting for the simplified version of the IMM without the <code>s</code> parameter, the <code>IMMabc</code>.</p>
 <p>We can illustrate the recovery of the data generating parameters by plotting the full posterior distributions alongside the data generating parameters. For this we need to extract the posterior draws using the <code>tidybayes</code> package and include the data generating parameters into the plots of the posteriors.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">

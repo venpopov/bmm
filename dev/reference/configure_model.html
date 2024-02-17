@@ -22,7 +22,7 @@ shared methods for classes of models that share the same configuration."><meta n
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@ shared methods for classes of models that share the same configuration."><meta n
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -112,7 +112,7 @@ See <code><a href="https://paul-buerkner.github.io/brms/reference/custom_family.
    &lt;preprocessing code&gt;
 
    # construct the formula
-   formula &lt;- formula + &lt;new terms&gt;
+   formula &lt;- bmf2bf(formula, model)
 
    # construct the family
    family &lt;- &lt;code for new family&gt;
@@ -121,8 +121,7 @@ See <code><a href="https://paul-buerkner.github.io/brms/reference/custom_family.
    prior &lt;- &lt;code for new prior&gt;
 
    # return the list
-   out &lt;- nlist(formula, data, family, prior)
-   return(out)
+   nlist(formula, data, family, prior)
 }
 </code></pre><p></p></div>
     </div>
@@ -133,7 +132,7 @@ See <code><a href="https://paul-buerkner.github.io/brms/reference/custom_family.
 <span class="r-in"><span><span class="va">configure_model.3p</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">model</span>, <span class="va">data</span>, <span class="va">formula</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>   <span class="co"># retrieve arguments from the data check</span></span></span>
 <span class="r-in"><span>   <span class="va">max_setsize</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"max_setsize"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>   <span class="va">non_targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"non_targets"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   <span class="va">nt_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"nt_features"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>   <span class="va">lure_idx_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"lure_idx_vars"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>   <span class="va">setsize_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"setsize_var"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -144,19 +143,23 @@ See <code><a href="https://paul-buerkner.github.io/brms/reference/custom_family.
 <span class="r-in"><span>   <span class="va">mu_nts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'mu'</span>, <span class="fl">2</span><span class="op">:</span><span class="va">max_setsize</span><span class="op">)</span></span></span>
 <span class="r-in"><span>   <span class="va">mu_unif</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'mu'</span>, <span class="va">max_setsize</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="co"># construct main brms formula from the bmm formula</span></span></span>
+<span class="r-in"><span>   <span class="va">bmm_formula</span> <span class="op">&lt;-</span> <span class="va">formula</span></span></span>
+<span class="r-in"><span>   <span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="bmf2bf.html">bmf2bf</a></span><span class="op">(</span><span class="va">model</span>, <span class="va">bmm_formula</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span>   <span class="co"># construct formula</span></span></span>
 <span class="r-in"><span>   <span class="va">formula</span> <span class="op">&lt;-</span> <span class="va">formula</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>     <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula-helpers.html" class="external-link">lf</a></span><span class="op">(</span><span class="va">mu1</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu">glue_lf</span><span class="op">(</span><span class="va">kappa_unif</span>,<span class="st">' ~ 1'</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu">glue_lf</span><span class="op">(</span><span class="va">mu_unif</span>, <span class="st">' ~ 1'</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula-helpers.html" class="external-link">nlf</a></span><span class="op">(</span><span class="va">theta1</span> <span class="op">~</span> <span class="va">thetat</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>     <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula-helpers.html" class="external-link">nlf</a></span><span class="op">(</span><span class="va">kappa1</span> <span class="op">~</span> <span class="va">kappa</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span>   <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">max_setsize</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>     <span class="va">formula</span> <span class="op">&lt;-</span> <span class="va">formula</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>       <span class="fu">glue_nlf</span><span class="op">(</span><span class="va">kappa_nts</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">' ~ kappa'</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>       <span class="fu">glue_nlf</span><span class="op">(</span><span class="va">theta_nts</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">' ~ '</span>, <span class="va">lure_idx_vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">'*(thetant + log(inv_ss)) + '</span>,</span></span>
 <span class="r-in"><span>                <span class="st">'(1-'</span>, <span class="va">lure_idx_vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">')*(-100)'</span><span class="op">)</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>       <span class="fu">glue_nlf</span><span class="op">(</span><span class="va">mu_nts</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">' ~ '</span>, <span class="va">non_targets</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>       <span class="fu">glue_nlf</span><span class="op">(</span><span class="va">mu_nts</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">' ~ '</span>, <span class="va">nt_features</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span>   <span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>   <span class="co"># define mixture family</span></span></span>
@@ -179,8 +182,7 @@ See <code><a href="https://paul-buerkner.github.io/brms/reference/custom_family.
 <span class="r-in"><span>       <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior_</a></span><span class="op">(</span><span class="st">"constant(-100)"</span>, class<span class="op">=</span><span class="st">"b"</span>, coef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">setsize_var</span>, <span class="fl">1</span><span class="op">)</span>, nlpar<span class="op">=</span><span class="st">"thetant"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>   <span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>   <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">nlist</span><span class="op">(</span><span class="va">formula</span>, <span class="va">data</span>, <span class="va">family</span>, <span class="va">prior</span><span class="op">)</span></span></span>
-<span class="r-in"><span>   <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   <span class="fu">nlist</span><span class="op">(</span><span class="va">formula</span>, <span class="va">data</span>, <span class="va">family</span>, <span class="va">prior</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>

@@ -22,7 +22,7 @@ used if no user-specified priors were passed to the fit_model() function."><meta
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@ used if no user-specified priors were passed to the fit_model() function."><meta
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../dev-notes/index.html">Develop</a>
+  <a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -81,7 +81,7 @@ used if no user-specified priors were passed to the <code><a href="fit_model.htm
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>formula</dt>
-<dd><p>An object of class <code>brmsformula</code>. A symbolic description of
+<dd><p>An object of class <code>bmmformula</code>. A symbolic description of
 the model to be fitted.</p></dd>
 
 
@@ -116,12 +116,12 @@ parameters (or parameter classes) for which priors can be specified.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The following models are supported:</p><ul><li><p><code>IMMabc(non_targets, setsize)</code></p></li>
-<li><p><code>IMMbsc(non_targets, setsize, spaPos)</code></p></li>
-<li><p><code>IMMfull(non_targets, setsize, spaPos)</code></p></li>
-<li><p><code><a href="mixture2p.html">mixture2p()</a></code></p></li>
-<li><p><code>mixture3p(non_targets, setsize)</code></p></li>
-<li><p><code><a href="SDM.html">sdmSimple()</a></code></p></li>
+    <p>The following models are supported:</p><ul><li><p><code>IMMabc(resp_err, nt_features, setsize)</code></p></li>
+<li><p><code>IMMbsc(resp_err, nt_features, nt_distances, setsize)</code></p></li>
+<li><p><code>IMMfull(resp_err, nt_features, nt_distances, setsize)</code></p></li>
+<li><p><code>mixture2p(resp_err)</code></p></li>
+<li><p><code>mixture3p(resp_err, nt_features, setsize)</code></p></li>
+<li><p><code>sdmSimple(resp_err)</code></p></li>
 </ul><p>Type <code>?modelname</code> to get information about a specific model, e.g. <code><a href="IMM.html">?IMMfull</a></code></p>
 <p>Type <code><a href="https://venpopov.github.io/bmm/reference">help(package=bmm)</a></code> for a full list of available help topics.</p>
     </div>
@@ -137,9 +137,9 @@ parameters (or parameter classes) for which priors can be specified.</p>
 <span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="SDMdist.html">rsdm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">2000</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># define formula</span></span></span>
-<span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>               <span class="va">c</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>               <span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="bmmformula.html">bmf</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>          <span class="va">c</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>          <span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit the model</span></span></span>
 <span class="r-in"><span><span class="fu">get_model_prior</span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span></span>
