@@ -142,7 +142,10 @@ configure_model.mixture3p <- function(model, data, formula) {
   thetant_preds <- rhs_vars(bmm_formula$thetant)
   if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% thetant_preds) {
     prior <- prior +
-      brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list('normal(2,1)'),
+                                        thetat=list('logistic(0, 1)'),
+                                        thetant=list('logistic(0, 1)')))
   }
 
   nlist(formula, data, family, prior)
