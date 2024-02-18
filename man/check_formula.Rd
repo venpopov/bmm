@@ -4,10 +4,12 @@
 \alias{check_formula}
 \title{checks if the formula is valid for the specified model}
 \usage{
-check_formula(model, formula)
+check_formula(model, data, formula)
 }
 \arguments{
 \item{model}{a model list object returned from check_model()}
+
+\item{data}{user supplied data}
 
 \item{formula}{user supplied formula}
 }

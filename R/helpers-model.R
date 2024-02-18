@@ -582,8 +582,8 @@ get_stancode <- function(formula, data, model, prior=NULL, ...) {
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model)
-  formula <- check_formula(model, formula)
   data <- check_data(model, data, formula)
+  formula <- check_formula(model, data, formula)
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
