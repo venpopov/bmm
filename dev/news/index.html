@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.1.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,9 +51,16 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.3.0" id="bmm-030">bmm 0.3.0<a class="anchor" aria-label="anchor" href="#bmm-030"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.3.0" id="bmm-030">bmm 0.3.0+<a class="anchor" aria-label="anchor" href="#bmm-030"></a></h2>
 <div class="section level4">
 <h4 id="new-features-0-3-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h4>
+<ul><li>add a check for the sdmSimple model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the <code>sort_data</code> argument (<a href="https://github.com/venpopov/bmm/issues/72" class="external-link">#72</a>)</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="bmm-030-1">bmm 0.3.0<a class="anchor" aria-label="anchor" href="#bmm-030-1"></a></h2>
+<div class="section level4">
+<h4 id="new-features-0-3-0-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0-1"></a></h4>
 <ul><li>BREAKING CHANGE: The <code>fit_model</code> function now requires a <code>bmmformula</code> to be passed. The syntax of the <code>bmmformula</code> or its short form <code>bmf</code> is equal to specifying a <code>brmsformula</code>. However, as of this version the <code>bmmformula</code> only specifies how parameters of a <code>bmmmodel</code> change across experimental conditions or continuous predictors. The response variables that the model is fit to now have to be specified when the model is defined using <code>model = bmmmodel()</code>. (<a href="https://github.com/venpopov/bmm/issues/79" class="external-link">#79</a>)</li>
 <li>BREAKING CHANGE: The <code>non_target</code> and <code>spaPos</code> variables for the <code>mixture3p</code> and <code>IMM</code> models were relabled to <code>nt_features</code> and <code>nt_distances</code> for consistency. This is also to communicate that distance is not limited to spatial distance but distances on any feature dimensions of the retrieval cues. Currently, still only a single generalization gradient for the cue features is possible.</li>
 <li>This release includes reference fits for all implemented models to ensure that future changes to the package do not compromise the included models and change the results that their implementations produce.</li>
