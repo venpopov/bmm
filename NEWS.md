@@ -3,6 +3,10 @@
 ### New features
 
 * add a check for the sdmSimple model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the `sort_data` argument (#72)
+* the mixture3p and imm models now require that when set size is used as a predictor, the intercept must be suppressed. This is because set size 1 otherwise causes problems - there can be no contribution of non_target responses when there is set size 1, and it is not meaningful to estimate an intercept for parameters that involve non_target responses (#96).
+
+### Bug fixes
+* fix a bug in the mixture3p and IMM models which caused an error when intercept was not supressed and set size was used as predictor
 
 # bmm 0.3.0
 
