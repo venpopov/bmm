@@ -103,3 +103,47 @@ fixed_pars_priors <- function(model, additional_pars = list()) {
   brms::set_prior(priors, class = "Intercept", dpar = pars)
 }
 
+
+set_default_prior <- function(bmmformula, data, prior_list) {
+  dpars <- names(bmmformula)
+  dpars_key <- names(prior_list)
+  prior <- NULL
+  if (any(not_in(dpars_key, dpars))) {
+    stop("You are trying to set a default prior on a parameter that is not part of the model")
+  }
+  if (!is.list(prior_list)) {
+    for (i in 1:length(prior_list)) {
+      if(!is.list(prior_list[[i]])) {
+        stop("The prior_list should be a list of lists")
+      }
+    }
+  }
+  dpars <- dpars[dpars %in% dpars_key]
+  for (dpar in dpars) {
+    bform <- bmmformula[[dpar]]
+    bterms <- stats::terms(bform)
+    prior_desc <- prior_list[[dpar]]
+    if (attr(bterms, "intercept")) {
+      prior <- as.brmsprior(prior + brms::prior_(prior_desc[[1]], class = "b", coef = "Intercept", nlpar = dpar))
+      next
+    }
+
+    # get individual predictors, and the formula terms. Fixed effects are those that match
+    all_rhs_names <- rhs_vars(bform)
+    all_rhs_terms <- attr(bterms, "term.labels")
+    fixef <- all_rhs_terms[all_rhs_terms %in% all_rhs_names]
+    nfixef <- length(fixef)
+    interaction_only <- length(attr(bterms, "order")) == 1 && attr(bterms,"order") == 2
+    if (nfixef == 1 || interaction_only) {
+      prior <- as.brmsprior(prior + brms::prior_(prior_desc[[1]], class = "b", nlpar = dpar))
+      next
+    }
+    first_term <- attr(bterms,"term.labels")[1]
+    levels <- levels(data[[first_term]])
+    coefs <- paste0(first_term, levels)
+    for (coef in coefs) {
+      prior <- as.brmsprior(prior + brms::prior_(prior_desc[[1]], class = "b", coef = coef, nlpar = dpar))
+    }
+  }
+  prior
+}
