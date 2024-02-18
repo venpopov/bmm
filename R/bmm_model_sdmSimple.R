@@ -79,6 +79,17 @@
 sdmSimple <- .model_sdmSimple
 
 
+#############################################################################!
+# CHECK_DATA S3 METHODS                                                  ####
+#############################################################################!
+
+#' @export
+check_data.sdmSimple <- function(model, data, formula) {
+  # data sorted by predictors is necessary for speedy computation of normalizing constant
+  data <- order_data_query(model, data, formula)
+  NextMethod("check_data")
+}
+
 
 #############################################################################!
 # CONFIGURE_MODEL S3 METHODS                                             ####

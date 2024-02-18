@@ -24,6 +24,12 @@
 #'   or related functions and combined using the c method or the + operator. See
 #'   also [get_model_prior()] for more help. Not necessary for the default model
 #'   fitting, but you can provide prior constraints to model parameters
+#' @param sort_data Logical. If TRUE, the data will be sorted by the predictor
+#'   variables for faster sampling. If FALSE, the data will not be sorted, but
+#'   sampling will be slower. If NULL (the default), `fit_model()` will check if
+#'   the data is sorted, and ask you via a console prompt if it should be
+#'   sorted. You can set the default value for this option using global
+#'   `options(bmm.sort_data = TRUE/FALSE)`
 #' @param silent Verbosity level between 0 and 2. If 1 (the default), most of the
 #'   informational messages of compiler and sampler are suppressed. If 2, even
 #'   more messages are suppressed. The actual sampling progress is still
@@ -69,18 +75,18 @@
 #' }
 #'
 fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
-                      prior = NULL, silent = getOption('bmm.silent', 1), ...) {
+                      prior = NULL, sort_data = getOption('bmm.sort_data', NULL), 
+                      silent = getOption('bmm.silent', 1), ...) {
   # warning for using old version
   dots <- list(...)
   if ("model_type" %in% names(dots)) {
     stop('The "model_type" argument was deprecated on Feb 3, 2024. Either:
          - See ?fit_model for the new usage;
-         - or install the old version of the package with: devtools::install_github("venpopov/bmm@v0.0.1")
-         ')
+         - or install the old version of the package with: devtools::install_github("venpopov/bmm@v0.0.1")')
   }
 
   # set temporary global options and return modified arguments for brms
-  opts <- configure_options(nlist(parallel, chains, silent))
+  opts <- configure_options(nlist(parallel, chains, sort_data, silent))
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model)

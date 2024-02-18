@@ -105,8 +105,3 @@ bmf2bf.bmmmodel <- function(model, formula) {
   }
   brms_formula
 }
-
-
-
-
-
