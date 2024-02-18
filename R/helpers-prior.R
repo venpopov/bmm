@@ -124,7 +124,7 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     bterms <- stats::terms(bform)
     prior_desc <- prior_list[[dpar]]
     if (attr(bterms, "intercept")) {
-      prior <- as.brmsprior(prior + brms::prior_(prior_desc[[1]], class = "b", coef = "Intercept", nlpar = dpar))
+      prior <- brms::as.brmsprior(prior + brms::prior_(prior_desc[[1]], class = "b", coef = "Intercept", nlpar = dpar))
       next
     }
 
@@ -135,14 +135,14 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     nfixef <- length(fixef)
     interaction_only <- length(attr(bterms, "order")) == 1 && attr(bterms,"order") == 2
     if (nfixef == 1 || interaction_only) {
-      prior <- as.brmsprior(prior + brms::prior_(prior_desc[[1]], class = "b", nlpar = dpar))
+      prior <- brms::as.brmsprior(prior + brms::prior_(prior_desc[[1]], class = "b", nlpar = dpar))
       next
     }
     first_term <- attr(bterms,"term.labels")[1]
     levels <- levels(data[[first_term]])
     coefs <- paste0(first_term, levels)
     for (coef in coefs) {
-      prior <- as.brmsprior(prior + brms::prior_(prior_desc[[1]], class = "b", coef = coef, nlpar = dpar))
+      prior <- brms::as.brmsprior(prior + brms::prior_(prior_desc[[1]], class = "b", coef = coef, nlpar = dpar))
     }
   }
   prior
