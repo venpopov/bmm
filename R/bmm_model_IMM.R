@@ -214,10 +214,13 @@ configure_model.IMMabc <- function(model, data, formula) {
   additional_constants <- list()
   additional_constants[[kappa_unif]] <- -100
   additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants) +
-    brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "a")
+  prior <- fixed_pars_priors(model, additional_constants)
+  if (getOption("bmm.default_priors", TRUE)) {
+    prior <- prior +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "a")
+  }
 
   # if there is setsize 1 in the data, set constant prior over a for setsize1
   a_preds <- rhs_vars(bmm_formula$a)
@@ -273,10 +276,13 @@ configure_model.IMMbsc <- function(model, data, formula) {
   additional_constants <- list()
   additional_constants[[kappa_unif]] <- -100
   additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants) +
-    brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
+  prior <- fixed_pars_priors(model, additional_constants)
+  if (getOption("bmm.default_priors", TRUE)) {
+    prior <- prior +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
+  }
 
   # if there is setsize 1 in the data, set constant prior over s for setsize1
   s_preds <- rhs_vars(bmm_formula$s)
@@ -332,11 +338,14 @@ configure_model.IMMfull <- function(model, data, formula) {
   additional_constants <- list()
   additional_constants[[kappa_unif]] <- -100
   additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants) +
-    brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "a") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
+  prior <- fixed_pars_priors(model, additional_constants)
+  if (getOption("bmm.default_priors", TRUE)) {
+    prior <- prior +
+      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "a") +
+      brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
+  }
 
   # if there is setsize 1 in the data, set constant prior over a and s for setsize1
   a_preds <- rhs_vars(bmm_formula$a)
