@@ -217,16 +217,16 @@ configure_model.IMMabc <- function(model, data, formula) {
   prior <- fixed_pars_priors(model, additional_constants)
   if (getOption("bmm.default_priors", TRUE)) {
     prior <- prior +
-      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-      brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
-      brms::prior_("normal(0, 1)", class = "b", nlpar = "a")
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=T),
+                                        a=list(main = 'normal(0,1)', effects = 'normal(0,1)', nlpar=T),
+                                        c=list(main = 'normal(0,1)', effects = 'normal(0,1)', nlpar=T)))
   }
 
   # if there is setsize 1 in the data, set constant prior over a for setsize1
   a_preds <- rhs_vars(bmm_formula$a)
   if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% a_preds) {
-    prior <- prior +
-      brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a")
+    prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a"))
   }
 
   nlist(formula, data, family, prior)
@@ -279,16 +279,16 @@ configure_model.IMMbsc <- function(model, data, formula) {
   prior <- fixed_pars_priors(model, additional_constants)
   if (getOption("bmm.default_priors", TRUE)) {
     prior <- prior +
-      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-      brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
-      brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
+                                        c=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T),
+                                        s=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T)))
   }
 
   # if there is setsize 1 in the data, set constant prior over s for setsize1
   s_preds <- rhs_vars(bmm_formula$s)
   if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% s_preds) {
-    prior <- prior +
-      brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s")
+    prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s"))
   }
 
   nlist(formula, data, family, prior)
@@ -341,10 +341,11 @@ configure_model.IMMfull <- function(model, data, formula) {
   prior <- fixed_pars_priors(model, additional_constants)
   if (getOption("bmm.default_priors", TRUE)) {
     prior <- prior +
-      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-      brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
-      brms::prior_("normal(0, 1)", class = "b", nlpar = "a") +
-      brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
+                                        a=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T),
+                                        c=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T),
+                                        s=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T)))
   }
 
   # if there is setsize 1 in the data, set constant prior over a and s for setsize1
@@ -352,12 +353,10 @@ configure_model.IMMfull <- function(model, data, formula) {
   s_preds <- rhs_vars(bmm_formula$s)
   if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]])) {
     if (setsize_var %in% a_preds) {
-      prior <- prior +
-        brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a")
+      prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a"))
     }
     if (setsize_var %in% s_preds) {
-      prior <- prior +
-        brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s")
+      prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s"))
     }
   }
 

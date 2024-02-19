@@ -142,8 +142,7 @@ configure_model.mixture3p <- function(model, data, formula) {
   # if there is setsize 1 in the data, set constant prior over thetant for setsize1
   thetant_preds <- rhs_vars(bmm_formula$thetant)
   if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% thetant_preds) {
-    prior <- prior +
-      brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
+    prior <- combine_prior(prior, brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant"))
   }
 
   nlist(formula, data, family, prior)

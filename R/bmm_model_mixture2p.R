@@ -88,8 +88,9 @@ configure_model.mixture2p <- function(model, data, formula) {
   prior <- fixed_pars_priors(model, additional_constants)
   if (getOption("bmm.default_priors", TRUE)) {
     prior <- prior +
-      brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-      brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat")
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
+                                        thetat=list(main='logistic(0, 1)', nlpar=T)))
   }
 
   nlist(formula, data, family, prior)
