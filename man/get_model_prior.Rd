@@ -40,12 +40,12 @@ used if no user-specified priors were passed to the \code{\link[=fit_model]{fit_
 \details{
 The following models are supported:
 \itemize{
-\item \code{IMMabc(resp_err, non_targets, setsize)}
-\item \code{IMMbsc(resp_err, non_targets, setsize, spaPos)}
-\item \code{IMMfull(resp_err, non_targets, setsize, spaPos)}
+\item \code{IMMabc(resp_err, nt_features, setsize)}
+\item \code{IMMbsc(resp_err, nt_features, nt_distances, setsize)}
+\item \code{IMMfull(resp_err, nt_features, nt_distances, setsize)}
 \item \code{ezDM(meanRT, varRT, nCorr, nTrials, data_aggregated)}
 \item \code{mixture2p(resp_err)}
-\item \code{mixture3p(resp_err, non_targets, setsize)}
+\item \code{mixture3p(resp_err, nt_features, setsize)}
 \item \code{sdmSimple(resp_err)}
 }
 
@@ -74,4 +74,4 @@ get_model_prior(formula = ff,
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[brms:get_prior]{brms::get_prior()}}
 }
-\keyword{extract_stan}
+\keyword{extract_info}

@@ -46,11 +46,10 @@
 #' dat <- data.frame(y = rmixture2p(n=2000))
 #'
 #' # define formula
-#' ff <- brms::bf(y ~ 1,
-#'                kappa ~ 1,
-#'                thetat ~ 1)
+#' ff <- bmmformula(kappa ~ 1,
+#'                  thetat ~ 1)
 #'
-#' model <- mixture2p()
+#' model <- mixture2p(resp_err = "y")
 #'
 #' # fit the model
 #' fit <- fit_model(formula = ff,
@@ -90,6 +89,5 @@ configure_model.mixture2p <- function(model, data, formula) {
     brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
     brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat")
 
-  out <- nlist(formula, data, family, prior)
-  return(out)
+  nlist(formula, data, family, prior)
 }

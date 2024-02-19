@@ -32,3 +32,44 @@ test_that("add_missing_parameters works", {
   model_pars <- names(IMMfull(NA,NA, NA,NA)$info$parameters)
   expect_equal(names(suppressMessages(add_missing_parameters(IMMfull(NA,NA, NA,NA), f))), model_pars)
 })
+
+
+test_that("check_formula gives expected errors", {
+  expect_error(check_formula(sdmSimple('dev_rad'),
+                             data = NULL,
+                             formula = brmsf <- brms::bf(dev_rad ~ 1, c ~ 1)),
+               'The provided formula is a brms formula.')
+
+  expect_error(check_formula(sdmSimple('dev_rad'),
+                             data = NULL,
+                             formula = bmf(c ~ 1, kappa1 ~ 1)),
+               'The formula contains parameters that are not part of the model')
+})
+
+test_that("check_formula works", {
+  expect_equal(names(check_formula(sdmSimple('dev_rad'),
+                                   data = NULL,
+                                   formula = bmmformula(c ~ 1, kappa ~ 1))),
+               c('mu','c','kappa'))
+  expect_equal(names(check_formula(sdmSimple('dev_rad'),
+                                   data = NULL,
+                                   formula = bmmformula(c ~ 1))),
+               c('mu','c','kappa'))
+})
+
+
+test_that('has_intercept works', {
+  expect_true(has_intercept(y ~ 1))
+  expect_true(has_intercept(y ~ A))
+  expect_true(has_intercept(y ~ A + B))
+  expect_true(has_intercept(y ~ A * B))
+  expect_true(has_intercept(y ~ 1 + A))
+  expect_true(has_intercept(y ~ A + (A|ID)))
+
+  expect_false(has_intercept(y ~ 0+A))
+  expect_false(has_intercept(y ~ 0+A + B))
+  expect_false(has_intercept(y ~ 0+A * B))
+  expect_false(has_intercept(y ~ 0+A + (A|ID)))
+
+  expect_error(has_intercept(bmf(y~1,c~1)),'The formula must be a formula object.')
+})

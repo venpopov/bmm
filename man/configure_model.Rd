@@ -42,7 +42,7 @@ A bare bones configure_model.* method should look like this:
    <preprocessing code>
 
    # construct the formula
-   formula <- formula + <new terms>
+   formula <- bmf2bf(formula, model)
 
    # construct the family
    family <- <code for new family>
@@ -51,8 +51,7 @@ A bare bones configure_model.* method should look like this:
    prior <- <code for new prior>
 
    # return the list
-   out <- nlist(formula, data, family, prior)
-   return(out)
+   nlist(formula, data, family, prior)
 \}
 }\if{html}{\out{</div>}}
 }
@@ -61,7 +60,7 @@ A bare bones configure_model.* method should look like this:
 configure_model.3p <- function(model, data, formula) {
    # retrieve arguments from the data check
    max_setsize <- attr(data, "max_setsize")
-   non_targets <- attr(data, "non_targets")
+   nt_features <- attr(data, "nt_features")
    lure_idx_vars <- attr(data, "lure_idx_vars")
    setsize_var <- attr(data, "setsize_var")
 
@@ -72,19 +71,23 @@ configure_model.3p <- function(model, data, formula) {
    mu_nts <- paste0('mu', 2:max_setsize)
    mu_unif <- paste0('mu', max_setsize + 1)
 
+   # construct main brms formula from the bmm formula
+   bmm_formula <- formula
+   formula <- bmf2bf(model, bmm_formula)
+
    # construct formula
    formula <- formula +
-     brms::lf(mu1 ~ 1) +
      glue_lf(kappa_unif,' ~ 1') +
      glue_lf(mu_unif, ' ~ 1') +
      brms::nlf(theta1 ~ thetat) +
      brms::nlf(kappa1 ~ kappa)
+
    for (i in 1:(max_setsize-1)) {
      formula <- formula +
        glue_nlf(kappa_nts[i], ' ~ kappa') +
        glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(thetant + log(inv_ss)) + ',
                 '(1-', lure_idx_vars[i], ')*(-100)') +
-       glue_nlf(mu_nts[i], ' ~ ', non_targets[i])
+       glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
    }
 
    # define mixture family
@@ -107,8 +110,7 @@ configure_model.3p <- function(model, data, formula) {
        brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
    }
 
-   out <- nlist(formula, data, family, prior)
-   return(out)
+   nlist(formula, data, family, prior)
 }
 }
 

@@ -39,6 +39,10 @@ Two-parameter mixture model by Zhang and Luck (2008).
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{thetat}: Mixture weight for target responses
 }
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu1} = 0
+}
 }
 }
 \examples{
@@ -47,11 +51,10 @@ Two-parameter mixture model by Zhang and Luck (2008).
 dat <- data.frame(y = rmixture2p(n=2000))
 
 # define formula
-ff <- brms::bf(y ~ 1,
-               kappa ~ 1,
-               thetat ~ 1)
+ff <- bmmformula(kappa ~ 1,
+                 thetat ~ 1)
 
-model <- mixture2p()
+model <- mixture2p(resp_err = "y")
 
 # fit the model
 fit <- fit_model(formula = ff,

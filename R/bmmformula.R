@@ -119,7 +119,7 @@ bmf <- function(formula, ...) {
   } else if(!is.null(f2)) {
     stop("The second argument must be a formula or a bmmformula.")
   }
-  return(f1)
+  f1
 }
 
 

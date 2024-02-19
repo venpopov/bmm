@@ -1,9 +1,15 @@
 #' checks if the formula is valid for the specified model
 #' @param model a model list object returned from check_model()
+#' @param data user supplied data
 #' @param formula user supplied formula
 #' @return the formula object
 #' @keywords internal, developer
-check_formula <- function(model, formula) {
+check_formula <- function(model, data, formula) {
+  UseMethod('check_formula')
+}
+
+#' @export
+check_formula.bmmmodel <- function(model, data, formula) {
   if (!is.bmmformula(formula)) {
     if (is.brmsformula(formula)) {
       stop("The provided formula is a brms formula.
@@ -24,8 +30,29 @@ check_formula <- function(model, formula) {
   }
 
   formula <- add_missing_parameters(model, formula)
+  NextMethod("check_formula")
+}
 
+#' @export
+check_formula.default <- function(model, data, formula) {
   return(formula)
+}
+
+#' @export
+check_formula.nontargets <- function(model, data, formula) {
+  setsize_var <- model$other_vars$setsize
+  dpars <- names(formula)
+  for (dpar in dpars) {
+    dpar_pred <- rhs_vars(formula[[dpar]])
+    if (setsize_var %in% dpar_pred) {
+      ss_form <- formula[[dpar]]
+      if (has_intercept(ss_form)) {
+        stop2("The formula for parameter ", dpar, " contains an intercept and also uses setsize as a predictor.",
+             " This model requires that the intercept is supressed when setsize is used as predictor.")
+      }
+    }
+  }
+  NextMethod("check_formula")
 }
 
 
@@ -43,8 +70,8 @@ add_missing_parameters <- function(model, formula) {
                      "For this parameter only a fixed intercept will be estimated."))
     }
   }
-  formula <- formula[model_pars] # reorder formula to match model parameters order
-  return(formula)
+  all_pars <- unique(c(model_pars,formula_pars))
+  formula[all_pars] # reorder formula to match model parameters order
 }
 
 
@@ -56,13 +83,31 @@ wrong_parameters <- function(model, formula) {
   fpars[wpars]
 }
 
-
+#' @title Convert `bmmformula` objects to `brmsformula` objects
+#' @description
+#'  Called by configure_model() inside fit_model() to convert the `bmmformula` into a
+#'  `brmsformula` based on information in the model object. It will call the
+#'  appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
+#' @param model The model object defining one of the supported `bmmmodels``
+#' @param formula The `bmmformula` that should be converted to a `brmsformula`
+#' @returns A `brmsformula` defining the response variables and the additional parameter
+#'   formulas for the specified `bmmmodel`
+#' @keywords internal, developer
+#' @examples
+#'   model <- mixture2p(resp_err = "error")
+#'
+#'   formula <- bmmformula(
+#'     thetat ~ 0 + setsize + (0 + setsize | id),
+#'     kappa ~ 1 + (1 | id)
+#'   )
+#'
+#'   brms_formula <- bmf2bf(model, formula)
+#' @export
 bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
 }
 
 # default method for all bmmmodels with 1 response variable
-# TODO: add support for multiple response variables
 #' @export
 bmf2bf.bmmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE
@@ -92,6 +137,11 @@ bmf2bf.bmmmodel <- function(model, formula) {
 }
 
 
-
-
-
+has_intercept <- function(formula) {
+  if (is.null(formula)) {
+    return(FALSE)
+  } else if (!is.formula(formula)) {
+    stop("The formula must be a formula object.")
+  }
+  as.logical(attr(stats::terms(formula), "intercept"))
+}

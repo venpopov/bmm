@@ -79,6 +79,17 @@
 sdmSimple <- .model_sdmSimple
 
 
+#############################################################################!
+# CHECK_DATA S3 METHODS                                                  ####
+#############################################################################!
+
+#' @export
+check_data.sdmSimple <- function(model, data, formula) {
+  # data sorted by predictors is necessary for speedy computation of normalizing constant
+  data <- order_data_query(model, data, formula)
+  NextMethod("check_data")
+}
+
 
 #############################################################################!
 # CONFIGURE_MODEL S3 METHODS                                             ####
@@ -95,6 +106,8 @@ configure_model.sdmSimple <- function(model, data, formula) {
       "sdm_simple", dpars = c("mu", "c","kappa"),
       links = c("identity","identity", "log"), lb = c(NA, NA, NA),
       type = "real", loop=FALSE,
+      log_lik = log_lik_sdm_simple,
+      posterior_predict = posterior_predict_sdm_simple
     )
     family <- sdm_simple
 
@@ -120,8 +133,7 @@ configure_model.sdmSimple <- function(model, data, formula) {
     init = 1
 
     # return the list
-    out <- nlist(formula, data, family, prior, stanvars, init)
-    return(out)
+    nlist(formula, data, family, prior, stanvars, init)
 }
 
 
@@ -134,5 +146,21 @@ postprocess_brm.sdmSimple <- function(model, fit) {
   # manually set link_c to "log" since I coded it manually
   fit$family$link_c <- "log"
   fit$formula$family$link_c <- "log"
-  return(fit)
+  fit
 }
+
+log_lik_sdm_simple <- function(i, prep) {
+  mu <- brms::get_dpar(prep, "mu", i = i)
+  c <- brms::get_dpar(prep, "c", i = i)
+  kappa <- brms::get_dpar(prep, "kappa", i = i)
+  y <- prep$data$Y[i]
+  dsdm(y, mu, c, kappa, log=T)
+}
+
+posterior_predict_sdm_simple <- function(i, prep, ...) {
+  mu <- brms::get_dpar(prep, "mu", i = i)
+  c <- brms::get_dpar(prep, "c", i = i)
+  kappa <- brms::get_dpar(prep, "kappa", i = i)
+  rsdm(length(mu), mu, c, kappa)
+}
+

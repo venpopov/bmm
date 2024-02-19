@@ -28,6 +28,16 @@ nlist <- function(...) {
   dots
 }
 
+# find the name that 'x' had in a specific environment
+substitute_name <- function(x, envir = parent.frame(), nchar = 50) {
+  out <- substitute(x)
+  out <- eval2(paste0("substitute(", out, ")"), envir = envir)
+  if (missing(out)) {
+    return(NULL)
+  }
+  substr(collapse(deparse(out)), 1, nchar)
+}
+
 # combine deparse lines into one string
 # since R 4.0 we also have base::deparse1 for this purpose
 deparse0 <- function(x, max_char = NULL, ...) {
@@ -46,6 +56,58 @@ eval2 <- function(expr, envir = parent.frame(), ...) {
   }
   eval(expr, envir, ...)
 }
+
+
+SW <- function(expr) {
+  base::suppressWarnings(expr)
+}
+
+# coerce 'x' to a single integer value
+as_one_integer <- function(x, allow_na = FALSE) {
+  s <- substitute(x)
+  x <- SW(as.integer(x))
+  if (length(x) != 1L || anyNA(x) && !allow_na) {
+    s <- deparse0(s, max_char = 100L)
+    stop2("Cannot coerce '", s, "' to a single integer value.")
+  }
+  x
+}
+
+# coerce 'x' to a single numeric value
+as_one_numeric <- function(x, allow_na = FALSE) {
+  s <- substitute(x)
+  x <- SW(as.numeric(x))
+  if (length(x) != 1L || anyNA(x) && !allow_na) {
+    s <- deparse0(s, max_char = 100L)
+    stop2("Cannot coerce '", s, "' to a single numeric value.")
+  }
+  x
+}
+
+# coerce 'x' to a single character string
+as_one_character <- function(x, allow_na = FALSE) {
+  s <- substitute(x)
+  x <- SW(as.character(x))
+  if (length(x) != 1L || anyNA(x) && !allow_na) {
+    s <- deparse0(s, max_char = 100L)
+    stop2("Cannot coerce '", s, "' to a single character value.")
+  }
+  x
+}
+
+stop2 <- function(...) {
+  stop(..., call. = FALSE)
+}
+
+warning2 <- function(...) {
+  warning(..., call. = FALSE)
+}
+
+# check if x is a try-error resulting from try()
+is_try_error <- function(x) {
+  inherits(x, "try-error")
+}
+
 
 # find all namespace entries of a package, which are of
 # a particular type for instance all exported objects

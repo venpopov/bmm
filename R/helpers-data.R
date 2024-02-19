@@ -47,6 +47,7 @@ check_data.bmmmodel <- function(model, data, formula) {
     stop("Argument 'data' does not contain observations.")
   }
 
+  attr(data, 'data_name') <- substitute_name(data, envir = eval(parent.frame()))
   attr(data, 'checked') <- TRUE
   NextMethod("check_data")
 }
@@ -64,43 +65,30 @@ check_data.vwm <- function(model, data, formula) {
              The model will continue to run, but the results may be compromised.')
   }
 
-  data = NextMethod("check_data")
-
-  return(data)
+  NextMethod("check_data")
 }
 
 
 #' @export
 check_data.nontargets <- function(model, data, formula) {
-  non_targets <- model$other_vars$non_targets
-  if (max(abs(data[,non_targets]), na.rm = T) > 2*pi) {
+  nt_features <- model$other_vars$nt_features
+  if (max(abs(data[,nt_features]), na.rm = T) > 2*pi) {
     warning('It appears at least one of your non_target variables are in degrees.\n
              The model requires these variable to be in radians.\n
-            The model will continue to run, but the results may be compromised.')
+             The model will continue to run, but the results may be compromised.')
   }
 
-  setsize <- model$other_vars$setsize
-  if (is.character(setsize) && length(setsize) == 1) {
-    # Variable setsize
-    ss_numeric <- as.numeric(as.character(data[[setsize]]))
-    max_setsize <- max(ss_numeric)
-  } else if (is.numeric(setsize) && length(setsize) == 1) {
-    # Fixed setsize
-    ss_numeric <- rep(setsize, times = nrow(data))
-    max_setsize <- setsize
-  } else {
-    stop("Argument 'setsize' must be either a single numeric value or a character string.")
-  }
+  ss <- check_var_setsize(model$other_vars$setsize, data)
+  max_setsize <- ss$max_setsize
+  ss_numeric <- ss$ss_numeric
 
-  if (length(non_targets) < max_setsize - 1) {
+  if (!isTRUE(all.equal(length(nt_features), max_setsize - 1))) {
     stop("The number of columns for non-target values in the argument ",
-         "'non_targets' is less than max(setsize)-1")
-  } else if (length(non_targets) > max_setsize - 1) {
-    stop('The number of columns for non-target values in the argument ',
-         '`non_targets` is more than max(setsize)-1')
+         "'nt_features' should equal max(setsize)-1")
   }
 
-  # create index variables for non_targets and correction variable for theta due to setsize
+
+  # create index variables for nt_features and correction variable for theta due to setsize
   lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
   for (i in 1:(max_setsize - 1)) {
     data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
@@ -108,15 +96,47 @@ check_data.nontargets <- function(model, data, formula) {
   data$ss_numeric <- ss_numeric
   data$inv_ss = 1/(ss_numeric - 1)
   data$inv_ss = ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
-  data[,non_targets][is.na(data[,non_targets])] <- 0
+  data[,nt_features][is.na(data[,nt_features])] <- 0
 
   # save some variables for later use
   attr(data, 'max_setsize') <- max_setsize
   attr(data, 'lure_idx_vars') <- lure_idx_vars
 
-  data = NextMethod("check_data")
+  NextMethod("check_data")
+}
 
-  return(data)
+
+check_var_setsize <- function(setsize, data) {
+  if (length(setsize) > 1) {
+    stop2("The setsize variable '", setsize, "' must be a single numeric value or a single variable in your data",
+          " You provided a vector of length ", length(setsize))
+  }
+  # class check - is setsize a single numeric value or a variable in the data
+  # coericble to a numeric vector?
+  if (is_data_var(setsize, data)) {
+    ss_numeric <- try(as_numeric_vector(data[[setsize]]), silent=T)
+    if (is_try_error(ss_numeric)) {
+      stop2("The setsize variable '", setsize, "' must be coercible to a numeric vector.\n",
+            "Did you code your set size as a character vector?")
+    }
+    max_setsize <- max(ss_numeric, na.rm = T)
+  } else {
+    max_setsize <- try(as_one_integer(setsize), silent=T)
+    if (is_try_error(max_setsize) | is.logical(setsize)) {
+      stop2("The setsize variable '", setsize, "' must be either a variable in your data or ",
+            "a single numeric value")
+    }
+    ss_numeric <- rep(max_setsize, nrow(data))
+  }
+  # value check
+  if (any(ss_numeric < 1, na.rm = T)) {
+    stop2("Values of the setsize variable '", setsize, "' must be greater than 0")
+  }
+  if (any(ss_numeric %% 1 != 0, na.rm = T)) {
+    stop2("Values of the setsize variable '", setsize, "' must be whole numbers")
+  }
+
+  list(max_setsize = max_setsize, ss_numeric = ss_numeric)
 }
 
 
@@ -131,7 +151,7 @@ check_data.nontargets <- function(model, data, formula) {
 #' @param data A `data.frame` object where each row is a single observation
 #' @param response Character. The name of the column in `data` which contains
 #'   the response
-#' @param non_targets Character vector. The names of the columns in `data` which
+#' @param nt_features Character vector. The names of the columns in `data` which
 #'   contain the values of the non-targets
 #' @keywords transform
 #' @return A `data.frame` with n*m rows, where n is the number of rows of `data`
@@ -141,13 +161,13 @@ check_data.nontargets <- function(model, data, formula) {
 #'
 #' @export
 #'
-calc_error_relative_to_nontargets <- function(data, response, non_targets) {
+calc_error_relative_to_nontargets <- function(data, response, nt_features) {
   y <- y_nt <- non_target_name <- non_target_value <- NULL
   data <- data %>%
-    tidyr::gather(non_target_name, non_target_value, eval(non_targets))
+    tidyr::gather(non_target_name, non_target_value, eval(nt_features))
 
   data$y_nt <- wrap(data[[response]]-data[["non_target_value"]])
-  return(data)
+  data
 }
 
 #' @title Wrap angles that extend beyond (-pi;pi)
@@ -175,9 +195,8 @@ wrap <- function(x, radians=TRUE) {
   stopifnot(is.logical(radians))
   if (radians) {
     return(((x+pi) %% (2*pi)) - pi)
-  } else {
-    return(((x+180) %% (2*180)) - 180)
   }
+  ((x+180) %% (2*180)) - 180
 }
 
 #' @title Convert degrees to radians or radians to degrees.
@@ -236,7 +255,7 @@ rad2deg <- function(rad){
 #'
 #' @export
 #'
-#' @keywords extract_stan
+#' @keywords extract_info
 #'
 #' @examples
 #' \dontrun{
@@ -244,14 +263,13 @@ rad2deg <- function(rad){
 #' dat <- data.frame(y=rsdm(n=2000))
 #'
 #' # define formula
-#' ff <- brms::bf(y ~ 1,
-#'                c ~ 1,
-#'                kappa ~ 1)
+#' ff <- bmf(c ~ 1,
+#'           kappa ~ 1)
 #'
 #' # fit the model
 #' get_standata(formula = ff,
 #'              data = dat,
-#'              model = sdmSimple()
+#'              model = sdmSimple(resp_err = "y")
 #' )
 #' }
 #'
@@ -259,8 +277,8 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model)
-  formula <- check_formula(model, formula)
   data <- check_data(model, data, formula)
+  formula <- check_formula(model, data, formula)
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
@@ -271,7 +289,37 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
   # extract stan code
   dots <- list(...)
   fit_args <- c(config_args, dots)
-  standata <- brms::do_call(brms::make_standata, fit_args)
-
-  return(standata)
+  brms::do_call(brms::make_standata, fit_args)
 }
+
+
+# check if the data is sorted by the predictors
+is_data_ordered <- function(data, formula) {
+  dpars <- names(formula)
+  predictors <- rhs_vars(formula)
+  predictors <- predictors[not_in(predictors, dpars)]
+  data <- data[,predictors]
+  if (length(predictors) > 1) {
+    gr_idx <- do.call(paste, c(data, list(sep="_")))
+  } else {
+    gr_idx <- data
+  }
+  is_ordered <- !has_nonconsecutive_duplicates(gr_idx)
+  is_ordered
+}
+
+# checks if all repetitions of a given value are consecutive in a vector
+# by iterating over unique values and checking if all their positions are consecutive
+has_nonconsecutive_duplicates <- function(vec) {
+  unique_vals <- unique(vec)
+  cond <- TRUE
+  for(val in unique_vals) {
+    positions <- which(vec == val)
+    cond <- cond & all(diff(positions) == 1)
+  }
+  !cond
+}
+
+
+
+

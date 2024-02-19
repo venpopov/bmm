@@ -11,6 +11,7 @@ fit_model(
   parallel = FALSE,
   chains = 4,
   prior = NULL,
+  sort_data = getOption("bmm.sort_data", NULL),
   silent = getOption("bmm.silent", 1),
   ...
 )
@@ -40,6 +41,13 @@ or related functions and combined using the c method or the + operator. See
 also \code{\link[=get_model_prior]{get_model_prior()}} for more help. Not necessary for the default model
 fitting, but you can provide prior constraints to model parameters}
 
+\item{sort_data}{Logical. If TRUE, the data will be sorted by the predictor
+variables for faster sampling. If FALSE, the data will not be sorted, but
+sampling will be slower. If NULL (the default), \code{fit_model()} will check if
+the data is sorted, and ask you via a console prompt if it should be
+sorted. You can set the default value for this option using global
+\code{options(bmm.sort_data = TRUE/FALSE)}}
+
 \item{silent}{Verbosity level between 0 and 2. If 1 (the default), most of the
 informational messages of compiler and sampler are suppressed. If 2, even
 more messages are suppressed. The actual sampling progress is still
@@ -66,12 +74,12 @@ model.
 \details{
 The following models are supported:
 \itemize{
-\item \code{IMMabc(resp_err, non_targets, setsize)}
-\item \code{IMMbsc(resp_err, non_targets, setsize, spaPos)}
-\item \code{IMMfull(resp_err, non_targets, setsize, spaPos)}
+\item \code{IMMabc(resp_err, nt_features, setsize)}
+\item \code{IMMbsc(resp_err, nt_features, nt_distances, setsize)}
+\item \code{IMMfull(resp_err, nt_features, nt_distances, setsize)}
 \item \code{ezDM(meanRT, varRT, nCorr, nTrials, data_aggregated)}
 \item \code{mixture2p(resp_err)}
-\item \code{mixture3p(resp_err, non_targets, setsize)}
+\item \code{mixture3p(resp_err, nt_features, setsize)}
 \item \code{sdmSimple(resp_err)}
 }
 
@@ -85,14 +93,13 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 dat <- data.frame(y=rsdm(n=2000))
 
 # define formula
-ff <- brms::bf(y ~ 1,
-               c ~ 1,
-               kappa ~ 1)
+ff <- bmmformula(c ~ 1,
+                 kappa ~ 1)
 
 # fit the model
 fit <- fit_model(formula = ff,
                  data = dat,
-                 model = sdmSimple(),
+                 model = sdmSimple(resp_err = "y"),
                  parallel=T,
                  iter=500,
                  backend='cmdstanr')

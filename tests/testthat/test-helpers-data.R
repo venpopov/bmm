@@ -15,37 +15,30 @@ test_that("check_data() produces expected errors and warnings", {
 
   mls <- lapply(c('mixture2p','mixture3p','IMMabc','IMMbsc','IMMfull'), get_model2)
   for (ml in mls) {
-    expect_warning(check_data(ml(resp_err = "y", non_targets = 'x', setsize=2, spaPos = 'z'),
+    expect_warning(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distances = 'z'),
                               data.frame(y = 12, x = 1, z = 2),
                               bmmformula(kappa ~ 1)),
                    "It appears your response variable is in degrees.\n")
-    expect_silent(check_data(ml(resp_err = "y", non_targets = 'x', setsize=2, spaPos = 'z'),
-                             data.frame(y = 1, x = 1, z = 2), brms::bf(y ~ 1)))
+    expect_silent(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distances = 'z'),
+                             data.frame(y = 1, x = 1, z = 2), bmmformula(y ~ 1)))
   }
 
   mls <- lapply(c('mixture3p','IMMabc','IMMbsc','IMMfull'), get_model2)
   for (ml in mls) {
-    expect_error(check_data(ml(resp_err = "y", non_targets = 'x', spaPos = 'z'),
+    expect_error(check_data(ml(resp_err = "y", nt_features = 'x', nt_distances = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
                  'argument "setsize" is missing, with no default')
-    expect_error(check_data(ml(resp_err = "y",setsize = 'x', spaPos = 'z'),
+    expect_error(check_data(ml(resp_err = "y",setsize = 'x', nt_distances = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
-                 'argument "non_targets" is missing, with no default')
-    expect_error(check_data(ml(resp_err = "y",non_targets='x', setsize = TRUE, spaPos = 'z'),
+                 'argument "nt_features" is missing, with no default')
+
+    expect_error(check_data(ml(resp_err = "y",nt_features='x', setsize = 5, nt_distances = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
-                 "Argument 'setsize' must be either a single numeric value or a character string.")
-    expect_error(check_data(ml(resp_err = "y",non_targets='x', setsize = c(1,2,3), spaPos = 'z'),
-                            data.frame(y = 1, x = 1, z = 2),
-                            bmmformula(kappa ~ 1)),
-                 "Argument 'setsize' must be either a single numeric value or a character string.")
-    expect_error(check_data(ml(resp_err = "y",non_targets='x', setsize = 5, spaPos = 'z'),
-                            data.frame(y = 1, x = 1, z = 2),
-                            bmmformula(kappa ~ 1)),
-                 "'non_targets' is less than max\\(setsize\\)-1")
-    expect_warning(check_data(ml(resp_err = "y", non_targets = 'x', setsize=2, spaPos = 'z'),
+                 "'nt_features' should equal max\\(setsize\\)-1")
+    expect_warning(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distances = 'z'),
                               data.frame(y = 1, x = 2*pi+1, z = 2),
                               bmmformula(kappa ~ 1)),
                    "at least one of your non_target variables are in degrees")
@@ -53,17 +46,113 @@ test_that("check_data() produces expected errors and warnings", {
 
   mls <- lapply(c('IMMbsc','IMMfull'), get_model2)
   for (ml in mls) {
-    expect_error(check_data(ml(resp_err = "y",non_targets=paste0('x',1:4), setsize = 5, spaPos = 'z'),
+    expect_error(check_data(ml(resp_err = "y",nt_features=paste0('x',1:4), setsize = 5, nt_distances = 'z'),
                             data.frame(y = 1, x1 = 1, x2=2,x3=3,x4=4, z = 2),
                             bmmformula(kappa ~ 1)),
-                 "'spaPos' is less than max\\(setsize\\)-1")
+                 "'nt_distances' should equal max\\(setsize\\)-1")
   }
 })
+
+
+
+test_that("check_var_setsize accepts valid input", {
+  # Simple numeric vector is valid
+  dat <- data.frame(y = rep(c(1,2,3), each=3))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(names(check_var_setsize('y', dat)), c("max_setsize","ss_numeric"))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 3)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+  # Factor with numeric levels is valid
+  dat <- data.frame(y = factor(rep(c(1,2,3), each=3)))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 3)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+
+  # Character vector representing numbers is valid
+  dat <- data.frame(y = rep(c('1','2','3'), each=3))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 3)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+
+  # Numeric vector with NA values is valid (assuming NA is treated correctly)
+  dat <- data.frame(y = rep(c(1,5,NA), each=3))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 5)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+
+  # Factor with NA and numeric levels is valid
+  dat <- data.frame(y = factor(rep(c(1,5,NA), each=3)))
+  expect_silent(check_var_setsize('y', dat))
+  expect_equal(check_var_setsize('y', dat)$max_setsize, 5)
+  all(is.numeric(check_var_setsize('y', dat)$ss_numeric), na.rm = T)
+
+})
+
+test_that("check_var_setsize rejects invalid input", {
+  # Factor with non-numeric levels is invalid
+  dat <- data.frame(y = factor(rep(c('A','B','C'), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Character vector with non-numeric values is invalid
+  dat <- data.frame(y = rep(c('A','B','C'), each=3))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Character vector with NA and non-numeric values is invalid
+  dat <- data.frame(y = rep(c('A',NA,'C'), each=3))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Factor with NA and non-numeric levels is invalid
+  dat <- data.frame(y = factor(rep(c('A',NA,'C'), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Character vector with numeric and non-numeric values is invalid
+  dat <- data.frame(y = rep(c('A',5,'C'), each=3))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Factor with numeric and non-numeric levels is invalid
+  dat <- data.frame(y = factor(rep(c('A',5,'C'), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Numeric vector with invalid set sizes (less than 1) is invalid
+  dat <- data.frame(y = rep(c(0,1,5), each=3))
+  expect_error(check_var_setsize('y', dat), "must be greater than 0")
+
+  # Factor with levels less than 1 are invalid
+  dat <- data.frame(y = factor(rep(c(0,4,5), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be greater than 0")
+
+  # Character vector representing set sizes with text is invalid
+  dat <- data.frame(y = rep(paste0('setsize ', c(2,3,8)), each=3))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Factor representing set sizes with text is invalid
+  dat <- data.frame(y = factor(rep(paste0('setsize ', c(2,3,8)), each=3)))
+  expect_error(check_var_setsize('y', dat), "must be coercible to a numeric vector")
+
+  # Numeric vector with decimals is invalid
+  dat <- data.frame(y = c(1:8,1.3))
+  expect_error(check_var_setsize('y', dat), "must be whole numbers")
+
+  # Setsize must be of length 1
+  dat <- data.frame(y = c(1,2,3), z = c(1,2,3))
+  expect_error(check_var_setsize(c('z','y'), dat), "You provided a vector")
+  expect_error(check_var_setsize(list('z','y'), dat), "You provided a vector")
+  expect_error(check_var_setsize(setsize=TRUE, dat), "must be either a variable in your data or a single numeric value")
+})
+
+
+
+
+
 
 test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call=FALSE), get_model)
   for (ml in mls) {
-    expect_s3_class(check_data(ml(resp_err = "y",non_targets = 'x', setsize=2, spaPos = 'z'),
+    expect_s3_class(check_data(ml(resp_err = "y",nt_features = 'x', setsize=2, nt_distances = 'z'),
                                data.frame(y = 1, x = 1, z = 2),
                                bmmformula(kappa ~ 1)), "data.frame")
   }
@@ -128,8 +217,109 @@ test_that("get_standata() returns a standata class", {
   standata <- get_standata(formula = ff,
                            data = dat,
                            model = mixture3p(resp_err = "y" ,
-                                             non_targets = paste0('nt',1,'_loc'),
+                                             nt_features = paste0('nt',1,'_loc'),
                                              setsize = 2))
   expect_equal(class(standata)[1], "standata")
 })
 
+
+# first draft of tests was written by ChatGPT4
+test_that('has_nonconsecutive_duplicates works', {
+  # Test with a vector that has only consecutive duplicates
+  expect_false(has_nonconsecutive_duplicates(c("a", "a", "b", "b", "c", "c")))
+
+  # Test with a vector that has non-consecutive duplicates
+  expect_true(has_nonconsecutive_duplicates(c("a", "b", "a", "c", "c", "b")))
+
+  # Test with a single unique value repeated
+  expect_false(has_nonconsecutive_duplicates(rep("a", 5)))
+
+  # Test with a vector of all unique values
+  expect_false(has_nonconsecutive_duplicates(letters[1:5]))
+
+  # Test with a vector that has a mix of consecutive and non-consecutive duplicates
+  expect_true(has_nonconsecutive_duplicates(c("a", "a", "b", "a", "b", "b")))
+
+  # Test with a numeric vector with mixed values
+  expect_true(has_nonconsecutive_duplicates(c(1, 2, 3, 1, 4, 2)))
+
+  # Test with an empty vector
+  expect_false(has_nonconsecutive_duplicates(numeric(0)))
+
+  # Test with a vector that has only one element
+  expect_false(has_nonconsecutive_duplicates(c("a")))
+
+  # Test with a vector that has non-consecutive duplicates at the beginning and end
+  expect_true(has_nonconsecutive_duplicates(c("a", "b", "b", "a")))
+
+  # Test with a vector that includes NA values
+  expect_false(has_nonconsecutive_duplicates(c(NA, NA, NA)))
+
+  # Test with a vector that includes NA values among other values
+  expect_false(has_nonconsecutive_duplicates(c(NA, 1, NA)))
+
+  # Test with a complex vector including numbers, NA, and characters
+  expect_true(has_nonconsecutive_duplicates(c(1, "a", 2, "b", 1, NA, "a")))
+
+  # Test with a vector that changes type (numeric and character mixed)
+  expect_true(has_nonconsecutive_duplicates(c("1", 2, "2", 1)))
+})
+
+test_that('is_data_ordered works', {
+  # Test with a data frame that is ordered
+  data1 <- expand.grid(y = 1:3, B = 1:3, C = 1:3)
+  formula1 <- bmf(y ~ B + C)
+  expect_true(is_data_ordered(data1, formula1))
+
+  # Test with a data frame that is not ordered
+  data2 <- rbind(data1, data1[1, ])
+  expect_false(is_data_ordered(data2, formula1))
+
+  # Test when irrelevant variables are not ordered but predictors are
+  data3 <- data1
+  data3$A <- c(3, 2, 1)
+  data3$A <- sample(data3$A)
+  formula2 <- bmf(y ~ A + B + C)
+  expect_true(is_data_ordered(data3, formula1))
+  expect_false(is_data_ordered(data3, formula2))
+})
+
+test_that('is_data_ordered works when there is only one predictor', {
+  # Test with a data frame that is ordered
+  data <- data.frame(y = rep(1:3, each=2),
+                      B = rep(1:3, each=2),
+                      C = factor(rep(1:3, each=2)),
+                      D = rep(1:3, times=2),
+                      E = factor(rep(1:3, times=2)))
+  expect_true(is_data_ordered(data, y ~ B))
+
+  # Test with a data frame that is not ordered
+  expect_false(is_data_ordered(data, y ~ D))
+
+  # Test with a data frame that is ordered and predictor is a factor
+  expect_true(is_data_ordered(data, y ~ C))
+
+  # Test with a data frame that is not ordered and predictor is a factor
+  expect_false(is_data_ordered(data, y ~ E))
+})
+
+test_that('is_data_ordered works when there are no predictors', {
+  # Test with a data frame that is ordered
+  data <- data.frame(y = 1:3)
+  expect_true(is_data_ordered(data, y ~ 1))
+})
+
+test_that('is_data_ordered works when there are non-linear predictors', {
+  data <- data.frame(y = rep(1:3, each=2),
+                     B = rep(1:3, each=2),
+                     C = rep(1:3, times=2))
+  # Test with a data frame that is ordered
+  formula1 <- bmf(y ~ nlD,
+                  nlD ~ B)
+  expect_true(is_data_ordered(data, formula1))
+
+  # Test with a data frame that is not ordered
+  formula2 <- bmf(y ~ nlD,
+                  nlD ~ C)
+  expect_false(is_data_ordered(data, formula2))
+})
