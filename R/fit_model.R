@@ -75,7 +75,7 @@
 #' }
 #'
 fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
-                      prior = NULL, sort_data = getOption('bmm.sort_data', NULL), 
+                      prior = NULL, sort_data = getOption('bmm.sort_data', NULL),
                       silent = getOption('bmm.silent', 1), ...) {
   # warning for using old version
   dots <- list(...)
@@ -90,8 +90,9 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model)
-  formula <- check_formula(model, formula)
   data <- check_data(model, data, formula)
+  formula <- check_formula(model, data, formula)
+
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)

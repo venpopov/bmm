@@ -219,10 +219,11 @@ configure_model.IMMabc <- function(model, data, formula) {
     brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
     brms::prior_("normal(0, 1)", class = "b", nlpar = "a")
 
-  # if there is setsize 1 in the data, set constant prior over thetant for setsize1
-  if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
+  # if there is setsize 1 in the data, set constant prior over a for setsize1
+  a_preds <- rhs_vars(bmm_formula$a)
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% a_preds) {
     prior <- prior +
-      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "a")
+      brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a")
   }
 
   nlist(formula, data, family, prior)
@@ -277,10 +278,11 @@ configure_model.IMMbsc <- function(model, data, formula) {
     brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
     brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
 
-  # if there is setsize 1 in the data, set constant prior over thetant for setsize1
-  if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
+  # if there is setsize 1 in the data, set constant prior over s for setsize1
+  s_preds <- rhs_vars(bmm_formula$s)
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% s_preds) {
     prior <- prior +
-      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "s")
+      brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s")
   }
 
   nlist(formula, data, family, prior)
@@ -336,11 +338,18 @@ configure_model.IMMfull <- function(model, data, formula) {
     brms::prior_("normal(0, 1)", class = "b", nlpar = "a") +
     brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
 
-  # if there is setsize 1 in the data, set constant prior over thetant for setsize1
-  if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
-    prior <- prior +
-      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "a") +
-      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "s")
+  # if there is setsize 1 in the data, set constant prior over a and s for setsize1
+  a_preds <- rhs_vars(bmm_formula$a)
+  s_preds <- rhs_vars(bmm_formula$s)
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]])) {
+    if (setsize_var %in% a_preds) {
+      prior <- prior +
+        brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a")
+    }
+    if (setsize_var %in% s_preds) {
+      prior <- prior +
+        brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s")
+    }
   }
 
   nlist(formula, data, family, prior)
