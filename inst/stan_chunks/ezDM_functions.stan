@@ -8,16 +8,16 @@ real coth (real x) {
 }
 
 // Specify likelihood for ezDM
-real ezDM_lpdf (real y, real mu, real bound, real ndt, real vrt, int hits, int trials) {
+real ezDM_lpdf (real y, real mu, real drift, real bound, real ndt, real vrt, int hits, int trials) {
   // get standardized boundary and start point
-  real k_z = mu * bound/2;
+  real k_z = drift * (bound + 0.1)/2;
 
   // get proportion correct
   real pC = 1 - (1 - exp(-2 * k_z)) / (exp(2 * k_z) - exp(-2 * k_z));
 
   // Calculate moments based on DM parameters
-  real MDT = 1/(mu^2)*(2*k_z*coth(2*k_z) - (k_z)*coth(k_z));
-  real VRT = 1/(mu^4)*(4*k_z^2*(csch(2*k_z))^2 + 2*k_z*coth(2*k_z) - (k_z)^2*(csch(k_z))^2 - (k_z)*coth(k_z));
+  real MDT = 1/(drift^2)*(2*k_z*coth(2*k_z) - (k_z)*coth(k_z));
+  real VRT = 1/(drift^4)*(4*k_z^2*(csch(2*k_z))^2 + 2*k_z*coth(2*k_z) - (k_z)^2*(csch(k_z))^2 - (k_z)*coth(k_z));
 
   // sample from binomial for correct responses
   real out = binomial_lpmf(hits | trials, pC);

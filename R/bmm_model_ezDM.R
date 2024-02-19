@@ -20,7 +20,7 @@
             ndt = "The non-decision time capturing additive processes unrelated to the actual decision process, such as encoding or motor execution."
          )
       ),
-      void_mu = FALSE
+      void_mu = TRUE
    )
    class(out) <- c('bmmmodel', 'ezDM')
    out
@@ -107,7 +107,7 @@ bmf2bf.ezDM <- function(model, formula) {
 
    # meanRT | vreal(varRT) + vint(nHits) + trials(nTrials)  ~ drift
    # set base brms formula based on response
-   brms_formula <- brms::bf(paste0(mrt_var, " | vreal(", vrt_var, ") + vint(",nCorr_var,") + trials(",nTrial_var,")" , "~ drift"), nl = T)
+   brms_formula <- brms::bf(paste0(mrt_var, " | vreal(", vrt_var, ") + vint(",nCorr_var,") + trials(",nTrial_var,")" , "~ 1"), nl = F)
 
    # for each dependent parameter, check if it is used as a non-linear predictor of
    # another parameter and add the corresponding brms function
@@ -138,13 +138,13 @@ configure_model.ezDM <- function(model, data, formula) {
    formula <- bmf2bf(model, bmm_formula)
 
    # set up the custom family
-   ezDM_family <- function(link = "identity", link_bound = "log", link_ndt = "log") {
+   ezDM_family <- function(link = "identity", link_drift = "identity", link_bound = "log", link_ndt = "logit") {
       custom_family(
          "ezDM",
-         dpars = c("mu", "bound", "ndt"), # Those will be estimated
-         links = c(link, link_bound, link_ndt),
-         lb = c(NA, 0, 0), # bounds for the parameters
-         ub = c(NA, NA, NA),
+         dpars = c("mu", "drift", "bound", "ndt"), # Those will be estimated
+         links = c(link, link_drift, link_bound, link_ndt),
+         lb = c(NA, NA, 0, 0), # bounds for the parameters
+         ub = c(NA, NA, NA, NA),
          vars = c("vreal1[n]" , "vint1[n]", "trials[n]"),
          loop = TRUE,
          type = "real"
@@ -160,7 +160,8 @@ configure_model.ezDM <- function(model, data, formula) {
    stanvars <- stanvar(scode = stan_functions, block = 'functions')
 
    # construct the default prior
-   prior <- prior(normal(0,1), class = "b", nlpar = "drift") +
+   prior <- prior(constant(0), class = "Intercept", dpar = "mu") +
+      prior(normal(0,1), class = "Intercept", dpar = "drift") +
       prior(normal(0,0.5), class = "Intercept", dpar = "bound") +
       prior(normal(-2,0.5), class = "Intercept", dpar = "ndt")
 

@@ -4,7 +4,7 @@
 \alias{ezDM}
 \title{ez Diffusion Model (DM)}
 \usage{
-ezDM(meanRT, varRT, nCorr, nTrials, ...)
+ezDM(meanRT, varRT, nCorr, nTrials, data_aggregated = FALSE, ...)
 }
 \arguments{
 \item{meanRT}{The name of the variable containing the mear reaction time of correct responses in the data.}
