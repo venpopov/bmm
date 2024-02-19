@@ -181,6 +181,11 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     nfixef <- length(fixef)
     interaction_only <- length(attr(bterms, "order")) == 1 && attr(bterms,"order") == 2
 
+    ## if the user has specified a non-linear predictor on a model parameter, do not set prior
+    if (any(all_rhs_names %in% dpars)) {
+      next
+    }
+
     # # by default set the effects prior on the class 'b'. The intercept can be overwritten later
     if (has_effects_prior && nfixef > 0) {
       if (is_nlpar[par]) {
