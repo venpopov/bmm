@@ -106,6 +106,8 @@ configure_model.sdmSimple <- function(model, data, formula) {
       "sdm_simple", dpars = c("mu", "c","kappa"),
       links = c("identity","identity", "log"), lb = c(NA, NA, NA),
       type = "real", loop=FALSE,
+      log_lik = log_lik_sdm_simple,
+      posterior_predict = posterior_predict_sdm_simple
     )
     family <- sdm_simple
 
@@ -146,3 +148,19 @@ postprocess_brm.sdmSimple <- function(model, fit) {
   fit$formula$family$link_c <- "log"
   fit
 }
+
+log_lik_sdm_simple <- function(i, prep) {
+  mu <- brms::get_dpar(prep, "mu", i = i)
+  c <- brms::get_dpar(prep, "c", i = i)
+  kappa <- brms::get_dpar(prep, "kappa", i = i)
+  y <- prep$data$Y[i]
+  dsdm(y, mu, c, kappa, log=T)
+}
+
+posterior_predict_sdm_simple <- function(i, prep, ...) {
+  mu <- brms::get_dpar(prep, "mu", i = i)
+  c <- brms::get_dpar(prep, "c", i = i)
+  kappa <- brms::get_dpar(prep, "kappa", i = i)
+  rsdm(length(mu), mu, c, kappa)
+}
+

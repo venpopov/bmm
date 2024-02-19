@@ -3,6 +3,7 @@
 ### New features
 
 * add a check for the sdmSimple model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the `sort_data` argument (#72)
+* add postprocessing methods for sdmSimple to allow for pp_check(), conditional_effects and bridgesampling usage with the model (#30)
 
 # bmm 0.3.0
 
