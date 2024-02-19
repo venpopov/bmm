@@ -7,6 +7,8 @@
 
 ### Bug fixes
 * fix a bug in the mixture3p and IMM models which caused an error when intercept was not supressed and set size was used as predictor
+* add postprocessing methods for sdmSimple to allow for pp_check(), conditional_effects and bridgesampling usage with the model (#30)
+
 
 # bmm 0.3.0
 
