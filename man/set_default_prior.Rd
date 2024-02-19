@@ -14,10 +14,13 @@ set_default_prior(bmmformula, data, prior_list)
 \item{prior_list}{A list of lists containing the priors for the parameters.
 The list should have the same names as the parameters in the \code{bmmformula}
 for which you want to set the default prior. Each parameter should be
-assigned a list of priors. The first entry will be used for the Intercept
-or any of the main levels if the intercept is suppressed. The second entry
+assigned a list of priors. The 'main' entry will be used for the Intercept
+or any of the main levels if the intercept is suppressed. The 'effects' entry
 is optional. If given, it will be used as the prior for effects of the
-predictor relative to the intercept.}
+predictor relative to the intercept. Finally, an 'nlpar = TRUE' entry can be given
+in the list for each predictor, to specify that the prior should be set on
+\code{nlpar} (see \code{bmm_model_mixture3p.R} for an example). By default the priors
+will be set on dpar}
 }
 \description{
 For developers to use within configure_model.* functions. This function
@@ -31,24 +34,24 @@ intercept.
 \examples{
 data <- OberauerLin_2017
 data$session <- as.factor(data$session)
-# supressed intercept on thetat, intercept present for kappa
+# suppressed intercept on thetat, intercept present for kappa
 formula <- bmf(thetat ~ 0 + set_size, kappa ~ session)
-prior_list <- list(thetat = list('logistic(0,1)'),
-                   kappa = list('normal(2,1)', 'normal(0,1)'))
+prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
+                   kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
 prior <- set_default_prior(formula, data, prior_list)
 print(prior)
 
-# supressed intercept on both thetat and kappa
+# suppressed intercept on both thetat and kappa
 formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + session)
-prior_list <- list(thetat = list('logistic(0,1)'),
-                   kappa = list('normal(2,1)', 'normal(0,1)'))
+prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
+                   kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
 prior <- set_default_prior(formula, data, prior_list)
 print(prior)
 
-# supressed intercept on both thetat and kappa, with interaction for kappa
+# suppressed intercept on both thetat and kappa, with interaction for kappa
 formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + set_size*session)
-prior_list <- list(thetat = list('logistic(0,1)'),
-                   kappa = list('normal(2,1)', 'normal(0,1)'))
+prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
+                   kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
 prior <- set_default_prior(formula, data, prior_list)
 print(prior)
 }

@@ -134,9 +134,9 @@ configure_model.mixture3p <- function(model, data, formula) {
   if (getOption("bmm.default_priors", TRUE)) {
     prior <- prior +
       set_default_prior(bmm_formula, data,
-                        prior_list=list(kappa=list('normal(2,1)','normal(0,1)'),
-                                        thetat=list('logistic(0, 1)'),
-                                        thetant=list('logistic(0, 1)')))
+                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
+                                        thetat=list(main='logistic(0, 1)', nlpar=T),
+                                        thetant=list(main='logistic(0, 1)', nlpar=T)))
   }
 
   # if there is setsize 1 in the data, set constant prior over thetant for setsize1

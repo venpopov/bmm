@@ -119,78 +119,96 @@ fixed_pars_priors <- function(model, additional_pars = list()) {
 #' @param prior_list A list of lists containing the priors for the parameters.
 #'   The list should have the same names as the parameters in the `bmmformula`
 #'   for which you want to set the default prior. Each parameter should be
-#'   assigned a list of priors. The first entry will be used for the Intercept
-#'   or any of the main levels if the intercept is suppressed. The second entry
+#'   assigned a list of priors. The 'main' entry will be used for the Intercept
+#'   or any of the main levels if the intercept is suppressed. The 'effects' entry
 #'   is optional. If given, it will be used as the prior for effects of the
-#'   predictor relative to the intercept.
+#'   predictor relative to the intercept. Finally, an 'nlpar = TRUE' entry can be given
+#'   in the list for each predictor, to specify that the prior should be set on
+#'   `nlpar` (see `bmm_model_mixture3p.R` for an example). By default the priors
+#'   will be set on dpar
 #' @examples
 #' data <- OberauerLin_2017
 #' data$session <- as.factor(data$session)
-#' # supressed intercept on thetat, intercept present for kappa
+#' # suppressed intercept on thetat, intercept present for kappa
 #' formula <- bmf(thetat ~ 0 + set_size, kappa ~ session)
-#' prior_list <- list(thetat = list('logistic(0,1)'),
-#'                    kappa = list('normal(2,1)', 'normal(0,1)'))
+#' prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
+#'                    kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
 #' prior <- set_default_prior(formula, data, prior_list)
 #' print(prior)
 #'
-#' # supressed intercept on both thetat and kappa
+#' # suppressed intercept on both thetat and kappa
 #' formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + session)
-#' prior_list <- list(thetat = list('logistic(0,1)'),
-#'                    kappa = list('normal(2,1)', 'normal(0,1)'))
+#' prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
+#'                    kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
 #' prior <- set_default_prior(formula, data, prior_list)
 #' print(prior)
 #'
-#' # supressed intercept on both thetat and kappa, with interaction for kappa
+#' # suppressed intercept on both thetat and kappa, with interaction for kappa
 #' formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + set_size*session)
-#' prior_list <- list(thetat = list('logistic(0,1)'),
-#'                    kappa = list('normal(2,1)', 'normal(0,1)'))
+#' prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
+#'                    kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
 #' prior <- set_default_prior(formula, data, prior_list)
 #' print(prior)
 #' @export
 #' @keywords internal, developer
 set_default_prior <- function(bmmformula, data, prior_list) {
   dpars <- names(bmmformula)
-  dpars_key <- names(prior_list)
+  pars_key <- names(prior_list)
   prior <- brms::empty_prior()
-  if (any(not_in(dpars_key, dpars))) {
+  if (any(not_in(pars_key, dpars))) {
     stop("You are trying to set a default prior on a parameter that is not part of the model")
   }
   if (!is.list(prior_list)) {
-    for (i in 1:length(prior_list)) {
-      if(!is.list(prior_list[[i]])) {
-        stop("The prior_list should be a list of lists")
-      }
+    stop("The prior_list should be a list of lists")
+  }
+  for (i in 1:length(prior_list)) {
+    if(!is.list(prior_list[[i]])) {
+      stop("The prior_list should be a list of lists")
     }
   }
-  dpars <- dpars[dpars %in% dpars_key]
-  for (dpar in dpars) {
-    bform <- bmmformula[[dpar]]
-    bterms <- stats::terms(bform)
-    prior_desc <- prior_list[[dpar]]
-    has_effects_prior <- length(prior_desc) > 1
 
-    # by default set the effects prior on the class 'b'. The intercept can be overwritten later
-    if (has_effects_prior) {
-      prior <- combine_prior(prior, brms::prior_(prior_desc[[2]], class = "b", nlpar = dpar))
+  pars <- dpars[dpars %in% pars_key]
+  is_nlpar <- sapply(prior_list[pars], function(x) {isTRUE(x$nlpar)})
+  for (par in pars) {
+    bform <- bmmformula[[par]]
+    bterms <- stats::terms(bform)
+    prior_desc <- prior_list[[par]]
+    has_effects_prior <- !is.null(prior_desc$effects)
+
+    all_rhs_names <- rhs_vars(bform)
+    all_rhs_terms <- attr(bterms, "term.labels")
+    fixef <- all_rhs_terms[all_rhs_terms %in% all_rhs_names]
+    nfixef <- length(fixef)
+    interaction_only <- length(attr(bterms, "order")) == 1 && attr(bterms,"order") == 2
+
+    # # by default set the effects prior on the class 'b'. The intercept can be overwritten later
+    if (has_effects_prior && nfixef > 0) {
+      if (is_nlpar[par]) {
+        prior <- combine_prior(prior, brms::prior_(prior_desc$effects, class = "b", nlpar = par))
+      } else {
+        prior <- combine_prior(prior, brms::prior_(prior_desc$effects, class = "b", dpar = par))
+      }
     }
 
-    # check if intercept is present and set prior_desc[[1]] on the intercept and
-    # if prior_desc[[2]] is not missing, set it on the effects
+    # check if intercept is present and set prior_desc[[1]] on the intercept
     if (attr(bterms, "intercept")) {
-      prior <- combine_prior(prior, brms::prior_(prior_desc[[1]], class = "b", coef = "Intercept", nlpar = dpar))
+      if (is_nlpar[par]) {
+        prior <- combine_prior(prior, brms::prior_(prior_desc$main, class = "b", coef = "Intercept", nlpar = par))
+      } else {
+        prior <- combine_prior(prior, brms::prior_(prior_desc$main, class = "Intercept", dpar = par))
+      }
       next
     }
 
     # next check if there is only one predictor, in which case set the main prior on all levels
     # same if there are multiple predictors, but they are specified only as an interaction
     # get individual predictors, and the formula terms. Fixed effects are those that match
-    all_rhs_names <- rhs_vars(bform)
-    all_rhs_terms <- attr(bterms, "term.labels")
-    fixef <- all_rhs_terms[all_rhs_terms %in% all_rhs_names]
-    nfixef <- length(fixef)
-    interaction_only <- length(attr(bterms, "order")) == 1 && attr(bterms,"order") == 2
     if (nfixef == 1 || interaction_only) {
-      prior <- combine_prior(prior, brms::prior_(prior_desc[[1]], class = "b", nlpar = dpar))
+      if (is_nlpar[par]) {
+        prior <- combine_prior(prior, brms::prior_(prior_desc[[1]], class = "b", nlpar = par))
+      } else {
+        prior <- combine_prior(prior, brms::prior_(prior_desc[[1]], class = "b", dpar = par))
+      }
       next
     }
 
@@ -199,7 +217,11 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     levels <- levels(data[[first_term]])
     coefs <- paste0(first_term, levels)
     for (coef in coefs) {
-      prior <- combine_prior(prior, brms::prior_(prior_desc[[1]], class = "b", coef = coef, nlpar = dpar))
+      if (is_nlpar[par]) {
+        prior <- combine_prior(prior, brms::prior_(prior_desc[[1]], class = "b", coef = coef, nlpar = par))
+      } else {
+        prior <- combine_prior(prior, brms::prior_(prior_desc[[1]], class = "b", coef = coef, dpar = par))
+      }
     }
   }
   prior
