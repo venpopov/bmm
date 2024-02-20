@@ -18,7 +18,8 @@
             drift = "The drift rate capturing the speed of evidence accumulation towards the decision boundaries.",
             bound = "The boundary separation capturing the amoung of evidence require to initiate a response.",
             ndt = "The non-decision time capturing additive processes unrelated to the actual decision process, such as encoding or motor execution."
-         )
+         ),
+         fixed_parameters = list()
       ),
       void_mu = TRUE
    )
@@ -62,7 +63,6 @@
 ezDM <- .model_ezDM
 
 
-
 #############################################################################!
 # CHECK_DATA S3 methods                                                  ####
 #############################################################################!
@@ -70,8 +70,6 @@ ezDM <- .model_ezDM
 # If a model shares methods with other models, the shared methods should be
 # defined in data-helpers.R. Put here only the methods that are specific to
 # the model. See ?check_data for details
-
-
 #' @export
 check_data.ezDM <- function(model, data, formula) {
    # retrieve required arguments
@@ -108,21 +106,7 @@ bmf2bf.ezDM <- function(model, formula) {
    # meanRT | vreal(varRT) + vint(nHits) + trials(nTrials)  ~ drift
    # set base brms formula based on response
    brms_formula <- brms::bf(paste0(mrt_var, " | vreal(", vrt_var, ") + vint(",nCorr_var,") + trials(",nTrial_var,")" , "~ 1"), nl = F)
-
-   # for each dependent parameter, check if it is used as a non-linear predictor of
-   # another parameter and add the corresponding brms function
-   dpars <- names(formula)
-   for (dpar in dpars) {
-      pform <- formula[[dpar]]
-      predictors <- rhs_vars(pform)
-      if (any(predictors %in% dpars)) {
-         brms_formula <- brms_formula + brms::nlf(pform)
-      } else {
-         brms_formula <- brms_formula + brms::lf(pform)
-      }
-   }
-
-   return(brms_formula)
+   brms_formula
 }
 
 #############################################################################!
@@ -155,15 +139,12 @@ configure_model.ezDM <- function(model, data, formula) {
    # prepare initial stanvars to pass to brms, model formula and priors
    sc_path <- system.file('stan_chunks', package='bmm')
    stan_functions <- readChar(paste0(sc_path, '/ezDM_functions.stan'),
-      file.info(paste0(sc_path, '/ezDM_functions.stan'))$size)
+                              file.info(paste0(sc_path, '/ezDM_functions.stan'))$size)
 
    stanvars <- stanvar(scode = stan_functions, block = 'functions')
 
    # construct the default prior
-   prior <- prior(constant(0), class = "Intercept", dpar = "mu") +
-      prior(normal(0,1), class = "Intercept", dpar = "drift") +
-      prior(normal(0,0.5), class = "Intercept", dpar = "bound") +
-      prior(normal(-2,0.5), class = "Intercept", dpar = "ndt")
+   prior <- prior(constant(0), class = "Intercept", dpar = "mu")
 
    # return the list
    out <- nlist(formula, data, family, prior, stanvars)
@@ -171,14 +152,11 @@ configure_model.ezDM <- function(model, data, formula) {
 }
 
 
-
 #############################################################################!
 # POSTPROCESS METHODS                                                    ####
 #############################################################################!
 # A postprocess_brm.* function should be defined for the model class. See
 # ?postprocess_brm for details
-
-
 #' @export
 postprocess_brm.ezDM <- function(model, fit) {
    # any required postprocessing (if none, delete this section)
