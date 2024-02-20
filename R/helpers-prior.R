@@ -178,8 +178,10 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     all_rhs_names <- rhs_vars(bform)
     all_rhs_terms <- attr(bterms, "term.labels")
     fixef <- all_rhs_terms[all_rhs_terms %in% all_rhs_names]
+    inter <- all_rhs_terms[attr(bterms,'order') > 1]
     nfixef <- length(fixef)
-    interaction_only <- length(attr(bterms, "order")) == 1 && attr(bterms,"order") == 2
+    ninter <- length(inter)
+    interaction_only <- nfixef == 0 && ninter > 0
 
     ## if the user has specified a non-linear predictor on a model parameter, do not set prior
     if (any(all_rhs_names %in% dpars)) {
@@ -208,7 +210,7 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     # next check if there is only one predictor, in which case set the main prior on all levels
     # same if there are multiple predictors, but they are specified only as an interaction
     # get individual predictors, and the formula terms. Fixed effects are those that match
-    if (nfixef == 1 || interaction_only) {
+    if ((nfixef == 1 && ninter == 0) || interaction_only) {
       if (is_nlpar[par]) {
         prior <- combine_prior(prior, brms::prior_(prior_desc[[1]], class = "b", nlpar = par))
       } else {

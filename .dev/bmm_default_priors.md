@@ -1043,6 +1043,194 @@ compare_priors(formula, dat, modelSDM)
     ##       (flat) student_t(5,1.75,0.75)         b       session1            kappa       (unknown)
     ##       (flat) student_t(5,1.75,0.75)         b       session2            kappa       (unknown)
 
+### Supressed intercept, 2 factors, only maineffect for facto1 and interaction
+
+``` r
+formula <- bmf(kappa ~ 0 + set_size + set_size:session, c~0 + set_size + set_size:session)
+compare_priors(formula, dat, modelSDM)
+```
+
+    ##    priorBRMS               priorBMM     class               coef group resp  dpar nlpar    source
+    ##  constant(0)            constant(0) Intercept                                           (unknown)
+    ##       (flat)            normal(0,1)         b                                   c       (unknown)
+    ##       (flat)            normal(0,1)         b set_size1:session2                c       (unknown)
+    ##       (flat)            normal(0,1)         b set_size2:session2                c       (unknown)
+    ##       (flat)            normal(0,1)         b set_size3:session2                c       (unknown)
+    ##       (flat)            normal(0,1)         b set_size4:session2                c       (unknown)
+    ##       (flat)            normal(0,1)         b set_size5:session2                c       (unknown)
+    ##       (flat)            normal(0,1)         b set_size6:session2                c       (unknown)
+    ##       (flat)            normal(0,1)         b set_size7:session2                c       (unknown)
+    ##       (flat)            normal(0,1)         b set_size8:session2                c       (unknown)
+    ##       (flat)    student_t(5,2,0.75)         b          set_size1                c       (unknown)
+    ##       (flat)    student_t(5,2,0.75)         b          set_size2                c       (unknown)
+    ##       (flat)    student_t(5,2,0.75)         b          set_size3                c       (unknown)
+    ##       (flat)    student_t(5,2,0.75)         b          set_size4                c       (unknown)
+    ##       (flat)    student_t(5,2,0.75)         b          set_size5                c       (unknown)
+    ##       (flat)    student_t(5,2,0.75)         b          set_size6                c       (unknown)
+    ##       (flat)    student_t(5,2,0.75)         b          set_size7                c       (unknown)
+    ##       (flat)    student_t(5,2,0.75)         b          set_size8                c       (unknown)
+    ##       (flat)            normal(0,1)         b                               kappa       (unknown)
+    ##       (flat)            normal(0,1)         b set_size1:session2            kappa       (unknown)
+    ##       (flat)            normal(0,1)         b set_size2:session2            kappa       (unknown)
+    ##       (flat)            normal(0,1)         b set_size3:session2            kappa       (unknown)
+    ##       (flat)            normal(0,1)         b set_size4:session2            kappa       (unknown)
+    ##       (flat)            normal(0,1)         b set_size5:session2            kappa       (unknown)
+    ##       (flat)            normal(0,1)         b set_size6:session2            kappa       (unknown)
+    ##       (flat)            normal(0,1)         b set_size7:session2            kappa       (unknown)
+    ##       (flat)            normal(0,1)         b set_size8:session2            kappa       (unknown)
+    ##       (flat) student_t(5,1.75,0.75)         b          set_size1            kappa       (unknown)
+    ##       (flat) student_t(5,1.75,0.75)         b          set_size2            kappa       (unknown)
+    ##       (flat) student_t(5,1.75,0.75)         b          set_size3            kappa       (unknown)
+    ##       (flat) student_t(5,1.75,0.75)         b          set_size4            kappa       (unknown)
+    ##       (flat) student_t(5,1.75,0.75)         b          set_size5            kappa       (unknown)
+    ##       (flat) student_t(5,1.75,0.75)         b          set_size6            kappa       (unknown)
+    ##       (flat) student_t(5,1.75,0.75)         b          set_size7            kappa       (unknown)
+    ##       (flat) student_t(5,1.75,0.75)         b          set_size8            kappa       (unknown)
+
+### Supressed intercept, 3-way interaction only
+
+``` r
+formula <- bmf(kappa ~ 0 + set_size:session:cond, c~1)
+compare_priors(formula, dat, modelSDM)
+```
+
+    ##    priorBRMS               priorBMM     class                     coef group resp  dpar nlpar
+    ##  constant(0)            constant(0) Intercept                                                
+    ##       (flat)    student_t(5,2,0.75) Intercept                                         c      
+    ##       (flat) student_t(5,1.75,0.75)         b                                     kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size1:session1:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size1:session1:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size1:session1:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size1:session1:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size1:session2:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size1:session2:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size1:session2:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size1:session2:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size2:session1:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size2:session1:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size2:session1:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size2:session1:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size2:session2:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size2:session2:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size2:session2:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size2:session2:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size3:session1:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size3:session1:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size3:session1:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size3:session1:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size3:session2:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size3:session2:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size3:session2:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size3:session2:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size4:session1:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size4:session1:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size4:session1:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size4:session1:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size4:session2:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size4:session2:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size4:session2:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size4:session2:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size5:session1:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size5:session1:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size5:session1:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size5:session1:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size5:session2:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size5:session2:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size5:session2:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size5:session2:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size6:session1:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size6:session1:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size6:session1:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size6:session1:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size6:session2:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size6:session2:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size6:session2:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size6:session2:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size7:session1:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size7:session1:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size7:session1:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size7:session1:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size7:session2:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size7:session2:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size7:session2:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size7:session2:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size8:session1:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size8:session1:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size8:session1:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size8:session1:cond4            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size8:session2:cond1            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size8:session2:cond2            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size8:session2:cond3            kappa      
+    ##       (flat) student_t(5,1.75,0.75)         b set_size8:session2:cond4            kappa      
+    ##     source
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+    ##  (unknown)
+
 ### Two factors no intercept, yes interaction
 
 ``` r

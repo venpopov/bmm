@@ -415,6 +415,19 @@ formula <- bmf(kappa ~ 0 + session * cond, c ~ 1)
 compare_priors(formula, dat, modelSDM)
 ```
 
+### Supressed intercept, 2 factors, only maineffect for facto1 and interaction
+
+```{r}
+formula <- bmf(kappa ~ 0 + set_size + set_size:session, c~0 + set_size + set_size:session)
+compare_priors(formula, dat, modelSDM)
+```
+
+### Supressed intercept, 3-way interaction only
+
+```{r}
+formula <- bmf(kappa ~ 0 + set_size:session:cond, c~1)
+compare_priors(formula, dat, modelSDM)
+```
 
 
 ### Two factors no intercept, yes interaction
@@ -433,5 +446,8 @@ compare_priors(formula, dat, modelSDM)
 formula <- bmf(kappa ~ 0 + session:cond, c ~ 1)
 compare_priors(formula, dat, modelSDM)
 ```
+
+
+
 
 </details>
