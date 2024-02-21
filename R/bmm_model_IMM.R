@@ -144,6 +144,49 @@
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel
+#' @examples
+#' \dontrun{
+#' # load data
+#' data <- OberauerLin_2017
+#'
+#' # define formula
+#' ff <- bmmformula(
+#'   kappa ~ 0 + set_size,
+#'   c ~ 0 + set_size,
+#'   a ~ 0 + set_size,
+#'   s ~ 0 + set_size
+#' )
+#'
+#' # specify the full IMM model with explicit column names for non-target features and distances
+#' model1 <- IMMfull(resp_err = "dev_rad",
+#'                   nt_features = paste0('col_nt',1:7),
+#'                   nt_distances = paste0('dist_nt',1:7),
+#'                   setsize = 'set_size')
+#'
+#' # fit the model
+#' fit <- fit_model(formula = ff,
+#'                  data = data,
+#'                  model = model1,
+#'                  parallel = T,
+#'                  iter = 500,
+#'                  backend = 'cmdstanr')
+#'
+#' # alternatively specify the IMM model with a regular expression to match non-target features
+#' # this is equivalent to the previous call, but more concise
+#' model2 <- IMMfull(resp_err = "dev_rad",
+#'                   nt_features = 'col_nt',
+#'                   nt_distances = 'dist_nt',
+#'                   setsize = 'set_size',
+#'                   regex = TRUE)
+#'
+#' # fit the model
+#' fit <- fit_model(formula = ff,
+#'                  data = data,
+#'                  model = model2,
+#'                  parallel=T,
+#'                  iter = 500,
+#'                  backend='cmdstanr')
+#'}
 #' @export
 IMMfull <- .model_IMMfull
 

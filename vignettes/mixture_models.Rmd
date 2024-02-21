@@ -300,4 +300,19 @@ fit3p <- fit_model(
 
 The rest of the analysis is the same as for the 2-parameter model. We can inspect the model fit, extract the parameter estimates, and visualize the posterior distributions.
 
+In the above example we specified all column names for the non_targets explicitely via `paste0('non_target_',1:5)`. Alternatively, you can use a regular expression to match the non-target feature columns in the dataset. This is useful when the non-target feature columns are named in a consistent way, e.g. `non_target_1`, `non_target_2`, `non_target_3`, etc. For example, you can specify the model a few different ways via regular expressions:
+
+```{r}
+model <- mixture3p(resp_err = "error", 
+                   nt_features = "non_target_[1-5]", 
+                   setsize = 'set_size', 
+                   regex = TRUE)
+model <- mixture3p(resp_err = "error", 
+                   nt_features = "non_target_", 
+                   setsize = 'set_size', 
+                   regex = TRUE)
+```
+
+
+
 # References
