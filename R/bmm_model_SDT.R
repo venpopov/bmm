@@ -3,10 +3,10 @@
 #############################################################################!
 # see file 'R/bmm_model_mixture3p.R' for an example
 
-.model_SDT <- function(response, stimulus, nTrials = NULL, dist_noise = "gumbel", data_aggregated = FALSE, ...) {
+.model_SDT <- function(response, stimulus, nTrials = NULL, dist_noise = "gumbel", ...) {
    out <- list(
       resp_vars = nlist(response, stimulus, nTrials),
-      other_vars = nlist(dist_noise, data_aggregated, ...),
+      other_vars = nlist(dist_noise, ...),
       info = list(
          domain = 'Perception & Recognition',
          task = 'Signal/Memory Recognition',
@@ -32,11 +32,22 @@
 #' @title `r .model_SDT(NA,NA)$info$name`
 #' @name SDT
 #' @details `r model_info(SDT(NA,NA))`
-#' @param response A description of the response variable
-#' @param stimulus A description of the response variable
-#' @param nTrials A description of the response variable
-#' @param dist_noise A description of the required argument
-#' @param data_aggregated A description of the required argument
+#' @param response The variable name of the response variable in the data set.
+#'   The response given when a stimulus appears. Either these can be integers
+#'   indicating that noise/new information was detected `0` or a signal/old information was
+#'   detected `1`. Or the sum of responses for signal/old information, when data is aggregated
+#' @param stimulus The variable name of the stimulus variable in the data set.
+#'   The type of stimulus that was presented. Either an integer value indicating
+#'   noise/new stimuli with `0` and signal/old stimuli with `1`, or a factor variable using
+#'   dummy coding with noise/new stimulus factors as the baseline level. If a factor variable
+#'   is used this factor should only have two levels: one for noise/new stimuli and another
+#'   for signal/old stimuli
+#' @param nTrials The variable name of the variable specifying the number of trials in the data set.
+#'   This argument only needs to be specified if aggregated data is provided in the response variable.
+#' @param dist_noise The noise distribution that should be assumed for the Signal Detection model.
+#'   Currently, the following noise distributions are supported: "normal", "gumbel",
+#'   "cauchy", and "logistic". The default is to assume normal noise around both the
+#'   signal and noise distribution in the SDT model.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
@@ -99,7 +110,7 @@ bmf2bf.SDT <- function(model, formula) {
    }
 
    # set the base brmsformula given the variable names
-   if (model$other_vars$data_aggregated) {
+   if (is.null(model$resp_vars$nTrials)) {
       brms_formula <- brms::bf(paste0(response," | ", "trials(",nTrials,")", " ~ dprime*",stimulus," - crit" ), nl = TRUE)
    } else {
       brms_formula <- brms::bf(paste0(response," ~ dprime*",stimulus," - crit"),nl = TRUE)

@@ -4,25 +4,28 @@
 \alias{SDT}
 \title{Models of Signal Detection Theory}
 \usage{
-SDT(
-  response,
-  stimulus,
-  nTrials = NULL,
-  dist_noise = "gumbel",
-  data_aggregated = FALSE,
-  ...
-)
+SDT(response, stimulus, nTrials = NULL, dist_noise = "gumbel", ...)
 }
 \arguments{
-\item{response}{A description of the response variable}
+\item{response}{The variable name of the response variable in the data set.
+The response given when a stimulus appears. Either these can be integers
+indicating that noise/new information was detected \code{0} or a signal/old information was
+detected \code{1}. Or the sum of responses for signal/old information, when data is aggregated}
 
-\item{stimulus}{A description of the response variable}
+\item{stimulus}{The variable name of the stimulus variable in the data set.
+The type of stimulus that was presented. Either an integer value indicating
+noise/new stimuli with \code{0} and signal/old stimuli with \code{1}, or a factor variable using
+dummy coding with noise/new stimulus factors as the baseline level. If a factor variable
+is used this factor should only have two levels: one for noise/new stimuli and another
+for signal/old stimuli}
 
-\item{nTrials}{A description of the response variable}
+\item{nTrials}{The variable name of the variable specifying the number of trials in the data set.
+This argument only needs to be specified if aggregated data is provided in the response variable.}
 
-\item{dist_noise}{A description of the required argument}
-
-\item{data_aggregated}{A description of the required argument}
+\item{dist_noise}{The noise distribution that should be assumed for the Signal Detection model.
+Currently, the following noise distributions are supported: "normal", "gumbel",
+"cauchy", and "logistic". The default is to assume normal noise around both the
+signal and noise distribution in the SDT model.}
 
 \item{...}{used internally for testing, ignore it}
 }
