@@ -300,4 +300,11 @@ order_data_query <- function(model, data, formula) {
   data
 }
 
-
+#' @inherit brms::save_pars title params return
+#' @description Thin wrapper around [brms::save_pars()]. When calling
+#'   [fit_model] with additional information to save parameters you can use this
+#'   function to pass information about saving parameter draws to `brms` without
+#'   having to load `brms`. Alternatively, you can also load `brms` and call
+#'   `save_pars`. For details see ?brms::save_pars.
+#' @export
+save_pars <- brms::save_pars
