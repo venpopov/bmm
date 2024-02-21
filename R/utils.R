@@ -299,5 +299,3 @@ order_data_query <- function(model, data, formula) {
   }
   data
 }
-
-
