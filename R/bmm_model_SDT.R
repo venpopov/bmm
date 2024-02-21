@@ -102,7 +102,7 @@ bmf2bf.SDT <- function(model, formula) {
 
    # set the base brmsformula given the variable names
    if (model$other_vars$data_aggregated) {
-      brms_formula <- brms::bf(paste0(response," | ", nTrials(nTrials), " ~ dprime*",stimulus," - crit" ), nl = TRUE)
+      brms_formula <- brms::bf(paste0(response," | ", "trials(",nTrials,")", " ~ dprime*",stimulus," - crit" ), nl = TRUE)
    } else {
       brms_formula <- brms::bf(paste0(response," ~ dprime*",stimulus," - crit"),nl = TRUE)
    }
@@ -144,7 +144,7 @@ configure_model.SDT <- function(model, data, formula) {
    }
 
    if (model$other_vars$data_aggregated) {
-      family <- brms::binomial(link = link_fun)
+      family <- binomial(link = link_fun)
    } else {
       family <- brms::bernoulli(link = link_fun)
    }
