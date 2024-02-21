@@ -319,6 +319,6 @@ order_data_query <- function(model, data, formula) {
 #' # example code
 #'
 save_pars_bmm2brms <- function(group = TRUE, all = FALSE, manual = NULL) {
-  save_pars <- brms::save_pars(group, all, manual)
+  save_pars <- brms::save_pars(group = group, all = all, manual = manual)
   save_pars
 }
