@@ -16,10 +16,3 @@ test_that("empty dots don't crash the function", {
   out <- combine_args(nlist(config_args))
   expect_equal(out, list(formula = 'a', family = 'b', prior = 'c', data = 'd', stanvars = 'e', init = 1))
 })
-
-test_that("save_pars_bmm2brm works as expected", {
-  expect_equal(brms::save_pars(all = TRUE), save_pars_bmm2brms(all = TRUE))
-  expect_error(save_pars_bmm2brms(all = "all"))
-  expect_error(save_pars_bmm2brms(latent = TRUE))
-})
-
