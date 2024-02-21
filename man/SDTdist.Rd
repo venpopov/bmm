@@ -60,12 +60,14 @@ assume the first half of the to be generated trials as 1 and the second half as 
 Signal-Detection Model. Available options are "normal", "gumbel", "cauchy", and "logistic".
 The default is "normal".}
 
-\item{log, }{log.p logical. if \code{TRUE} , values are returned on the log scale.}
+\item{log}{logical. if \code{TRUE} , values are returned on the log scale.}
 
 \item{q}{A vector of quantiles.}
 
 \item{lower.tail}{logical. if \code{TRUE} (default), probabilities are P[X < x],
 otherwise P[X > x].}
+
+\item{log.p}{logical. if \code{TRUE} , values are returned on the log scale.}
 
 \item{p}{A vector of probabilities.}
 

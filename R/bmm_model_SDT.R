@@ -11,7 +11,7 @@
          domain = 'Perception & Recognition',
          task = 'Signal/Memory Recognition',
          name = 'Models of Signal Detection Theory',
-         citation = 'DeCarlo, L. T. (1998). Signal detection theory and generalized linear models. Psychological Methods, 3(2), 186–205. https://doi.org/10.1037/1082-989X.3.2.186',
+         citation = 'DeCarlo, L. T. (1998). Signal detection theory and generalized linear models. Psychological Methods, 3(2), 186-205.',
          version = '',
          requirements = '',
          parameters = list(
@@ -25,10 +25,10 @@
    class(out) <- c('bmmmodel', 'SDT')
    out
 }
+
 # user facing alias
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_SDT()$info
-
 #' @title `r .model_SDT(NA,NA)$info$name`
 #' @name SDT
 #' @details `r model_info(SDT(NA,NA))`
@@ -72,9 +72,7 @@ check_data.SDT <- function(model, data, formula) {
    }
 
    # ask user if data should be aggregated to speed up model fitting
-   if (!model$other_vars$data_aggregated) {
 
-   }
    # save some variables as attributes of the data for later use (optional)
 
    data = NextMethod('check_data')
@@ -144,7 +142,7 @@ configure_model.SDT <- function(model, data, formula) {
    }
 
    if (model$other_vars$data_aggregated) {
-      family <- binomial(link = link_fun)
+      family <- stats::binomial(link = link_fun)
    } else {
       family <- brms::bernoulli(link = link_fun)
    }

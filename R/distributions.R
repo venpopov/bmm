@@ -623,7 +623,8 @@ rIMM <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
 #' @param dist_noise A string specifying which noise distribution is assumed for the
 #'   Signal-Detection Model. Available options are "normal", "gumbel", "cauchy", and "logistic".
 #'   The default is "normal".
-#' @param log, log.p logical. if `TRUE` , values are returned on the log scale.
+#' @param log logical. if `TRUE` , values are returned on the log scale.
+#' @param log.p logical. if `TRUE` , values are returned on the log scale.
 #' @param lower.tail logical. if `TRUE` (default), probabilities are P\[X < x\],
 #'   otherwise P\[X > x\].
 #'
@@ -650,16 +651,16 @@ dSDT <- function(x, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise 
 
   acts <- dprime*stim_num - crit
   if (tolower(dist_noise) == "normal") {
-    probs <- pnorm(acts)
+    probs <- stats::pnorm(acts)
   } else if (tolower(dist_noise) == "gumbel") {
     probs <- evd::pgumbel(-acts, lower.tail = FALSE)
   } else if (tolower(dist_noise) == "cauchy") {
-    probs <- pcauchy(acts)
+    probs <- stats::pcauchy(acts)
   } else if (tolower(dist_noise) == "logistic") {
-    probs <- plogis(acts)
+    probs <- stats::plogis(acts)
   }
 
-  density <- dbinom(x, size = size, prob = probs, log = log)
+  density <- stats::dbinom(x, size = size, prob = probs, log = log)
 
   if (!log) {
     return(exp(density))
@@ -686,16 +687,16 @@ pSDT <- function(q, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise 
 
   acts <- dprime*stim_num - crit
   if (tolower(dist_noise) == "normal") {
-    probs <- pnorm(acts)
+    probs <- stats::pnorm(acts)
   } else if (tolower(dist_noise) == "gumbel") {
     probs <- evd::pgumbel(-acts, lower.tail = FALSE)
   } else if (tolower(dist_noise) == "cauchy") {
-    probs <- pcauchy(acts)
+    probs <- stats::pcauchy(acts)
   } else if (tolower(dist_noise) == "logistic") {
-    probs <- plogis(acts)
+    probs <- stats::plogis(acts)
   }
 
-  prob <- pbinom(q = q, size = size, prob = probs, log.p = log.p)
+  prob <- stats::pbinom(q = q, size = size, prob = probs, log.p = log.p)
   prob
 }
 
@@ -717,16 +718,16 @@ qSDT <- function(p, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise 
 
   acts <- dprime*stim_num - crit
   if (tolower(dist_noise) == "normal") {
-    probs <- pnorm(acts)
+    probs <- stats::pnorm(acts)
   } else if (tolower(dist_noise) == "gumbel") {
     probs <- evd::pgumbel(-acts, lower.tail = FALSE)
   } else if (tolower(dist_noise) == "cauchy") {
-    probs <- pcauchy(acts)
+    probs <- stats::pcauchy(acts)
   } else if (tolower(dist_noise) == "logistic") {
-    probs <- plogis(acts)
+    probs <- stats::plogis(acts)
   }
 
-  quantile <- qbinom(p = p, size = size, prob = probs, log.p = log.p)
+  quantile <- stats::qbinom(p = p, size = size, prob = probs, log.p = log.p)
   quantile
 }
 
@@ -748,15 +749,15 @@ rSDT <- function(n, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise 
 
   acts <- dprime*stim_num - crit
   if (tolower(dist_noise) == "normal") {
-    probs <- pnorm(acts)
+    probs <- stats::pnorm(acts)
   } else if (tolower(dist_noise) == "gumbel") {
     probs <- evd::pgumbel(-acts, lower.tail = FALSE)
   } else if (tolower(dist_noise) == "cauchy") {
-    probs <- pcauchy(acts)
+    probs <- stats::pcauchy(acts)
   } else if (tolower(dist_noise) == "logistic") {
-    probs <- plogis(acts)
+    probs <- stats::plogis(acts)
   }
 
-  data <- rbinom(n = n, size = size, prob = probs)
+  data <- stats::rbinom(n = n, size = size, prob = probs)
   data
 }

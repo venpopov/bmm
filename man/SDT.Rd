@@ -39,7 +39,7 @@ Models of Signal Detection Theory
 \item \strong{Name:} Models of Signal Detection Theory
 \item \strong{Citation:}
 \itemize{
-\item DeCarlo, L. T. (1998). Signal detection theory and generalized linear models. Psychological Methods, 3(2), 186–205. https://doi.org/10.1037/1082-989X.3.2.186
+\item DeCarlo, L. T. (1998). Signal detection theory and generalized linear models. Psychological Methods, 3(2), 186-205.
 }
 \item \strong{Requirements:}
 \item \strong{Parameters:}
