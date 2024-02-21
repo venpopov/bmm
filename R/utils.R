@@ -226,6 +226,10 @@ is_try_warning <- function(x) {
   inherits(x, "warning")
 }
 
+is_bmmmodel <- function(x) {
+  inherits(x, "bmmmodel")
+}
+
 as_numeric_vector <- function(x) {
   out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
   if (is_try_warning(out)) {
@@ -308,3 +312,10 @@ order_data_query <- function(model, data, formula) {
 #'   `save_pars`. For details see ?brms::save_pars.
 #' @export
 save_pars <- brms::save_pars
+
+
+# custom method form printing nicely formatted character values via cat instead of print
+#' @export
+print.message <- function(x, ...) {
+  cat(x, ...)
+}
