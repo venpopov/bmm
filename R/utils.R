@@ -230,6 +230,11 @@ is_bmmmodel <- function(x) {
   inherits(x, "bmmmodel")
 }
 
+is_supported_bmmmodel <- function(x) {
+  valid_models <- supported_models(print_call = FALSE)
+  is_bmmmodel(x) && inherits(x, valid_models)
+}
+
 as_numeric_vector <- function(x) {
   out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
   if (is_try_warning(out)) {
