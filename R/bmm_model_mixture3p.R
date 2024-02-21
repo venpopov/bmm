@@ -130,16 +130,19 @@ configure_model.mixture3p <- function(model, data, formula) {
   additional_constants <- list()
   additional_constants[[kappa_unif]] <- -100
   additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants) +
-    brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-    brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat") +
-    brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetant")
+  prior <- fixed_pars_priors(model, additional_constants)
+  if (getOption("bmm.default_priors", TRUE)) {
+    prior <- prior +
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
+                                        thetat=list(main='logistic(0, 1)', nlpar=T),
+                                        thetant=list(main='logistic(0, 1)', nlpar=T)))
+  }
 
   # if there is setsize 1 in the data, set constant prior over thetant for setsize1
   thetant_preds <- rhs_vars(bmm_formula$thetant)
   if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% thetant_preds) {
-    prior <- prior +
-      brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
+    prior <- combine_prior(prior, brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant"))
   }
 
   nlist(formula, data, family, prior)

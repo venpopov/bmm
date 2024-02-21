@@ -127,6 +127,12 @@ configure_model.sdmSimple <- function(model, data, formula) {
     # construct the default prior
     # TODO: for now it just fixes mu to 0, I have to add proper priors
     prior <- fixed_pars_priors(model)
+    if (getOption("bmm.default_priors", TRUE)) {
+      prior <- prior +
+        set_default_prior(bmm_formula, data,
+                          prior_list=list(kappa = list(main = 'student_t(5,1.75,0.75)',effects = 'normal(0,1)'),
+                                          c = list(main = 'student_t(5,2,0.75)', effects = 'normal(0,1)')))
+    }
 
     # set initial values to be sampled between [-1,1] to avoid extreme SDs that
     # can cause the sampler to fail

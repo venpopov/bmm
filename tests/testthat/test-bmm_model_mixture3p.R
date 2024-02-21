@@ -31,9 +31,9 @@ test_that('mixture3p gives an error if setsize is a predictor but there is an in
 
 
   formula <- bmf(
-    kappa ~ 1,
+    kappa ~ 1 + session,
     thetat ~ 1,
     thetant ~ 0 + set_size
   )
-  expect_silent(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F))
+  expect_silent({fit = fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F)})
 })
