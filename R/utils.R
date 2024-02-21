@@ -41,27 +41,21 @@ NULL
 #' softmax(5:7)
 #' softmaxinv(softmax(5:7))
 softmax <- function(eta, lambda = 1) {
-
   stopifnot(requireNamespace("matrixStats", quietly = TRUE))
-
-  #Compute the softmax function
   m     <- length(eta)+1
   DEN   <- matrixStats::logSumExp(c(lambda*eta, 0))
   LSOFT <- c(lambda*eta, 0) - DEN
-  SOFT  <- exp(LSOFT)
-  SOFT
+  exp(LSOFT)
 }
 
 #' @rdname softmax
 #' @export
 softmaxinv <- function(p, lambda = 1) {
-
-  #Compute the inverse-softmax function
   m <- length(p)
   if (m > 1) {
-    SOFTINV <- (base::log(p) - base::log(p[m]))[1:(m-1)]/lambda } else {
-      SOFTINV <- numeric(0) }
-  SOFTINV
+    return((log(p) - log(p[m]))[1:(m-1)]/lambda)
+  }
+  numeric(0)
 }
 
 #' @title Configure local options during model fitting
@@ -88,14 +82,14 @@ configure_options <- function(opts, env=parent.frame()) {
   withr::local_options(
     list(
       mc.cores = cores,
-      bmm.silent = opts$silent
+      bmm.silent = opts$silent,
+      bmm.sort_data = opts$sort_data
     ),
     .local_envir=env)
 
   # return only options that can be passed to brms/rstan/cmdstanr
-  exclude_args <- c('parallel')
-  opts <- opts[not_in(names(opts), exclude_args)]
-  return(opts)
+  exclude_args <- c('parallel', 'sort_data')
+  opts[not_in(names(opts), exclude_args)]
 }
 
 # ------------------------------------------------------------------------------
@@ -135,10 +129,9 @@ glue_lf <- function(...) {
 #' @noRd
 call_brm <- function(fit_args) {
   fit <- brms::do_call(brms::brm, fit_args)
-  if (!is.null(fit_args$backend) && fit_args$backend == "mock") {
-    fit$fit_args <- fit_args
-  }
-  return(fit)
+  fit$bmm_fit_args <- fit_args
+  class(fit) <- c('bmmfit','brmsfit')
+  fit
 }
 
 
@@ -203,6 +196,7 @@ install_and_load_bmm_version <- function(version) {
 #'   list or data.frame with the information for each fit is returned.
 #'  - "time": A data.frame with the sampling time per chain
 #'  - "time_mean": A named numeric vector with the mean sampling time
+#' @keywords extract_info
 #' @export
 fit_info <- function(fit, what) {
   UseMethod("fit_info")
@@ -239,3 +233,78 @@ as_numeric_vector <- function(x) {
   }
   out
 }
+
+stop_quietly <- function() {
+  opt <- options(show.error.messages = FALSE)
+  on.exit(options(opt))
+  stop()
+}
+
+
+# for some models it is faster to sample if the normalizing constant is calculated
+# only once for all trials that have the same value for the predictors. Currently
+# this is only used in the sdmSimple model, and to work it requires that the
+# data is ordered by the predictor variables. This function checks if the data is
+# ordered by the predictors, and if not, it suggests to the user to sort the data
+order_data_query <- function(model, data, formula) {
+  sort_data <- getOption("bmm.sort_data", NULL)
+  if(is.null(sort_data) & !is_data_ordered(data, formula)) {
+    message("\n\nData is not ordered by predictors.\nYou can speed up the model ",
+            "estimation up to several times (!) by ordering the data by all your ",
+            "predictor columns.\n\n")
+    caution_msg <- paste(strwrap("* caution: if you chose Option 2, you need to be careful
+      when using brms postprocessing methods that rely on the data order, such as
+      generating predictions. Assuming you assigned the result of fit_model to a
+      variable called `fit`, you can extract the sorted data from the fitted object
+      with:\n\n   data_sorted <- fit$fit_args$data", width=80), collapse = "\n")
+    caution_msg <- crayon::red(caution_msg)
+
+    if(interactive()) {
+      var <- utils::menu(c("Yes (note: you will receive code to sort your data)",
+               paste0("Let bmm sort the data for you and continue with the faster model fitting ",
+                      crayon::red("(*)")),
+               paste0("No, I want to continue with the slower estimation\n\n", caution_msg, collapse = "\n")),
+               title="Do you want to stop and sort your data? (y/n): ")
+      if(var == 1) {
+        message("Please sort your data by all predictors and then re-run the model.")
+        data_name <- attr(data, "data_name")
+        if (is.null(data_name)) {
+          data_name <- deparse(substitute(data))
+        }
+        message("To sort your data, use the following code:\n\n")
+        message(crayon::green("library(dplyr)"))
+        message(crayon::green(data_name, "_sorted <- ", data_name, " %>% arrange(",
+                              paste(rhs_vars(formula), collapse = ", "),
+                              ")\n\n",
+                              sep=""))
+        message("Then re-run the model with the newly sorted data.")
+        stop_quietly()
+      } else if (var == 2) {
+        message("Your data has been sorted by the following predictors: ", paste(rhs_vars(formula), collapse = ", "),'\n')
+        preds <- rhs_vars(formula)
+        data <- dplyr::arrange_at(data, preds)
+      }
+    }
+  } else if (isTRUE(sort_data)) {
+    preds <- rhs_vars(formula)
+    data <- dplyr::arrange_at(data, preds)
+    message("\nYour data has been sorted by the following predictors: ", paste(rhs_vars(formula), collapse = ", "),'\n')
+    caution_msg <- paste(strwrap("* caution: you have set `sort_data=TRUE`. You need to be careful
+        when using brms postprocessing methods that rely on the data order, such as
+        generating predictions. Assuming you assigned the result of fit_model to a
+        variable called `fit`, you can extract the sorted data from the fitted object
+        with:\n\n   data_sorted <- fit$fit_args$data", width=80), collapse = "\n")
+    caution_msg <- crayon::red(caution_msg)
+    message(caution_msg)
+  }
+  data
+}
+
+#' @inherit brms::save_pars title params return
+#' @description Thin wrapper around [brms::save_pars()]. When calling
+#'   [fit_model] with additional information to save parameters you can use this
+#'   function to pass information about saving parameter draws to `brms` without
+#'   having to load `brms`. Alternatively, you can also load `brms` and call
+#'   `save_pars`. For details see ?brms::save_pars.
+#' @export
+save_pars <- brms::save_pars

@@ -29,7 +29,7 @@ k2sd <- function (K) {
       S[j] = sqrt(-2*log(besselI(K[j],1)/besselI(K[j],0)));
     }
   }
-  return(as.numeric(S))
+  as.numeric(S)
 }
 
 

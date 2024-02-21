@@ -20,7 +20,7 @@ navbar:
         href: news/index.html
      develop:
         text: Develop
-        href: dev-notes/index.html
+        href: https://venpopov.github.io/bmm/dev/dev-notes/index.html
 
 
 
@@ -34,10 +34,11 @@ reference:
    desc: "Main function for model fitting"
  - contents:
    - "fit_model"
+   - "bmmformula"
  - title: "Extract model information"
    desc: "Utility functions for extracting default priors, generate stan code, stan data, etc."
  - contents:
-   - has_keyword("extract_stan")
+   - has_keyword("extract_info")
  - title: "Specifying models"
    desc: "Functions for specifying which model to fit"
  - contents:

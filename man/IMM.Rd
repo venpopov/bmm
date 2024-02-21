@@ -7,9 +7,9 @@
 \alias{IMMabc}
 \title{Interference measurement model by Oberauer and Lin (2017).}
 \usage{
-IMMfull(resp_err, nt_features, nt_distance, setsize, ...)
+IMMfull(resp_err, nt_features, nt_distances, setsize, ...)
 
-IMMbsc(resp_err, nt_features, nt_distance, setsize, ...)
+IMMbsc(resp_err, nt_features, nt_distances, setsize, ...)
 
 IMMabc(resp_err, nt_features, setsize, ...)
 }
@@ -22,7 +22,7 @@ target in radians. You can transform the response error in degrees to radian usi
 The non_target variables should be in radians and be centered relative to the
 target.}
 
-\item{nt_distance}{A vector of names of the columns containing the distances of
+\item{nt_distances}{A vector of names of the columns containing the distances of
 non-target items to the target item. Only necessary for the \code{IMMbsc} and \code{IMMfull} models}
 
 \item{setsize}{Name of the column containing the set size variable (if
@@ -62,6 +62,10 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \code{c}: Context activation
 \item \code{s}: Spatial similarity gradient
 }
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu1} = 0
+}
 }
 }
 
@@ -79,6 +83,10 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \code{c}: Context activation
 \item \code{s}: Spatial similarity gradient
 }
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu1} = 0
+}
 }
 }
 
@@ -95,6 +103,10 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
 \item \code{a}: General activation of memory items
 \item \code{c}: Context activation
+}
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu1} = 0
 }
 }
 

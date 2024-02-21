@@ -36,8 +36,7 @@
 #'     prior <- <code for new prior>
 #'
 #'     # return the list
-#'     out <- nlist(formula, data, family, prior)
-#'     return(out)
+#'     nlist(formula, data, family, prior)
 #'  }
 #'  ```
 #' @examples
@@ -95,8 +94,7 @@
 #'        brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
 #'    }
 #'
-#'    out <- nlist(formula, data, family, prior)
-#'    return(out)
+#'    nlist(formula, data, family, prior)
 #' }
 #' }
 #'
@@ -137,7 +135,7 @@ supported_models <- function(print_call=TRUE) {
     cat(gsub("`", " ", out))
     return(invisible(out))
   }
-  return(supported_models)
+  supported_models
 }
 
 #' @title Generate a markdown list of the measurement models available in `bmm`
@@ -185,6 +183,14 @@ model_info.bmmmodel <- function(model, components = 'all') {
     }
   }
 
+  fixed_pars <- model$info$fixed_parameters
+  fixed_par_info <- ""
+  if (length(fixed_pars) > 0) {
+    for (fixed_par in names(fixed_pars)) {
+      fixed_par_info <- paste0(fixed_par_info, "   - `", fixed_par, "` = ", fixed_pars[[fixed_par]], "\n")
+    }
+  }
+
   info_all <-   list(
     domain = paste0("* **Domain:** ", model$info$domain, "\n\n"),
     task = paste0("* **Task:** ", model$info$task, "\n\n"),
@@ -192,7 +198,8 @@ model_info.bmmmodel <- function(model, components = 'all') {
     citation = paste0("* **Citation:** \n\n   - ", model$info$citation, "\n\n"),
     version = paste0("* **Version:** ", model$info$version, "\n\n"),
     requirements = paste0("* **Requirements:** \n\n  ", model$info$requirements, "\n\n"),
-    parameters = paste0("* **Parameters:** \n\n  ", par_info, "\n\n")
+    parameters = paste0("* **Parameters:** \n\n  ", par_info, "\n\n"),
+    fixed_parameters = paste0("* **Fixed parameters:** \n\n  ", fixed_par_info, "\n\n")
   )
 
   if (length(components) == 1 && components == 'all') {
@@ -204,7 +211,7 @@ model_info.bmmmodel <- function(model, components = 'all') {
   }
 
   # return only the specified components
-  return(collapse(info_all[components]))
+  collapse(info_all[components])
 }
 
 #' Checks if the model is supported, and returns the model function
@@ -218,8 +225,7 @@ check_model <- function(model) {
     stop(model_label, " is not a supported model. Supported ",
          "models are:\n", collapse_comma(ok_models))
   }
-
-  return(model)
+  model
 }
 
 
@@ -320,7 +326,8 @@ use_model_template <- function(model_name,
     "# A check_data.* function should be defined for each class of the model.\n",
     "# If a model shares methods with other models, the shared methods should be\n",
     "# defined in data-helpers.R. Put here only the methods that are specific to\n",
-    "# the model. See ?check_data for details\n\n")
+    "# the model. See ?check_data for details.\n",
+    "# (YOU CAN DELETE THIS SECTION IF YOU DO NOT REQUIRE ADDITIONAL DATA CHECKS)\n\n")
 
   bmf2bf_header <- paste0(
     "\n\n#############################################################################!\n",
@@ -329,7 +336,8 @@ use_model_template <- function(model_name,
     "# A bmf2bf.* function should be defined if the default method for consructing\n",
     "# the brmsformula from the bmmformula does not apply\n",
     "# The shared method for all `bmmmodels` is defined in helpers-formula.R.\n",
-    "# See ?bmf2bf for details.\n\n")
+    "# See ?bmf2bf for details.\n",
+    "# (YOU CAN DELETE THIS SECTION IF YOUR MODEL USES A STANDARD FORMULA WITH 1 RESPONSE VARIABLE)\n\n")
 
   configure_model_header <- paste0(
     "\n\n#############################################################################!\n",
@@ -448,8 +456,7 @@ use_model_template <- function(model_name,
         }
       }
       stan_vars_template <- paste0(stan_vars_template,
-                                   "   stan_", stanvar_block, " <- readChar(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'),\n",
-                                   "      file.info(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'))$size)\n")
+                                   "   stan_", stanvar_block, " <- read_lines2(paste0(sc_path, '/", model_name, "_", stanvar_block, ".stan'))\n")
     }
     stan_vars_template <- paste0(stan_vars_template, "\n   stanvars <- ")
     i = 1
@@ -553,7 +560,7 @@ use_model_template <- function(model_name,
 #'
 #' @export
 #'
-#' @keywords extract_stan
+#' @keywords extract_info
 #'
 #' @examples
 #' \dontrun{
@@ -575,8 +582,8 @@ get_stancode <- function(formula, data, model, prior=NULL, ...) {
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model)
-  formula <- check_formula(model, formula)
   data <- check_data(model, data, formula)
+  formula <- check_formula(model, data, formula)
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
@@ -587,9 +594,7 @@ get_stancode <- function(formula, data, model, prior=NULL, ...) {
   # extract stan code
   dots <- list(...)
   fit_args <- c(config_args, dots)
-  stancode <- brms::do_call(brms::make_stancode, fit_args)
-
-  return(stancode)
+  brms::do_call(brms::make_stancode, fit_args)
 }
 
 
@@ -616,7 +621,7 @@ get_stancode <- function(formula, data, model, prior=NULL, ...) {
 #' @param ... Further arguments passed to [brms::make_stancode()]. See the
 #'   description of [brms::make_stancode()] for more details
 #'
-#' @keywords extract_stan
+#' @keywords extract_info
 #'
 #' @returns A character string containing the parameter block of fully commented
 #'   Stan code to fit a bmm model.
@@ -627,8 +632,7 @@ get_stancode <- function(formula, data, model, prior=NULL, ...) {
 #' @export
 get_stancode_parblock <- function(formula, data, model, prior=NULL, ...) {
   stancode <- get_stancode(formula, data, model, prior, ...)
-  parblock <- .extract_parblock(stancode)
-  return(parblock)
+  .extract_parblock(stancode)
 }
 
 
@@ -641,5 +645,5 @@ get_stancode_parblock <- function(formula, data, model, prior=NULL, ...) {
   parblock <- stringr::str_match(as.character(stancode),
                                  "(?s)parameters \\{\\n(.*?)\\}\\ntransformed")[,2]
   class(parblock) <- class(stancode)
-  return(parblock)
+  parblock
 }

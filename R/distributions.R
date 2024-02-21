@@ -414,7 +414,6 @@ dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2, log 
     return(exp(density))
   }
 
-  # return the weighted density
   density
 }
 
@@ -550,7 +549,6 @@ dIMM <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
     return(exp(density))
   }
 
-  # return the weighted density
   density
 }
 

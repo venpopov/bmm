@@ -15,7 +15,8 @@ cmdstanr_output_dir <- here::here("tests/internal/cmdstanr_output")
 if (!dir.exists(cmdstanr_output_dir)) {
   dir.create(cmdstanr_output_dir)
 }
-options(cmdstanr_write_stan_file_dir = cmdstanr_output_dir)
+options(cmdstanr_write_stan_file_dir = cmdstanr_output_dir,
+        bmm.sort_data = TRUE)
 ```
 
 ## Introduction
@@ -265,7 +266,7 @@ formula <- bmf(a ~ 0 + SetSize,
 
 model <- IMMfull(resp_err = 'dev_rad',
                  nt_features = paste0("Item", 2:4,"_Col_rad"),
-                 nt_distance = paste0("Item", 2:4,"_Pos_rad"),
+                 nt_distances = paste0("Item", 2:4,"_Pos_rad"),
                  setsize = "SetSize")
 
 fit$IMMfull <- fit_model(formula, data, model,
@@ -325,7 +326,7 @@ formula <- bmf(c ~ 0 + SetSize,
 
 model <- IMMbsc(resp_err = 'dev_rad',
                 nt_features = paste0("Item", 2:4,"_Col_rad"),
-                nt_distance = paste0("Item", 2:4,"_Pos_rad"),
+                nt_distances = paste0("Item", 2:4,"_Pos_rad"),
                 setsize = "SetSize")
 
 fit$IMMbsc <- fit_model(formula, data, model,

@@ -49,6 +49,10 @@ Three-parameter mixture model by Bays et al (2009).
 \item \code{thetat}: Mixture weight for target responses
 \item \code{thetant}: Mixture weight for non-target responses
 }
+\item \strong{Fixed parameters:}
+\itemize{
+\item \code{mu1} = 0
+}
 }
 }
 \examples{

@@ -1,0 +1,5 @@
+Internal documents related to the package development such as:
+
+- design specs
+- playtests
+- others

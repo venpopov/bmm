@@ -33,10 +33,10 @@
   out
 }
 
-.model_IMMbsc <- function(resp_err, nt_features, nt_distance, setsize, ...) {
+.model_IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
-    other_vars = nlist(nt_features, nt_distance, setsize),
+    other_vars = nlist(nt_features, nt_distances, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -64,10 +64,10 @@
   out
 }
 
-.model_IMMfull <- function(resp_err,  nt_features, nt_distance, setsize, ...) {
+.model_IMMfull <- function(resp_err,  nt_features, nt_distances, setsize, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
-    other_vars = nlist( nt_features, nt_distance, setsize),
+    other_vars = nlist(nt_features, nt_distances, setsize),
     info = list(
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -102,11 +102,11 @@
 #' @name IMM
 #' @details `r model_info(IMMfull(NA, NA, NA, NA), components =c('domain', 'task', 'name', 'citation'))`
 #' #### Version: `IMMfull`
-#' `r model_info(IMMfull(NA, NA, NA, NA), components =c('requirements', 'parameters'))`
+#' `r model_info(IMMfull(NA, NA, NA, NA), components =c('requirements', 'parameters', 'fixed_parameters'))`
 #' #### Version: `IMMbsc`
-#' `r model_info(IMMbsc(NA, NA, NA, NA), components =c('requirements', 'parameters'))`
+#' `r model_info(IMMbsc(NA, NA, NA, NA), components =c('requirements', 'parameters', 'fixed_parameters'))`
 #' #### Version: `IMMabc`
-#' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters'))`
+#' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters', 'fixed_parameters'))`
 #'
 #' Additionally, all IMM models have an internal parameter that is fixed to 0 to
 #' allow the model to be identifiable. This parameter is not estimated and is not
@@ -120,7 +120,7 @@
 #' @param nt_features A character vector with the names of the non-target variables.
 #'   The non_target variables should be in radians and be centered relative to the
 #'   target.
-#' @param nt_distance A vector of names of the columns containing the distances of
+#' @param nt_distances A vector of names of the columns containing the distances of
 #'   non-target items to the target item. Only necessary for the `IMMbsc` and `IMMfull` models
 #' @param setsize Name of the column containing the set size variable (if
 #'   setsize varies) or a numeric value for the setsize, if the setsize is
@@ -151,25 +151,19 @@ IMMabc <- .model_IMMabc
 
 #' @export
 check_data.IMMspatial <- function(model, data, formula) {
-  nt_distance <- model$other_vars$nt_distance
+  nt_distances <- model$other_vars$nt_distances
   max_setsize <- attr(data, 'max_setsize')
 
-  if (length(nt_distance) < max_setsize - 1) {
-    stop(paste0("The number of columns for spatial positions in the argument ",
-                "'nt_distance' is less than max(setsize)-1"))
-  } else if (length(nt_distance) > max_setsize - 1) {
-    stop(paste0("The number of columns for spatial positions in the argument ",
-                "'nt_distance' is more than max(setsize)-1"))
+  if (!isTRUE(all.equal(length(nt_distances), max_setsize - 1))) {
+    stop("The number of columns for non-target distances in the argument ",
+         "'nt_distances' should equal max(setsize)-1")
   }
 
-  if (any(data[,nt_distance] < 0)) {
-    stop('Somve values of the spatial distance variables in the data are negative.\n
-         All spatial distances to the target need to be postive.')
+  if (any(data[,nt_distances] < 0)) {
+    stop('All non-target distances to the target need to be postive.')
   }
 
-  data = NextMethod("check_data")
-
-  return(data)
+  NextMethod("check_data")
 }
 
 #############################################################################!
@@ -220,19 +214,22 @@ configure_model.IMMabc <- function(model, data, formula) {
   additional_constants <- list()
   additional_constants[[kappa_unif]] <- -100
   additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants) +
-    brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "a")
-
-  # if there is setsize 1 in the data, set constant prior over thetant for setsize1
-  if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
+  prior <- fixed_pars_priors(model, additional_constants)
+  if (getOption("bmm.default_priors", TRUE)) {
     prior <- prior +
-      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "a")
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=T),
+                                        a=list(main = 'normal(0,1)', effects = 'normal(0,1)', nlpar=T),
+                                        c=list(main = 'normal(0,1)', effects = 'normal(0,1)', nlpar=T)))
   }
 
-  out <- nlist(formula, data, family, prior)
-  return(out)
+  # if there is setsize 1 in the data, set constant prior over a for setsize1
+  a_preds <- rhs_vars(bmm_formula$a)
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% a_preds) {
+    prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a"))
+  }
+
+  nlist(formula, data, family, prior)
 }
 
 #' @export
@@ -242,7 +239,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
   lure_idx_vars <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
-  nt_distance <- model$other_vars$nt_distance
+  nt_distances <- model$other_vars$nt_distances
 
   # construct main brms formula from the bmm formula
   bmm_formula <- formula
@@ -265,7 +262,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
-      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distance[i],')*c) + ',
+      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distances[i],')*c) + ',
                '(1-', lure_idx_vars[i], ')*(-100)') +
       glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
   }
@@ -279,19 +276,22 @@ configure_model.IMMbsc <- function(model, data, formula) {
   additional_constants <- list()
   additional_constants[[kappa_unif]] <- -100
   additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants) +
-    brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
-
-  # if there is setsize 1 in the data, set constant prior over thetant for setsize1
-  if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
+  prior <- fixed_pars_priors(model, additional_constants)
+  if (getOption("bmm.default_priors", TRUE)) {
     prior <- prior +
-      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "s")
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
+                                        c=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T),
+                                        s=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T)))
   }
 
-  out <- nlist(formula, data, family, prior)
-  return(out)
+  # if there is setsize 1 in the data, set constant prior over s for setsize1
+  s_preds <- rhs_vars(bmm_formula$s)
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% s_preds) {
+    prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s"))
+  }
+
+  nlist(formula, data, family, prior)
 }
 
 #' @export
@@ -301,7 +301,7 @@ configure_model.IMMfull <- function(model, data, formula) {
   lure_idx_vars <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
-  nt_distance <- model$other_vars$nt_distance
+  nt_distances <- model$other_vars$nt_distances
 
   # construct main brms formula from the bmm formula
   bmm_formula <- formula
@@ -324,7 +324,7 @@ configure_model.IMMfull <- function(model, data, formula) {
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
       glue_nlf(kappa_nts[i], ' ~ kappa') +
-      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distance[i],')*c + a) + ',
+      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distances[i],')*c + a) + ',
                '(1-', lure_idx_vars[i], ')*(-100)') +
       glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
   }
@@ -338,19 +338,27 @@ configure_model.IMMfull <- function(model, data, formula) {
   additional_constants <- list()
   additional_constants[[kappa_unif]] <- -100
   additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants) +
-    brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "c") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "a") +
-    brms::prior_("normal(0, 1)", class = "b", nlpar = "s")
-
-  # if there is setsize 1 in the data, set constant prior over thetant for setsize1
-  if ((1 %in% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
+  prior <- fixed_pars_priors(model, additional_constants)
+  if (getOption("bmm.default_priors", TRUE)) {
     prior <- prior +
-      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "a") +
-      brms::prior_("constant(0)", class = "b", coef = paste0(setsize_var, 1), nlpar = "s")
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
+                                        a=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T),
+                                        c=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T),
+                                        s=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T)))
   }
 
-  out <- nlist(formula, data, family, prior)
-  return(out)
+  # if there is setsize 1 in the data, set constant prior over a and s for setsize1
+  a_preds <- rhs_vars(bmm_formula$a)
+  s_preds <- rhs_vars(bmm_formula$s)
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]])) {
+    if (setsize_var %in% a_preds) {
+      prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a"))
+    }
+    if (setsize_var %in% s_preds) {
+      prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s"))
+    }
+  }
+
+  nlist(formula, data, family, prior)
 }

@@ -47,6 +47,7 @@ check_data.bmmmodel <- function(model, data, formula) {
     stop("Argument 'data' does not contain observations.")
   }
 
+  attr(data, 'data_name') <- substitute_name(data, envir = eval(parent.frame()))
   attr(data, 'checked') <- TRUE
   NextMethod("check_data")
 }
@@ -64,9 +65,7 @@ check_data.vwm <- function(model, data, formula) {
              The model will continue to run, but the results may be compromised.')
   }
 
-  data = NextMethod("check_data")
-
-  return(data)
+  NextMethod("check_data")
 }
 
 
@@ -83,12 +82,9 @@ check_data.nontargets <- function(model, data, formula) {
   max_setsize <- ss$max_setsize
   ss_numeric <- ss$ss_numeric
 
-  if (length(nt_features) < max_setsize - 1) {
+  if (!isTRUE(all.equal(length(nt_features), max_setsize - 1))) {
     stop("The number of columns for non-target values in the argument ",
-         "'nt_features' is less than max(setsize)-1")
-  } else if (length(nt_features) > max_setsize - 1) {
-    stop('The number of columns for non-target values in the argument ',
-         '`nt_features` is more than max(setsize)-1')
+         "'nt_features' should equal max(setsize)-1")
   }
 
 
@@ -106,9 +102,7 @@ check_data.nontargets <- function(model, data, formula) {
   attr(data, 'max_setsize') <- max_setsize
   attr(data, 'lure_idx_vars') <- lure_idx_vars
 
-  data = NextMethod("check_data")
-
-  return(data)
+  NextMethod("check_data")
 }
 
 
@@ -142,7 +136,7 @@ check_var_setsize <- function(setsize, data) {
     stop2("Values of the setsize variable '", setsize, "' must be whole numbers")
   }
 
-  return(list(max_setsize = max_setsize, ss_numeric = ss_numeric))
+  list(max_setsize = max_setsize, ss_numeric = ss_numeric)
 }
 
 
@@ -173,7 +167,7 @@ calc_error_relative_to_nontargets <- function(data, response, nt_features) {
     tidyr::gather(non_target_name, non_target_value, eval(nt_features))
 
   data$y_nt <- wrap(data[[response]]-data[["non_target_value"]])
-  return(data)
+  data
 }
 
 #' @title Wrap angles that extend beyond (-pi;pi)
@@ -201,9 +195,8 @@ wrap <- function(x, radians=TRUE) {
   stopifnot(is.logical(radians))
   if (radians) {
     return(((x+pi) %% (2*pi)) - pi)
-  } else {
-    return(((x+180) %% (2*180)) - 180)
   }
+  ((x+180) %% (2*180)) - 180
 }
 
 #' @title Convert degrees to radians or radians to degrees.
@@ -262,7 +255,7 @@ rad2deg <- function(rad){
 #'
 #' @export
 #'
-#' @keywords extract_stan
+#' @keywords extract_info
 #'
 #' @examples
 #' \dontrun{
@@ -284,8 +277,8 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model)
-  formula <- check_formula(model, formula)
   data <- check_data(model, data, formula)
+  formula <- check_formula(model, data, formula)
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
@@ -296,10 +289,37 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
   # extract stan code
   dots <- list(...)
   fit_args <- c(config_args, dots)
-  standata <- brms::do_call(brms::make_standata, fit_args)
-
-  return(standata)
+  brms::do_call(brms::make_standata, fit_args)
 }
+
+
+# check if the data is sorted by the predictors
+is_data_ordered <- function(data, formula) {
+  dpars <- names(formula)
+  predictors <- rhs_vars(formula)
+  predictors <- predictors[not_in(predictors, dpars)]
+  data <- data[,predictors]
+  if (length(predictors) > 1) {
+    gr_idx <- do.call(paste, c(data, list(sep="_")))
+  } else {
+    gr_idx <- data
+  }
+  is_ordered <- !has_nonconsecutive_duplicates(gr_idx)
+  is_ordered
+}
+
+# checks if all repetitions of a given value are consecutive in a vector
+# by iterating over unique values and checking if all their positions are consecutive
+has_nonconsecutive_duplicates <- function(vec) {
+  unique_vals <- unique(vec)
+  cond <- TRUE
+  for(val in unique_vals) {
+    positions <- which(vec == val)
+    cond <- cond & all(diff(positions) == 1)
+  }
+  !cond
+}
+
 
 
 
