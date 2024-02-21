@@ -40,9 +40,9 @@ used if no user-specified priors were passed to the \code{\link[=fit_model]{fit_
 \details{
 The following models are supported:
 \itemize{
-\item IMMabc(resp_err, nt_features, setsize)
-\item IMMbsc(resp_err, nt_features, nt_distances, setsize)
-\item IMMfull(resp_err, nt_features, nt_distances, setsize)
+\item IMMabc(resp_err, nt_features, setsize, regex)
+\item IMMbsc(resp_err, nt_features, nt_distances, setsize, regex)
+\item IMMfull(resp_err, nt_features, nt_distances, setsize, regex)
 \item mixture2p(resp_err)
 \item mixture3p(resp_err, nt_features, setsize, regex)
 \item sdmSimple(resp_err)

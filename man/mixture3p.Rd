@@ -4,7 +4,7 @@
 \alias{mixture3p}
 \title{Three-parameter mixture model by Bays et al (2009).}
 \usage{
-mixture3p(resp_err, nt_features, setsize, ...)
+mixture3p(resp_err, nt_features, setsize, regex = FALSE, ...)
 }
 \arguments{
 \item{resp_err}{The name of the variable in the dataset containing
@@ -13,12 +13,17 @@ the to-be-recalled target in radians. You can transform the response error
 in degrees to radians using the \code{deg2rad} function.}
 
 \item{nt_features}{A character vector with the names of the non-target
-feature values. The non_target feature values should be in radians and centered
-relative to the target.}
+feature values. The non_target feature values should be in radians and
+centered relative to the target. Alternatively, if regex=TRUE, a regular
+expression can be used to match the non-target feature columns in the
+dataset.}
 
 \item{setsize}{Name of the column containing the set size variable (if
 setsize varies) or a numeric value for the setsize, if the setsize is
 fixed.}
+
+\item{regex}{Logical. If TRUE, the \code{nt_features} argument is interpreted as
+a regular expression to match the non-target feature columns in the dataset.}
 
 \item{...}{used internally for testing, ignore it}
 }
@@ -72,8 +77,11 @@ ff <- bmmformula(
   thetant ~ 1
 )
 
-# specify the 3-parameter model
+# specify the 3-parameter model with explicit column names for non-target features
 model <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), setsize = 4)
+
+# specify the 3-parameter model with a regular expression to match non-target features
+model <- mixture3p(resp_err = "y", nt_features = "nt_loc", setsize = 4, regex = TRUE)
 
 # fit the model
 fit <- fit_model(formula = ff,

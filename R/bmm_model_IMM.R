@@ -2,7 +2,7 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <- function(resp_err, nt_features, setsize, ...) {
+.model_IMMabc <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, setsize),
@@ -29,11 +29,13 @@
       )),
     void_mu = FALSE
   )
+  attr(out, "regex") <- regex
+  attr(out, "regex_vars") <- c('nt_features') # variables that can be specified via regular expression
   class(out) <- c("bmmmodel", "vwm","nontargets","IMMabc")
   out
 }
 
-.model_IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, ...) {
+.model_IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),
@@ -60,11 +62,14 @@
       )),
     void_mu = FALSE
   )
+  attr(out, "regex") <- regex
+  # variables that can be specified via regular expression
+  attr(out, "regex_vars") <- c('nt_features', 'nt_distances')
   class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMbsc")
   out
 }
 
-.model_IMMfull <- function(resp_err,  nt_features, nt_distances, setsize, ...) {
+.model_IMMfull <- function(resp_err,  nt_features, nt_distances, setsize, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),
@@ -92,6 +97,9 @@
       )),
     void_mu = FALSE
   )
+  attr(out, "regex") <- regex
+  # variables that can be specified via regular expression
+  attr(out, "regex_vars") <- c('nt_features', 'nt_distances')
   class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMfull")
   out
 }
@@ -114,17 +122,25 @@
 #'
 #'   - b = "Background activation (internally fixed to 0)"
 #'
-#' @param resp_err The name of the variable in the provided dataset containing the
-#'   response error. The response Error should code the response relative to the to-be-recalled
-#'   target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
-#' @param nt_features A character vector with the names of the non-target variables.
-#'   The non_target variables should be in radians and be centered relative to the
-#'   target.
-#' @param nt_distances A vector of names of the columns containing the distances of
-#'   non-target items to the target item. Only necessary for the `IMMbsc` and `IMMfull` models
+#' @param resp_err The name of the variable in the provided dataset containing
+#'   the response error. The response Error should code the response relative to
+#'   the to-be-recalled target in radians. You can transform the response error
+#'   in degrees to radian using the `deg2rad` function.
+#' @param nt_features A character vector with the names of the non-target
+#'   variables. The non_target variables should be in radians and be centered
+#'   relative to the target. Alternatively, if regex=TRUE, a regular
+#'   expression can be used to match the non-target feature columns in the
+#'   dataset.
+#' @param nt_distances A vector of names of the columns containing the distances
+#'   of non-target items to the target item. Alternatively, if regex=TRUE, a regular
+#'   expression can be used to match the non-target distances columns in the
+#'   dataset. Only necessary for the `IMMbsc` and `IMMfull` models.
 #' @param setsize Name of the column containing the set size variable (if
 #'   setsize varies) or a numeric value for the setsize, if the setsize is
 #'   fixed.
+#' @param regex Logical. If TRUE, the `nt_features` and `nt_distances` arguments
+#'   are interpreted as a regular expression to match the non-target feature
+#'   columns in the dataset.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel

@@ -7,27 +7,36 @@
 \alias{IMMabc}
 \title{Interference measurement model by Oberauer and Lin (2017).}
 \usage{
-IMMfull(resp_err, nt_features, nt_distances, setsize, ...)
+IMMfull(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...)
 
-IMMbsc(resp_err, nt_features, nt_distances, setsize, ...)
+IMMbsc(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...)
 
-IMMabc(resp_err, nt_features, setsize, ...)
+IMMabc(resp_err, nt_features, setsize, regex = FALSE, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the provided dataset containing the
-response error. The response Error should code the response relative to the to-be-recalled
-target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
+\item{resp_err}{The name of the variable in the provided dataset containing
+the response error. The response Error should code the response relative to
+the to-be-recalled target in radians. You can transform the response error
+in degrees to radian using the \code{deg2rad} function.}
 
-\item{nt_features}{A character vector with the names of the non-target variables.
-The non_target variables should be in radians and be centered relative to the
-target.}
+\item{nt_features}{A character vector with the names of the non-target
+variables. The non_target variables should be in radians and be centered
+relative to the target. Alternatively, if regex=TRUE, a regular
+expression can be used to match the non-target feature columns in the
+dataset.}
 
-\item{nt_distances}{A vector of names of the columns containing the distances of
-non-target items to the target item. Only necessary for the \code{IMMbsc} and \code{IMMfull} models}
+\item{nt_distances}{A vector of names of the columns containing the distances
+of non-target items to the target item. Alternatively, if regex=TRUE, a regular
+expression can be used to match the non-target distances columns in the
+dataset. Only necessary for the \code{IMMbsc} and \code{IMMfull} models.}
 
 \item{setsize}{Name of the column containing the set size variable (if
 setsize varies) or a numeric value for the setsize, if the setsize is
 fixed.}
+
+\item{regex}{Logical. If TRUE, the \code{nt_features} and \code{nt_distances} arguments
+are interpreted as a regular expression to match the non-target feature
+columns in the dataset.}
 
 \item{...}{used internally for testing, ignore it}
 }
