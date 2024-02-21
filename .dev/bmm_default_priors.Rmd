@@ -1,0 +1,453 @@
+---
+title: "Default priors for bmm models"
+output: github_document
+---
+
+```{r setup, message=F, warnings=F, echo=F}
+library(brms)   
+library(bmm)      # you need to install the current branch of bmm first. e.g. install() if within the package directory
+library(dplyr)
+withr::local_options(list(width=100))
+```
+
+## Introduction
+
+Here I explore options for how to set up default bmm prior flexibly based on the formula.
+
+## How it is done in `brms`
+
+First, we can see what happens by default in `brms`. Let's look at a simple linear regression.
+
+<details><summary>Click to expand</summary>
+
+
+### Intercept only
+
+It puts a default prior on all parameters that have only an intercept
+
+```{r}
+dat <- OberauerLin_2017
+dat$cond <- factor(rep(1:4, each=nrow(dat)/4))   # fake condition for testing formulas
+get_prior(bf(dev_rad ~ 1, sigma ~ 1), dat)
+```
+
+### Intercept and a predictor
+
+The intercept gets a default prior, but the effects get a flat prior
+
+```{r}
+get_prior(bf(dev_rad ~ 1, sigma ~ set_size), dat)
+```
+
+### Intercept supressed
+
+Just flat prior on all coefficients
+
+```{r}
+get_prior(bf(dev_rad ~ 1, sigma ~ 0+set_size), dat)
+```
+
+### Intercept supressed and random effects
+
+```{r}
+get_prior(bf(dev_rad ~ 1, sigma ~ 0+set_size + (0+set_size|ID)), dat)
+```
+
+### Intercept predictor and random effects
+
+```{r}
+get_prior(bf(dev_rad ~ 1, sigma ~ set_size + (set_size|ID)), dat)
+```
+
+</details>
+
+## How should we do it in `bmm`
+
+Currently we put a default prior on all parameters, assuming naively that they are specified with a suppressed intercept (except for the sdmSimple, for which we have no default priors yet). We don't want to follow `brms` approach, because these measurement models need meaningful default priors to help with sampling.
+
+Options: 1) we do it like `brms` and let the user specify priors for all parameters 2) we put reasonable priors on intercepts and on all effects when an intercept is suprresed, but leave flat priors for effects when an intercept is present 3) we put reasonable priors on all parameters, regardless of the formula
+
+I don't like option 1, because it is not user friendly. For my own models I don't want to have to specify the priors every time, unless I want priors that are different from the defaults. Options 2 and 3 are both ok, but we need to figure out when to put the priors and when not.
+
+## Prior structure for models with non-linear parameters (e.g. mixture3p)
+
+In this section I just print the brms prior structure for a variety of different formulas. I turn off the bmm priors, and also print the structure of `terms(formula)`, which can help identify what information we need to figure out how to set default priors.
+
+<details><summary>Click to expand</summary>
+
+
+Disable currently used default priors:
+
+```{r}
+options(list(bmm.default_priors = FALSE))
+```
+
+### Intercept only
+
+All model parameters are `nlpar` so they get class `b` with coef `Intercept`
+
+```{r}
+model <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), setsize='set_size')
+formula <- bmf(kappa ~ 1, thetat ~ 1, thetant ~ 1)
+get_model_prior(formula, dat, model)
+```
+
+```{r}
+terms(formula$kappa)
+```
+
+### Intercept and a predictor
+
+For kappa, which we include and intercept and a predictor, we get class `b` with coef `Intercept` and `session2`
+
+```{r}
+formula <- bmf(kappa ~ session, thetat ~ 1, thetant ~ 1)
+get_model_prior(formula, dat, model)
+```
+
+```{r}
+terms(formula$kappa)
+```
+
+### Intercept supressed
+
+For kappa, which we include and intercept and a predictor, we get class `b` with coef `session1` and `session2`
+
+```{r}
+formula <- bmf(kappa ~ 0+session, thetat ~ 1, thetant ~ 1)
+get_model_prior(formula, dat, model)
+```
+
+```{r}
+terms(formula$kappa)
+```
+
+### Intercept supressed and random effects
+
+```{r}
+formula <- bmf(kappa ~ 0+session + ( 0+session|ID), thetat ~ 1, thetant ~ 1)
+get_model_prior(formula, dat, model)
+```
+
+```{r}
+terms(formula$kappa)
+```
+
+### Two factors plus intercept
+
+```{r}
+
+formula <- bmf(kappa ~ session + cond, thetat ~ 1, thetant ~ 1)
+get_model_prior(formula, dat, model)
+```
+
+```{r}
+terms(formula$kappa)
+```
+
+### Two factors no intercept
+
+Ok, so this is tricky. coefs session1 and session2 are main levels while cond=1, but cond2,cond3 and cond4 are additive effects. So we can't just check if an intercept is present in coef or not.
+
+What we can do, is for each predictor, check how many levels appear.
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session + cond, thetat ~ 1, thetant ~ 1)
+get_model_prior(formula, dat, model)
+```
+
+```{r}
+terms(formula$kappa)
+```
+
+### Two factors no intercept, yes interaction
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session * cond, thetat ~ 1, thetant ~ 1)
+get_model_prior(formula, dat, model)
+```
+
+```{r}
+terms(formula$kappa)
+```
+
+### Two factors no intercept, yes interaction
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session:cond + cond + session, thetat ~ 1, thetant ~ 1)
+get_model_prior(formula, dat, model)
+```
+
+```{r}
+terms(formula$kappa)
+```
+
+### Two factors no intercept, no main effects, all levels explicit
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session:cond, thetat ~ 1, thetant ~ 1)
+get_model_prior(formula, dat, model)
+```
+
+```{r}
+terms(formula$kappa)
+```
+
+</details>
+
+## Algorithm
+
+Looking at the structure of the priors and the terms(formula$kappa), here is a suggested algorithm for the initial `set_default_prior` function:
+
+1)  Get dpar names of bmmformula
+2)  Loop over dpar names
+3)  Get terms from the formula component with stats::terms
+4)  Get the value of \`attr(terms, "intercept")
+
+    -   if 1, then:
+        -   set the default prior on class `b`, coef `Intercept`
+        -   set wide priors centered on 0 for the remaining coefficients
+        -   go to step 2 and continue with next parameter
+    -   if 0, continue to step 5
+5)  check number of predictors via rhs_vars
+
+    -   if 1, then:
+        -   set the default prior on class `b`
+        -   go to step 2 and continue with next parameter
+    -   if \>1, continue to step 6
+6)  check if there is only interaction (e.g. <session:cond>) via stats::terms, length(attr(,"order")) == 1 & attr(,"order") == 2
+
+    -   if true, then:
+        -   set the default prior on class `b`
+        -   go to step 2 and continue with next parameter
+    -   if false, continue to step 7
+7)  find the first term in stats::terms attr(,"term.labels"):
+    -   set the default prior on class `b` with coefs equal to that predictor with the level appended
+
+## Mixture3p: Comparison with new function "set_default_prior"
+
+A helper function to compare the priors with and without the default priors.
+
+
+```{r}
+compare_priors <- function(formula,dat,model) {
+  p1 <- withr::with_options(list('bmm.default_priors'=FALSE), get_model_prior(formula, dat, model)) %>% 
+    brms:::prepare_print_prior() %>% 
+    rename(priorBRMS=prior) %>% 
+    select(priorBRMS,class,coef,group,resp,dpar,nlpar)
+  p2 <- withr::with_options(list('bmm.default_priors'=TRUE), get_model_prior(formula, dat, model)) %>% 
+    brms:::prepare_print_prior() %>% 
+    rename(priorBMM=prior) %>% 
+    select(priorBMM,class,coef,group,resp,dpar,nlpar)
+  p <- left_join(p1,p2, by=c('class','coef','group','resp','dpar','nlpar')) %>%
+    select(priorBRMS,priorBMM,class,coef,group,resp,dpar,nlpar) %>% 
+    arrange(nlpar, dpar, class, priorBMM, coef)
+  p
+}
+```
+
+
+```{r}
+model3p <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), setsize='set_size')
+```
+
+<details><summary>Click to expand</summary>
+
+### Intercept only
+
+All model parameters are `nlpar` so they get class `b` with coef `Intercept`
+
+```{r message=FALSE, results='hold'}
+formula <- bmf(kappa ~ 1, thetat ~ 1, thetant ~ 1)
+compare_priors(formula, dat, model3p)
+```
+
+### Intercept and a predictor
+
+For kappa, which we include and intercept and a predictor, we get class `b` with coef `Intercept` and `session2`
+
+```{r}
+formula <- bmf(kappa ~ session, thetat ~ 1, thetant ~ 1)
+compare_priors(formula, dat, model3p)
+```
+
+### Intercept supressed
+
+For kappa, which we include and intercept and a predictor, we get class `b` with coef `session1` and `session2`
+
+```{r}
+formula <- bmf(kappa ~ 0+session, thetat ~ 1, thetant ~ 1)
+compare_priors(formula, dat, model3p)
+```
+
+### Intercept supressed and random effects
+
+```{r}
+formula <- bmf(kappa ~ 0+session + ( 0+session|ID), thetat ~ 1, thetant ~ 1)
+compare_priors(formula, dat, model3p)
+```
+
+
+### Two factors plus intercept
+
+```{r}
+
+formula <- bmf(kappa ~ session + cond, thetat ~ 1, thetant ~ 1)
+compare_priors(formula, dat, model3p)
+```
+
+
+### Two factors no intercept
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session + cond, thetat ~ 1, thetant ~ 1)
+compare_priors(formula, dat, model3p)
+```
+
+
+### Two factors no intercept, yes interaction
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session * cond, thetat ~ 1, thetant ~ 1)
+compare_priors(formula, dat, model3p)
+```
+
+
+
+### Two factors no intercept, yes interaction
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session:cond + cond + session, thetat ~ 1, thetant ~ 1)
+compare_priors(formula, dat, model3p)
+```
+
+
+### Two factors no intercept, no main effects, all levels explicit
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session:cond, thetat ~ 1, thetant ~ 1)
+compare_priors(formula, dat, model3p)
+```
+### with non-linear predictors
+
+```{r}
+formula <- bmf(kappa ~ exp(a)*trial, thetat ~ 1, thetant ~ 1, a ~ 1)
+compare_priors(formula, dat, model3p)
+```
+
+</details>
+
+## Check the same for the sdm
+
+```{r}
+options(bmm.sort_data = F)
+modelSDM <- sdmSimple('dev_rad')
+```
+
+<details><summary>Click to expand</summary>
+
+### Intercept only
+
+All model parameters are `nlpar` so they get class `b` with coef `Intercept`
+
+```{r}
+formula <- bmf(kappa ~ 1, c ~ 1)
+compare_priors(formula, dat, modelSDM)
+```
+
+### Intercept and a predictor
+
+For kappa, which we include and intercept and a predictor, we get class `b` with coef `Intercept` and `session2`
+
+```{r}
+formula <- bmf(kappa ~ session, c ~ 1)
+compare_priors(formula, dat, modelSDM)
+```
+
+### Intercept supressed
+
+For kappa, which we include and intercept and a predictor, we get class `b` with coef `session1` and `session2`
+
+```{r}
+formula <- bmf(kappa ~ 0+session, c ~ 1)
+compare_priors(formula, dat, modelSDM)
+```
+
+### Intercept supressed and random effects
+
+```{r}
+formula <- bmf(kappa ~ 0+session + ( 0+session|ID), c ~ 1)
+compare_priors(formula, dat, modelSDM)
+```
+
+
+### Two factors plus intercept
+
+```{r}
+
+formula <- bmf(kappa ~ session + cond, c ~ 1)
+compare_priors(formula, dat, modelSDM)
+```
+
+
+### Two factors no intercept
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session + cond, c ~ 1)
+compare_priors(formula, dat, modelSDM)
+```
+
+
+### Two factors no intercept, yes interaction
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session * cond, c ~ 1)
+compare_priors(formula, dat, modelSDM)
+```
+
+### Supressed intercept, 2 factors, only maineffect for facto1 and interaction
+
+```{r}
+formula <- bmf(kappa ~ 0 + set_size + set_size:session, c~0 + set_size + set_size:session)
+compare_priors(formula, dat, modelSDM)
+```
+
+### Supressed intercept, 3-way interaction only
+
+```{r}
+formula <- bmf(kappa ~ 0 + set_size:session:cond, c~1)
+compare_priors(formula, dat, modelSDM)
+```
+
+
+### Two factors no intercept, yes interaction
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session:cond + cond + session, c ~ 1)
+compare_priors(formula, dat, modelSDM)
+```
+
+
+### Two factors no intercept, no main effects, all levels explicit
+
+```{r}
+
+formula <- bmf(kappa ~ 0 + session:cond, c ~ 1)
+compare_priors(formula, dat, modelSDM)
+```
+
+
+
+
+</details>

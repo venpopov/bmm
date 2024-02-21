@@ -169,7 +169,7 @@ ggplot(dat, aes(x=y, fill=cond)) +
 
 ## Estimating the model with `bmm`
 
-To estimate the parameters of the SDM distribution, we can use the `fit_model()` function. First, let's specify the model formula. We want `c` and `kappa` to vary over conditions. By default, the first line of the formula specifies the response variable and it should be `y ~ 1` - this fixes the location parameter $\mu$ to 0. The next two lines of the formula specify how the parameters vary over conditions. In this case, we want them to vary over the `cond` variable, so we use `c ~ 0 + cond` and `kappa ~ 0 + cond`:
+To estimate the parameters of the SDM distribution, we can use the `fit_model()` function. First, let's specify the model formula. We want `c` and `kappa` to vary over conditions. The first two lines of the formula specify how the parameters vary over conditions. In this case, we want them to vary over the `cond` variable, so we use `c ~ 0 + cond` and `kappa ~ 0 + cond`:
 
 ```{r}
 ff <- bmf(
@@ -178,7 +178,7 @@ ff <- bmf(
 )
 ```
 
-Then we specify the model, which in this case is just `sdmSimple()`
+Then we specify the model, which in this case is just `sdmSimple()`, and we provide the name of the response error variable in the dataset:
 
 ```{r}
 model <- sdmSimple(resp_err = "y")

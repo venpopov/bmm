@@ -277,8 +277,7 @@ test_that('is_data_ordered works', {
 
   # Test when irrelevant variables are not ordered but predictors are
   data3 <- data1
-  data3$A <- c(3, 2, 1)
-  data3$A <- sample(data3$A)
+  data3$A <- c(3, 2, 2, 1, 2, 1, 3, 1, 3, 3, 1, 2, 2, 1, 1, 1, 3, 3, 1, 3, 2, 3, 1, 2, 3, 2, 2)
   formula2 <- bmf(y ~ A + B + C)
   expect_true(is_data_ordered(data3, formula1))
   expect_false(is_data_ordered(data3, formula2))
