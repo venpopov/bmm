@@ -300,4 +300,31 @@ order_data_query <- function(model, data, formula) {
   data
 }
 
+#' @title Generic S3 Method to aggregate data for `bmmmodels`
+#' @description
+#'   Called by `check_data` if data should be aggregated to speed up model estimation. This
+#'   method will call the appropriate `check_data.bmmmodel` method to aggregate the data
+#'   according to requirements of the model and the predictors used in the formula.
+#' @param model The `bmmmodel` the method will be used with
+#' @param formula The `bmmformula` specified for the to-be-estimated model.
+#' @param data The data set the `bmmmodel` will be fit to
+#' @return An aggregated data set with the variables required for the specified `bmmmodel`.
+#' @export
+#' @keywords internal, developer
+aggregate_data <- function(model, formula, data) {
+  UseMethod("aggregate_data")
+}
+
+#' @export
+aggregate_data.bmmmodel <- function(model, formula, data){
+  NextMethod("aggregate_data")
+}
+
+#' @export
+aggregate_data.default <- function(model, formula, data){
+  data
+}
+
+
+
 
