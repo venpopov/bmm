@@ -299,3 +299,26 @@ order_data_query <- function(model, data, formula) {
   }
   data
 }
+
+#' @title Pass options to save parameters from `bmm` t0 `brms`
+#' @description
+#'   When calling `fit_model` with additional information to save parameters you can use this
+#'   function to pass information about saving parameter draws to `brms` without having to load `brms`.
+#'   Alternatively, you can also load `brms` and call `save_pars`. For details see ?brms::save_pars().
+#' @param group logical. Indicates if group-level parameter for each level of the grouping variable should be saved.
+#'   Default is `TRUE`.
+#' @param all logical. Indicates if draws from all variables defined in the STAN parameter block
+#'   should be saved. Default is `FALSE`. If you want to use methods such as `bridge_sampler` or
+#'   `bayes_factor` you need to set this to `TRUE`.
+#' @param manual character vector. Vector naming the STAN variables for which draws should be saved.
+#'   These names need to match the names inside the STAN code before renaming. You can access these
+#'   by having a lot at the STAN code using the `get_stancode` or `get_stancode_parblock`.
+#' @return A list of `brms` class "save_pars.
+#' @export
+#' @examples
+#' # example code
+#'
+save_pars_bmm2brms <- function(group = TRUE, all = FALSE, manual = NULL) {
+  save_pars <- brms::save_pars(group, all, manual)
+  save_pars
+}
