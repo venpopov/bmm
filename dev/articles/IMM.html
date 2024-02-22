@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.4.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.5.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -147,7 +147,7 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <h3 id="generating-simulated-data">
 <span class="header-section-number">3.1</span> Generating simulated data<a class="anchor" aria-label="anchor" href="#generating-simulated-data"></a>
 </h3>
-<p>Should you already have a data set you want to fit, you can skip this section. Alternatively, you can use data provided with the package (add reference to data) or generate data using the random generation function provided in the <code>bmm</code> package.</p>
+<p>Should you already have a data set you want to fit, you can skip this section. Alternatively, you can use data provided with the package (see <code>data(package='bmm')</code>) or generate data using the random generation function provided in the <code>bmm</code> package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># set seed for reproducibility</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
@@ -216,11 +216,18 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <p>Then, we can specify the model that we want to estimate. This includes specifying the name of the variable containing the dependent variable <code>resp_err</code> in our simulated data set. Additionally, we also need to provide the information of the <code>non_target</code> locations, the name of the variable coding the spatial distances of the nt_features to the target <code>spaDist</code>, and the <code>setsize</code> used in our data. The <code>setsize</code> can either be a fixed integer, if there is only one setsize in your data, or the name of the variable coding the <code>setsize</code> in your data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IMM.html">IMMfull</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"resp_err"</span>,</span>
-<span>                 nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"color_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="va">setsize</span><span class="op">)</span>,</span>
+<span>                 nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"color_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,</span>
 <span>                 setsize <span class="op">=</span> <span class="va">setsize</span>,</span>
-<span>                 nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dist_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="va">setsize</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Finally, we can fit the model by passing all the relevant arguments to the <code>fit_model</code> function:</p>
+<span>                 nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dist_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>In the above example we specified all column names for the non_targets explicitely via <code>paste0('color_item',2:5)</code>. Alternatively, you can use a regular expression to match the non-target feature columns in the dataset. For example, you can specify the model a few different ways via regular expressions:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IMM.html">IMMfull</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"resp_err"</span>,</span>
+<span>                 nt_features <span class="op">=</span> <span class="st">"color_item[2-5]"</span>,</span>
+<span>                 setsize <span class="op">=</span> <span class="va">setsize</span>,</span>
+<span>                 nt_distances <span class="op">=</span> <span class="st">"dist_item[2-5]"</span>,</span>
+<span>                 regex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Finally, we can fit the model by passing all the relevant arguments to the <code>fit_model</code> function:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_model.html">fit_model</a></span><span class="op">(</span></span>
 <span>  formula <span class="op">=</span> <span class="va">model_formula</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">simData</span>,</span>
@@ -231,10 +238,10 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span>  backend <span class="op">=</span> <span class="st">"cmdstanr"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Running this model takes about 2 to 5 minutes (depending on the speed of your computer). Here we load an already saved fit object, but on your machine you will have to wait until the model finishes sampling. Both <code>brms</code> and <code>cmdstanr</code> typically print out some information on the sampling progress.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"imm_vignette_fit.rds"</span>, package<span class="op">=</span><span class="st">'bmm'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Using this <code>fit</code> object we can have a quick look at the summary of the fitted model:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Family: mixture(von_mises, von_mises, von_mises, von_mises, von_mises, von_mises) </span></span>
 <span><span class="co">#&gt;   Links: mu1 = identity; kappa1 = log; mu2 = identity; kappa2 = log; mu3 = identity; kappa3 = log; mu4 = identity; kappa4 = log; mu5 = identity; kappa5 = log; mu6 = identity; kappa6 = log; theta1 = identity; theta2 = identity; theta3 = identity; theta4 = identity; theta5 = identity; theta6 = identity </span></span>
@@ -293,7 +300,7 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <p>The first thing you might notice is that below the parts of the formula that was passed to the <code>fit_model</code> function, <code>bmm</code> has added a lot of additional specifications to implement the IMM. This is nothing that you have to check. But if you are interested in customizing and exploring different assumptions imposed by the IMM, you could start by taking this formula and adapting it accordingly.</p>
 <p>Next, we can have a look at the estimated parameters. The first thing we should check is if the sampling converged, this is indicated by all <code>Rhat</code> values being close to one. If you want to do more inspection of the sampling, you can check out the functionality implemented in <code>brms</code>to do this.</p>
 <p>The parameter estimates for <code>c</code> and <code>a</code> are already on their native scale, but both <code>s</code> and <code>kappa</code> are estimated using a <code>log</code> link function, so we have to transform these back to the native scale.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fixedFX</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># print posterior means for the s parameter</span></span>
@@ -329,7 +336,7 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span><span class="co">#&gt; kappa_cond4  9.424614  1.128771  7.366675 11.78818</span></span></code></pre></div>
 <p>These results indicate that all parameters, except for <code>s</code> were well recovered. As already noted by <span class="citation">Oberauer et al. (2017)</span>, a good recovery of the generalization gradient <code>s</code> requires a lot of data. Thus you might consider opting for the simplified version of the IMM without the <code>s</code> parameter, the <code>IMMabc</code>.</p>
 <p>We can illustrate the recovery of the data generating parameters by plotting the full posterior distributions alongside the data generating parameters. For this we need to extract the posterior draws using the <code>tidybayes</code> package and include the data generating parameters into the plots of the posteriors.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mjskay.github.io/tidybayes/" class="external-link">tidybayes</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
@@ -347,11 +354,18 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">value</span>, <span class="va">par</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="http://mjskay.github.io/tidybayes/reference/tidybayes-deprecated.html" class="external-link">stat_halfeyeh</a></span><span class="op">(</span>normalize <span class="op">=</span> <span class="st">"groups"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">draws</span><span class="op">)</span>,</span>
-<span>                               value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Cs</span>,<span class="va">As</span>,<span class="va">Ss</span>,<span class="va">kappas</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                               value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">kappas</span>, <span class="va">As</span>, <span class="va">Cs</span>, <span class="va">Ss</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">value</span>,<span class="va">par</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"red"</span>,</span>
 <span>             shape <span class="op">=</span> <span class="st">"diamond"</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>lim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="IMM_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p><img src="IMM_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">draws</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "b_kappa_cond1" "b_kappa_cond2" "b_kappa_cond3" "b_kappa_cond4"</span></span>
+<span><span class="co">#&gt;  [5] "b_a_cond1"     "b_a_cond2"     "b_a_cond3"     "b_a_cond4"    </span></span>
+<span><span class="co">#&gt;  [9] "b_c_cond1"     "b_c_cond2"     "b_c_cond3"     "b_c_cond4"    </span></span>
+<span><span class="co">#&gt; [13] "b_s_cond1"     "b_s_cond2"     "b_s_cond3"     "b_s_cond4"</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">

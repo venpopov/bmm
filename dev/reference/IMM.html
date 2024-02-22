@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.4.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.5.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,36 +57,47 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">IMMfull</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">nt_distances</span>, <span class="va">setsize</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">IMMfull</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">nt_distances</span>, <span class="va">setsize</span>, regex <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">IMMbsc</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">nt_distances</span>, <span class="va">setsize</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">IMMbsc</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">nt_distances</span>, <span class="va">setsize</span>, regex <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">IMMabc</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">setsize</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">IMMabc</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">setsize</span>, regex <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>resp_err</dt>
-<dd><p>The name of the variable in the provided dataset containing the
-response error. The response Error should code the response relative to the to-be-recalled
-target in radians. You can transform the response error in degrees to radian using the <code>deg2rad</code> function.</p></dd>
+<dd><p>The name of the variable in the provided dataset containing
+the response error. The response Error should code the response relative to
+the to-be-recalled target in radians. You can transform the response error
+in degrees to radian using the <code>deg2rad</code> function.</p></dd>
 
 
 <dt>nt_features</dt>
-<dd><p>A character vector with the names of the non-target variables.
-The non_target variables should be in radians and be centered relative to the
-target.</p></dd>
+<dd><p>A character vector with the names of the non-target
+variables. The non_target variables should be in radians and be centered
+relative to the target. Alternatively, if regex=TRUE, a regular
+expression can be used to match the non-target feature columns in the
+dataset.</p></dd>
 
 
 <dt>nt_distances</dt>
-<dd><p>A vector of names of the columns containing the distances of
-non-target items to the target item. Only necessary for the <code>IMMbsc</code> and <code>IMMfull</code> models</p></dd>
+<dd><p>A vector of names of the columns containing the distances
+of non-target items to the target item. Alternatively, if regex=TRUE, a regular
+expression can be used to match the non-target distances columns in the
+dataset. Only necessary for the <code>IMMbsc</code> and <code>IMMfull</code> models.</p></dd>
 
 
 <dt>setsize</dt>
 <dd><p>Name of the column containing the set size variable (if
 setsize varies) or a numeric value for the setsize, if the setsize is
 fixed.</p></dd>
+
+
+<dt>regex</dt>
+<dd><p>Logical. If TRUE, the <code>nt_features</code> and <code>nt_distances</code> arguments
+are interpreted as a regular expression to match the non-target feature
+columns in the dataset.</p></dd>
 
 
 <dt>...</dt>
@@ -160,6 +171,52 @@ included in the model formula. The parameter is:</p><ul><li><p>b = "Background a
 
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># load data</span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">OberauerLin_2017</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># define formula</span></span></span>
+<span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="bmmformula.html">bmmformula</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span>,</span></span>
+<span class="r-in"><span>  <span class="va">c</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span>,</span></span>
+<span class="r-in"><span>  <span class="va">a</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span>,</span></span>
+<span class="r-in"><span>  <span class="va">s</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># specify the full IMM model with explicit column names for non-target features and distances</span></span></span>
+<span class="r-in"><span><span class="va">model1</span> <span class="op">&lt;-</span> <span class="fu">IMMfull</span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"dev_rad"</span>,</span></span>
+<span class="r-in"><span>                  nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'col_nt'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'dist_nt'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  setsize <span class="op">=</span> <span class="st">'set_size'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># fit the model</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="fit_model.html">fit_model</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span></span>
+<span class="r-in"><span>                 data <span class="op">=</span> <span class="va">data</span>,</span></span>
+<span class="r-in"><span>                 model <span class="op">=</span> <span class="va">model1</span>,</span></span>
+<span class="r-in"><span>                 parallel <span class="op">=</span> <span class="cn">T</span>,</span></span>
+<span class="r-in"><span>                 iter <span class="op">=</span> <span class="fl">500</span>,</span></span>
+<span class="r-in"><span>                 backend <span class="op">=</span> <span class="st">'cmdstanr'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># alternatively specify the IMM model with a regular expression to match non-target features</span></span></span>
+<span class="r-in"><span><span class="co"># this is equivalent to the previous call, but more concise</span></span></span>
+<span class="r-in"><span><span class="va">model2</span> <span class="op">&lt;-</span> <span class="fu">IMMfull</span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"dev_rad"</span>,</span></span>
+<span class="r-in"><span>                  nt_features <span class="op">=</span> <span class="st">'col_nt'</span>,</span></span>
+<span class="r-in"><span>                  nt_distances <span class="op">=</span> <span class="st">'dist_nt'</span>,</span></span>
+<span class="r-in"><span>                  setsize <span class="op">=</span> <span class="st">'set_size'</span>,</span></span>
+<span class="r-in"><span>                  regex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># fit the model</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="fit_model.html">fit_model</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span></span>
+<span class="r-in"><span>                 data <span class="op">=</span> <span class="va">data</span>,</span></span>
+<span class="r-in"><span>                 model <span class="op">=</span> <span class="va">model2</span>,</span></span>
+<span class="r-in"><span>                 parallel<span class="op">=</span><span class="cn">T</span>,</span></span>
+<span class="r-in"><span>                 iter <span class="op">=</span> <span class="fl">500</span>,</span></span>
+<span class="r-in"><span>                 backend<span class="op">=</span><span class="st">'cmdstanr'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.4.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.5.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -483,6 +483,16 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <span>  backend<span class="op">=</span><span class="st">'cmdstanr'</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The rest of the analysis is the same as for the 2-parameter model. We can inspect the model fit, extract the parameter estimates, and visualize the posterior distributions.</p>
+<p>In the above example we specified all column names for the non_targets explicitely via <code>paste0('non_target_',1:5)</code>. Alternatively, you can use a regular expression to match the non-target feature columns in the dataset. This is useful when the non-target feature columns are named in a consistent way, e.g. <code>non_target_1</code>, <code>non_target_2</code>, <code>non_target_3</code>, etc. For example, you can specify the model a few different ways via regular expressions:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span>, </span>
+<span>                   nt_features <span class="op">=</span> <span class="st">"non_target_[1-5]"</span>, </span>
+<span>                   setsize <span class="op">=</span> <span class="st">'set_size'</span>, </span>
+<span>                   regex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span>, </span>
+<span>                   nt_features <span class="op">=</span> <span class="st">"non_target_"</span>, </span>
+<span>                   setsize <span class="op">=</span> <span class="st">'set_size'</span>, </span>
+<span>                   regex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
