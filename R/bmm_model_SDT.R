@@ -105,12 +105,12 @@ bmf2bf.SDT <- function(model, formula) {
    # retrieve required response arguments
    response <- model$resp_vars$response
    stimulus <- model$resp_vars$stimulus
-   if (model$other_vars$data_aggregated == T) {
+   if (!is.null(model$resp_vars$nTrials)) {
       nTrials <- model$resp_vars$nTrials
    }
 
    # set the base brmsformula given the variable names
-   if (is.null(model$resp_vars$nTrials)) {
+   if (!is.null(model$resp_vars$nTrials)) {
       brms_formula <- brms::bf(paste0(response," | ", "trials(",nTrials,")", " ~ dprime*",stimulus," - crit" ), nl = TRUE)
    } else {
       brms_formula <- brms::bf(paste0(response," ~ dprime*",stimulus," - crit"),nl = TRUE)
@@ -152,7 +152,7 @@ configure_model.SDT <- function(model, data, formula) {
            \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
    }
 
-   if (model$other_vars$data_aggregated) {
+   if (!is.null(model$resp_vars$nTrials)) {
       family <- stats::binomial(link = link_fun)
    } else {
       family <- brms::bernoulli(link = link_fun)
