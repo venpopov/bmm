@@ -314,7 +314,7 @@ save_pars <- brms::save_pars
 # missing from the call
 missing_args <- function(which = -1) {
   parent_objects <- as.list(sys.frame(which))
-  parent_args <- names(as.list(args(as.character(sys.call(-2)[[1]]))))
+  parent_args <- names(as.list(args(as.character(sys.call(which)[[1]]))))
   parent_args <- parent_args[!parent_args %in% c("...", "")]
   symbols <- names(parent_objects)[sapply(parent_objects, is.symbol)]
   missing <- symbols[symbols %in% parent_args]
