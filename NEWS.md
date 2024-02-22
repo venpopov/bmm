@@ -12,6 +12,9 @@
 ### Bug fixes
 * fix a bug in the mixture3p and IMM models which caused an error when intercept was not supressed and set size was used as predictor
 
+### Other changes
+* `brms` is now loaded automatically when loading `bmm` with `library(bmm)`
+
 
 
 # bmm 0.3.0
