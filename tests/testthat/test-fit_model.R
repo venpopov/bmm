@@ -69,7 +69,7 @@ test_that('Available models produce expected errors', {
     test_args <- lapply(args_list, function(x) {NULL})
     model <- brms::do_call(model, test_args)
     expect_error(fit_model(bmmformula(kappa~1), model=model, backend="mock", mock_fit=1, rename=FALSE),
-                 "Data must be specified using the 'data' argument.")
+                 'argument "data" is missing, with no default')
   }
 
 

@@ -2,7 +2,7 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <- function(resp_err, nt_features, setsize, ...) {
+.model_IMMabc <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, setsize),
@@ -29,11 +29,13 @@
       )),
     void_mu = FALSE
   )
+  attr(out, "regex") <- regex
+  attr(out, "regex_vars") <- c('nt_features') # variables that can be specified via regular expression
   class(out) <- c("bmmmodel", "vwm","nontargets","IMMabc")
   out
 }
 
-.model_IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, ...) {
+.model_IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),
@@ -60,11 +62,14 @@
       )),
     void_mu = FALSE
   )
+  attr(out, "regex") <- regex
+  # variables that can be specified via regular expression
+  attr(out, "regex_vars") <- c('nt_features', 'nt_distances')
   class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMbsc")
   out
 }
 
-.model_IMMfull <- function(resp_err,  nt_features, nt_distances, setsize, ...) {
+.model_IMMfull <- function(resp_err,  nt_features, nt_distances, setsize, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),
@@ -92,6 +97,9 @@
       )),
     void_mu = FALSE
   )
+  attr(out, "regex") <- regex
+  # variables that can be specified via regular expression
+  attr(out, "regex_vars") <- c('nt_features', 'nt_distances')
   class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMfull")
   out
 }
@@ -114,20 +122,71 @@
 #'
 #'   - b = "Background activation (internally fixed to 0)"
 #'
-#' @param resp_err The name of the variable in the provided dataset containing the
-#'   response error. The response Error should code the response relative to the to-be-recalled
-#'   target in radians. You can transform the response error in degrees to radian using the `deg2rad` function.
-#' @param nt_features A character vector with the names of the non-target variables.
-#'   The non_target variables should be in radians and be centered relative to the
-#'   target.
-#' @param nt_distances A vector of names of the columns containing the distances of
-#'   non-target items to the target item. Only necessary for the `IMMbsc` and `IMMfull` models
+#' @param resp_err The name of the variable in the provided dataset containing
+#'   the response error. The response Error should code the response relative to
+#'   the to-be-recalled target in radians. You can transform the response error
+#'   in degrees to radian using the `deg2rad` function.
+#' @param nt_features A character vector with the names of the non-target
+#'   variables. The non_target variables should be in radians and be centered
+#'   relative to the target. Alternatively, if regex=TRUE, a regular
+#'   expression can be used to match the non-target feature columns in the
+#'   dataset.
+#' @param nt_distances A vector of names of the columns containing the distances
+#'   of non-target items to the target item. Alternatively, if regex=TRUE, a regular
+#'   expression can be used to match the non-target distances columns in the
+#'   dataset. Only necessary for the `IMMbsc` and `IMMfull` models.
 #' @param setsize Name of the column containing the set size variable (if
 #'   setsize varies) or a numeric value for the setsize, if the setsize is
 #'   fixed.
+#' @param regex Logical. If TRUE, the `nt_features` and `nt_distances` arguments
+#'   are interpreted as a regular expression to match the non-target feature
+#'   columns in the dataset.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel
+#' @examples
+#' \dontrun{
+#' # load data
+#' data <- OberauerLin_2017
+#'
+#' # define formula
+#' ff <- bmmformula(
+#'   kappa ~ 0 + set_size,
+#'   c ~ 0 + set_size,
+#'   a ~ 0 + set_size,
+#'   s ~ 0 + set_size
+#' )
+#'
+#' # specify the full IMM model with explicit column names for non-target features and distances
+#' model1 <- IMMfull(resp_err = "dev_rad",
+#'                   nt_features = paste0('col_nt',1:7),
+#'                   nt_distances = paste0('dist_nt',1:7),
+#'                   setsize = 'set_size')
+#'
+#' # fit the model
+#' fit <- fit_model(formula = ff,
+#'                  data = data,
+#'                  model = model1,
+#'                  parallel = T,
+#'                  iter = 500,
+#'                  backend = 'cmdstanr')
+#'
+#' # alternatively specify the IMM model with a regular expression to match non-target features
+#' # this is equivalent to the previous call, but more concise
+#' model2 <- IMMfull(resp_err = "dev_rad",
+#'                   nt_features = 'col_nt',
+#'                   nt_distances = 'dist_nt',
+#'                   setsize = 'set_size',
+#'                   regex = TRUE)
+#'
+#' # fit the model
+#' fit <- fit_model(formula = ff,
+#'                  data = data,
+#'                  model = model2,
+#'                  parallel=T,
+#'                  iter = 500,
+#'                  backend='cmdstanr')
+#'}
 #' @export
 IMMfull <- .model_IMMfull
 

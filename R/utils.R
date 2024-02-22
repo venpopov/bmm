@@ -226,6 +226,15 @@ is_try_warning <- function(x) {
   inherits(x, "warning")
 }
 
+is_bmmmodel <- function(x) {
+  inherits(x, "bmmmodel")
+}
+
+is_supported_bmmmodel <- function(x) {
+  valid_models <- supported_models(print_call = FALSE)
+  is_bmmmodel(x) && inherits(x, valid_models)
+}
+
 as_numeric_vector <- function(x) {
   out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
   if (is_try_warning(out)) {
@@ -308,3 +317,27 @@ order_data_query <- function(model, data, formula) {
 #'   `save_pars`. For details see ?brms::save_pars.
 #' @export
 save_pars <- brms::save_pars
+
+
+# custom method form printing nicely formatted character values via cat instead of print
+#' @export
+print.message <- function(x, ...) {
+  cat(x, ...)
+}
+
+
+# returns either x, or all variables that match the regular expression x
+# @param x character vector or regular expression
+# @param all_variables character vector of all variables within which to search
+# @param regex logical. If TRUE, x is treated as a regular expression
+get_variables <- function(x, all_variables, regex = FALSE) {
+  if (regex) {
+    variables <- all_variables[grep(x, all_variables)]
+    if (length(variables) == 0) {
+      stop2("No variables found that match the regular expression '", x, "'")
+    }
+    return(variables)
+  }
+  x
+}
+
