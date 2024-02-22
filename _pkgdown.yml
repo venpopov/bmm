@@ -56,9 +56,6 @@ reference:
  - contents:
    - "OberauerLin_2017"
    - "ZhangLuck_2008"
- - title: Miscellaneous
- - contents:
-   -  "save_pars"
  - title: "Developers' corner"
    desc: "Functions to assist in developing new models"
  - contents:
