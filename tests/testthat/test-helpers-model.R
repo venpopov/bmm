@@ -12,10 +12,7 @@ test_that("check_model() refuses invalid models and accepts valid models", {
   expect_error(check_model(structure(list(), class='invalid')))
   okmodels <- supported_models(print_call=FALSE)
   for (model in okmodels) {
-    model <- get_model2(model)
-    args_list <- formals(model)
-    test_args <- lapply(args_list, function(x) {NULL})
-    model <- brms::do_call(model, test_args)
+    model <- get_model(model)()
     expect_silent(check_model(model))
     expect_type(check_model(model), "list")
   }

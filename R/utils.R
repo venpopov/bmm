@@ -308,3 +308,25 @@ order_data_query <- function(model, data, formula) {
 #'   `save_pars`. For details see ?brms::save_pars.
 #' @export
 save_pars <- brms::save_pars
+
+
+# when called from another function, it will return a vector of arguments that are
+# missing from the call
+missing_args <- function(which = -1) {
+  parent_objects <- as.list(sys.frame(which))
+  parent_args <- names(as.list(args(as.character(sys.call(-2)[[1]]))))
+  parent_args <- parent_args[!parent_args %in% c("...", "")]
+  symbols <- names(parent_objects)[sapply(parent_objects, is.symbol)]
+  missing <- symbols[symbols %in% parent_args]
+  missing
+}
+
+# when called from another function, it will stop the execution if any of the
+# required arguments are missing
+stop_missing_args <- function() {
+  missing <- missing_args(-2)
+  fun <- as.character(sys.call(-1)[[1]])
+  if (length(missing) > 0) {
+    stop2("The following required arguments are missing in ", fun, "(): ", paste(missing, collapse = ", "))
+  }
+}
