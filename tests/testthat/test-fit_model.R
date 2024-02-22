@@ -66,8 +66,7 @@ test_that('Available models produce expected errors', {
   for (model in okmodels) {
     model <- get_model(model)
     expect_error(fit_model(bmmformula(kappa~1), model=model(), backend="mock", mock_fit=1, rename=FALSE),
-                 "Data must be specified using the 'data' argument.")
-
+                 "argument \"data\" is missing, with no default")
   }
 
 

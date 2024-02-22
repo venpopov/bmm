@@ -2,7 +2,7 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture3p <- function(resp_err = NULL, nt_features = NULL, setsize = NULL, ...) {
+.model_mixture3p <- function(resp_err = NULL, nt_features = NULL, setsize = NULL, regex = FALSE, ...) {
 
   out <- list(
     resp_vars = nlist(resp_err),

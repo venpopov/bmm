@@ -2,8 +2,7 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <- function(resp_err = NULL, nt_features = NULL, setsize = NULL, ...) {
-
+.model_IMMabc <- function(resp_err = NULL, nt_features = NULL, setsize = NULL, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, setsize),
@@ -36,9 +35,7 @@
   out
 }
 
-.model_IMMbsc <- function(resp_err = NULL, nt_features = NULL,
-                          nt_distances = NULL, setsize = NULL, ...) {
-
+.model_IMMbsc <- function(resp_err = NULL, nt_features = NULL, nt_distances = NULL, setsize = NULL, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),
@@ -72,8 +69,7 @@
   out
 }
 
-.model_IMMfull <- function(resp_err = NULL,  nt_features = NULL,
-                           nt_distances = NULL, setsize = NULL, ...) {
+.model_IMMfull <- function(resp_err = NULL,  nt_features = NULL, nt_distances = NULL, setsize = NULL, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),

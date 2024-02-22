@@ -74,11 +74,11 @@ model.
 \details{
 The following models are supported:
 \itemize{
-\item IMMabc(resp_err, nt_features, setsize, regex)
-\item IMMbsc(resp_err, nt_features, nt_distances, setsize, regex)
-\item IMMfull(resp_err, nt_features, nt_distances, setsize, regex)
+\item IMMabc(resp_err, nt_features, setsize)
+\item IMMbsc(resp_err, nt_features, nt_distances, setsize)
+\item IMMfull(resp_err, nt_features, nt_distances, setsize)
 \item mixture2p(resp_err)
-\item mixture3p(resp_err, nt_features, setsize, regex)
+\item mixture3p(resp_err, nt_features, setsize)
 \item sdmSimple(resp_err)
 }
 
