@@ -98,7 +98,7 @@ library(bmm)
 
 ## Generating simulated data
 
-Should you already have a data set you want to fit, you can skip this section. Alternatively, you can use data provided with the package (add reference to data) or generate data using the random generation function provided in the `bmm` package.
+Should you already have a data set you want to fit, you can skip this section. Alternatively, you can use data provided with the package (see `data(package='bmm')`) or generate data using the random generation function provided in the `bmm` package.
 
 ```{r}
 # set seed for reproducibility
@@ -172,10 +172,21 @@ Then, we can specify the model that we want to estimate. This includes specifyin
 
 ```{r}
 model <- IMMfull(resp_err = "resp_err",
-                 nt_features = paste0("color_item",2:setsize),
+                 nt_features = paste0("color_item",2:5),
                  setsize = setsize,
-                 nt_distances = paste0("dist_item",2:setsize))
+                 nt_distances = paste0("dist_item",2:5))
 ```
+
+In the above example we specified all column names for the non_targets explicitely via `paste0('color_item',2:5)`. Alternatively, you can use a regular expression to match the non-target feature columns in the dataset. For example, you can specify the model a few different ways via regular expressions:
+
+```{r}
+model <- IMMfull(resp_err = "resp_err",
+                 nt_features = "color_item[2-5]",
+                 setsize = setsize,
+                 nt_distances = "dist_item[2-5]",
+                 regex = TRUE)
+```
+
 
 Finally, we can fit the model by passing all the relevant arguments to the `fit_model` function:
 
@@ -247,10 +258,12 @@ as.data.frame(draws) %>%
   ggplot(aes(value, par)) +
   tidybayes::stat_halfeyeh(normalize = "groups") +
   geom_point(data = data.frame(par = colnames(draws),
-                               value = c(Cs,As,Ss,kappas)),
+                               value = c(kappas, As, Cs, Ss)),
              aes(value,par), color = "red",
              shape = "diamond", size = 2.5) +
   scale_x_continuous(lim=c(0,20))
+
+colnames(draws)
 ```
 
 # References

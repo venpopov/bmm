@@ -65,7 +65,7 @@ combine_prior <- function(prior1, prior2) {
 #' }
 #'
 get_model_prior <- function(formula, data, model, ...) {
-  model <- check_model(model)
+  model <- check_model(model, data)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
   config_args <- configure_model(model, data, formula)

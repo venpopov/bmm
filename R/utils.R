@@ -226,6 +226,15 @@ is_try_warning <- function(x) {
   inherits(x, "warning")
 }
 
+is_bmmmodel <- function(x) {
+  inherits(x, "bmmmodel")
+}
+
+is_supported_bmmmodel <- function(x) {
+  valid_models <- supported_models(print_call = FALSE)
+  is_bmmmodel(x) && inherits(x, valid_models)
+}
+
 as_numeric_vector <- function(x) {
   out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
   if (is_try_warning(out)) {
@@ -308,3 +317,47 @@ order_data_query <- function(model, data, formula) {
 #'   `save_pars`. For details see ?brms::save_pars.
 #' @export
 save_pars <- brms::save_pars
+
+
+# when called from another function, it will return a vector of arguments that are
+# missing from the call
+missing_args <- function(which = -1) {
+  parent_objects <- as.list(sys.frame(which))
+  parent_args <- names(as.list(args(as.character(sys.call(which)[[1]]))))
+  parent_args <- parent_args[!parent_args %in% c("...", "")]
+  symbols <- names(parent_objects)[sapply(parent_objects, is.symbol)]
+  missing <- symbols[symbols %in% parent_args]
+  missing
+}
+
+# when called from another function, it will stop the execution if any of the
+# required arguments are missing
+stop_missing_args <- function() {
+  missing <- missing_args(-2)
+  fun <- as.character(sys.call(-1)[[1]])
+  if (length(missing) > 0) {
+    stop2("The following required arguments are missing in ", fun, "(): ", paste(missing, collapse = ", "))
+  }
+}
+                  
+# custom method form printing nicely formatted character values via cat instead of print
+#' @export
+print.message <- function(x, ...) {
+  cat(x, ...)
+}
+
+
+# returns either x, or all variables that match the regular expression x
+# @param x character vector or regular expression
+# @param all_variables character vector of all variables within which to search
+# @param regex logical. If TRUE, x is treated as a regular expression
+get_variables <- function(x, all_variables, regex = FALSE) {
+  if (regex) {
+    variables <- all_variables[grep(x, all_variables)]
+    if (length(variables) == 0) {
+      stop2("No variables found that match the regular expression '", x, "'")
+    }
+    return(variables)
+  }
+  x
+}

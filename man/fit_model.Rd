@@ -74,15 +74,15 @@ model.
 \details{
 The following models are supported:
 \itemize{
-\item \code{IMMabc(resp_err, nt_features, setsize)}
-\item \code{IMMbsc(resp_err, nt_features, nt_distances, setsize)}
-\item \code{IMMfull(resp_err, nt_features, nt_distances, setsize)}
-\item \code{mixture2p(resp_err)}
-\item \code{mixture3p(resp_err, nt_features, setsize)}
-\item \code{sdmSimple(resp_err)}
+\item IMMabc(resp_err, nt_features, setsize, regex)
+\item IMMbsc(resp_err, nt_features, nt_distances, setsize, regex)
+\item IMMfull(resp_err, nt_features, nt_distances, setsize, regex)
+\item mixture2p(resp_err)
+\item mixture3p(resp_err, nt_features, setsize, regex)
+\item sdmSimple(resp_err)
 }
 
-Type \code{?modelname} to get information about a specific model, e.g. \code{?IMMfull}
+Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
 
 Type \code{help(package=bmm)} for a full list of available help topics.
 }
