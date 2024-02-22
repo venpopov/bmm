@@ -7,11 +7,11 @@
 \alias{IMMabc}
 \title{Interference measurement model by Oberauer and Lin (2017).}
 \usage{
-IMMfull(resp_err, nt_features, nt_distances, setsize, ...)
+IMMfull(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...)
 
-IMMbsc(resp_err, nt_features, nt_distances, setsize, ...)
+IMMbsc(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...)
 
-IMMabc(resp_err, nt_features, setsize, ...)
+IMMabc(resp_err, nt_features, setsize, regex = FALSE, ...)
 }
 \arguments{
 \item{resp_err}{The name of the variable in the provided dataset containing
@@ -34,11 +34,11 @@ dataset. Only necessary for the \code{IMMbsc} and \code{IMMfull} models.}
 setsize varies) or a numeric value for the setsize, if the setsize is
 fixed.}
 
-\item{...}{used internally for testing, ignore it}
-
 \item{regex}{Logical. If TRUE, the \code{nt_features} and \code{nt_distances} arguments
 are interpreted as a regular expression to match the non-target feature
 columns in the dataset.}
+
+\item{...}{used internally for testing, ignore it}
 }
 \value{
 An object of class \code{bmmmodel}

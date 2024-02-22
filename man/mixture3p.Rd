@@ -4,7 +4,7 @@
 \alias{mixture3p}
 \title{Three-parameter mixture model by Bays et al (2009).}
 \usage{
-mixture3p(resp_err, nt_features, setsize, ...)
+mixture3p(resp_err, nt_features, setsize, regex = FALSE, ...)
 }
 \arguments{
 \item{resp_err}{The name of the variable in the dataset containing
@@ -22,10 +22,10 @@ dataset.}
 setsize varies) or a numeric value for the setsize, if the setsize is
 fixed.}
 
-\item{...}{used internally for testing, ignore it}
-
 \item{regex}{Logical. If TRUE, the \code{nt_features} argument is interpreted as
 a regular expression to match the non-target feature columns in the dataset.}
+
+\item{...}{used internally for testing, ignore it}
 }
 \value{
 An object of class \code{bmmmodel}

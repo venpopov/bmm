@@ -2,7 +2,8 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <- function(resp_err = NULL, nt_features = NULL, setsize = NULL, regex = FALSE, ...) {
+.model_IMMabc <- function(resp_err = NULL, nt_features = NULL, setsize = NULL,
+                          regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, setsize),
@@ -35,7 +36,8 @@
   out
 }
 
-.model_IMMbsc <- function(resp_err = NULL, nt_features = NULL, nt_distances = NULL, setsize = NULL, regex = FALSE, ...) {
+.model_IMMbsc <- function(resp_err = NULL, nt_features = NULL, nt_distances = NULL,
+                          setsize = NULL, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),
@@ -69,7 +71,8 @@
   out
 }
 
-.model_IMMfull <- function(resp_err = NULL,  nt_features = NULL, nt_distances = NULL, setsize = NULL, regex = FALSE, ...) {
+.model_IMMfull <- function(resp_err = NULL,  nt_features = NULL, nt_distances = NULL,
+                           setsize = NULL, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),
@@ -188,27 +191,28 @@
 #'                  backend='cmdstanr')
 #'}
 #' @export
-IMMfull <- function(resp_err, nt_features, nt_distances, setsize, ...) {
+IMMfull <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...) {
   stop_missing_args()
   .model_IMMfull(resp_err = resp_err, nt_features = nt_features,
-                 nt_distances = nt_distances, setsize = setsize, ...)
+                 nt_distances = nt_distances, setsize = setsize, regex = regex, ...)
 }
 
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, ...) {
+IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...) {
   stop_missing_args()
   .model_IMMbsc(resp_err = resp_err, nt_features = nt_features,
-                nt_distances = nt_distances, setsize = setsize, ...)
+                nt_distances = nt_distances, setsize = setsize, regex = regex, ...)
 }
 
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMabc <- function(resp_err, nt_features, setsize, ...) {
+IMMabc <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
   stop_missing_args()
-  .model_IMMabc(resp_err = resp_err, nt_features = nt_features, setsize = setsize, ...)
+  .model_IMMabc(resp_err = resp_err, nt_features = nt_features,
+                setsize = setsize, regex = regex,...)
 }
 
 #############################################################################!

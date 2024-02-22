@@ -99,9 +99,10 @@
 #'                  iter = 500,
 #'                  backend='cmdstanr')
 #' }
-mixture3p <- function(resp_err, nt_features, setsize, ...) {
+mixture3p <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
   stop_missing_args()
-  .model_mixture3p(resp_err = resp_err, nt_features = nt_features, setsize = setsize, ...)
+  .model_mixture3p(resp_err = resp_err, nt_features = nt_features,
+                   setsize = setsize, regex = regex, ...)
 }
 
 #############################################################################!
