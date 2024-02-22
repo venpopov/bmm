@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.6.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.8.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,6 +64,13 @@
 <div class="section level4">
 <h4 id="bug-fixes-0-3-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-3-0"></a></h4>
 <ul><li>fix a bug in the mixture3p and IMM models which caused an error when intercept was not supressed and set size was used as predictor</li>
+<li>fix a bug in the sort_data check which caused an error when using grouped covariance structure in random effects across different parameters</li>
+</ul></div>
+<div class="section level4">
+<h4 id="other-changes-0-3-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-3-0"></a></h4>
+<ul><li>
+<code>brms</code> is now loaded automatically when loading <code>bmm</code> with <code><a href="https://github.com/venpopov/bmm" class="external-link">library(bmm)</a></code>
+</li>
 </ul></div>
 </div>
     <div class="section level2">
