@@ -2,7 +2,8 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
+.model_IMMabc <- function(resp_err = NULL, nt_features = NULL, setsize = NULL,
+                          regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, setsize),
@@ -35,7 +36,8 @@
   out
 }
 
-.model_IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...) {
+.model_IMMbsc <- function(resp_err = NULL, nt_features = NULL, nt_distances = NULL,
+                          setsize = NULL, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),
@@ -69,7 +71,8 @@
   out
 }
 
-.model_IMMfull <- function(resp_err,  nt_features, nt_distances, setsize, regex = FALSE, ...) {
+.model_IMMfull <- function(resp_err = NULL,  nt_features = NULL, nt_distances = NULL,
+                           setsize = NULL, regex = FALSE, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, nt_distances, setsize),
@@ -106,15 +109,15 @@
 
 # user facing alias
 
-#' @title `r .model_IMMfull(NA, NA, NA, NA)$info$name`
+#' @title `r .model_IMMfull()$info$name`
 #' @name IMM
-#' @details `r model_info(IMMfull(NA, NA, NA, NA), components =c('domain', 'task', 'name', 'citation'))`
+#' @details `r model_info(.model_IMMfull(), components =c('domain', 'task', 'name', 'citation'))`
 #' #### Version: `IMMfull`
-#' `r model_info(IMMfull(NA, NA, NA, NA), components =c('requirements', 'parameters', 'fixed_parameters'))`
+#' `r model_info(.model_IMMfull(), components =c('requirements', 'parameters', 'fixed_parameters'))`
 #' #### Version: `IMMbsc`
-#' `r model_info(IMMbsc(NA, NA, NA, NA), components =c('requirements', 'parameters', 'fixed_parameters'))`
+#' `r model_info(.model_IMMbsc(), components =c('requirements', 'parameters', 'fixed_parameters'))`
 #' #### Version: `IMMabc`
-#' `r model_info(IMMabc(NA, NA, NA), components =c('requirements', 'parameters', 'fixed_parameters'))`
+#' `r model_info(.model_IMMabc(), components =c('requirements', 'parameters', 'fixed_parameters'))`
 #'
 #' Additionally, all IMM models have an internal parameter that is fixed to 0 to
 #' allow the model to be identifiable. This parameter is not estimated and is not
@@ -188,17 +191,29 @@
 #'                  backend='cmdstanr')
 #'}
 #' @export
-IMMfull <- .model_IMMfull
+IMMfull <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...) {
+  stop_missing_args()
+  .model_IMMfull(resp_err = resp_err, nt_features = nt_features,
+                 nt_distances = nt_distances, setsize = setsize, regex = regex, ...)
+}
 
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMbsc <- .model_IMMbsc
+IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...) {
+  stop_missing_args()
+  .model_IMMbsc(resp_err = resp_err, nt_features = nt_features,
+                nt_distances = nt_distances, setsize = setsize, regex = regex, ...)
+}
 
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMabc <- .model_IMMabc
+IMMabc <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
+  stop_missing_args()
+  .model_IMMabc(resp_err = resp_err, nt_features = nt_features,
+                setsize = setsize, regex = regex,...)
+}
 
 #############################################################################!
 # CHECK_DATA S3 methods                                                  ####

@@ -2,7 +2,8 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture3p <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
+.model_mixture3p <- function(resp_err = NULL, nt_features = NULL, setsize = NULL, regex = FALSE, ...) {
+
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, setsize),
@@ -38,8 +39,8 @@
 
 
 # user facing alias
-#' @title `r .model_mixture3p(NA, NA, NA)$info$name`
-#' @details `r model_info(mixture3p(NA, NA, NA))`
+#' @title `r .model_mixture3p()$info$name`
+#' @details `r model_info(.model_mixture3p())`
 #' @param resp_err The name of the variable in the dataset containing
 #'   the response error. The response error should code the response relative to
 #'   the to-be-recalled target in radians. You can transform the response error
@@ -98,7 +99,11 @@
 #'                  iter = 500,
 #'                  backend='cmdstanr')
 #' }
-mixture3p <- .model_mixture3p
+mixture3p <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
+  stop_missing_args()
+  .model_mixture3p(resp_err = resp_err, nt_features = nt_features,
+                   setsize = setsize, regex = regex, ...)
+}
 
 #############################################################################!
 # CONFIGURE_MODEL METHODS                                                ####
