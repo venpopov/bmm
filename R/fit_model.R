@@ -89,7 +89,7 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
   opts <- configure_options(nlist(parallel, chains, sort_data, silent))
 
   # check model, formula and data, and transform data if necessary
-  model <- check_model(model)
+  model <- check_model(model, data)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
 

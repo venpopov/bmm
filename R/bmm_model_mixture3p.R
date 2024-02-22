@@ -3,6 +3,7 @@
 #############################################################################!
 
 .model_mixture3p <- function(resp_err = NULL, nt_features = NULL, setsize = NULL, ...) {
+
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(nt_features, setsize),
@@ -30,6 +31,8 @@
       )),
     void_mu = FALSE
   )
+  attr(out, "regex") <- regex
+  attr(out, "regex_vars") <- c('nt_features') # variables that can be specified via regular expression
   class(out) = c("bmmmodel", "vwm", "nontargets", "mixture3p")
   out
 }
@@ -43,11 +46,15 @@
 #'   the to-be-recalled target in radians. You can transform the response error
 #'   in degrees to radians using the `deg2rad` function.
 #' @param nt_features A character vector with the names of the non-target
-#'   feature values. The non_target feature values should be in radians and centered
-#'   relative to the target.
+#'   feature values. The non_target feature values should be in radians and
+#'   centered relative to the target. Alternatively, if regex=TRUE, a regular
+#'   expression can be used to match the non-target feature columns in the
+#'   dataset.
 #' @param setsize Name of the column containing the set size variable (if
 #'   setsize varies) or a numeric value for the setsize, if the setsize is
 #'   fixed.
+#' @param regex Logical. If TRUE, the `nt_features` argument is interpreted as
+#'  a regular expression to match the non-target feature columns in the dataset.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel
@@ -69,13 +76,25 @@
 #'   thetant ~ 1
 #' )
 #'
-#' # specify the 3-parameter model
-#' model <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), setsize = 4)
+#' # specify the 3-parameter model with explicit column names for non-target features
+#' model1 <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), setsize = 4)
 #'
 #' # fit the model
 #' fit <- fit_model(formula = ff,
 #'                  data = dat,
-#'                  model = model,
+#'                  model = model1,
+#'                  parallel=T,
+#'                  iter = 500,
+#'                  backend='cmdstanr')
+#'
+#' # alternatively specify the 3-parameter model with a regular expression to match non-target features
+#' # this is equivalent to the previous call, but more concise
+#' model2 <- mixture3p(resp_err = "y", nt_features = "nt.*_loc", setsize = 4, regex = TRUE)
+#'
+#' # fit the model
+#' fit <- fit_model(formula = ff,
+#'                  data = dat,
+#'                  model = model2,
 #'                  parallel=T,
 #'                  iter = 500,
 #'                  backend='cmdstanr')

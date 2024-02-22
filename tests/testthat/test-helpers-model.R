@@ -18,6 +18,52 @@ test_that("check_model() refuses invalid models and accepts valid models", {
   }
 })
 
+test_that("check_model() works with regular expressions", {
+  dat <- OberauerLin_2017
+  models1 <- list(mixture3p("dev_rad",
+                            nt_features = paste0('col_nt',1:7),
+                            setsize = 'set_size'),
+                  IMMfull('dev_rad',
+                          nt_features = paste0('col_nt',1:7),
+                          nt_distances = paste0('dist_nt',1:7),
+                          setsize = 'set_size'),
+                  IMMbsc('dev_rad',
+                          nt_features = paste0('col_nt',1:7),
+                          nt_distances = paste0('dist_nt',1:7),
+                          setsize = 'set_size'),
+                  IMMabc('dev_rad',
+                          nt_features = paste0('col_nt',1:7),
+                          setsize = 'set_size')
+                  )
+  models2 <- list(mixture3p("dev_rad",
+                            nt_features = 'col_nt',
+                            setsize = 'set_size',
+                            regex = TRUE),
+                  IMMfull('dev_rad',
+                          nt_features = 'col_nt',
+                          nt_distances = 'dist_nt',
+                          setsize = 'set_size',
+                          regex = TRUE),
+                  IMMbsc('dev_rad',
+                          nt_features = 'col_nt',
+                          nt_distances = 'dist_nt',
+                          setsize = 'set_size',
+                          regex = TRUE),
+                  IMMabc('dev_rad',
+                          nt_features = 'col_nt',
+                          setsize = 'set_size',
+                          regex = TRUE)
+                  )
+
+  for (i in 1:length(models1)) {
+    check1 <- check_model(models1[[i]], dat)
+    check2 <- check_model(models2[[i]], dat)
+    attributes(check1) <- NULL
+    attributes(check2) <- NULL
+    expect_equal(check1, check2)
+  }
+})
+
 test_that("use_model_template() prevents duplicate models", {
   skip_on_cran()
   okmodels <- supported_models(print_call=FALSE)
