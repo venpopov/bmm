@@ -298,11 +298,12 @@ is_data_ordered <- function(data, formula) {
   dpars <- names(formula)
   predictors <- rhs_vars(formula)
   predictors <- predictors[not_in(predictors, dpars)]
+  predictors <- predictors[predictors %in% colnames(data)]
   data <- data[,predictors]
   if (length(predictors) > 1) {
     gr_idx <- do.call(paste, c(data, list(sep="_")))
   } else {
-    gr_idx <- data
+    gr_idx <- unlist(data)
   }
   is_ordered <- !has_nonconsecutive_duplicates(gr_idx)
   is_ordered

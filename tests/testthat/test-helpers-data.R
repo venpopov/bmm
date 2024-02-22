@@ -275,9 +275,12 @@ test_that('is_data_ordered works', {
 
   # test with a complex formula with shared covariance structure across parameters
   data <- OberauerLin_2017
-  formula <- bmf(c ~ 0 + set_size + (0 + set_size | p1 | id),
-                 kappa ~ 0 + set_size + (0 + set_size | p1 | id))
+  formula <- bmf(c ~ 0 + set_size + (0 + set_size | p1 | ID),
+                 kappa ~ 0 + set_size + (0 + set_size | p1 | ID))
   expect_false(is_data_ordered(data, formula))
+
+  data <- dplyr::arrange(data, set_size, ID)
+  expect_true(is_data_ordered(data, formula))
 })
 
 test_that('is_data_ordered works when there is only one predictor', {
