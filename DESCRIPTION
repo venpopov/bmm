@@ -3,13 +3,15 @@ Title: Easy and Accesible Bayesian Measurement Models using 'brms'
 Version: 0.3.9.9000
 Authors@R: c(
     person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph")),
-    person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")))
+    person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")),
+    person("Paul", "Bürkner", , "paul.buerkner@gmail.com", role = c("cph"), 
+      comment = "Creator of brms, a package for Bayesian regression model that this package builds upon."))
 Description: Wrapper functions and custom distributions that make it easier to estimate common 
     measurement models for using the 'brms' package. Currently implemented 
     are the two-parameter mixture model by Zhang and Luck (2008),the three-
     parameter mixture model by Bays et al (2009), and the Interference Measurement Model 
     (Oberauer et al., 2017).
-License: GPL (>= 3)
+License: GPL-2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
