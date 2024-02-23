@@ -25,5 +25,10 @@ Authors:
   \item Gidon Frischkorn \email{gidon.frischkorn@psychologie.uzh.ch} [copyright holder]
 }
 
+Other contributors:
+\itemize{
+  \item Paul Bürkner \email{paul.buerkner@gmail.com} (Creator of brms, a package for Bayesian regression model that this package builds upon.) [copyright holder]
+}
+
 }
 \keyword{internal}
