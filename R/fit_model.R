@@ -36,12 +36,35 @@
 #'   printed. Set refresh = 0 to turn this off as well. If using backend =
 #'   "rstan" you can also set open_progress = FALSE to prevent opening
 #'   additional progress bars.
-#' @param ... Further arguments passed to [brms::brm()] or Stan. See the
+#' @param checkpoints Experimental. A numeric vector of iteration numbers at which to save the
+#'  current state of the sampler. This option uses the [chkptstanr][chkptstanr::chkptstanr-package] package to
+#'  allow interrupted sampling to be resumed. Disabled by default. Enabling this
+#'  option requires the [chkptstanr][chkptstanr::chkptstanr-package] package to be installed (see details).
+#' @param checkpoints_folder If checkpoints is not NULL, this argument specifies the
+#'  directory where the checkpoints will be saved
+#' @param checkpoints_path if NULL (default), the checkpoints_folder will be created
+#'  in the current working directory. Alternatively, you can specify a path to
+#'  an existing folder where the checkpoints_folder will be created
+#' @param ... Further arguments passed to [brms::brm()], Stan or chkptstanr. See the
 #'   description of [brms::brm()] for more details
 #'
 #' @details `r a= supported_models(); a`
 #'
 #'   Type `help(package=bmm)` for a full list of available help topics.
+#'
+#'   ## Using checkpoints
+#'
+#'   The `checkpoints` argument allows you to save the current state of the
+#'   sampler at specific iteration numbers. This can be useful if you want to
+#'   interrupt the sampling process and resume it later. This feature requires
+#'   the chkptstanr package to be installed, and to use "backend = cmdstanr".
+#'   The current CRAN version of chkptstanr has a bug that prevents it from
+#'   working. Until the issue is fixed, you can install a working forked version
+#'   of chkptstanr with:
+#'
+#'   ``` r
+#'   remotes::install_github("venpopov/chkptstanr")
+#'   ```
 #'
 #' @returns An object of class brmsfit which contains the posterior draws along
 #'   with many other useful information about the model. Use methods(class =
@@ -72,11 +95,14 @@
 #'                  parallel=T,
 #'                  iter=500,
 #'                  backend='cmdstanr')
+#'
+#' # TODO: add checkpoint example
 #' }
 #'
 fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
                       prior = NULL, sort_data = getOption('bmm.sort_data', NULL),
-                      silent = getOption('bmm.silent', 1), ...) {
+                      silent = getOption('bmm.silent', 1), checkpoints = NULL,
+                      checkpoints_folder = NULL, checkpoints_path = NULL, ...) {
   # warning for using old version
   dots <- list(...)
   if ("model_type" %in% names(dots)) {
@@ -105,7 +131,10 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
   # estimate the model
   dots <- list(...)
   fit_args <- combine_args(nlist(config_args, opts, dots))
-  fit <- call_brm(fit_args)
+  fit <- run_model(fit_args,
+                   checkpoints = checkpoints,
+                   checkpoints_folder = checkpoints_folder,
+                   checkpoints_path = checkpoints_path)
 
   # model postprocessing
   postprocess_brm(model, fit, fit_args = fit_args, user_formula = user_formula,

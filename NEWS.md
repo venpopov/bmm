@@ -2,6 +2,7 @@
 
 ### New features
 
+* add option to checkpoint bmm models sampling via the `checkpoints` argument in `fit_model()`. This uses the `chkptstanr` package as a backend to save the sampling results every "checkpoints" iterations. This is useful for long sampling runs, as it allows you to resume sampling from the last checkpoint in case of a crash or other interruption (#129). This option should be considered Experimental. It works only with the `cmdstanr` backend, and it requires you to install a forked version of `chkptstanr` from GitHub, which implements a number of bugfixes. To install the forked version, run `remotes::install_github("venpopov/chkptstanr")`. See '?fit_model' for more information on how to use the `checkpoints` argument, and see the `chkptstanr` package documentation for the motivation and benefits of using checkpoints.
 * add a check for the sdmSimple model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the `sort_data` argument (#72)
 * the mixture3p and imm models now require that when set size is used as a predictor, the intercept must be suppressed. This is because set size 1 otherwise causes problems - there can be no contribution of non_target responses when there is set size 1, and it is not meaningful to estimate an intercept for parameters that involve non_target responses (#96).
 * add postprocessing methods for sdmSimple to allow for pp_check(), conditional_effects and bridgesampling usage with the model (#30)

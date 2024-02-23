@@ -13,6 +13,9 @@ fit_model(
   prior = NULL,
   sort_data = getOption("bmm.sort_data", NULL),
   silent = getOption("bmm.silent", 1),
+  checkpoints = NULL,
+  checkpoints_folder = NULL,
+  checkpoints_path = NULL,
   ...
 )
 }
@@ -55,7 +58,19 @@ printed. Set refresh = 0 to turn this off as well. If using backend =
 "rstan" you can also set open_progress = FALSE to prevent opening
 additional progress bars.}
 
-\item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See the
+\item{checkpoints}{Experimental. A numeric vector of iteration numbers at which to save the
+current state of the sampler. This option uses the \link[chkptstanr:chkptstanr-package]{chkptstanr} package to
+allow interrupted sampling to be resumed. Disabled by default. Enabling this
+option requires the \link[chkptstanr:chkptstanr-package]{chkptstanr} package to be installed (see details).}
+
+\item{checkpoints_folder}{If checkpoints is not NULL, this argument specifies the
+directory where the checkpoints will be saved}
+
+\item{checkpoints_path}{if NULL (default), the checkpoints_folder will be created
+in the current working directory. Alternatively, you can specify a path to
+an existing folder where the checkpoints_folder will be created}
+
+\item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}}, Stan or chkptstanr. See the
 description of \code{\link[brms:brm]{brms::brm()}} for more details}
 }
 \value{
@@ -85,6 +100,19 @@ The following models are supported:
 Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
 
 Type \code{help(package=bmm)} for a full list of available help topics.
+\subsection{Using checkpoints}{
+
+The \code{checkpoints} argument allows you to save the current state of the
+sampler at specific iteration numbers. This can be useful if you want to
+interrupt the sampling process and resume it later. This feature requires
+the chkptstanr package to be installed, and to use "backend = cmdstanr".
+The current CRAN version of chkptstanr has a bug that prevents it from
+working. Until the issue is fixed, you can install a working forked version
+of chkptstanr with:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{remotes::install_github("venpopov/chkptstanr")
+}\if{html}{\out{</div>}}
+}
 }
 \examples{
 \dontrun{
@@ -102,6 +130,8 @@ fit <- fit_model(formula = ff,
                  parallel=T,
                  iter=500,
                  backend='cmdstanr')
+
+# TODO: add checkpoint example
 }
 
 }
