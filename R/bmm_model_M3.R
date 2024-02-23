@@ -10,10 +10,10 @@
       info = list(
          domain = 'Working Memory (categorical)',
          task = 'n-AFC retrieval',
-         name = 'Memory Measurement Model (custom)',
-         citation = '',
+         name = 'The Memory Measurement Model by Oberauer & Lewandowsky (2019)',
+         citation = 'Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.',
          version = 'custom',
-         requirements = '',
+         requirements = '- Provide names for variables specifying the number of responses in a set of response categories.',
          parameters = list(
             custom_activations = "Dependent of the provided activation functions, the user
               decides which activation sources for the different categories exist and how
@@ -39,6 +39,11 @@
 #' @title `r .model_M3custom()$info$name`
 #' @name M3
 #'
+#' @details
+#'   #### Version: `M3custom`
+#'   `r model_info(.model_M3custom(), components =c('domain', 'task', 'name', 'citation'))`
+#'
+#'
 #' @param resp_cats The variable names that contain the number of responses for each of the
 #'   response categories used for the M3.
 #' @param num_options Either an integer vector of the same length as `resp_cats` if the number
@@ -55,6 +60,8 @@
 #'   working memory tasks. Psychological Review"
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
+#'
+#' @keywords bmmmodel
 #'
 #' @examples
 #' \dontrun{

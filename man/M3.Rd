@@ -3,7 +3,7 @@
 \name{M3}
 \alias{M3}
 \alias{M3custom}
-\title{Memory Measurement Model (custom)}
+\title{The Memory Measurement Model by Oberauer & Lewandowsky (2019)}
 \usage{
 M3custom(resp_cats, num_options, choice_rule, ...)
 }
@@ -31,7 +31,20 @@ working memory tasks. Psychological Review"}
 An object of class \code{bmmmodel}
 }
 \description{
-Memory Measurement Model (custom)
+The Memory Measurement Model by Oberauer & Lewandowsky (2019)
+}
+\details{
+\subsection{Version: \code{M3custom}}{
+\itemize{
+\item \strong{Domain:} Working Memory (categorical)
+\item \strong{Task:} n-AFC retrieval
+\item \strong{Name:} The Memory Measurement Model by Oberauer & Lewandowsky (2019)
+\item \strong{Citation:}
+\itemize{
+\item Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.
+}
+}
+}
 }
 \examples{
 \dontrun{
@@ -39,3 +52,4 @@ Memory Measurement Model (custom)
 }
 
 }
+\keyword{bmmmodel}
