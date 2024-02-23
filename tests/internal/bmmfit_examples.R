@@ -27,8 +27,7 @@ bmmfit_example1 <- fit_model(formula, data, model,
                              refresh = 0,
                              init = 1,
                              silent = 1,
-                             chains = 1,
-                             backend = 'cmdstanr')
+                             chains = 1)
 
 
 usethis::use_data(bmmfit_example1, internal = TRUE, overwrite = TRUE)
