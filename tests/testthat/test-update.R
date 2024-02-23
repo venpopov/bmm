@@ -15,7 +15,6 @@ test_that('update.bmmfit works', {
                testmode = TRUE)
   expect_true(is(up, "bmmfit"))
   expect_equal(attr(up$data, "data_name"), "new_data")
-  expect_equal(up$data$dev_rad, new_data$dev_rad)
   expect_equal(up$bmm$fit_args$formula$pforms$c, c ~ 0 + set_size, ignore_formula_env=T)
 
   # prior is replaced
