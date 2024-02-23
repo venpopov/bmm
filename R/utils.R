@@ -257,7 +257,12 @@ stop_quietly <- function() {
 # ordered by the predictors, and if not, it suggests to the user to sort the data
 order_data_query <- function(model, data, formula) {
   sort_data <- getOption("bmm.sort_data", NULL)
-  if(is.null(sort_data) & !is_data_ordered(data, formula)) {
+  dpars <- names(formula)
+  predictors <- rhs_vars(formula)
+  predictors <- predictors[not_in(predictors, dpars)]
+  predictors <- predictors[predictors %in% colnames(data)]
+
+  if(is.null(sort_data) && !is_data_ordered(data, formula)) {
     message("\n\nData is not ordered by predictors.\nYou can speed up the model ",
             "estimation up to several times (!) by ordering the data by all your ",
             "predictor columns.\n\n")
@@ -283,21 +288,19 @@ order_data_query <- function(model, data, formula) {
         message("To sort your data, use the following code:\n\n")
         message(crayon::green("library(dplyr)"))
         message(crayon::green(data_name, "_sorted <- ", data_name, " %>% arrange(",
-                              paste(rhs_vars(formula), collapse = ", "),
+                              paste(predictors, collapse = ", "),
                               ")\n\n",
                               sep=""))
         message("Then re-run the model with the newly sorted data.")
         stop_quietly()
       } else if (var == 2) {
-        message("Your data has been sorted by the following predictors: ", paste(rhs_vars(formula), collapse = ", "),'\n')
-        preds <- rhs_vars(formula)
-        data <- dplyr::arrange_at(data, preds)
+        message("Your data has been sorted by the following predictors: ", paste(predictors, collapse = ", "),'\n')
+        data <- dplyr::arrange_at(data, predictors)
       }
     }
   } else if (isTRUE(sort_data)) {
-    preds <- rhs_vars(formula)
-    data <- dplyr::arrange_at(data, preds)
-    message("\nYour data has been sorted by the following predictors: ", paste(rhs_vars(formula), collapse = ", "),'\n')
+    data <- dplyr::arrange_at(data, predictors)
+    message("\nYour data has been sorted by the following predictors: ", paste(predictors, collapse = ", "),'\n')
     caution_msg <- paste(strwrap("* caution: you have set `sort_data=TRUE`. You need to be careful
         when using brms postprocessing methods that rely on the data order, such as
         generating predictions. Assuming you assigned the result of fit_model to a
@@ -308,16 +311,6 @@ order_data_query <- function(model, data, formula) {
   }
   data
 }
-
-#' @inherit brms::save_pars title params return
-#' @description Thin wrapper around [brms::save_pars()]. When calling
-#'   [fit_model] with additional information to save parameters you can use this
-#'   function to pass information about saving parameter draws to `brms` without
-#'   having to load `brms`. Alternatively, you can also load `brms` and call
-#'   `save_pars`. For details see ?brms::save_pars.
-#' @export
-save_pars <- brms::save_pars
-
 
 # when called from another function, it will return a vector of arguments that are
 # missing from the call

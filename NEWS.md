@@ -12,6 +12,10 @@
 ### Bug fixes
 * fix a bug in the mixture3p and IMM models which caused an error when intercept was not supressed and set size was used as predictor
 * update() now works properly with bmmfit objects (#95)
+* fix a bug in the sort_data check which caused an error when using grouped covariance structure in random effects across different parameters
+
+### Other changes
+* `brms` is now loaded automatically when loading `bmm` with `library(bmm)`
 
 
 
