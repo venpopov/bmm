@@ -31,10 +31,11 @@ reference:
    - "bmm"
    - "supported_models"
  - title: "Fitting models"
-   desc: "Main function for model fitting"
+   desc: "Main functions for model fitting"
  - contents:
    - "fit_model"
    - "bmmformula"
+   - "update.bmmfit"
  - title: "Extract model information"
    desc: "Utility functions for extracting default priors, generate stan code, stan data, etc."
  - contents:
