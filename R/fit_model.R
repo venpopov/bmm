@@ -86,11 +86,13 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
   }
 
   # set temporary global options and return modified arguments for brms
-  opts <- configure_options(nlist(parallel, chains, sort_data, silent))
+  configure_opts <- nlist(parallel, chains, sort_data, silent)
+  opts <- configure_options(configure_opts)
 
   # check model, formula and data, and transform data if necessary
   model <- check_model(model, data)
   data <- check_data(model, data, formula)
+  user_formula <- formula
   formula <- check_formula(model, data, formula)
 
 
@@ -106,22 +108,7 @@ fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
   fit <- call_brm(fit_args)
 
   # model postprocessing
-  postprocess_brm(model, fit)
-}
-
-
-
-#' @export
-update.bmmfit <- function(fit, ...) {
-  stop("The update method for bmmfit is not yet implemented, but is planned for a future release.", call. = FALSE)
-  # do any necessary preprocessing to accomondate bmm changes into brms
-  # ....
-
-  fit = NextMethod(fit)  # pass back to brms::update.brmsfit
-
-  # do any necessary postprocessing to convert back to bmmfit
-  # ....
-  class(fit) <- c('bmmfit', class(fit))  # reassing class
-  return(fit)
+  postprocess_brm(model, fit, fit_args = fit_args, user_formula = user_formula,
+                  configure_opts = configure_opts)
 }
 
