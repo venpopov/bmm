@@ -151,12 +151,21 @@ configure_model.sdmSimple <- function(model, data, formula) {
 #############################################################################!
 
 #' @export
-postprocess_brm.sdmSimple <- function(model, fit) {
+postprocess_brm.sdmSimple <- function(model, fit, ...) {
   # manually set link_c to "log" since I coded it manually
   fit$family$link_c <- "log"
   fit$formula$family$link_c <- "log"
   fit
 }
+
+#' @export
+revert_postprocess_brm.sdmSimple <- function(model, fit, ...) {
+  fit$family$link_c <- "identity"
+  fit$formula$family$link_c <- "identity"
+  fit
+}
+
+
 
 log_lik_sdm_simple <- function(i, prep) {
   mu <- brms::get_dpar(prep, "mu", i = i)

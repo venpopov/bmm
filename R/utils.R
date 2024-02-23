@@ -71,13 +71,16 @@ softmaxinv <- function(p, lambda = 1) {
 #' @keywords internal
 #' @returns A list of options to pass to brm()
 configure_options <- function(opts, env=parent.frame()) {
-  if (opts$parallel) {
+  if (isTRUE(opts$parallel)) {
     cores = parallel::detectCores()
     if (opts$chains >  parallel::detectCores()) {
       opts$chains <- parallel::detectCores()
     }
   } else {
     cores = NULL
+  }
+  if (not_in_list('silent', opts)) {
+    opts$silent <- getOption('bmm.silent', 1)
   }
   withr::local_options(
     list(
@@ -129,9 +132,6 @@ glue_lf <- function(...) {
 #' @noRd
 call_brm <- function(fit_args) {
   fit <- brms::do_call(brms::brm, fit_args)
-  fit$bmm_fit_args <- fit_args
-  class(fit) <- c('bmmfit','brmsfit')
-  fit
 }
 
 
@@ -353,4 +353,32 @@ get_variables <- function(x, all_variables, regex = FALSE) {
     return(variables)
   }
   x
+}
+
+# replace the base identical function with a S3 method
+identical <- function(x, y, ...) {
+  UseMethod("identical")
+}
+
+#' @export
+identical.default <- function(x, y, ...) {
+  base::identical(x, y, ...)
+}
+
+#' @export
+identical.brmsformula <- function(x, y, ...) {
+  res <- waldo::compare(x, y, ignore_formula_env = TRUE)
+  length(res) == 0
+}
+
+#' @export
+identical.bmmformula <- function(x, y, ...) {
+  res <- waldo::compare(x, y, ignore_formula_env = TRUE)
+  length(res) == 0
+}
+
+#' @export
+identical.formula <- function(x, y, ...) {
+  res <- waldo::compare(x, y, ignore_formula_env = TRUE)
+  length(res) == 0
 }
