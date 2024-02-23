@@ -1,14 +1,6 @@
 ## set default options for afex_options:
 .onLoad <- function(libname, pkgname) {
-  options <- options()
-  options_bmm <- list(
-    bmm.default_priors = TRUE
-  )
 
-  options_to_set <- !(names(options_bmm) %in% names(options))
-  if (any(options_to_set)) options(options_bmm[options_to_set])
-
-  invisible()
 }
 
 .onAttach <- function(libname, pkgname) {
