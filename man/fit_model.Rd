@@ -77,6 +77,7 @@ The following models are supported:
 \item IMMabc(resp_err, nt_features, setsize, regex)
 \item IMMbsc(resp_err, nt_features, nt_distances, setsize, regex)
 \item IMMfull(resp_err, nt_features, nt_distances, setsize, regex)
+\item M3custom(resp_cats, num_options, choice_rule)
 \item mixture2p(resp_err)
 \item mixture3p(resp_err, nt_features, setsize, regex)
 \item sdmSimple(resp_err)
