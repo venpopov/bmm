@@ -164,10 +164,6 @@ run_model <- function(fit_args, checkpoints, checkpoints_folder, checkpoints_pat
     stop2("Checkpoints are not supported for rstan. Use backend='cmdstanr' instead.")
   }
 
-  if (!requireNamespace("cmdstanr", quietly = TRUE)) {
-    stop2("Package \"cmdstanr\" must be installed to use this function.")
-  }
-
   if (!is.null(fit_args$iter)) {
     fit_args$iter_warmup <- ifelse(is.null(fit_args$warmup), fit_args$iter/2, fit_args$warmup)
     fit_args$iter_sampling <- fit_args$iter - fit_args$iter_warmup
