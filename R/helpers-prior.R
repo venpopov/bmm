@@ -95,12 +95,16 @@ get_model_prior <- function(formula, data, model, ...) {
 #'   class="Intercept", dpar=parameter_name) for all fixed parameters in the
 #'   model
 #' @noRd
-fixed_pars_priors <- function(model, additional_pars = list()) {
+fixed_pars_priors <- function(model, additional_pars = list(), class = "Intercept", partype = "dpar") {
   par_list <- c(model$info$fixed_parameters, additional_pars)
   pars <- names(par_list)
   values <- unlist(par_list)
   priors <- glue::glue("constant({values})")
-  brms::set_prior(priors, class = "Intercept", dpar = pars)
+  if(partype == "dpar") {
+    brms::set_prior(priors, class = class, dpar = pars)
+  } else {
+    brms::set_prior(priors, class = class, nlpar = pars)
+  }
 }
 
 

@@ -118,7 +118,7 @@ check_model <- function(model, data=NULL) {
 
 #' @export
 check_model.default <- function(model, data) {
-  bmm_models <- supported_models(print_call=FALSE)
+  bmm_models <- supported_models(print_call = FALSE)
   if (is.function(model)) {
     fun_name <- as.character(substitute(model))
     if (fun_name %in% bmm_models) {
@@ -126,7 +126,7 @@ check_model.default <- function(model, data) {
             "See ?", fun_name, " for details on properly specifying the model argument\n\n")
     }
   }
-  if(!is_supported_bmmmodel(model)) {
+  if (!is_supported_bmmmodel(model)) {
     stop2("You provided an object of class `", class(model), "` to the model argument. ",
           "The model argument should be a `bmmmodel` function.\n",
           "You can see the list of supported models by running `supported_models()`\n\n",
@@ -142,7 +142,7 @@ check_model.bmmmodel <- function(model, data = NULL) {
 }
 
 check_model.M3 <- function(model, data = NULL) {
-  if(is.null(names(model$other_vars$num_options))) names(model$other_vars$num_options) <- model$resp_vars$resp_cats
+  if (is.null(names(model$other_vars$num_options))) names(model$other_vars$num_options) <- model$resp_vars$resp_cats
   NextMethod("check_model")
 }
 
@@ -184,8 +184,6 @@ replace_regex_variables <- function(model, data) {
 }
 
 
-
-
 #############################################################################!
 # HELPER FUNCTIONS                                                       ####
 #############################################################################!
@@ -214,7 +212,7 @@ supported_models <- function(print_call=TRUE) {
     args <- args[!args %in% c("...")]
     args <- collapse_comma(args)
     args <- gsub("'", "", args)
-    out <- paste0(out, '- `', model,'(',args,')`', "\n", sep='')
+    out <- paste0(out, '- `', model,'(',args,')`', "\n", sep = '')
   }
   out <- paste0(out, "\nType `?modelname` to get information about a specific model, e.g. `?IMMfull`\n")
   out <- gsub("`", " ", out)
@@ -231,7 +229,7 @@ supported_models <- function(print_call=TRUE) {
 #' @export
 #' @keywords internal
 print_pretty_models_md <- function() {
-  ok_models <- supported_models(print_call=FALSE)
+  ok_models <- supported_models(print_call = FALSE)
   domains <- c()
   models <- c()
   for (model in ok_models) {
@@ -244,7 +242,7 @@ print_pretty_models_md <- function() {
   }
   unique_domains <- unique(domains)
   for (dom in unique_domains) {
-    cat('**', dom, '**\n\n', sep="")
+    cat('**', dom, '**\n\n', sep = "")
     dom_models <- unique(models[domains == dom])
     for (model in dom_models) {
       cat('*', model, '\n')
@@ -309,16 +307,13 @@ model_info.bmmmodel <- function(model, components = 'all') {
 #'   returned function, e.g. `get_model("mixture2p")()`
 #' @noRd
 get_model <- function(model) {
-  get(paste0('.model_', model), mode='function')
+  get(paste0('.model_', model), mode = 'function')
 }
 
 # same as get_model2, but with the new model structure for the user facing alias
 get_model2 <- function(model) {
-  get(model, mode='function')
+  get(model, mode = 'function')
 }
-
-
-
 
 
 #'Create a file with a template for adding a new model (for developers)

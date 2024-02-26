@@ -126,9 +126,21 @@ bmf2bf.M3 <- function(model, formula) {
       brms_formula <- brms_formula +
          glue_nlf(paste0("mu",resp_cats[i]), ' ~ act', resp_cats[i])
    }
-   brms_formula
 
-   return(brms_formula)
+   if ("M3custom" %in% class(model)) {
+      # number of resp_cats
+      num_respCats <- length(model$resp_vars$resp_cats)
+
+      # for each dependent parameter, check if it is used as a non-linear predictor of
+      # another parameter and add the corresponding brms function
+      dpars <- names(formula)
+      for (dpar in dpars[dpars %in% model$resp_vars$resp_cats]) {
+         pform <- formula[[dpar]]
+         brms_formula <- brms_formula + glue_nlf("act",deparse(pform),"+ log(",model$other_vars$num_options[dpar],")")
+      }
+   }
+
+   brms_formula
 }
 
 
@@ -148,24 +160,18 @@ configure_model.M3 <- function(model, data, formula) {
    family <- brms::multinomial(refcat = NA)
 
    # construct the default prior
-   prior <- NULL
+   prior <- fixed_pars_priors(model, partype = "nlpar", class = "b")
+   # if (getOption("bmm.default_priors", TRUE)) {
+   #    prior <- prior +
+   #       set_default_prior(bmm_formula, data,
+   #                         prior_list=list(kappa =list(main = 'normal(2,1)',effects = 'normal(0,1)', nlpar = T),
+   #                                         c = list(main = 'normal(0,1)',effects = 'normal(0,1)', nlpar = T),
+   #                                         s = list(main = 'normal(0,1)',effects = 'normal(0,1)', nlpar = T)))
+   # }
 
    # return the list
    out <- nlist(formula, data, family, prior)
    return(out)
 }
 
-
-#############################################################################!
-# POSTPROCESS METHODS                                                    ####
-#############################################################################!
-# A postprocess_brm.* function should be defined for the model class. See
-# ?postprocess_brm for details
-
-#' @export
-postprocess_brm.M3 <- function(model, fit) {
-   # any required postprocessing (if none, delete this section)
-
-   return(fit)
-}
 

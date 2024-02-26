@@ -129,15 +129,11 @@ bmf2bf.bmmmodel <- function(model, formula) {
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function
   dpars <- names(formula)
-  for (dpar in dpars) {
+  for (dpar in dpars[!dpars %in% model$resp_vars$resp_cats]) {
     pform <- formula[[dpar]]
     predictors <- rhs_vars(pform)
     if (any(predictors %in% dpars)) {
-      if ("M3" %in% class(model) || dpar %in% model$resp_vars$resp_cats) {
-        brms_formula <- brms_formula + glue_nlf("act",deparse(pform),"+ log(",model$other_vars$num_options[dpar],")")
-      } else {
-        brms_formula <- brms_formula + brms::nlf(pform)
-      }
+      brms_formula <- brms_formula + brms::nlf(pform)
     } else {
       brms_formula <- brms_formula + brms::lf(pform)
     }

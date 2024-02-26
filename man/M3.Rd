@@ -5,7 +5,7 @@
 \alias{M3custom}
 \title{The Memory Measurement Model by Oberauer & Lewandowsky (2019)}
 \usage{
-M3custom(resp_cats, num_options, choice_rule, ...)
+M3custom(resp_cats, num_options, choice_rule = "softmax", ...)
 }
 \arguments{
 \item{resp_cats}{The variable names that contain the number of responses for each of the
