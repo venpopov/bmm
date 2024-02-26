@@ -128,9 +128,6 @@ bmf2bf.M3 <- function(model, formula) {
    }
 
    if ("M3custom" %in% class(model)) {
-      # number of resp_cats
-      num_respCats <- length(model$resp_vars$resp_cats)
-
       # for each dependent parameter, check if it is used as a non-linear predictor of
       # another parameter and add the corresponding brms function
       dpars <- names(formula)
