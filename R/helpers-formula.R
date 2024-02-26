@@ -79,7 +79,12 @@ wrong_parameters <- function(model, formula) {
   fpars <- names(formula)
   mpars <- names(model$info$parameters)
   rhs_vars <- rhs_vars(formula)
-  wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
+
+  if ("M3custom" %in% class(model)) {
+    wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars) & not_in(fpars, model$resp_vars$resp_cats)
+  } else {
+    wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
+  }
   fpars[wpars]
 }
 
@@ -112,14 +117,14 @@ bmf2bf <- function(model, formula) {
 bmf2bf.bmmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE
   resp <- model$resp_vars
-  if (length(resp) > 1) {
-    formula <- NextMethod("bmf2bf")
-    return(formula)
-  }
-  resp <- resp[[1]]
+  if (length(resp) > 1 | "M3" %in% class(model)) {
+    brms_formula <- NextMethod("bmf2bf")
+  } else {
+    resp <- resp[[1]]
 
-  # set base brms formula based on response
-  brms_formula <- brms::bf(paste0(resp, "~ 1"))
+    # set base brms formula based on response
+    brms_formula <- brms::bf(paste0(resp, "~ 1"))
+  }
 
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function
@@ -128,7 +133,11 @@ bmf2bf.bmmmodel <- function(model, formula) {
     pform <- formula[[dpar]]
     predictors <- rhs_vars(pform)
     if (any(predictors %in% dpars)) {
-      brms_formula <- brms_formula + brms::nlf(pform)
+      if ("M3" %in% class(model) || dpar %in% model$resp_vars$resp_cats) {
+        brms_formula <- brms_formula + glue_nlf("act",deparse(pform),"+ log(",model$other_vars$num_options[dpar],")")
+      } else {
+        brms_formula <- brms_formula + brms::nlf(pform)
+      }
     } else {
       brms_formula <- brms_formula + brms::lf(pform)
     }

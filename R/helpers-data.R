@@ -68,7 +68,6 @@ check_data.vwm <- function(model, data, formula) {
   NextMethod("check_data")
 }
 
-
 #' @export
 check_data.nontargets <- function(model, data, formula) {
   nt_features <- model$other_vars$nt_features
@@ -101,6 +100,14 @@ check_data.nontargets <- function(model, data, formula) {
   # save some variables for later use
   attr(data, 'max_setsize') <- max_setsize
   attr(data, 'lure_idx_vars') <- lure_idx_vars
+
+  NextMethod("check_data")
+}
+
+check_data.M3 <- function(model, data, formula) {
+  resp_cats <- model$resp_vars$resp_cats
+  data$Y <- apply(data[,resp_cats],2,cbind)
+  data$nTrials <- rowSums(data[,resp_cats])
 
   NextMethod("check_data")
 }

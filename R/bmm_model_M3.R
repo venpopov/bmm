@@ -13,11 +13,11 @@
          name = 'The Memory Measurement Model by Oberauer & Lewandowsky (2019)',
          citation = 'Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.',
          version = 'custom',
-         requirements = '- Provide names for variables specifying the number of responses in a set of response categories.',
+         requirements = '- Provide names for variables specifying the number of responses in a set of response categories.\n
+         - Specify activation sources for each response categories \n
+         - Include at least an activation source "b" for all response categories \n
+         - Predict the specified activation at least by a fixed intercept and any additional predictors from your data',
          parameters = list(
-            custom_activations = "Dependent of the provided activation functions, the user
-              decides which activation sources for the different categories exist and how
-              they are labeled",
             b = "Background activation. This source of activation should be added to the
               activation function for each response category, and represents the background
               noise. This parameter is fixed for scaling, but needs to be included in all
@@ -69,9 +69,9 @@
 #' }
 #'
 #' @export
-M3custom <- function(resp_cats, num_options, choice_rule, ...) {
+M3custom <- function(resp_cats, num_options, choice_rule = "softmax", ...) {
    stop_missing_args()
-   .model_M3(resp_cats = resp_cats, num_options = num_options, choice_rule = choice_rule, ...)
+   .model_M3custom(resp_cats = resp_cats, num_options = num_options, choice_rule = choice_rule, ...)
 }
 
 
@@ -115,25 +115,18 @@ check_data.M3 <- function(model, data, formula) {
 #' @export
 bmf2bf.M3 <- function(model, formula) {
    # retrieve required response arguments
-   resp_var1 <- model$resp_vars$resp_var1
-   resp_var2 <- model$resp_vars$resp_arg2
+   resp_cats <- model$resp_vars$resp_cats
 
    # set the base brmsformula based
-   brms_formula <- brms::bf(paste0(resp_var1," | ", vreal(resp_var2), " ~ 1" ),)
+   brms_formula <- brms::bf(paste0("Y | trials(nTrials)", " ~ act", resp_cats[1] ),nl = TRUE)
 
-   # add bmmformula to the brms_formula
-   # check if parameters are used as non-linear predictors in other formulas
-   # and use the brms::lf() or brms::nlf() accordingly.
-   dpars <- names(formula)
-   for (dpar in dpars) {
-     pform <- formula[[dpar]]
-     predictors <- rhs_vars(pform)
-     if (any(predictors %in% dpars)) {
-       brms_formula <- brms_formula + brms::nlf(pform)
-     } else {
-       brms_formula <- brms_formula + brms::lf(pform)
-     }
+   # for each dependent parameter, check if it is used as a non-linear predictor of
+   # another parameter and add the corresponding brms function
+   for (i in 2:length(resp_cats) ) {
+      brms_formula <- brms_formula +
+         glue_nlf(paste0("mu",resp_cats[i]), ' ~ act', resp_cats[i])
    }
+   brms_formula
 
    return(brms_formula)
 }
@@ -147,19 +140,12 @@ bmf2bf.M3 <- function(model, formula) {
 
 #' @export
 configure_model.M3 <- function(model, data, formula) {
-   # retrieve required arguments
-   required_arg1 <- model$other_vars$required_arg1
-   required_arg2 <- model$other_vars$required_arg2
-
-   # retrieve arguments from the data check
-   my_precomputed_var <- attr(data, 'my_precomputed_var')
-
    # construct brms formula from the bmm formula
    bmm_formula <- formula
    formula <- bmf2bf(model, bmm_formula)
 
    # construct the family
-   family <- NULL
+   family <- brms::multinomial(refcat = NA)
 
    # construct the default prior
    prior <- NULL
