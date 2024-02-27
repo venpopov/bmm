@@ -13,8 +13,8 @@ test_that('fit_model works with checkpointing', {
                       backend = 'cmdstanr',
                       sort_data = T,
                       iter = 100,
-                      checkpoints = 25,
-                      stop_after = 2,
+                      checkpoint_every = 25,
+                      stop_after = 50,
                       checkpoints_folder = folder),
              silent = T)
 
@@ -25,7 +25,7 @@ test_that('fit_model works with checkpointing', {
                        backend = 'cmdstanr',
                        sort_data = T,
                        iter = 100,
-                       checkpoints = 25,
+                       checkpoint_every = 25,
                        checkpoints_folder = folder),
              silent = T)
 

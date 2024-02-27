@@ -131,23 +131,14 @@ glue_lf <- function(...) {
 #' model configuration is correct. Avoids compiling and running the model
 #' if checkpoints is not NULL, use [chkptstanr]
 #' @noRd
-run_model <- function(fit_args, checkpoints, checkpoints_folder, checkpoints_path) {
-  if (is.null(checkpoints)) {
+run_model <- function(fit_args, checkpoint_every, stop_after, checkpoints_folder, reset) {
+  if (is.null(checkpoint_every)) {
     fit <- brms::do_call(brms::brm, fit_args)
     return(fit)
   }
 
   if (is.null(checkpoints_folder)) {
     stop2("You must provide a folder name to save the checkpoints")
-  }
-
-  # needed because of silly setup in chkptstanr::create_dir(). Eventually can remove
-  # if I rework their function
-  if (xfun::is_abs_path(checkpoints_folder)) {
-    stop2("The checkpoints_folder argument must be a relative path.\n",
-          "You can provide a base path in which to create the folder",
-          " with the checkpoints_path argument, or leave it as NULL to use",
-          " the current working directory.")
   }
 
   if (!requireNamespace("chkptstanr", quietly = TRUE)) {
@@ -171,12 +162,11 @@ run_model <- function(fit_args, checkpoints, checkpoints_folder, checkpoints_pat
     fit_args$warmup <- NULL
   }
 
-  fit_args$iter_per_chkpt <- checkpoints
-  fit_args$path <- file_path2(checkpoints_path, checkpoints_folder)
-  if (!dir.exists(fit_args$path)) {
-    # TODO: this check should really be implemented in chkptstanr::create_folder
-    fit_args$path <- chkptstanr::create_folder(checkpoints_folder, path = checkpoints_path)
-  }
+  fit_args$iter_per_chkpt <- checkpoint_every
+  fit_args$path <- checkpoints_folder
+  fit_args$stop_after = stop_after
+  fit_args$reset <- reset
+  fit_args$parallel_chains <- fit_args$chains
   attr(fit_args$path, "info") <- "chkpt_brms folder"
 
   fit <- brms::do_call(chkptstanr::chkpt_brms, fit_args)

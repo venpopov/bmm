@@ -23,6 +23,9 @@ postprocess_brm <- function(model, fit, ...) {
 
 #' @export
 postprocess_brm.bmmmodel <- function(model, fit, ...) {
+  if (is.null(fit)) {
+    return(NULL)
+  }
   dots <- list(...)
   class(fit) <- c('bmmfit','brmsfit')
   fit$bmm$fit_args <- dots$fit_args
