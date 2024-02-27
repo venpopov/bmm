@@ -256,7 +256,7 @@ stop_quietly <- function() {
 # data is ordered by the predictor variables. This function checks if the data is
 # ordered by the predictors, and if not, it suggests to the user to sort the data
 order_data_query <- function(model, data, formula) {
-  sort_data <- getOption("bmm.sort_data", NULL)
+  sort_data <- getOption("bmm.sort_data", "check")
   dpars <- names(formula)
   predictors <- rhs_vars(formula)
   predictors <- predictors[not_in(predictors, dpars)]
@@ -381,4 +381,98 @@ identical.bmmformula <- function(x, y, ...) {
 identical.formula <- function(x, y, ...) {
   res <- waldo::compare(x, y, ignore_formula_env = TRUE)
   length(res) == 0
+}
+
+
+#' View or change global bmm options
+#' @param sort_data logical. If TRUE, the data will be sorted by the predictors. If
+#'  FALSE, the data will not be sorted, but sampling will be slower. If "check" (the
+#'  default), `fit_model()` will check if the data is sorted, and ask you via a
+#'  console prompt if it should be sorted.
+#' @param parallel logical. If TRUE, chains will be run in parallel. If FALSE, chains will
+#'  be run sequentially. You can also set these value for each model separately via
+#'  the argument `parallel` in `fit_model()`.
+#' @param default_priors logical. If TRUE (default), the default bmm priors will be used. If
+#'  FALSE, only the basic `brms` priors will be used.
+#' @param silent numeric. Verbosity level between 0 and 2. If 1 (the default), most of the
+#'  informational messages of compiler and sampler are suppressed. If 2, even
+#'  more messages are suppressed. The actual sampling progress is still printed.
+#' @param reset_options logical. If TRUE, the options will be reset to their default values
+#' @details The `bmm_options` function is used to view or change the current bmm
+#'  options. If no arguments are provided, the function will return the current
+#'  options. If arguments are provided, the function will change the options and
+#'  return the old options invisibly. If you provide only some of the arguments,
+#'  the other options will not be changed. The options are stored in the global options
+#'  list and will be used by `fit_model()` and other functions in the `bmm` package.
+#'  Each of these options can also be set manually using the built-in `options()` function,
+#'  by setting the `bmm.sort_data`, `bmm.default_priors`, and `bmm.silent` options.
+#' @return A message with the current bmm options and their values, and invisibly
+#'  returns the old options for use with on.exit() and friends.
+#' @export
+bmm_options <- function(sort_data, parallel, default_priors, silent, reset_options = FALSE) {
+  opts <- ls()
+  if (!missing(sort_data) && sort_data != "check" && !is.logical(sort_data)) {
+    stop2("sort_data must be one of TRUE, FALSE, or 'check'")
+  }
+  if (!missing(parallel) && !is.logical(parallel)) {
+    stop2("parallel must be one of TRUE or FALSE")
+  }
+  if (!missing(default_priors) && !is.logical(default_priors)) {
+    stop2("default_priors must be a TRUE or FALSE")
+  }
+  if (!missing(silent) && (!is.numeric(silent) || silent < 0 || silent > 2)) {
+    stop2("silent must be one of 0, 1, or 2")
+  }
+
+  # set default options if function is called for the first time or if reset_options is TRUE
+  if (reset_options) {
+    options(bmm.sort_data = "check",
+            bmm.parallel = FALSE,
+            bmm.default_priors = TRUE,
+            bmm.silent = 1)
+  }
+
+  # change options if arguments are provided. get argument name and loop over non-missing arguments
+  op <- list()
+  non_missing_args <- names(match.call())[-1]
+  non_missing_args <- non_missing_args[!non_missing_args %in% "reset_options"]
+  for (i in non_missing_args) {
+      op[[paste0('bmm.',i)]] <- get(i)
+  }
+
+  old_op <- options(op)
+  message2("\nCurrent bmm options:\n",
+           crayon::green(paste0("  sort_data = ", getOption("bmm.sort_data"),"",
+                                 "\n  parallel = ", getOption("bmm.parallel"),
+                                 "\n  default_priors = ", getOption("bmm.default_priors"),
+                                 "\n  silent = ", getOption("bmm.silent"), "\n")),
+           "For more information on these options or how to change them, see help(bmm_options).\n")
+  invisible(old_op)
+}
+
+# an improved version of tryCatch that captures messages as well
+# modified version of https://github.com/cran/admisc/blob/master/R/tryCatchWEM.R
+tryCatch2 <- function(expr, capture = FALSE) {
+  toreturn <- list()
+  output <- withVisible(withCallingHandlers(
+    tryCatch(expr, error = function(e) {
+      toreturn$error <<- e$message
+      NULL
+    }),
+    warning = function(w) {
+      toreturn$warning <<- c(toreturn$warning, w$message)
+      invokeRestart("muffleWarning")
+    },
+    message = function(m) {
+      toreturn$message <<- paste(toreturn$message, m$message, sep = "")
+      invokeRestart("muffleMessage")
+    }
+  ))
+  if (capture && output$visible && !is.null(output$value)) {
+    toreturn$output <- utils::capture.output(output$value)
+    toreturn$value <- output$value
+  }
+  if (length(toreturn) > 0) {
+    return(toreturn)
+  }
 }

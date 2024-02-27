@@ -26,10 +26,10 @@
 #'   fitting, but you can provide prior constraints to model parameters
 #' @param sort_data Logical. If TRUE, the data will be sorted by the predictor
 #'   variables for faster sampling. If FALSE, the data will not be sorted, but
-#'   sampling will be slower. If NULL (the default), `fit_model()` will check if
+#'   sampling will be slower. If "check" (the default), `fit_model()` will check if
 #'   the data is sorted, and ask you via a console prompt if it should be
 #'   sorted. You can set the default value for this option using global
-#'   `options(bmm.sort_data = TRUE/FALSE)`
+#'   `options(bmm.sort_data = TRUE/FALSE/"check)`)` or via `bmm_options(sort_data)`
 #' @param silent Verbosity level between 0 and 2. If 1 (the default), most of the
 #'   informational messages of compiler and sampler are suppressed. If 2, even
 #'   more messages are suppressed. The actual sampling progress is still
@@ -74,9 +74,13 @@
 #'                  backend='cmdstanr')
 #' }
 #'
-fit_model <- function(formula, data, model, parallel = FALSE, chains = 4,
-                      prior = NULL, sort_data = getOption('bmm.sort_data', NULL),
-                      silent = getOption('bmm.silent', 1), ...) {
+fit_model <- function(formula, data, model,
+                      prior = NULL,
+                      chains = 4,
+                      parallel = getOption('bmm.parallel', FALSE),
+                      sort_data = getOption('bmm.sort_data', "check"),
+                      silent = getOption('bmm.silent', 1),
+                      ...) {
   # warning for using old version
   dots <- list(...)
   if ("model_type" %in% names(dots)) {

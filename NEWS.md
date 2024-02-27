@@ -8,6 +8,8 @@
 * add informed default priors for all models. You can always use the `get_model_prior()` function to see the default priors for a model
 * add a new function `set_default_prior` for developers, which allows them to more easily set default priors on new models regardless of the user-specified formula
 * you can now specify variables for models via regular expressions rather than character vectors (#102)
+* you can now view and set all bmm global options via `bmm_options()`. See `?bmm_options` for more information
+* add a startup message upon loading the package 
 
 ### Bug fixes
 * fix a bug in the mixture3p and IMM models which caused an error when intercept was not supressed and set size was used as predictor
