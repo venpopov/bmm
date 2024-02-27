@@ -3,7 +3,9 @@ Title: Easy and Accesible Bayesian Measurement Models using 'brms'
 Version: 0.3.9.9000
 Authors@R: c(
     person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph")),
-    person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")))
+    person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")),
+    person("Paul", "Bürkner", , "paul.buerkner@gmail.com", role = c("cph"), 
+      comment = "Creator of brms, a package for Bayesian regression model that this package builds upon."))
 Description: Implementations of computational measurement models using the 'brms' package. 
     Currently implemented models can be listed using supported_models(). The package also
     provides functions to extract model informations such as priors, or the generated
