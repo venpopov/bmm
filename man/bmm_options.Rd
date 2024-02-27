@@ -7,27 +7,31 @@
 bmm_options(sort_data, parallel, default_priors, silent, reset_options = FALSE)
 }
 \arguments{
-\item{sort_data}{logical. If TRUE, the data will be sorted by the predictors. If
-FALSE, the data will not be sorted, but sampling will be slower. If "check" (the
-default), \code{fit_model()} will check if the data is sorted, and ask you via a
-console prompt if it should be sorted.}
+\item{sort_data}{logical. If TRUE, the data will be sorted by the predictors.
+If FALSE, the data will not be sorted, but sampling will be slower. If
+"check" (the default), \code{fit_model()} will check if the data is sorted, and
+ask you via a console prompt if it should be sorted. \strong{Default: "check"}}
 
-\item{parallel}{logical. If TRUE, chains will be run in parallel. If FALSE, chains will
-be run sequentially. You can also set these value for each model separately via
-the argument \code{parallel} in \code{fit_model()}.}
+\item{parallel}{logical. If TRUE, chains will be run in parallel. If FALSE,
+chains will be run sequentially. You can also set these value for each
+model separately via the argument \code{parallel} in \code{fit_model()}. \strong{Default:
+FALSE}}
 
-\item{default_priors}{logical. If TRUE (default), the default bmm priors will be used. If
-FALSE, only the basic \code{brms} priors will be used.}
+\item{default_priors}{logical. If TRUE (default), the default bmm priors will
+be used. If FALSE, only the basic \code{brms} priors will be used. \strong{Default:
+TRUE}}
 
-\item{silent}{numeric. Verbosity level between 0 and 2. If 1 (the default), most of the
-informational messages of compiler and sampler are suppressed. If 2, even
-more messages are suppressed. The actual sampling progress is still printed.}
+\item{silent}{numeric. Verbosity level between 0 and 2. If 1 ( the default),
+most of the informational messages of compiler and sampler are suppressed.
+If 2, even more messages are suppressed. The actual sampling progress is
+still printed. \strong{Default: 1}}
 
-\item{reset_options}{logical. If TRUE, the options will be reset to their default values}
+\item{reset_options}{logical. If TRUE, the options will be reset to their
+default values \strong{Default: FALSE}}
 }
 \value{
-A message with the current bmm options and their values, and invisibly
-returns the old options for use with on.exit() and friends.
+A message with the current bmm options and their values, and
+invisibly returns the old options for use with on.exit() and friends.
 }
 \description{
 View or change global bmm options
@@ -35,10 +39,35 @@ View or change global bmm options
 \details{
 The \code{bmm_options} function is used to view or change the current bmm
 options. If no arguments are provided, the function will return the current
-options. If arguments are provided, the function will change the options and
-return the old options invisibly. If you provide only some of the arguments,
-the other options will not be changed. The options are stored in the global options
-list and will be used by \code{fit_model()} and other functions in the \code{bmm} package.
-Each of these options can also be set manually using the built-in \code{options()} function,
-by setting the \code{bmm.sort_data}, \code{bmm.default_priors}, and \code{bmm.silent} options.
+options. If arguments are provided, the function will change the options
+and return the old options invisibly. If you provide only some of the
+arguments, the other options will not be changed. The options are stored in
+the global options list and will be used by \code{fit_model()} and other
+functions in the \code{bmm} package. Each of these options can also be set
+manually using the built-in \code{options()} function, by setting the
+\code{bmm.sort_data},  \code{bmm.default_priors}, and \code{bmm.silent} options.
+}
+\examples{
+
+# view the current options
+bmm_options()
+
+# change the options to always sort the data and to use parallel sampling
+bmm_options(sort_data = TRUE, parallel = TRUE)
+
+# restore the default options
+bmm_options(reset_options = TRUE)
+
+# you can change the options using the options() function as well
+options(bmm.sort_data = TRUE, bmm.parallel = TRUE)
+bmm_options()
+
+# reset the options to their default values
+bmm_options(reset_options = TRUE)
+
+# bmm_options(sort_data = TRUE, parallel = TRUE) will also return the old options
+# so you can use it with on.exit()
+old_op <- bmm_options(sort_data = TRUE, parallel = TRUE)
+on.exit(bmm_options(old_op))
+
 }

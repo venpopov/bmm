@@ -385,29 +385,58 @@ identical.formula <- function(x, y, ...) {
 
 
 #' View or change global bmm options
-#' @param sort_data logical. If TRUE, the data will be sorted by the predictors. If
-#'  FALSE, the data will not be sorted, but sampling will be slower. If "check" (the
-#'  default), `fit_model()` will check if the data is sorted, and ask you via a
-#'  console prompt if it should be sorted.
-#' @param parallel logical. If TRUE, chains will be run in parallel. If FALSE, chains will
-#'  be run sequentially. You can also set these value for each model separately via
-#'  the argument `parallel` in `fit_model()`.
-#' @param default_priors logical. If TRUE (default), the default bmm priors will be used. If
-#'  FALSE, only the basic `brms` priors will be used.
-#' @param silent numeric. Verbosity level between 0 and 2. If 1 (the default), most of the
-#'  informational messages of compiler and sampler are suppressed. If 2, even
-#'  more messages are suppressed. The actual sampling progress is still printed.
-#' @param reset_options logical. If TRUE, the options will be reset to their default values
+#' @param sort_data logical. If TRUE, the data will be sorted by the predictors.
+#'   If FALSE, the data will not be sorted, but sampling will be slower. If
+#'   "check" (the default), `fit_model()` will check if the data is sorted, and
+#'   ask you via a console prompt if it should be sorted. **Default: "check"**
+#' @param parallel logical. If TRUE, chains will be run in parallel. If FALSE,
+#'   chains will be run sequentially. You can also set these value for each
+#'   model separately via the argument `parallel` in `fit_model()`. **Default:
+#'   FALSE**
+#' @param default_priors logical. If TRUE (default), the default bmm priors will
+#'   be used. If FALSE, only the basic `brms` priors will be used. **Default:
+#'   TRUE**
+#' @param silent numeric. Verbosity level between 0 and 2. If 1 ( the default),
+#'   most of the informational messages of compiler and sampler are suppressed.
+#'   If 2, even more messages are suppressed. The actual sampling progress is
+#'   still printed. **Default: 1**
+#' @param reset_options logical. If TRUE, the options will be reset to their
+#'   default values **Default: FALSE**
 #' @details The `bmm_options` function is used to view or change the current bmm
-#'  options. If no arguments are provided, the function will return the current
-#'  options. If arguments are provided, the function will change the options and
-#'  return the old options invisibly. If you provide only some of the arguments,
-#'  the other options will not be changed. The options are stored in the global options
-#'  list and will be used by `fit_model()` and other functions in the `bmm` package.
-#'  Each of these options can also be set manually using the built-in `options()` function,
-#'  by setting the `bmm.sort_data`, `bmm.default_priors`, and `bmm.silent` options.
-#' @return A message with the current bmm options and their values, and invisibly
-#'  returns the old options for use with on.exit() and friends.
+#'   options. If no arguments are provided, the function will return the current
+#'   options. If arguments are provided, the function will change the options
+#'   and return the old options invisibly. If you provide only some of the
+#'   arguments, the other options will not be changed. The options are stored in
+#'   the global options list and will be used by `fit_model()` and other
+#'   functions in the `bmm` package. Each of these options can also be set
+#'   manually using the built-in `options()` function, by setting the
+#'   `bmm.sort_data`,  `bmm.default_priors`, and `bmm.silent` options.
+#'
+#' @return A message with the current bmm options and their values, and
+#'   invisibly returns the old options for use with on.exit() and friends.
+#' @examples
+#'
+#' # view the current options
+#' bmm_options()
+#'
+#' # change the options to always sort the data and to use parallel sampling
+#' bmm_options(sort_data = TRUE, parallel = TRUE)
+#'
+#' # restore the default options
+#' bmm_options(reset_options = TRUE)
+#'
+#' # you can change the options using the options() function as well
+#' options(bmm.sort_data = TRUE, bmm.parallel = TRUE)
+#' bmm_options()
+#'
+#' # reset the options to their default values
+#' bmm_options(reset_options = TRUE)
+#'
+#' # bmm_options(sort_data = TRUE, parallel = TRUE) will also return the old options
+#' # so you can use it with on.exit()
+#' old_op <- bmm_options(sort_data = TRUE, parallel = TRUE)
+#' on.exit(bmm_options(old_op))
+#'
 #' @export
 bmm_options <- function(sort_data, parallel, default_priors, silent, reset_options = FALSE) {
   opts <- ls()
