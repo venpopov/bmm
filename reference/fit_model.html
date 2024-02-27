@@ -20,7 +20,7 @@ model."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,9 +76,10 @@ model.</p>
 <span>  <span class="va">formula</span>,</span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">model</span>,</span>
-<span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  chains <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  prior <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  chains <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  parallel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"bmm.parallel"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>  sort_data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"bmm.sort_data"</span>, <span class="st">"check"</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"bmm.silent"</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -105,21 +106,30 @@ call. Call <code><a href="supported_models.html">supported_models()</a></code> t
 their required arguments</p></dd>
 
 
-<dt>parallel</dt>
-<dd><p>Logical; If TRUE, the number of cores on your machine will be
-detected and brms will fit max(chains, cores) number of chains (specified
-by the <code>chain</code> argument) in parallel using the parallel package</p></dd>
+<dt>prior</dt>
+<dd><p>One or more <code>brmsprior</code> objects created by <code><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">brms::set_prior()</a></code>
+or related functions and combined using the c method or the + operator. See
+also <code><a href="get_model_prior.html">get_model_prior()</a></code> for more help. Not necessary for the default model
+fitting, but you can provide prior constraints to model parameters</p></dd>
 
 
 <dt>chains</dt>
 <dd><p>Numeric. Number of Markov chains (defaults to 4)</p></dd>
 
 
-<dt>prior</dt>
-<dd><p>One or more <code>brmsprior</code> objects created by <code><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">brms::set_prior()</a></code>
-or related functions and combined using the c method or the + operator. See
-also <code><a href="get_model_prior.html">get_model_prior()</a></code> for more help. Not necessary for the default model
-fitting, but you can provide prior constraints to model parameters</p></dd>
+<dt>parallel</dt>
+<dd><p>Logical; If TRUE, the number of cores on your machine will be
+detected and brms will fit max(chains, cores) number of chains (specified
+by the <code>chain</code> argument) in parallel using the parallel package</p></dd>
+
+
+<dt>sort_data</dt>
+<dd><p>Logical. If TRUE, the data will be sorted by the predictor
+variables for faster sampling. If FALSE, the data will not be sorted, but
+sampling will be slower. If "check" (the default), <code>fit_model()</code> will check if
+the data is sorted, and ask you via a console prompt if it should be
+sorted. You can set the default value for this option using global
+<code>options(bmm.sort_data = TRUE/FALSE/"check)</code>)<code>or via</code>bmm_options(sort_data)`</p></dd>
 
 
 <dt>silent</dt>
@@ -146,13 +156,13 @@ with many other useful information about the model. Use methods(class =
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The following models are supported:</p><ul><li><p><code>IMMabc(resp_err, nt_features, setsize)</code></p></li>
-<li><p><code>IMMbsc(resp_err, nt_features, nt_distances, setsize)</code></p></li>
-<li><p><code>IMMfull(resp_err, nt_features, nt_distances, setsize)</code></p></li>
-<li><p><code>mixture2p(resp_err)</code></p></li>
-<li><p><code>mixture3p(resp_err, nt_features, setsize)</code></p></li>
-<li><p><code>sdmSimple(resp_err)</code></p></li>
-</ul><p>Type <code>?modelname</code> to get information about a specific model, e.g. <code><a href="IMM.html">?IMMfull</a></code></p>
+    <p>The following models are supported:</p><ul><li><p>IMMabc(resp_err, nt_features, setsize, regex)</p></li>
+<li><p>IMMbsc(resp_err, nt_features, nt_distances, setsize, regex)</p></li>
+<li><p>IMMfull(resp_err, nt_features, nt_distances, setsize, regex)</p></li>
+<li><p>mixture2p(resp_err)</p></li>
+<li><p>mixture3p(resp_err, nt_features, setsize, regex)</p></li>
+<li><p>sdmSimple(resp_err)</p></li>
+</ul><p>Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull</p>
 <p>Type <code><a href="https://venpopov.github.io/bmm/reference">help(package=bmm)</a></code> for a full list of available help topics.</p>
     </div>
     <div class="section level2">

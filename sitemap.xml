@@ -58,6 +58,9 @@
     <loc>https://venpopov.github.io/bmm/reference/bmm-package.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/reference/bmm_options.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/reference/bmmformula.html</loc>
   </url>
   <url>
@@ -130,10 +133,19 @@
     <loc>https://venpopov.github.io/bmm/reference/print_pretty_models_md.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/reference/revert_postprocess_brm.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/reference/set_default_prior.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/reference/softmax.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/supported_models.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/reference/update.bmmfit.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/use_model_template.html</loc>
