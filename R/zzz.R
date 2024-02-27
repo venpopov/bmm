@@ -10,11 +10,7 @@
   local_version <- utils::packageVersion("bmm")
   behind_cran <- cran_version > local_version
 
-  startUpMsg <- c(
-    paste0("A short introduction to package is available by calling help(\"bmm\"). \n",
-    "More detailed articles on how to fit different models are available via vignettes(\"bmm\").")
-  )
-
+  # add banner of package
   banner <- " _
 | |_ _____ _____
 | . |     |     |
@@ -22,6 +18,11 @@
 "
 
   versionMsg <- paste0("Loading bmm (version: ",local_version,").\n")
+
+  startUpMsg <- c(
+    paste0("A short introduction to package is available by calling help(\"bmm\"). \n",
+           "More detailed articles on how to fit different models are available via vignettes(\"bmm\").")
+  )
 
   if (interactive()) {
     if (length(behind_cran) > 0 && behind_cran) {
