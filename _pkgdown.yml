@@ -30,6 +30,7 @@ reference:
  - contents:
    - "bmm"
    - "supported_models"
+   - "bmm_options"
  - title: "Fitting models"
    desc: "Main functions for model fitting"
  - contents:

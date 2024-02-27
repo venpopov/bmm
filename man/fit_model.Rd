@@ -8,10 +8,10 @@ fit_model(
   formula,
   data,
   model,
-  parallel = FALSE,
-  chains = 4,
   prior = NULL,
-  sort_data = getOption("bmm.sort_data", NULL),
+  chains = 4,
+  parallel = getOption("bmm.parallel", FALSE),
+  sort_data = getOption("bmm.sort_data", "check"),
   silent = getOption("bmm.silent", 1),
   checkpoint_every = NULL,
   stop_after = NULL,
@@ -34,23 +34,23 @@ number of required arguments which need to be specified within the function
 call. Call \code{\link[=supported_models]{supported_models()}} to see the list of supported models and
 their required arguments}
 
-\item{parallel}{Logical; If TRUE, the number of cores on your machine will be
-detected and brms will fit max(chains, cores) number of chains (specified
-by the \code{chain} argument) in parallel using the parallel package}
-
-\item{chains}{Numeric. Number of Markov chains (defaults to 4)}
-
 \item{prior}{One or more \code{brmsprior} objects created by \code{\link[brms:set_prior]{brms::set_prior()}}
 or related functions and combined using the c method or the + operator. See
 also \code{\link[=get_model_prior]{get_model_prior()}} for more help. Not necessary for the default model
 fitting, but you can provide prior constraints to model parameters}
 
+\item{chains}{Numeric. Number of Markov chains (defaults to 4)}
+
+\item{parallel}{Logical; If TRUE, the number of cores on your machine will be
+detected and brms will fit max(chains, cores) number of chains (specified
+by the \code{chain} argument) in parallel using the parallel package}
+
 \item{sort_data}{Logical. If TRUE, the data will be sorted by the predictor
 variables for faster sampling. If FALSE, the data will not be sorted, but
-sampling will be slower. If NULL (the default), \code{fit_model()} will check if
+sampling will be slower. If "check" (the default), \code{fit_model()} will check if
 the data is sorted, and ask you via a console prompt if it should be
 sorted. You can set the default value for this option using global
-\code{options(bmm.sort_data = TRUE/FALSE)}}
+\verb{options(bmm.sort_data = TRUE/FALSE/"check)})\verb{or via}bmm_options(sort_data)`}
 
 \item{silent}{Verbosity level between 0 and 2. If 1 (the default), most of
 the informational messages of compiler and sampler are suppressed. If 2,
