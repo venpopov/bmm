@@ -4,27 +4,34 @@
 }
 
 .onAttach <- function(libname, pkgname) {
-  # test if local installation is behing CRAN
-  cran_pkgs <- available.packages()
+  # test if local installation is behind CRAN
+  cran_pkgs <- utils::available.packages(repos = "http://cran.us.r-project.org")
   cran_version <- cran_pkgs[which(cran_pkgs[,"Package"] == "bmm"),"Version"]
-  local_version <- packageVersion("bmm")
+  local_version <- utils::packageVersion("bmm")
   behind_cran <- cran_version > local_version
 
   startUpMsg <- c(
-    paste0("Loading bmm (version: ",local_version,"). ",
-    "A short introduction to package is available by calling help(\"bmm\"). More detailed
-    articles on how to fit different models are available via vignettes(\"bmm\").")
+    paste0("A short introduction to package is available by calling help(\"bmm\"). \n",
+    "More detailed articles on how to fit different models are available via vignettes(\"bmm\").")
   )
+
+  banner <- " _
+| |_ _____ _____
+| . |     |     |
+|___|_|_|_|_|_|_|
+"
+
+  versionMsg <- paste0("Loading bmm (version: ",local_version,").\n")
 
   if (interactive()) {
     if (length(behind_cran) > 0 && behind_cran) {
       msg <- "A newer version of bmm is available on CRAN."
       packageStartupMessage(msg, "\nWould you like to install it?")
-      if (menu(c("Yes", "No")) == 1) {
-        update.packages("vistributions")
+      if (utils::menu(c("Yes", "No")) == 1) {
+        utils::update.packages("bmm")
       }
     } else {
-      packageStartupMessage(paste(strwrap(startUpMsg), collapse = "\n"))
+      packageStartupMessage(banner, versionMsg, startUpMsg)
     }
   }
 }
