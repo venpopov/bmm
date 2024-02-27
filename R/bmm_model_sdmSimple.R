@@ -2,7 +2,8 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_sdmSimple <- function(resp_err, ...) {
+.model_sdmSimple <- function(resp_err = NULL, ...) {
+
    out <- list(
       resp_vars = nlist(resp_err),
       other_vars = nlist(),
@@ -32,11 +33,11 @@
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_sdmSimple(NA)$info
 
-#' @title `r .model_sdmSimple(NA)$info$name`
+#' @title `r .model_sdmSimple()$info$name`
 #' @name SDM
 #' @details see `vignette("sdm-simple")` for a detailed description of the model
 #'   and how to use it.
-#'   `r model_info(sdmSimple(NA))`
+#'   `r model_info(.model_sdmSimple())`
 #' @param resp_err The name of the variable in the dataset containing the
 #'   response error. The response error should code the response relative to the
 #'   to-be-recalled target in radians. You can transform the response error in
@@ -76,8 +77,21 @@
 #' lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
 #'               kappa=coef['kappa_Intercept']), col='red')
 #' }
-sdmSimple <- .model_sdmSimple
+sdmSimple <- function(resp_err, ...) {
+  stop_missing_args()
+  .model_sdmSimple(resp_err = resp_err, ...)
+}
 
+#############################################################################!
+# CHECK_DATA S3 METHODS                                                  ####
+#############################################################################!
+
+#' @export
+check_data.sdmSimple <- function(model, data, formula) {
+  # data sorted by predictors is necessary for speedy computation of normalizing constant
+  data <- order_data_query(model, data, formula)
+  NextMethod("check_data")
+}
 
 
 #############################################################################!
@@ -95,6 +109,8 @@ configure_model.sdmSimple <- function(model, data, formula) {
       "sdm_simple", dpars = c("mu", "c","kappa"),
       links = c("identity","identity", "log"), lb = c(NA, NA, NA),
       type = "real", loop=FALSE,
+      log_lik = log_lik_sdm_simple,
+      posterior_predict = posterior_predict_sdm_simple
     )
     family <- sdm_simple
 
@@ -114,6 +130,12 @@ configure_model.sdmSimple <- function(model, data, formula) {
     # construct the default prior
     # TODO: for now it just fixes mu to 0, I have to add proper priors
     prior <- fixed_pars_priors(model)
+    if (getOption("bmm.default_priors", TRUE)) {
+      prior <- prior +
+        set_default_prior(bmm_formula, data,
+                          prior_list=list(kappa = list(main = 'student_t(5,1.75,0.75)',effects = 'normal(0,1)'),
+                                          c = list(main = 'student_t(5,2,0.75)', effects = 'normal(0,1)')))
+    }
 
     # set initial values to be sampled between [-1,1] to avoid extreme SDs that
     # can cause the sampler to fail
@@ -129,9 +151,34 @@ configure_model.sdmSimple <- function(model, data, formula) {
 #############################################################################!
 
 #' @export
-postprocess_brm.sdmSimple <- function(model, fit) {
+postprocess_brm.sdmSimple <- function(model, fit, ...) {
   # manually set link_c to "log" since I coded it manually
   fit$family$link_c <- "log"
   fit$formula$family$link_c <- "log"
   fit
 }
+
+#' @export
+revert_postprocess_brm.sdmSimple <- function(model, fit, ...) {
+  fit$family$link_c <- "identity"
+  fit$formula$family$link_c <- "identity"
+  fit
+}
+
+
+
+log_lik_sdm_simple <- function(i, prep) {
+  mu <- brms::get_dpar(prep, "mu", i = i)
+  c <- brms::get_dpar(prep, "c", i = i)
+  kappa <- brms::get_dpar(prep, "kappa", i = i)
+  y <- prep$data$Y[i]
+  dsdm(y, mu, c, kappa, log=T)
+}
+
+posterior_predict_sdm_simple <- function(i, prep, ...) {
+  mu <- brms::get_dpar(prep, "mu", i = i)
+  c <- brms::get_dpar(prep, "c", i = i)
+  kappa <- brms::get_dpar(prep, "kappa", i = i)
+  rsdm(length(mu), mu, c, kappa)
+}
+

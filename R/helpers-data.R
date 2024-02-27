@@ -47,6 +47,7 @@ check_data.bmmmodel <- function(model, data, formula) {
     stop("Argument 'data' does not contain observations.")
   }
 
+  attr(data, 'data_name') <- substitute_name(data, envir = eval(parent.frame()))
   attr(data, 'checked') <- TRUE
   NextMethod("check_data")
 }
@@ -275,9 +276,9 @@ rad2deg <- function(rad){
 get_standata <- function(formula, data, model, prior=NULL, ...) {
 
   # check model, formula and data, and transform data if necessary
-  model <- check_model(model)
-  formula <- check_formula(model, formula)
+  model <- check_model(model, data)
   data <- check_data(model, data, formula)
+  formula <- check_formula(model, data, formula)
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
@@ -290,6 +291,36 @@ get_standata <- function(formula, data, model, prior=NULL, ...) {
   fit_args <- c(config_args, dots)
   brms::do_call(brms::make_standata, fit_args)
 }
+
+
+# check if the data is sorted by the predictors
+is_data_ordered <- function(data, formula) {
+  dpars <- names(formula)
+  predictors <- rhs_vars(formula)
+  predictors <- predictors[not_in(predictors, dpars)]
+  predictors <- predictors[predictors %in% colnames(data)]
+  data <- data[,predictors]
+  if (length(predictors) > 1) {
+    gr_idx <- do.call(paste, c(data, list(sep="_")))
+  } else {
+    gr_idx <- unlist(data)
+  }
+  is_ordered <- !has_nonconsecutive_duplicates(gr_idx)
+  is_ordered
+}
+
+# checks if all repetitions of a given value are consecutive in a vector
+# by iterating over unique values and checking if all their positions are consecutive
+has_nonconsecutive_duplicates <- function(vec) {
+  unique_vals <- unique(vec)
+  cond <- TRUE
+  for(val in unique_vals) {
+    positions <- which(vec == val)
+    cond <- cond & all(diff(positions) == 1)
+  }
+  !cond
+}
+
 
 
 

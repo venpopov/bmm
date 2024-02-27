@@ -1,3 +1,26 @@
+# bmm 0.4.0
+
+### New features
+
+* add a check for the sdmSimple model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the `sort_data` argument (#72)
+* the mixture3p and imm models now require that when set size is used as a predictor, the intercept must be suppressed. This is because set size 1 otherwise causes problems - there can be no contribution of non_target responses when there is set size 1, and it is not meaningful to estimate an intercept for parameters that involve non_target responses (#96).
+* add postprocessing methods for sdmSimple to allow for pp_check(), conditional_effects and bridgesampling usage with the model (#30)
+* add informed default priors for all models. You can always use the `get_model_prior()` function to see the default priors for a model
+* add a new function `set_default_prior` for developers, which allows them to more easily set default priors on new models regardless of the user-specified formula
+* you can now specify variables for models via regular expressions rather than character vectors (#102)
+* you can now view and set all bmm global options via `bmm_options()`. See `?bmm_options` for more information
+* add a startup message upon loading the package 
+
+### Bug fixes
+* fix a bug in the mixture3p and IMM models which caused an error when intercept was not supressed and set size was used as predictor
+* update() now works properly with bmmfit objects (#95)
+* fix a bug in the sort_data check which caused an error when using grouped covariance structure in random effects across different parameters
+
+### Other changes
+* `brms` is now loaded automatically when loading `bmm` with `library(bmm)`
+
+
+
 # bmm 0.3.0
 
 ### New features
@@ -10,7 +33,7 @@
 * there is now an option `bmm.silent` that allows to suppress messages
 * the baseline activation `b` was removed from the `IMM` models, as this is internally fixed 
 to zero for scaling and as of now cannot be predicted by independent variables because the model would be unidentifiable.
-* the arguments used to fit the bmm model are now accessible in the `bmmfit` object via the `fit$bmm_fit_args` list.
+* the arguments used to fit the bmm model are now accessible in the `bmmfit` object via the `fit$bmm$fit_args` list.
 * add class('bmmfit') to the object returned from fit_model() allowing for more flexible postprocessing of the underlying `brmsfit` object. The object is now of class('bmmfit', 'brmsfit')
 * changes to column names of datasets `ZhangLuck_2008` and `OberauerLin_2017` to make them more consistent
 

@@ -16,3 +16,5 @@
 ^index.md$
 ^tests/internal-.*$
 ^tests/internal$
+^.dev$
+^.Rprofile$

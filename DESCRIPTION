@@ -1,15 +1,19 @@
 Package: bmm
 Title: Easy and Accesible Bayesian Measurement Models using 'brms'
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: c(
     person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph")),
-    person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")))
-Description: Wrapper functions and custom distributions that make it easier to estimate common 
-    measurement models for using the 'brms' package. Currently implemented 
-    are the two-parameter mixture model by Zhang and Luck (2008),the three-
-    parameter mixture model by Bays et al (2009), and the Interference Measurement Model 
-    (Oberauer et al., 2017).
-License: GPL (>= 3)
+    person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")),
+    person("Paul", "Bürkner", , "paul.buerkner@gmail.com", role = c("cph"), 
+      comment = "Creator of brms, a package for Bayesian regression model that this package builds upon."))
+Description: Implementations of computational measurement models using the 'brms' package. 
+    Currently implemented models can be listed using supported_models(). The package also
+    provides functions to extract model informations such as priors, or the generated
+    STAN code. For all implemented models there are also density and random generation
+    functions to easily explore model predictions and evaluate parameter recovery.
+    Finally, helper functions aid in pre- and post-processing data for efficient communication
+    of results.
+License: GPL-2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
@@ -26,10 +30,10 @@ Suggests:
     ggthemes,
     cowplot,
     stringr,
-    remotes
+    remotes, 
+    waldo
 Config/testthat/edition: 3
 Imports: 
-    brms,
     magrittr,
     parallel,
     dplyr,
@@ -37,10 +41,15 @@ Imports:
     tidyr,
     stats,
     matrixStats,
+    crayon,
     methods
 URL: https://github.com/venpopov/bmm, https://venpopov.github.io/bmm/
 BugReports: https://github.com/venpopov/bmm/issues
+Additional_repositories:
+    https://mc-stan.org/r-packages/
+    https://paul-buerkner.github.io/brms/
 VignetteBuilder: knitr
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    brms
 LazyData: true

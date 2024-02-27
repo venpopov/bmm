@@ -2,7 +2,7 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture2p <- function(resp_err, ...) {
+.model_mixture2p <- function(resp_err = NULL, ...) {
   out <- list(
     resp_vars = nlist(resp_err),
     other_vars = nlist(),
@@ -31,8 +31,8 @@
 }
 
 # user facing alias
-#' @title `r .model_mixture2p(NA)$info$name`
-#' @details `r model_info(mixture2p(NA))`
+#' @title `r .model_mixture2p()$info$name`
+#' @details `r model_info(.model_mixture2p())`
 #' @param resp_err The name of the variable in the provided dataset containing
 #'   the response error. The response Error should code the response relative to
 #'   the to-be-recalled target in radians. You can transform the response error
@@ -60,7 +60,10 @@
 #'                  backend='cmdstanr')
 #' }
 #' @export
-mixture2p <- .model_mixture2p
+mixture2p <- function(resp_err, ...) {
+  stop_missing_args()
+  .model_mixture2p(resp_err, ...)
+}
 
 #############################################################################!
 # CONFIGURE_MODEL METHODS                                                ####
@@ -85,9 +88,13 @@ configure_model.mixture2p <- function(model, data, formula) {
 
   # set priors for the estimated parameters
   additional_constants <- list(kappa2 = -100, mu2 = 0)
-  prior <- fixed_pars_priors(model, additional_constants) +
-    brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-    brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat")
+  prior <- fixed_pars_priors(model, additional_constants)
+  if (getOption("bmm.default_priors", TRUE)) {
+    prior <- prior +
+      set_default_prior(bmm_formula, data,
+                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
+                                        thetat=list(main='logistic(0, 1)', nlpar=T)))
+  }
 
   nlist(formula, data, family, prior)
 }
