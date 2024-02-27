@@ -6,7 +6,7 @@
 \alias{bmm-package}
 \title{bmm: Easy and Accesible Bayesian Measurement Models using 'brms'}
 \description{
-Wrapper functions and custom distributions that make it easier to estimate common measurement models for using the 'brms' package. Currently implemented are the two-parameter mixture model by Zhang and Luck (2008),the three- parameter mixture model by Bays et al (2009), and the Interference Measurement Model (Oberauer et al., 2017).
+Implementations of computational measurement models using the 'brms' package. Currently implemented models can be listed using supported_models(). The package also provides functions to extract model informations such as priors, or the generated STAN code. For all implemented models there are also density and random generation functions to easily explore model predictions and evaluate parameter recovery. Finally, helper functions aid in pre- and post-processing data for efficient communication of results.
 }
 \seealso{
 Useful links:
