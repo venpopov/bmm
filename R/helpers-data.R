@@ -169,7 +169,7 @@ check_data.M3 <- function(model, data, formula) {
   # Transfer all of the response variables to a matrix and name it 'Y'
   data$nTrials <- rowSums(data[, resp_name])
   data$Y <- as.matrix(data[, resp_name])
-  data <- dplyr::select(data, -all_of(resp_name))
+  data <- dplyr::select(data, -dplyr::all_of(resp_name))
 
   # Get the vector of the options variables
   nOpt_vect <- model$other_vars$num_options
