@@ -7,27 +7,36 @@
 \alias{IMMabc}
 \title{Interference measurement model by Oberauer and Lin (2017).}
 \usage{
-IMMfull(resp_err, nt_features, nt_distances, setsize, ...)
+IMMfull(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...)
 
-IMMbsc(resp_err, nt_features, nt_distances, setsize, ...)
+IMMbsc(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...)
 
-IMMabc(resp_err, nt_features, setsize, ...)
+IMMabc(resp_err, nt_features, setsize, regex = FALSE, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the provided dataset containing the
-response error. The response Error should code the response relative to the to-be-recalled
-target in radians. You can transform the response error in degrees to radian using the \code{deg2rad} function.}
+\item{resp_err}{The name of the variable in the provided dataset containing
+the response error. The response Error should code the response relative to
+the to-be-recalled target in radians. You can transform the response error
+in degrees to radian using the \code{deg2rad} function.}
 
-\item{nt_features}{A character vector with the names of the non-target variables.
-The non_target variables should be in radians and be centered relative to the
-target.}
+\item{nt_features}{A character vector with the names of the non-target
+variables. The non_target variables should be in radians and be centered
+relative to the target. Alternatively, if regex=TRUE, a regular
+expression can be used to match the non-target feature columns in the
+dataset.}
 
-\item{nt_distances}{A vector of names of the columns containing the distances of
-non-target items to the target item. Only necessary for the \code{IMMbsc} and \code{IMMfull} models}
+\item{nt_distances}{A vector of names of the columns containing the distances
+of non-target items to the target item. Alternatively, if regex=TRUE, a regular
+expression can be used to match the non-target distances columns in the
+dataset. Only necessary for the \code{IMMbsc} and \code{IMMfull} models.}
 
 \item{setsize}{Name of the column containing the set size variable (if
 setsize varies) or a numeric value for the setsize, if the setsize is
 fixed.}
+
+\item{regex}{Logical. If TRUE, the \code{nt_features} and \code{nt_distances} arguments
+are interpreted as a regular expression to match the non-target feature
+columns in the dataset.}
 
 \item{...}{used internally for testing, ignore it}
 }
@@ -116,6 +125,50 @@ included in the model formula. The parameter is:
 \itemize{
 \item b = "Background activation (internally fixed to 0)"
 }
+}
+}
+\examples{
+\dontrun{
+# load data
+data <- OberauerLin_2017
+
+# define formula
+ff <- bmmformula(
+  kappa ~ 0 + set_size,
+  c ~ 0 + set_size,
+  a ~ 0 + set_size,
+  s ~ 0 + set_size
+)
+
+# specify the full IMM model with explicit column names for non-target features and distances
+model1 <- IMMfull(resp_err = "dev_rad",
+                  nt_features = paste0('col_nt',1:7),
+                  nt_distances = paste0('dist_nt',1:7),
+                  setsize = 'set_size')
+
+# fit the model
+fit <- fit_model(formula = ff,
+                 data = data,
+                 model = model1,
+                 parallel = T,
+                 iter = 500,
+                 backend = 'cmdstanr')
+
+# alternatively specify the IMM model with a regular expression to match non-target features
+# this is equivalent to the previous call, but more concise
+model2 <- IMMfull(resp_err = "dev_rad",
+                  nt_features = 'col_nt',
+                  nt_distances = 'dist_nt',
+                  setsize = 'set_size',
+                  regex = TRUE)
+
+# fit the model
+fit <- fit_model(formula = ff,
+                 data = data,
+                 model = model2,
+                 parallel=T,
+                 iter = 500,
+                 backend='cmdstanr')
 }
 }
 \keyword{bmmmodel}
