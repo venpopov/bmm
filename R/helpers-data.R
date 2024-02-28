@@ -175,7 +175,7 @@ check_data.M3 <- function(model, data, formula) {
   }
 
   # If the number of options is a string, then it is the name of the column in the data
-  if (is.string(nOpt_vect)) {
+  if (is.character(nOpt_vect)) {
     option_name <- nOpt_vect
 
     # Check if the name of the number of options is legal or not.
@@ -198,7 +198,7 @@ check_data.M3 <- function(model, data, formula) {
       nOpt_name <- paste0("nOpt",resp_name)
 
       nOpt_data <- data.frame(nOpt_name, nOpt_vect) %>%
-        pivot_wider(names_from = nOpt_name, values_from = nOpt_vect)
+        tidyr::pivot_wider(names_from = nOpt_name, values_from = nOpt_vect)
 
       # Add the number of options to the data
       data <- dplyr::cross_join(data, nOpt_data)
