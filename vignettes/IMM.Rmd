@@ -1,6 +1,9 @@
 ---
 title: "The Interference Measurement Model (IMM)"
 output: bookdown::html_document2
+author: 
+  - Gidon Frischkorn
+  - Ven Popov
 bibliography: REFERENCES.bib
 header-includes:
   - \usepackage{amsmath}
@@ -20,6 +23,9 @@ max-width: 800px !important;
 p {
 margin-top: 1.5em ;
 margin-bottom: 1.5em ;
+}
+.author{
+    display: none;
 }
 </style>
 
