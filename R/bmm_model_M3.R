@@ -6,7 +6,7 @@
 .model_M3custom <- function(resp_cats = NULL, num_options = NULL, choice_rule = "softmax", ...) {
    out <- list(
       resp_vars = nlist(resp_cats),
-      other_vars = nlist(num_options, choice_rule),
+      other_vars = nlist(num_options, choice_rule, ...),
       info = list(
          domain = 'Working Memory (categorical)',
          task = 'n-AFC retrieval',
@@ -24,7 +24,7 @@
               models."
          ),
          fixed_parameters = list(
-            b = 0
+            b = c(0,0.1)
          )
       ),
       void_mu = FALSE
@@ -76,34 +76,6 @@ M3custom <- function(resp_cats, num_options, choice_rule = "softmax", ...) {
 
 
 #############################################################################!
-# CHECK_DATA S3 methods                                                  ####
-#############################################################################!
-# A check_data.* function should be defined for each class of the model.
-# If a model shares methods with other models, the shared methods should be
-# defined in data-helpers.R. Put here only the methods that are specific to
-# the model. See ?check_data for details.
-# (YOU CAN DELETE THIS SECTION IF YOU DO NOT REQUIRE ADDITIONAL DATA CHECKS)
-
-#' @export
-check_data.M3 <- function(model, data, formula) {
-   # retrieve required arguments
-   required_arg1 <- model$other_vars$required_arg1
-   required_arg2 <- model$other_vars$required_arg2
-
-   # check the data (required)
-
-
-   # compute any necessary transformations (optional)
-
-   # save some variables as attributes of the data for later use (optional)
-
-   data = NextMethod('check_data')
-
-   return(data)
-}
-
-
-#############################################################################!
 # Convert bmmformula to brmsformla methods                               ####
 #############################################################################!
 # A bmf2bf.* function should be defined if the default method for consructing
@@ -117,23 +89,44 @@ bmf2bf.M3 <- function(model, formula) {
    # retrieve required response arguments
    resp_cats <- model$resp_vars$resp_cats
 
+   # retrieve choice rule
+   choice_rule <- tolower(model$other_vars$choice_rule)
+
+   # add transformation to activations according to choice rules
+   transform_act <- ifelse(choice_rule == "luce","log(","")
+   end_act <- ifelse(choice_rule == "luce",")","")
+
    # set the base brmsformula based
-   brms_formula <- brms::bf(paste0("Y | trials(nTrials)", " ~ act", resp_cats[1] ),nl = TRUE)
+   brms_formula <- brms::bf(paste0("Y | trials(nTrials)", " ~", transform_act,"act", resp_cats[1],end_act),nl = TRUE)
 
    # for each dependent parameter, check if it is used as a non-linear predictor of
    # another parameter and add the corresponding brms function
    for (i in 2:length(resp_cats) ) {
       brms_formula <- brms_formula +
-         glue_nlf(paste0("mu",resp_cats[i]), ' ~ act', resp_cats[i])
+         glue_nlf(paste0("mu",resp_cats[i]), " ~", transform_act,"act", resp_cats[i],end_act)
    }
 
+   par_links <- model$other_vars$par_links
    if ("M3custom" %in% class(model)) {
       # for each dependent parameter, check if it is used as a non-linear predictor of
       # another parameter and add the corresponding brms function
       dpars <- names(formula)
       for (dpar in dpars[dpars %in% model$resp_vars$resp_cats]) {
          pform <- formula[[dpar]]
-         brms_formula <- brms_formula + glue_nlf("act",deparse(pform),"+ log(",model$other_vars$num_options[dpar],")")
+         deparse_form <- deparse(pform)
+         split_form <- gsub("[[:space:]]", "", strsplit(deparse_form,"~")[[1]])
+         for (par in names(par_links)) {
+            if(is.numeric(par_links[[par]])) {
+               replace <- as.character(par_links[[par]])
+            } else {
+               replace <- dplyr::case_when(par_links[[par]] == "log" ~ paste0(" exp(",par,") "),
+                                           par_links[[par]] == "logit" ~ paste0(" inv.logit(",par,") "),
+                                           TRUE ~ par)
+            }
+            split_form <- gsub(par,replace,split_form)
+         }
+
+         brms_formula <- brms_formula + glue_nlf("act",split_form[1],"~",split_form[2],"+ log(",model$other_vars$num_options[dpar],")")
       }
    }
 
