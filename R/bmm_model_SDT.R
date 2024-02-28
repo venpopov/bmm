@@ -105,12 +105,10 @@ bmf2bf.SDT <- function(model, formula) {
    # retrieve required response arguments
    response <- model$resp_vars$response
    stimulus <- model$resp_vars$stimulus
-   if (!is.null(model$resp_vars$nTrials)) {
-      nTrials <- model$resp_vars$nTrials
-   }
 
    # set the base brmsformula given the variable names
    if (!is.null(model$resp_vars$nTrials)) {
+      nTrials <- model$resp_vars$nTrials
       brms_formula <- brms::bf(paste0(response," | ", "trials(",nTrials,")", " ~ dprime*",stimulus," - crit" ), nl = TRUE)
    } else {
       brms_formula <- brms::bf(paste0(response," ~ dprime*",stimulus," - crit"),nl = TRUE)
