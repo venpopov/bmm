@@ -3,6 +3,8 @@
 
 # bmm <!-- badges: start -->
 
+[![bmm status
+badge](https://popov-lab.r-universe.dev/badges/bmm)](https://popov-lab.r-universe.dev/bmm)
 [![R-CMD-check](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
@@ -65,11 +67,11 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  IMMabc(resp_err, nt_features, setsize) 
-#> -  IMMbsc(resp_err, nt_features, nt_distances, setsize) 
-#> -  IMMfull(resp_err, nt_features, nt_distances, setsize) 
+#> -  IMMabc(resp_err, nt_features, setsize, regex) 
+#> -  IMMbsc(resp_err, nt_features, nt_distances, setsize, regex) 
+#> -  IMMfull(resp_err, nt_features, nt_distances, setsize, regex) 
 #> -  mixture2p(resp_err) 
-#> -  mixture3p(resp_err, nt_features, setsize) 
+#> -  mixture3p(resp_err, nt_features, setsize, regex) 
 #> -  sdmSimple(resp_err) 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
@@ -108,7 +110,7 @@ this step.
 If you are already using `brms`, you are good to go and can install the
 package as described in one of the options below:
 
-<details>
+<details open>
 <summary>
 <b>Install the latest beta release of bmm</b>
 </summary>
@@ -116,10 +118,7 @@ package as described in one of the options below:
 </br>
 
 ``` r
-if (!requireNamespace("remotes")) {
-  install.packages("remotes")
-}
-remotes::install_github("venpopov/bmm@*release")
+install.packages('bmm', repos = c('https://popov-lab.r-universe.dev'))
 ```
 
 This does not install the vignettes, which take a long time to build,
