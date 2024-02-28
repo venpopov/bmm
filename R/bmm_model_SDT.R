@@ -3,7 +3,7 @@
 #############################################################################!
 # see file 'R/bmm_model_mixture3p.R' for an example
 
-.model_SDT <- function(response, stimulus, nTrials = NULL, dist_noise = "gumbel", ...) {
+.model_SDT <- function(response = NULL, stimulus = NULL, nTrials = NULL, dist_noise = "gumbel", ...) {
    out <- list(
       resp_vars = nlist(response, stimulus, nTrials),
       other_vars = nlist(dist_noise, ...),
@@ -29,9 +29,9 @@
 # user facing alias
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_SDT()$info
-#' @title `r .model_SDT(NA,NA)$info$name`
+#' @title `r .model_SDT()$info$name`
 #' @name SDT
-#' @details `r model_info(SDT(NA,NA))`
+#' @details `r model_info(.model_SDT())`
 #' @param response The variable name of the response variable in the data set.
 #'   The response given when a stimulus appears. Either these can be integers
 #'   indicating that noise/new information was detected `0` or a signal/old information was
@@ -55,7 +55,12 @@
 #' \dontrun{
 #' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)
 #' }
-SDT <- .model_SDT
+SDT <- function(response, stimulus, nTrials = NULL, dist_noise = "gumbel", ...) {
+  stop_missing_args()
+  .model_SDT(response = response, stimulus = stimulus, nTrials = nTrials,
+             dist_noise = dist_noise, ...)
+}
+
 
 
 #############################################################################!
@@ -172,7 +177,7 @@ configure_model.SDT <- function(model, data, formula) {
 # ?postprocess_brm for details
 
 #' @export
-postprocess_brm.SDT <- function(model, fit) {
+postprocess_brm.SDT <- function(model, fit, ...) {
    # any required postprocessing (if none, delete this section)
 
    return(fit)
