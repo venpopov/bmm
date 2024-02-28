@@ -143,8 +143,8 @@ test_that("check_var_setsize rejects invalid input", {
 test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call=FALSE), get_model)
   for (ml in mls) {
-    expect_s3_class(check_data(ml(resp_err = "y",nt_features = 'x', setsize=2, nt_distances = 'z'),
-                               data.frame(y = 1, x = 1, z = 2),
+    expect_s3_class(check_data(ml(resp_err = "y",nt_features = 'x', setsize=2, nt_distances = 'z', resp_cats = c("IIP","IOP","NPL"), num_options = c(1,2,3)),
+                               data.frame(y = 1, x = 1, z = 2, IIP = 1, IOP = 1, NPL = 1),
                                bmmformula(kappa ~ 1)), "data.frame")
   }
 })
