@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.Rdata
+.Rprofile
+.httr-oauth
+.DS_Store
+local/
+docs
+inst/doc
+/doc/
+/Meta/
+/tests/internal/cmdstanr_output/
+/tests/internal/*cache*
