@@ -20,7 +20,7 @@
 
   startUpMsg <- c(
     paste0("A short introduction to package is available by calling help(\"bmm\"). \n",
-           "More detailed articles on how to fit different models are available via vignettes(\"bmm\").\n",
+           "More detailed articles on how to fit different models are available via vignette(package=\"bmm\").\n",
            "You can view the list of currently available models by calling supported_models().\n")
   )
 
