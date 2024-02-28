@@ -41,3 +41,14 @@ test_that("get_variables works", {
   expect_equal(get_variables('a|b', c('a', 'b', 'c'), regex = FALSE), 'a|b')
   expect_error(get_variables('d', c('a', 'b', 'c'), regex = TRUE))
 })
+
+test_that("bmm_options works", {
+  withr::defer(suppressMessages(bmm_options()))
+  expect_message(bmm_options(), "Current bmm options")
+  expect_message(bmm_options(sort_data = TRUE), "sort_data = TRUE")
+  expect_equal(getOption('bmm.sort_data'), TRUE)
+  op <- suppressMessages(bmm_options(sort_data = FALSE))
+  expect_equal(getOption('bmm.sort_data'), FALSE)
+  options(op)
+  expect_equal(getOption('bmm.sort_data'), TRUE)
+})
