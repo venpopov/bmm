@@ -23,8 +23,8 @@ The helper functions \code{deg2rad} and \code{rad2deg} should add convenience in
 data from degrees to radians and from radians to degrees.
 }
 \examples{
-  degrees <- runif(100, min = 0, max = 360)
-  radians <- deg2rad(degrees)
-  degrees_again <- rad2deg(radians)
+degrees <- runif(100, min = 0, max = 360)
+radians <- deg2rad(degrees)
+degrees_again <- rad2deg(radians)
 }
 \keyword{transform}

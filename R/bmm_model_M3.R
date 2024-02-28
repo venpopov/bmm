@@ -170,5 +170,3 @@ configure_model.M3 <- function(model, data, formula) {
    out <- nlist(formula, data, family, prior)
    return(out)
 }
-
-
