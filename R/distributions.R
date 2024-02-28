@@ -660,7 +660,7 @@ dSDT <- function(x, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise 
     probs <- stats::plogis(acts)
   }
 
-  density <- stats::dbinom(x, size = size, prob = probs, log = log)
+  density <- stats::dbinom(x, size = size, prob = probs, log = TRUE)
 
   if (!log) {
     return(exp(density))
