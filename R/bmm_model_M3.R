@@ -123,7 +123,8 @@ bmf2bf.M3 <- function(model, formula) {
                                            par_links[[par]] == "logit" ~ paste0(" inv.logit(",par,") "),
                                            TRUE ~ par)
             }
-            split_form <- gsub(par,replace,split_form)
+           par_name <- paste0("\\b", par, "\\b") # match whole word only
+           split_form <- gsub(par_name,replace,split_form)
          }
 
          op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","+","*")
