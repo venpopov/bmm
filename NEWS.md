@@ -1,5 +1,8 @@
 # bmm 0.4.0+
 
+### New features
+* deprecate get_model_prior(), get_stancode() and get_standata(). These functions will be removed in future versions of the package. If you are using *brms* version 2.20.14 or later, you can now use the *brms* functions `get_prior`, `make_stancode` and `make_standata` directly with *bmm* models.
+
 # bmm 0.4.0
 
 ### New features
