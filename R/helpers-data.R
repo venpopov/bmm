@@ -145,6 +145,7 @@ check_var_setsize <- function(setsize, data) {
   list(max_setsize = max_setsize, ss_numeric = ss_numeric)
 }
 
+#' @export
 check_data.M3 <- function(model, data, formula) {
   # Get the vector of the response variables
   resp_name <- model$resp_vars$resp_cats
