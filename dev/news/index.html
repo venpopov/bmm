@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.1.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,11 +52,15 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="bmm-040">bmm 0.4.0+<a class="anchor" aria-label="anchor" href="#bmm-040"></a></h2>
+<div class="section level4">
+<h4 id="new-features-0-4-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h4>
+<ul><li>deprecate get_model_prior(), get_stancode() and get_standata(). These functions will be removed in future versions of the package. If you are using <em>brms</em> version 2.20.14 or later, you can now use the <em>brms</em> functions <code>get_prior</code>, <code>make_stancode</code> and <code>make_standata</code> directly with <em>bmm</em> models.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="bmm-040-1">bmm 0.4.0<a class="anchor" aria-label="anchor" href="#bmm-040-1"></a></h2>
 <div class="section level4">
-<h4 id="new-features-0-4-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h4>
+<h4 id="new-features-0-4-0-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0-1"></a></h4>
 <ul><li>add a check for the sdmSimple model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the <code>sort_data</code> argument (<a href="https://github.com/venpopov/bmm/issues/72" class="external-link">#72</a>)</li>
 <li>the mixture3p and imm models now require that when set size is used as a predictor, the intercept must be suppressed. This is because set size 1 otherwise causes problems - there can be no contribution of non_target responses when there is set size 1, and it is not meaningful to estimate an intercept for parameters that involve non_target responses (<a href="https://github.com/venpopov/bmm/issues/96" class="external-link">#96</a>).</li>
 <li>add postprocessing methods for sdmSimple to allow for pp_check(), conditional_effects and bridgesampling usage with the model (<a href="https://github.com/venpopov/bmm/issues/30" class="external-link">#30</a>)</li>

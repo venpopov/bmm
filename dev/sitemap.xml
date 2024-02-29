@@ -97,9 +97,6 @@
     <loc>https://venpopov.github.io/bmm/dev/reference/get_stancode.html</loc>
   </url>
   <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/get_stancode_parblock.html</loc>
-  </url>
-  <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/get_standata.html</loc>
   </url>
   <url>
@@ -107,6 +104,9 @@
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/k2sd.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/make_stancode_parblock.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/mixture2p.html</loc>
