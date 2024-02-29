@@ -2,13 +2,16 @@
 % Please edit documentation in R/helpers-prior.R
 \name{get_model_prior}
 \alias{get_model_prior}
-\title{Get Default priors for Measurement Models specified in BRMS}
+\alias{get_prior.bmmformula}
+\title{Get Default priors for Measurement Models specified in BMM}
 \usage{
 get_model_prior(formula, data, model, ...)
+
+\method{get_prior}{bmmformula}(formula, data, model, ...)
 }
 \arguments{
-\item{formula}{An object of class \code{bmmformula}. A symbolic description of
-the model to be fitted.}
+\item{formula}{An object of class \code{bmmformula}. A symbolic description of the
+model to be fitted.}
 
 \item{data}{An object of class data.frame, containing data of all variables
 used in the model. The names of the variables must match the variable names
@@ -24,18 +27,26 @@ their required arguments}
 description of \code{\link[brms:get_prior]{brms::get_prior()}} for more details}
 }
 \value{
-A data.frame with columns specifying the \code{prior}, the \code{class}, the \code{coef} and \code{group}
-for each of the priors specified. Separate rows contain the information on the
-parameters (or parameter classes) for which priors can be specified.
+A data.frame with columns specifying the \code{prior}, the \code{class}, the
+\code{coef} and \code{group} for each of the priors specified. Separate rows contain
+the information on the parameters (or parameter classes) for which priors
+can be specified.
 }
 \description{
-Obtain the default priors for a Bayesian multilevel measurement model,
-as well as information for which parameters priors can be specified.
-Given the \code{model}, the \code{data} and the \code{formula} for the model, this function will return
-the default priors that would be used to estimate the model. Additionally, it will
-return all model parameters that have no prior specified (flat priors). This can help to
-get an idea about which priors need to be specified and also know which priors were
-used if no user-specified priors were passed to the \code{\link[=fit_model]{fit_model()}} function.
+Obtain the default priors for a Bayesian multilevel measurement
+model, as well as information for which parameters priors can be specified.
+Given the \code{model}, the \code{data} and the \code{formula} for the model, this
+function will return the default priors that would be used to estimate the
+model. Additionally, it will return all model parameters that have no prior
+specified (flat priors). This can help to get an idea about which priors
+need to be specified and also know which priors were used if no
+user-specified priors were passed to the \code{\link[=fit_model]{fit_model()}} function.
+
+If you are using \emph{brms} version 2.20.14 or later, you should use
+\link[brms:get_prior]{get_prior} directly with the \code{bmmformula} object. If you are using an
+older version of \emph{brms}, you have to use \code{\link[=get_model_prior]{get_model_prior()}} to obtain the
+default priors. The usage of \code{\link[=get_model_prior]{get_model_prior()}} is deprecated and will be
+removed in future versions of \emph{bmm}.
 }
 \details{
 The following models are supported:
@@ -63,13 +74,19 @@ ff <- bmf(y ~ 1,
           c ~ 1,
           kappa ~ 1)
 
-# fit the model
-get_model_prior(formula = ff,
-                data = dat,
-                model = sdmSimple()
-)
-}
 
+if (utils::packageVersion('brms') >= "2.20.14") {
+  # extract the default bmm prior (if using brms version 2.20.14 or later)
+  get_prior(formula = ff,
+            data = dat,
+            model = sdmSimple())
+} else {
+   # (if using an older version of brms)
+   get_model_prior(formula = ff,
+                   data = dat,
+                   model = sdmSimple())
+}
+}
 }
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[brms:get_prior]{brms::get_prior()}}

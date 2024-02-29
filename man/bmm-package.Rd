@@ -27,7 +27,7 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Paul B<U+00FC>rkner \email{paul.buerkner@gmail.com} (Creator of brms, a package for Bayesian regression model that this package builds upon.) [copyright holder]
+  \item Paul Bürkner \email{paul.buerkner@gmail.com} (Creator of brms, a package for Bayesian regression model that this package builds upon.) [copyright holder]
 }
 
 }
