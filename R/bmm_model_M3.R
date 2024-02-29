@@ -24,7 +24,7 @@
               models."
          ),
          fixed_parameters = list(
-            b = c(0,0.1)
+            b = ifelse(choice_rule == "softmax", 0, 0.1)
          )
       ),
       void_mu = FALSE
@@ -126,7 +126,12 @@ bmf2bf.M3 <- function(model, formula) {
             split_form <- gsub(par,replace,split_form)
          }
 
-         brms_formula <- brms_formula + glue_nlf("act",split_form[1],"~",split_form[2],"+ log(",model$other_vars$num_options[dpar],")")
+         op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","+","*")
+         trans_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","log(","")
+         end_Nopts <- ifelse(model$other_vars$choice_rule == "softmax",")","")
+
+         brms_formula <- brms_formula + glue_nlf("act",split_form[1],"~ (",split_form[2],")",
+                                                 op_Nopts, trans_Nopts, model$other_vars$num_options[dpar],end_Nopts)
       }
    }
 
