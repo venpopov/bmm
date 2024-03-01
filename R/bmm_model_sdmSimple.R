@@ -128,7 +128,6 @@ configure_model.sdmSimple <- function(model, data, formula) {
     formula <- bmf2bf(model, bmm_formula)
 
     # construct the default prior
-    # TODO: for now it just fixes mu to 0, I have to add proper priors
     prior <- fixed_pars_priors(model)
     if (getOption("bmm.default_priors", TRUE)) {
       prior <- prior +

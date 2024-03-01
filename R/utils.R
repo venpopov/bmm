@@ -129,9 +129,55 @@ glue_lf <- function(...) {
 #' not used directly, but called by fit_model(). If fit_model() is run with
 #' backend="mock", then we can perform tests on the fit_args to check if the
 #' model configuration is correct. Avoids compiling and running the model
+#' if checkpoints is not NULL, use [chkptstanr]
 #' @noRd
-call_brm <- function(fit_args) {
-  fit <- brms::do_call(brms::brm, fit_args)
+run_model <- function(fit_args, checkpoint_every, stop_after, checkpoints_folder, reset) {
+  if (is.null(checkpoint_every)) {
+    fit <- brms::do_call(brms::brm, fit_args)
+    return(fit)
+  }
+
+  if (is.null(checkpoints_folder)) {
+    stop2("You must provide a folder name to save the checkpoints")
+  }
+
+  if (!requireNamespace("chkptstanr", quietly = TRUE)) {
+    stop2(
+      "\nPackage \"chkptstanr\" must be installed to use this function.\n",
+      "The current CRAN version of chkptstanr has a bug that prevents it from",
+      "working. Until the issue is fixed, you can install a working forked version",
+      "of chkptstanr with:\n\n",
+      "remotes::install_github(\"venpopov/chkptstanr\")"
+    )
+  }
+
+  if (fit_args$backend == "rstan") {
+    stop2("Checkpoints are not supported for rstan. Use backend='cmdstanr' instead.")
+  }
+
+  if (!is.null(fit_args$iter)) {
+    fit_args$iter_warmup <- ifelse(is.null(fit_args$warmup), fit_args$iter/2, fit_args$warmup)
+    fit_args$iter_sampling <- fit_args$iter - fit_args$iter_warmup
+    fit_args$iter <- NULL
+    fit_args$warmup <- NULL
+  }
+
+  fit_args$iter_per_chkpt <- checkpoint_every
+  fit_args$path <- checkpoints_folder
+  fit_args$stop_after = stop_after
+  fit_args$reset <- reset
+  fit_args$parallel_chains <- fit_args$chains
+  attr(fit_args$path, "info") <- "chkpt_brms folder"
+
+  fit <- brms::do_call(chkptstanr::chkpt_brms, fit_args)
+  fit
+}
+
+# wrapper around file path ignoring null values
+file_path2 <- function(...) {
+  dots <- list(...)
+  dots <- dots[!sapply(dots, is.null)]
+  do.call(file.path, dots)
 }
 
 

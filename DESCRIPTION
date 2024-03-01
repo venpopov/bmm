@@ -31,7 +31,9 @@ Suggests:
     cowplot,
     stringr,
     remotes, 
-    waldo
+    waldo,
+    xfun,
+    chkptstanr
 Config/testthat/edition: 3
 Imports: 
     magrittr,

@@ -36,12 +36,49 @@
 #'   printed. Set refresh = 0 to turn this off as well. If using backend =
 #'   "rstan" you can also set open_progress = FALSE to prevent opening
 #'   additional progress bars.
-#' @param ... Further arguments passed to [brms::brm()] or Stan. See the
-#'   description of [brms::brm()] for more details
+#' @param checkpoint_every Experimental. The number of iterations per checkpoint
+#'   at which to save intermediary sampling results. Note that \code{iter} is
+#'   divided by \code{checkpoint_every} to determine the number of checkpoints.
+#'   This must result in an integer (if not, there will be an error). This
+#'   option uses the [chkptstanr][chkptstanr::chkptstanr-package] package to
+#'   allow interrupted sampling to be resumed. Disabled by default. Enabling
+#'   this option requires the [chkptstanr][chkptstanr::chkptstanr-package]
+#'   package to be installed (see details).
+#' @param stop_after Experimental. (positive integer). If checkpoint_every is
+#'   not NULL, this specifies the number of iterations to sample before
+#'   stopping. If \code{NULL}, then all iterations are sampled (defaults to
+#'   \code{NULL}). Note that sampling will stop at the end of the fir
+#'   stcheckpoint which has an iteration number greater than or equal to
+#'   \code{stop_after}.
+#' @param reset Experimental. (logical). If checkpoint_every is not NULL, reset
+#'   = TRUE specifies to reset the checkpoints to 0 and restart sampling without
+#'   recompiling the model. If reset = FALSE, the sampling will resume from the
+#'   last checkpoint. Default is FALSE.
+#'
+#' @param checkpoints_folder If checkpoint_every is not NULL, this argument
+#'   specifies the directory where the checkpoints will be saved. Default is
+#'   'cp_folder' in the current working directory. Can be a relative or absolute
+#'   path.
+#' @param ... Further arguments passed to [brms::brm()], Stan or chkptstanr. See
+#'   the description of [brms::brm()] for more details
 #'
 #' @details `r a= supported_models(); a`
 #'
 #'   Type `help(package=bmm)` for a full list of available help topics.
+#'
+#'   ## Using checkpoints
+#'
+#'   The `checkpoint_every` argument allows you to save the current state of the
+#'   sampler at specific iteration numbers. This can be useful if you want to
+#'   interrupt the sampling process and resume it later. This feature requires
+#'   the chkptstanr package to be installed, and to use "backend = cmdstanr".
+#'   The current CRAN version of chkptstanr has a bug that prevents it from
+#'   working. Until the issue is fixed, you can install a working forked version
+#'   of chkptstanr with:
+#'
+#'   ``` r
+#'   remotes::install_github("venpopov/chkptstanr")
+#'   ```
 #'
 #' @returns An object of class brmsfit which contains the posterior draws along
 #'   with many other useful information about the model. Use methods(class =
@@ -72,6 +109,53 @@
 #'                  parallel=T,
 #'                  iter=500,
 #'                  backend='cmdstanr')
+#'
+#'
+#' # Alternatively, fit the model via checkpointing - save the state of the
+#' # sampler every 500 iterations # and stop it after 2000 iterations to check the
+#' # results (Experimental feature)
+#' remotes::install_github("venpopov/chkptstanr")
+#' library(chkptstanr)
+#'
+#' fit <- fit_model(formula = ff,
+#'                 data = dat,
+#'                 model = sdmSimple(resp_err = "y"),
+#'                 parallel=T,
+#'                 backend='cmdstanr',
+#'                 warmup = 1000,
+#'                 iter = 4000,
+#'                 checkpoint_every = 500,
+#'                 stop_after = 2000,
+#'                 checkpoints_folder = 'checkpoints/sdm_fit1')
+#'
+#' # The output will look like this:
+#'
+#' # > Sampling will stop after checkpoint 4
+#' # > Model executable is up to date!
+#' # >   Initial Warmup (Typical Set)
+#' # > Chkpt: 1 / 8; Iteration: 500 / 4000 (warmup)
+#' # > Chkpt: 2 / 8; Iteration: 1000 / 4000 (warmup)
+#' # > Chkpt: 3 / 8; Iteration: 1500 / 4000 (sample)
+#' # > Chkpt: 4 / 8; Iteration: 2000 / 4000 (sample)
+#' # > Stopping after 4 checkpoints
+#'
+#' # The intermediate results are saved to the fit object:
+#' summary(fit)
+#'
+#' # You can also resume the sampling from the last checkpoint, as long as you
+#' # don't change the arguments to fit_model():
+#'
+#' fit2 <- fit_model(formula = ff,
+#'                 data = dat,
+#'                 model = sdmSimple(resp_err = "y"),
+#'                 parallel=T,
+#'                 backend='cmdstanr',
+#'                 warmup = 1000,
+#'                 iter = 4000,
+#'                 checkpoint_every = 500,
+#'                 stop_after = 2000,
+#'                 checkpoints_folder = 'checkpoints/sdm_fit1')
+#'
 #' }
 #'
 fit_model <- function(formula, data, model,
@@ -80,6 +164,10 @@ fit_model <- function(formula, data, model,
                       parallel = getOption('bmm.parallel', FALSE),
                       sort_data = getOption('bmm.sort_data', "check"),
                       silent = getOption('bmm.silent', 1),
+                      checkpoint_every = NULL,
+                      stop_after = NULL,
+                      checkpoints_folder = 'cp_folder',
+                      reset = FALSE,
                       ...) {
   # warning for using old version
   dots <- list(...)
@@ -109,7 +197,11 @@ fit_model <- function(formula, data, model,
   # estimate the model
   dots <- list(...)
   fit_args <- combine_args(nlist(config_args, opts, dots))
-  fit <- call_brm(fit_args)
+  fit <- run_model(fit_args,
+                   checkpoints_folder = checkpoints_folder,
+                   checkpoint_every = checkpoint_every,
+                   stop_after = stop_after,
+                   reset = reset)
 
   # model postprocessing
   postprocess_brm(model, fit, fit_args = fit_args, user_formula = user_formula,
