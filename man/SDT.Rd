@@ -2,9 +2,9 @@
 % Please edit documentation in R/bmm_model_SDT.R
 \name{SDT}
 \alias{SDT}
-\title{Models of Signal Detection Theory}
+\title{Signal Detection Theory for Old/New Recognition}
 \usage{
-SDT(response, stimulus, nTrials = NULL, dist_noise = "gumbel", ...)
+SDT(response, stimulus, nTrials = NULL, dist_noise = "normal", ...)
 }
 \arguments{
 \item{response}{The variable name of the response variable in the data set.
@@ -33,18 +33,24 @@ signal and noise distribution in the SDT model.}
 An object of class \code{bmmmodel}
 }
 \description{
-Models of Signal Detection Theory
+Signal Detection Theory for Old/New Recognition
 }
 \details{
 \itemize{
 \item \strong{Domain:} Perception & Recognition
-\item \strong{Task:} Signal/Memory Recognition
-\item \strong{Name:} Models of Signal Detection Theory
+\item \strong{Task:} Signal/Noise or Old/New Recognition tasks
+\item \strong{Name:} Signal Detection Theory for Old/New Recognition
 \item \strong{Citation:}
 \itemize{
 \item DeCarlo, L. T. (1998). Signal detection theory and generalized linear models. Psychological Methods, 3(2), 186-205.
 }
 \item \strong{Requirements:}
+\itemize{
+\item provide the number of signal or old responses for the different stimulus types presented (signal/noise or old/new)
+\item provide the stimulus type either signal/noise or old/new, this can be a factor with dummy coding with 0 = noise/new, and 1 = signal/old, or a numeric vector with equal coding
+\item provide the number of total trial for each stimulus type in each condition
+\item additionally, you can select different noise distributions for the Signal Decetion Theory model. For details please see the provided reference.
+}
 \item \strong{Parameters:}
 \itemize{
 \item \code{dprime}: The level of signal from a perceptual or memory stimulus to be recognized

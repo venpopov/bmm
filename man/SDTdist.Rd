@@ -77,6 +77,12 @@ otherwise P[X > x].}
 Density, distribution, and random generation function for SDT models for binary (yes/no)
 responses without confidence ratings. All functions use the parameters \code{dprime} for the
 signal strength and \code{crit} for the criterium for saying "yes" or "old" to a stimulus.
+
+This means they give the likelihood for a hit or correct response when a signal or old
+stimulus is presented. and the likelihood for a false alarm when noise or a new stimulus
+is presented. Likewise the random generation function returns the randomly generated
+number of hits for signal or old trials, and the randomly generated number of false
+alarms for noise or new trials.
 }
 \examples{
 # example code

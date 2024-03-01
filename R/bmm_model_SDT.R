@@ -1,19 +1,20 @@
 #############################################################################!
 # MODELS                                                                 ####
 #############################################################################!
-# see file 'R/bmm_model_mixture3p.R' for an example
-
-.model_SDT <- function(response = NULL, stimulus = NULL, nTrials = NULL, dist_noise = "gumbel", ...) {
+.model_SDT <- function(response = NULL, stimulus = NULL, nTrials = NULL, dist_noise = "normal", ...) {
    out <- list(
-      resp_vars = nlist(response, stimulus, nTrials),
-      other_vars = nlist(dist_noise, ...),
+      resp_vars = nlist(response),
+      other_vars = nlist(stimulus, nTrials, dist_noise, ...),
       info = list(
          domain = 'Perception & Recognition',
-         task = 'Signal/Memory Recognition',
-         name = 'Models of Signal Detection Theory',
+         task = 'Signal/Noise or Old/New Recognition tasks',
+         name = 'Signal Detection Theory for Old/New Recognition',
          citation = 'DeCarlo, L. T. (1998). Signal detection theory and generalized linear models. Psychological Methods, 3(2), 186-205.',
          version = '',
-         requirements = '',
+         requirements = paste('- provide the number of signal or old responses for the different stimulus types presented (signal/noise or old/new)',
+         '  - provide the stimulus type either signal/noise or old/new, this can be a factor with dummy coding with 0 = noise/new, and 1 = signal/old, or a numeric vector with equal coding',
+         '  - provide the number of total trial for each stimulus type in each condition',
+         '  - additionally, you can select different noise distributions for the Signal Decetion Theory model. For details please see the provided reference.', sep = "\n"),
          parameters = list(
             dprime = "The level of signal from a perceptual or memory stimulus to be recognized",
             crit = "The criterion of activation to be reached for a stimulus to be recognized. This is parmaeterized as the bias relative to the optimal criterion at dprime/2"
@@ -55,13 +56,11 @@
 #' \dontrun{
 #' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)
 #' }
-SDT <- function(response, stimulus, nTrials = NULL, dist_noise = "gumbel", ...) {
+SDT <- function(response, stimulus, nTrials = NULL, dist_noise = "normal", ...) {
   stop_missing_args()
   .model_SDT(response = response, stimulus = stimulus, nTrials = nTrials,
              dist_noise = dist_noise, ...)
 }
-
-
 
 #############################################################################!
 # CHECK_DATA S3 methods                                                  ####
@@ -76,20 +75,19 @@ SDT <- function(response, stimulus, nTrials = NULL, dist_noise = "gumbel", ...) 
 check_data.SDT <- function(model, data, formula) {
    # retrieve required arguments
    resp_names <- unlist(model$resp_vars)
+   stimulus <- model$other_vars$stimulus
+   nTrials <- model$other_vars$nTrials
 
+   resp_vars <- c(resp_names,stimulus,nTrials)
    # check the data (required)
-   if (any(!resp_names %in% colnames(data))) {
-      missing_resp_name <- resp_names[which(!resp_names %in% colnames(data))]
+   if (any(!resp_vars %in% colnames(data))) {
+      missing_resp_name <- resp_vars[which(!resp_vars %in% colnames(data))]
       if (length(missing_resp_name == 1)) {
          stop(paste0("The response variable '", missing_resp_name, "' is not present in the data."))
       } else {
          stop(paste0("The response variables '", missing_resp_name, "' are not present in the data."))
       }
    }
-
-   # ask user if data should be aggregated to speed up model fitting
-
-   # save some variables as attributes of the data for later use (optional)
 
    data = NextMethod('check_data')
    return(data)
@@ -109,16 +107,15 @@ check_data.SDT <- function(model, data, formula) {
 bmf2bf.SDT <- function(model, formula) {
    # retrieve required response arguments
    response <- model$resp_vars$response
-   stimulus <- model$resp_vars$stimulus
+   stimulus <- model$other_vars$stimulus
 
    # set the base brmsformula given the variable names
    if (!is.null(model$resp_vars$nTrials)) {
-      nTrials <- model$resp_vars$nTrials
+      nTrials <- model$other_vars$nTrials
       brms_formula <- brms::bf(paste0(response," | ", "trials(",nTrials,")", " ~ dprime*",stimulus," - crit" ), nl = TRUE)
    } else {
       brms_formula <- brms::bf(paste0(response," ~ dprime*",stimulus," - crit"),nl = TRUE)
    }
-
 
    # return brms formula to add the rest of the bmmformula to it
    return(brms_formula)
@@ -150,7 +147,7 @@ configure_model.SDT <- function(model, data, formula) {
    } else if (tolower(dist_noise) == "logistic") {
       link_fun <- "logit"
    } else {
-      stop("The selected noise distributions is not supported.\n",
+      stop("The selected noise distributionis not supported.\n",
            "Please select one of the following noise distributions:
            \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
    }
@@ -168,18 +165,3 @@ configure_model.SDT <- function(model, data, formula) {
    out <- nlist(formula, data, family, prior)
    return(out)
 }
-
-
-#############################################################################!
-# POSTPROCESS METHODS                                                    ####
-#############################################################################!
-# A postprocess_brm.* function should be defined for the model class. See
-# ?postprocess_brm for details
-
-#' @export
-postprocess_brm.SDT <- function(model, fit, ...) {
-   # any required postprocessing (if none, delete this section)
-
-   return(fit)
-}
-

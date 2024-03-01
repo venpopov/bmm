@@ -607,6 +607,12 @@ rIMM <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
 #'   responses without confidence ratings. All functions use the parameters `dprime` for the
 #'   signal strength and `crit` for the criterium for saying "yes" or "old" to a stimulus.
 #'
+#'   This means they give the likelihood for a hit or correct response when a signal or old
+#'   stimulus is presented. and the likelihood for a false alarm when noise or a new stimulus
+#'   is presented. Likewise the random generation function returns the randomly generated
+#'   number of hits for signal or old trials, and the randomly generated number of false
+#'   alarms for noise or new trials.
+#'
 #' @name SDTdist
 #'
 #' @param x A vector of observed responses.
@@ -649,6 +655,13 @@ dSDT <- function(x, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise 
     stim_num <- stimulus
   }
 
+  dist_noise_opts <- c("normal","cauchy","logistic","gumbel")
+  if(!dist_noise %in% dist_noise_opts){
+    stop("The selected noise distribution is not supported.\n",
+         "Please select one of the following noise distributions:
+           \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
+  }
+
   acts <- dprime*stim_num - crit
   if (tolower(dist_noise) == "normal") {
     probs <- stats::pnorm(acts)
@@ -685,6 +698,13 @@ pSDT <- function(q, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise 
     stim_num <- stimulus
   }
 
+  dist_noise_opts <- c("normal","cauchy","logistic","gumbel")
+  if (!dist_noise %in% dist_noise_opts) {
+    stop("The selected noise distribution is not supported.\n",
+         "Please select one of the following noise distributions:
+           \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
+  }
+
   acts <- dprime*stim_num - crit
   if (tolower(dist_noise) == "normal") {
     probs <- stats::pnorm(acts)
@@ -716,6 +736,13 @@ qSDT <- function(p, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise 
     stim_num <- stimulus
   }
 
+  dist_noise_opts <- c("normal","cauchy","logistic","gumbel")
+  if (!dist_noise %in% dist_noise_opts) {
+    stop("The selected noise distribution is not supported.\n",
+         "Please select one of the following noise distributions:
+           \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
+  }
+
   acts <- dprime*stim_num - crit
   if (tolower(dist_noise) == "normal") {
     probs <- stats::pnorm(acts)
@@ -745,6 +772,13 @@ rSDT <- function(n, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise 
       stop("Please provide a stimulus variable only containing zeros and ones")
     }
     stim_num <- stimulus
+  }
+
+  dist_noise_opts <- c("normal","cauchy","logistic","gumbel")
+  if (!dist_noise %in% dist_noise_opts) {
+    stop("The selected noise distribution is not supported.\n",
+         "Please select one of the following noise distributions:
+           \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
   }
 
   acts <- dprime*stim_num - crit
