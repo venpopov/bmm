@@ -1,6 +1,9 @@
 ---
 title: "Mixture models for visual working memory"
 output: bookdown::html_document2
+author:
+  - Ven Popov
+  - Gidon Frischkorn
 bibliography: REFERENCES.bib
 vignette: >
   %\VignetteIndexEntry{Mixture models for visual working memory}
@@ -19,6 +22,9 @@ max-width: 850px !important;
 p {
 margin-top: 1.5em ;
 margin-bottom: 1.5em ;
+}
+.author{
+    display: none;
 }
 </style>
 ```
@@ -50,31 +56,34 @@ knitr::include_graphics("mixture_models_illustration.jpg")
 
 Responses based on a noisy memory representation of the correct feature come from a circular normal distribution (i.e., von Mises) centered on the correct feature value, while guessing responses come from a uniform distribution along the entire circle:
 
-\begin{align}
-p(\theta) &= p_{mem} \cdot \text{vM}(\theta; \mu, \kappa) + (1-p_{mem}) \cdot \text{Uniform}(\theta; -\pi, \pi) \\
-\\
-p_{guess} &= 1-p_{mem} \\
-\\
-vM(\theta; \mu, \kappa) &= \frac{e^{\kappa \cos(\theta - \mu)}}{2\pi I_0(\kappa)}
-\end{align}
+$$
+p(\theta) = p_{mem} \cdot \text{vM}(\theta; \mu, \kappa) + (1-p_{mem}) \cdot \text{Uniform}(\theta; -\pi, \pi) \\
+$$
+$$
+p_{guess} = 1-p_{mem} \\
+$$
+$$
+vM(\theta; \mu, \kappa) = \frac{e^{\kappa \cos(\theta - \mu)}}{2\pi I_0(\kappa)}
+$$
 
 where $\theta$ is the response angle, $p_{mem}$ is the probability that responses come from memory of target feature, $\mu$ is the mean of the von Mises distribution representing the target feature, and $\kappa$ is the concentration parameter of the von Mises distribution, representing the precision of the target memory representation.   
 
 The *three-parameter mixture model* (`?mixture3p`) adds a third state: confusing the cued object with another object shown during encoding and thus reporting the feature of the other object (long dashed green distribution in Figure \@ref(fig:mixture-models)). Responses from this state are sometimes called non-target responses or swap errors. The non-target responses also come from a von Mises distribution centered on the feature of the non-target object. The probability of non-target responses is represented by the parameter $p_{nt}$, and the complete model is:
 
-\begin{align}
-p(\theta) &= p_{mem} \cdot \text{vM}(\theta; \mu_t, \kappa) + p_{nt} \cdot \frac{\sum_{i=1}^{n} \text{vM}(\theta; \mu_{i}, \kappa)}{n} + (1-p_{mem}-p_{nt}) \cdot \text{Uniform}(\theta; -\pi, \pi) \\
-\\
-p_{guess} &= 1-p_{mem}-p_{nt}
-\end{align}
+$$
+p(\theta) = p_{mem} \cdot \text{vM}(\theta; \mu_t, \kappa) + p_{nt} \cdot \frac{\sum_{i=1}^{n} \text{vM}(\theta; \mu_{i}, \kappa)}{n} + (1-p_{mem}-p_{nt}) \cdot \text{Uniform}(\theta; -\pi, \pi) \\
+$$
+$$
+p_{guess} = 1-p_{mem}-p_{nt}
+$$
 
 where $\mu_{t}$ is the location of the target feature, $\mu_{i}$ is the location of the i-th non-target feature, $n$ is the number of non-target features.
 
 In most applications of the model, the responses are coded as the angular error relative to the target feature. The same is true for the non-target memory representations, which are assumed to be centered on the target feature, and the precision of the non-target memory representation is assumed to be the same as the precision of the target memory representation. This is the version of the model implemented in the `bmm` package:
 
-\begin{align}
-p(\theta) &= p_{mem} \cdot \text{vM}(\theta; 0, \kappa) + p_{nt} \cdot \frac{\sum_{i=1}^{n}  \text{vM}(\theta; \mu_{i}-\mu_t, \kappa)}{n} + (1-p_{mem}-p_{nt}) \cdot \text{Uniform}(\theta; -\pi, \pi)
-\end{align}
+$$
+p(\theta) = p_{mem} \cdot \text{vM}(\theta; 0, \kappa) + p_{nt} \cdot \frac{\sum_{i=1}^{n}  \text{vM}(\theta; \mu_{i}-\mu_t, \kappa)}{n} + (1-p_{mem}-p_{nt}) \cdot \text{Uniform}(\theta; -\pi, \pi)
+$$
 
 # The data
 
@@ -299,5 +308,20 @@ fit3p <- fit_model(
 ```                 
 
 The rest of the analysis is the same as for the 2-parameter model. We can inspect the model fit, extract the parameter estimates, and visualize the posterior distributions.
+
+In the above example we specified all column names for the non_targets explicitely via `paste0('non_target_',1:5)`. Alternatively, you can use a regular expression to match the non-target feature columns in the dataset. This is useful when the non-target feature columns are named in a consistent way, e.g. `non_target_1`, `non_target_2`, `non_target_3`, etc. For example, you can specify the model a few different ways via regular expressions:
+
+```{r}
+model <- mixture3p(resp_err = "error", 
+                   nt_features = "non_target_[1-5]", 
+                   setsize = 'set_size', 
+                   regex = TRUE)
+model <- mixture3p(resp_err = "error", 
+                   nt_features = "non_target_", 
+                   setsize = 'set_size', 
+                   regex = TRUE)
+```
+
+
 
 # References

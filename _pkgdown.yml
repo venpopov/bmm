@@ -30,11 +30,13 @@ reference:
  - contents:
    - "bmm"
    - "supported_models"
+   - "bmm_options"
  - title: "Fitting models"
-   desc: "Main function for model fitting"
+   desc: "Main functions for model fitting"
  - contents:
    - "fit_model"
    - "bmmformula"
+   - "update.bmmfit"
  - title: "Extract model information"
    desc: "Utility functions for extracting default priors, generate stan code, stan data, etc."
  - contents:
@@ -56,9 +58,6 @@ reference:
  - contents:
    - "OberauerLin_2017"
    - "ZhangLuck_2008"
- - title: Miscellaneous
- - contents:
-   -  "save_pars"
  - title: "Developers' corner"
    desc: "Functions to assist in developing new models"
  - contents:

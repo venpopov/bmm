@@ -13,7 +13,7 @@ test_that("check_data() produces expected errors and warnings", {
                           y~1),
                "Argument 'data' must be coercible to a data.frame.")
 
-  mls <- lapply(c('mixture2p','mixture3p','IMMabc','IMMbsc','IMMfull'), get_model2)
+  mls <- lapply(c('mixture2p','mixture3p','IMMabc','IMMbsc','IMMfull'), get_model)
   for (ml in mls) {
     expect_warning(check_data(ml(resp_err = "y", nt_features = 'x', setsize=2, nt_distances = 'z'),
                               data.frame(y = 12, x = 1, z = 2),
@@ -23,17 +23,8 @@ test_that("check_data() produces expected errors and warnings", {
                              data.frame(y = 1, x = 1, z = 2), bmmformula(y ~ 1)))
   }
 
-  mls <- lapply(c('mixture3p','IMMabc','IMMbsc','IMMfull'), get_model2)
+  mls <- lapply(c('mixture3p','IMMabc','IMMbsc','IMMfull'), get_model)
   for (ml in mls) {
-    expect_error(check_data(ml(resp_err = "y", nt_features = 'x', nt_distances = 'z'),
-                            data.frame(y = 1, x = 1, z = 2),
-                            bmmformula(kappa ~ 1)),
-                 'argument "setsize" is missing, with no default')
-    expect_error(check_data(ml(resp_err = "y",setsize = 'x', nt_distances = 'z'),
-                            data.frame(y = 1, x = 1, z = 2),
-                            bmmformula(kappa ~ 1)),
-                 'argument "nt_features" is missing, with no default')
-
     expect_error(check_data(ml(resp_err = "y",nt_features='x', setsize = 5, nt_distances = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
@@ -44,7 +35,7 @@ test_that("check_data() produces expected errors and warnings", {
                    "at least one of your non_target variables are in degrees")
   }
 
-  mls <- lapply(c('IMMbsc','IMMfull'), get_model2)
+  mls <- lapply(c('IMMbsc','IMMfull'), get_model)
   for (ml in mls) {
     expect_error(check_data(ml(resp_err = "y",nt_features=paste0('x',1:4), setsize = 5, nt_distances = 'z'),
                             data.frame(y = 1, x1 = 1, x2=2,x3=3,x4=4, z = 2),
@@ -204,6 +195,37 @@ test_that("rad2deg returns the correct values for 0, pi/2, 2*pi", {
   expect_equal(wrap(rad2deg(x), radians = F), rad2deg(wrap(x)))
 })
 
+test_that("make_standata() works with brmsformula", {
+  ff <- brms::bf(count ~ zAge + zBase * Trt + (1|patient))
+  sd <- make_standata(ff, data = brms::epilepsy, family = poisson())
+  expect_equal(class(sd)[1], "standata")
+})
+
+test_that("make_standata() works with formula", {
+  ff <- count ~ zAge + zBase * Trt + (1|patient)
+  sd <- make_standata(ff, data = brms::epilepsy, family = poisson())
+  expect_equal(class(sd)[1], "standata")
+})
+
+test_that("make_standata() works with bmmformula if brms >= 2.20.14", {
+  # define formula
+  ff <- bmmformula(kappa ~ 1,
+                   thetat ~ 1,
+                   thetant ~ 1)
+
+  # simulate data
+  dat <- OberauerLin_2017
+
+  # fit the model
+  if (utils::packageVersion("brms") >= "2.20.14") {
+    sd <- make_standata(formula = ff,
+                           data = dat,
+                           model = mixture3p(resp_err = "dev_rad",
+                                         nt_features = 'col_nt',
+                                         setsize = "set_size", regex = T))
+    expect_equal(class(sd)[1], "standata")
+  }
+})
 
 test_that("get_standata() returns a standata class", {
   ff <- bmmformula(kappa ~ 1,
@@ -281,6 +303,15 @@ test_that('is_data_ordered works', {
   formula2 <- bmf(y ~ A + B + C)
   expect_true(is_data_ordered(data3, formula1))
   expect_false(is_data_ordered(data3, formula2))
+
+  # test with a complex formula with shared covariance structure across parameters
+  data <- OberauerLin_2017
+  formula <- bmf(c ~ 0 + set_size + (0 + set_size | p1 | ID),
+                 kappa ~ 0 + set_size + (0 + set_size | p1 | ID))
+  expect_false(is_data_ordered(data, formula))
+
+  data <- dplyr::arrange(data, set_size, ID)
+  expect_true(is_data_ordered(data, formula))
 })
 
 test_that('is_data_ordered works when there is only one predictor', {

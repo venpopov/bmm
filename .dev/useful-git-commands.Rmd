@@ -1,0 +1,111 @@
+---
+title: "Useful git commands"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+## Setup
+
+```{r setup}
+knitr::opts_chunk$set(engine.opts = list(bash = "-l"))
+```
+
+
+```{bash}
+pwd # checking where bash commands from this markdown are executed
+```
+
+This is a compilation of git commands I frequently use, but often forget. I have set the file to run from the project working directory. So you can execute code chunks within the notebook and they will be run. I keep this file always open, making it easier for something that typing out the commands in the terminal or googling again how to do something. Will update as I go.
+
+::: {.blackbox style="color: red"}
+*Since these commands will be actually executed, do not run a code block unless you know what it will do, and DO NOT knit the whole file*
+:::
+
+## Status
+
+Always useful
+
+```{bash, engine.opts='-l'}
+git status
+```
+
+one-liner logs
+
+```{bash}
+git log --oneline -n 10 --decorate
+```
+
+## Branch management
+
+### Check current local and remote branches
+
+```{bash}
+git branch
+```
+
+### Sync with remote without pulling changes
+
+> Useful to just see if changes have been made to any branches without overwriting any work in progress.
+>
+> I usually run this every day when I sit down to work in the morning
+
+```{bash}
+git fetch origin
+```
+
+### Remove reference to remote branch after it has been deleted on github
+
+> Run the following commands when you want to clean the local repo from outdated branches (merged or deleted on github). This does ***not*** delete the local branches
+
+```{bash}
+git fetch origin ## syncs with the remote repository
+git remote prune origin ## deltes references to non-existing remote branches
+```
+
+or together
+
+```{bash}
+git fetch --prune ## sync with the remote and then delete non-existing branches
+```
+
+or you can set this as a configuration once
+
+```{bash}
+git config --global fetch.prune true
+```
+
+and then you will prune automatically whenever you run
+
+```{bash}
+git fetch origin
+```
+
+### Deleting pruned local branches
+
+> After pruning, you can use the commands below to delete all pruned branches. Be careful! See [here](https://dillionmegida.com/p/delete-outdated-branches/#does-pruning-delete-the-local-branches)
+
+```{bash}
+git checkout develop ## switch to main develop branch
+git branch --merged | egrep -v "master|develop" ## get a list of all branches that have been already merged into develop 
+```
+
+check out the output. Do you really want to delete these branches? If yes, you can run
+
+```{bash}
+git branch --merged | egrep -v "master|develop" | xargs git branch -d
+```
+
+The `xargs` command converts the output of `egrep` to the arguments of `git branch -d`. i.e., this will be interpreted as `git branch -d [egrep output]`. And `git branch -d` does a soft delete on the branches. Soft deletes ensure that the branch has been fully merged.
+
+Sometimes there are leftover branches because they were not merged but rather squashed or rebased into develop. You can delete individual branches with
+
+```{bash}
+git branch -d #followed by name of branch
+```
+
+or if that doesn't work, but you are sure you want to delete it, you can force with capital D
+
+```{bash}
+git branch -D #followed by name of branch
+```

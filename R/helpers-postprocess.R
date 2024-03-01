@@ -13,26 +13,57 @@
 #'   brmsfit object that was passed to it).
 #' @param model A model list object returned from check_model()
 #' @param fit the fitted brm model returned by `call_brm()`
+#' @param ... Additional arguments passed to the method
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export
 #' @keywords internal, developer
-postprocess_brm <- function(model, fit) {
+postprocess_brm <- function(model, fit, ...) {
   UseMethod('postprocess_brm')
 }
 
 #' @export
-postprocess_brm.bmmmodel <- function(model, fit) {
-  # save bmm version
+postprocess_brm.bmmmodel <- function(model, fit, ...) {
+  dots <- list(...)
+  class(fit) <- c('bmmfit','brmsfit')
+  fit$bmm$fit_args <- dots$fit_args
   fit$version$bmm <- utils::packageVersion('bmm')
+  fit$bmm$model <- model
+  fit$bmm$user_formula <- dots$user_formula
+  fit$bmm$configure_opts <- dots$configure_opts
+  attr(fit$data, 'data_name') <- attr(dots$fit_args$data, 'data_name')
+
   NextMethod('postprocess_brm')
 }
 
 #' @export
-postprocess_brm.vwm <- function(model, fit) {
-  NextMethod('postprocess_brm')
+postprocess_brm.default <- function(model, fit, ...) {
+  fit
+}
+
+
+#' @title Generic S3 method for reverting any postprocessing of the fitted brm model
+#' @description Called by update.bmmfit() to automatically revert some of the postprocessing
+#'   depending on the model type. It will call the appropriate revert_postprocess_brm.*
+#'   methods based on the list of classes defined in the .model_* functions. For
+#'   models with several classes listed, it will call the functions in the order
+#'   they are listed. For example, for the sdmSimple model, the
+#'   postprocessing involves setting the link function for the c parameter to "log",
+#'   because it was coded manually in the stan code, but it was specified as "identity"
+#'   in the brms custom family. However, during the update process, the link function
+#'   should be set back to "identity". Only use this if you have a specific reason to
+#'   revert the postprocessing (if otherwise the update method would produce incorrect
+#'   results).
+#' @param model A model list object returned from check_model()
+#' @param fit the fitted brm model returned by `call_brm()`
+#' @param ... Additional arguments passed to the method
+#' @return An object of class brmsfit, with any necessary postprocessing applied
+#' @export
+#' @keywords internal, developer
+revert_postprocess_brm <- function(model, fit, ...) {
+  UseMethod('revert_postprocess_brm')
 }
 
 #' @export
-postprocess_brm.default <- function(model, fit) {
+revert_postprocess_brm.default <- function(model, fit, ...) {
   fit
 }

@@ -71,13 +71,16 @@ softmaxinv <- function(p, lambda = 1) {
 #' @keywords internal
 #' @returns A list of options to pass to brm()
 configure_options <- function(opts, env=parent.frame()) {
-  if (opts$parallel) {
+  if (isTRUE(opts$parallel)) {
     cores = parallel::detectCores()
     if (opts$chains >  parallel::detectCores()) {
       opts$chains <- parallel::detectCores()
     }
   } else {
     cores = NULL
+  }
+  if (not_in_list('silent', opts)) {
+    opts$silent <- getOption('bmm.silent', 1)
   }
   withr::local_options(
     list(
@@ -129,9 +132,6 @@ glue_lf <- function(...) {
 #' @noRd
 call_brm <- function(fit_args) {
   fit <- brms::do_call(brms::brm, fit_args)
-  fit$bmm_fit_args <- fit_args
-  class(fit) <- c('bmmfit','brmsfit')
-  fit
 }
 
 
@@ -226,6 +226,15 @@ is_try_warning <- function(x) {
   inherits(x, "warning")
 }
 
+is_bmmmodel <- function(x) {
+  inherits(x, "bmmmodel")
+}
+
+is_supported_bmmmodel <- function(x) {
+  valid_models <- supported_models(print_call = FALSE)
+  is_bmmmodel(x) && inherits(x, valid_models)
+}
+
 as_numeric_vector <- function(x) {
   out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
   if (is_try_warning(out)) {
@@ -247,8 +256,13 @@ stop_quietly <- function() {
 # data is ordered by the predictor variables. This function checks if the data is
 # ordered by the predictors, and if not, it suggests to the user to sort the data
 order_data_query <- function(model, data, formula) {
-  sort_data <- getOption("bmm.sort_data", NULL)
-  if(is.null(sort_data) & !is_data_ordered(data, formula)) {
+  sort_data <- getOption("bmm.sort_data", "check")
+  dpars <- names(formula)
+  predictors <- rhs_vars(formula)
+  predictors <- predictors[not_in(predictors, dpars)]
+  predictors <- predictors[predictors %in% colnames(data)]
+
+  if(is.null(sort_data) && !is_data_ordered(data, formula)) {
     message("\n\nData is not ordered by predictors.\nYou can speed up the model ",
             "estimation up to several times (!) by ordering the data by all your ",
             "predictor columns.\n\n")
@@ -274,21 +288,19 @@ order_data_query <- function(model, data, formula) {
         message("To sort your data, use the following code:\n\n")
         message(crayon::green("library(dplyr)"))
         message(crayon::green(data_name, "_sorted <- ", data_name, " %>% arrange(",
-                              paste(rhs_vars(formula), collapse = ", "),
+                              paste(predictors, collapse = ", "),
                               ")\n\n",
                               sep=""))
         message("Then re-run the model with the newly sorted data.")
         stop_quietly()
       } else if (var == 2) {
-        message("Your data has been sorted by the following predictors: ", paste(rhs_vars(formula), collapse = ", "),'\n')
-        preds <- rhs_vars(formula)
-        data <- dplyr::arrange_at(data, preds)
+        message("Your data has been sorted by the following predictors: ", paste(predictors, collapse = ", "),'\n')
+        data <- dplyr::arrange_at(data, predictors)
       }
     }
   } else if (isTRUE(sort_data)) {
-    preds <- rhs_vars(formula)
-    data <- dplyr::arrange_at(data, preds)
-    message("\nYour data has been sorted by the following predictors: ", paste(rhs_vars(formula), collapse = ", "),'\n')
+    data <- dplyr::arrange_at(data, predictors)
+    message("\nYour data has been sorted by the following predictors: ", paste(predictors, collapse = ", "),'\n')
     caution_msg <- paste(strwrap("* caution: you have set `sort_data=TRUE`. You need to be careful
         when using brms postprocessing methods that rely on the data order, such as
         generating predictions. Assuming you assigned the result of fit_model to a
@@ -300,11 +312,196 @@ order_data_query <- function(model, data, formula) {
   data
 }
 
-#' @inherit brms::save_pars title params return
-#' @description Thin wrapper around [brms::save_pars()]. When calling
-#'   [fit_model] with additional information to save parameters you can use this
-#'   function to pass information about saving parameter draws to `brms` without
-#'   having to load `brms`. Alternatively, you can also load `brms` and call
-#'   `save_pars`. For details see ?brms::save_pars.
+# when called from another function, it will return a vector of arguments that are
+# missing from the call
+missing_args <- function(which = -1) {
+  parent_objects <- as.list(sys.frame(which))
+  parent_args <- names(as.list(args(as.character(sys.call(which)[[1]]))))
+  parent_args <- parent_args[!parent_args %in% c("...", "")]
+  symbols <- names(parent_objects)[sapply(parent_objects, is.symbol)]
+  missing <- symbols[symbols %in% parent_args]
+  missing
+}
+
+# when called from another function, it will stop the execution if any of the
+# required arguments are missing
+stop_missing_args <- function() {
+  missing <- missing_args(-2)
+  fun <- as.character(sys.call(-1)[[1]])
+  if (length(missing) > 0) {
+    stop2("The following required arguments are missing in ", fun, "(): ", paste(missing, collapse = ", "))
+  }
+}
+
+# custom method form printing nicely formatted character values via cat instead of print
 #' @export
-save_pars <- brms::save_pars
+print.message <- function(x, ...) {
+  cat(x, ...)
+}
+
+
+# returns either x, or all variables that match the regular expression x
+# @param x character vector or regular expression
+# @param all_variables character vector of all variables within which to search
+# @param regex logical. If TRUE, x is treated as a regular expression
+get_variables <- function(x, all_variables, regex = FALSE) {
+  if (regex) {
+    variables <- all_variables[grep(x, all_variables)]
+    if (length(variables) == 0) {
+      stop2("No variables found that match the regular expression '", x, "'")
+    }
+    return(variables)
+  }
+  x
+}
+
+# replace the base identical function with a S3 method
+identical <- function(x, y, ...) {
+  UseMethod("identical")
+}
+
+#' @export
+identical.default <- function(x, y, ...) {
+  base::identical(x, y, ...)
+}
+
+#' @export
+identical.brmsformula <- function(x, y, ...) {
+  res <- waldo::compare(x, y, ignore_formula_env = TRUE)
+  length(res) == 0
+}
+
+#' @export
+identical.bmmformula <- function(x, y, ...) {
+  res <- waldo::compare(x, y, ignore_formula_env = TRUE)
+  length(res) == 0
+}
+
+#' @export
+identical.formula <- function(x, y, ...) {
+  res <- waldo::compare(x, y, ignore_formula_env = TRUE)
+  length(res) == 0
+}
+
+
+#' View or change global bmm options
+#' @param sort_data logical. If TRUE, the data will be sorted by the predictors.
+#'   If FALSE, the data will not be sorted, but sampling will be slower. If
+#'   "check" (the default), `fit_model()` will check if the data is sorted, and
+#'   ask you via a console prompt if it should be sorted. **Default: "check"**
+#' @param parallel logical. If TRUE, chains will be run in parallel. If FALSE,
+#'   chains will be run sequentially. You can also set these value for each
+#'   model separately via the argument `parallel` in `fit_model()`. **Default:
+#'   FALSE**
+#' @param default_priors logical. If TRUE (default), the default bmm priors will
+#'   be used. If FALSE, only the basic `brms` priors will be used. **Default:
+#'   TRUE**
+#' @param silent numeric. Verbosity level between 0 and 2. If 1 ( the default),
+#'   most of the informational messages of compiler and sampler are suppressed.
+#'   If 2, even more messages are suppressed. The actual sampling progress is
+#'   still printed. **Default: 1**
+#' @param reset_options logical. If TRUE, the options will be reset to their
+#'   default values **Default: FALSE**
+#' @details The `bmm_options` function is used to view or change the current bmm
+#'   options. If no arguments are provided, the function will return the current
+#'   options. If arguments are provided, the function will change the options
+#'   and return the old options invisibly. If you provide only some of the
+#'   arguments, the other options will not be changed. The options are stored in
+#'   the global options list and will be used by `fit_model()` and other
+#'   functions in the `bmm` package. Each of these options can also be set
+#'   manually using the built-in `options()` function, by setting the
+#'   `bmm.sort_data`,  `bmm.default_priors`, and `bmm.silent` options.
+#'
+#' @return A message with the current bmm options and their values, and
+#'   invisibly returns the old options for use with on.exit() and friends.
+#' @examples
+#'
+#' # view the current options
+#' bmm_options()
+#'
+#' # change the options to always sort the data and to use parallel sampling
+#' bmm_options(sort_data = TRUE, parallel = TRUE)
+#'
+#' # restore the default options
+#' bmm_options(reset_options = TRUE)
+#'
+#' # you can change the options using the options() function as well
+#' options(bmm.sort_data = TRUE, bmm.parallel = TRUE)
+#' bmm_options()
+#'
+#' # reset the options to their default values
+#' bmm_options(reset_options = TRUE)
+#'
+#' # bmm_options(sort_data = TRUE, parallel = TRUE) will also return the old options
+#' # so you can use it with on.exit()
+#' old_op <- bmm_options(sort_data = TRUE, parallel = TRUE)
+#' on.exit(bmm_options(old_op))
+#'
+#' @export
+bmm_options <- function(sort_data, parallel, default_priors, silent, reset_options = FALSE) {
+  opts <- ls()
+  if (!missing(sort_data) && sort_data != "check" && !is.logical(sort_data)) {
+    stop2("sort_data must be one of TRUE, FALSE, or 'check'")
+  }
+  if (!missing(parallel) && !is.logical(parallel)) {
+    stop2("parallel must be one of TRUE or FALSE")
+  }
+  if (!missing(default_priors) && !is.logical(default_priors)) {
+    stop2("default_priors must be a TRUE or FALSE")
+  }
+  if (!missing(silent) && (!is.numeric(silent) || silent < 0 || silent > 2)) {
+    stop2("silent must be one of 0, 1, or 2")
+  }
+
+  # set default options if function is called for the first time or if reset_options is TRUE
+  if (reset_options) {
+    options(bmm.sort_data = "check",
+            bmm.parallel = FALSE,
+            bmm.default_priors = TRUE,
+            bmm.silent = 1)
+  }
+
+  # change options if arguments are provided. get argument name and loop over non-missing arguments
+  op <- list()
+  non_missing_args <- names(match.call())[-1]
+  non_missing_args <- non_missing_args[!non_missing_args %in% "reset_options"]
+  for (i in non_missing_args) {
+      op[[paste0('bmm.',i)]] <- get(i)
+  }
+
+  old_op <- options(op)
+  message2("\nCurrent bmm options:\n",
+           crayon::green(paste0("  sort_data = ", getOption("bmm.sort_data"),"",
+                                 "\n  parallel = ", getOption("bmm.parallel"),
+                                 "\n  default_priors = ", getOption("bmm.default_priors"),
+                                 "\n  silent = ", getOption("bmm.silent"), "\n")),
+           "For more information on these options or how to change them, see help(bmm_options).\n")
+  invisible(old_op)
+}
+
+# an improved version of tryCatch that captures messages as well
+# modified version of https://github.com/cran/admisc/blob/master/R/tryCatchWEM.R
+tryCatch2 <- function(expr, capture = FALSE) {
+  toreturn <- list()
+  output <- withVisible(withCallingHandlers(
+    tryCatch(expr, error = function(e) {
+      toreturn$error <<- e$message
+      NULL
+    }),
+    warning = function(w) {
+      toreturn$warning <<- c(toreturn$warning, w$message)
+      invokeRestart("muffleWarning")
+    },
+    message = function(m) {
+      toreturn$message <<- paste(toreturn$message, m$message, sep = "")
+      invokeRestart("muffleMessage")
+    }
+  ))
+  if (capture && output$visible && !is.null(output$value)) {
+    toreturn$output <- utils::capture.output(output$value)
+    toreturn$value <- output$value
+  }
+  if (length(toreturn) > 0) {
+    return(toreturn)
+  }
+}

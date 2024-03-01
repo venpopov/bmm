@@ -1,6 +1,9 @@
 ---
 title: "The Signal Discrimination Model (SDM)"
 output: bookdown::html_document2
+author: 
+  - Ven Popov
+  - Gidon Frischkorn
 bibliography: REFERENCES.bib
 header-includes:
   - \usepackage{amsmath}
@@ -20,6 +23,9 @@ p {
 margin-top: 1.5em ;
 margin-bottom: 1.5em ;
 }
+.author{
+    display: none;
+}
 </style>
 
 ```{r, include = FALSE}
@@ -37,74 +43,63 @@ The model assumes that when a test probe appears, all possible responses on the 
 feature stored in memory ($\mu$) and the response options. Formally, this is given by the following activation function:
 
 
-\begin{align}
-S(\theta) &= c \cdot \frac{\exp(\kappa \cdot \cos(y-\mu))}{2\pi I_0(\kappa)}
-(\#eq:activation-function)
-\end{align}
+$$
+S(\theta) = c \cdot \frac{\exp(\kappa \cdot \cos(y-\mu))}{2\pi I_0(\kappa)}
+$$
 
 
 where $c$ is the memory strength parameter, $\kappa$ is the precision parameter, and $I_0$ is the modified Bessel function of the first kind of order 0. Thus, the activation function follows a von Mises distribution, weigthed by a memory strength parameter.
 
 The activation of response options is corrupted by noise, which is assumed to follow a Gumbel distribution. Then the response is the option with the highest activation value:
 
-\begin{align}
+$$
 Pr(\theta) = argmax(S(\theta) + \epsilon) \\ \epsilon \sim Gumbel(0,1)
-(\#eq:argmax)
-\end{align}
+$$
 This is equivalent to the following softmax function (also known as the exponentiated Luce's choice rule):
 
-\begin{align}
+$$
 Pr(\theta) = \frac{\exp(S(\theta)}{\sum_{i=1}^{n} \exp(S(\theta_i))}
-(\#eq:ptheta-exps)
-\end{align}
+$$
 where n is the number of response options, most often 360 in typical visual working memory experiments.
 
 In summary, the model assumes that response errors come from the following distribution, where $\mu = 0$:
 
-\begin{align}
+$$
 \Large{f(\theta\ |\ \mu,c,\kappa) = \frac{e^ {c \ \frac{e^{k\ cos(\theta-\mu)}}{2\pi I_o(k)}}}{Z}}
-(\#eq:dsdm-oberauer)
-\end{align}
+$$
 and Z is the normalizing constant to ensure that the probability mass sums to 1.
 
 # Parametrization in the `bmm` package
 
-In the `bmm` package we use a different parametrization of Equation \@ref(eq:dsdm-oberauer). The parametrization is chosen for numerical stability and efficiency. Three features of \@ref(eq:dsdm-oberauer) make it difficult to work with in practice. First, the modified bessel function $I_0$ increases rapidly, often leading to numerical overflow. Second, the bessel function is expensive to compute, and estimating this model with MCMC methods can be slow. Third, the normalizing constant in the denominator requires summing 360 terms, which is also slow.
+In the `bmm` package we use a different parametrization. The parametrization is chosen for numerical stability and efficiency. Three features of the parametrization above make it difficult to work with in practice. First, the modified bessel function $I_0$ increases rapidly, often leading to numerical overflow. Second, the bessel function is expensive to compute, and estimating this model with MCMC methods can be slow. Third, the normalizing constant in the denominator requires summing 360 terms, which is also slow.
 
 To address these issues, we use the following parametrization of the SDM distribution:
 
-\begin{align}
-
+$$
 \Large{f(\theta\ |\ \mu,c,\kappa) = \frac{
 e^{c \ \sqrt{\frac{k}{2\pi}} e^{k \ (cos(\theta-\mu)-1)}}
 }{Z}}
-(\#eq:dsdm-bmm)
-\end{align}
+$$
 
 This parametrization is derived from the known approximation of the modified bessel function for large $k$ (@abramowitz1988handbook):
 
-\begin{align}
+$$
 I_0(\kappa) \sim ~ \frac{e^{\kappa}}{\sqrt{2\pi \kappa}}, \ \ \ \ \kappa \rightarrow \infty
-(\#eq:bessel-approx)
-\end{align}
+$$
 
 If needed, the $c$ parameter of the original formulation by Oberauer (2023) can be computed by:
 
-\begin{align}
-
+$$
 c_{oberauer} = c_{bmm} \ e^{-\kappa} I_0(\kappa)\sqrt{2 \pi \kappa}
-
-(\#eq:parametrization)
-\end{align}
+$$
 
 This parametrization does not change the predicted shape of the distribution, but it produces slightly different values of $c$ for small values of $kappa$. The parametrization is the default in the `bmm` package.
 
 A second optimization concerns the calculation of the normalizing constant $Z$. The original model assumed that responses can only be one of 360 discrete values, resulting in a probability mass function. In `bmm` we treat the response variable as continuous, which makes $f(\theta)$ a probability density function. This means that we can calculate the normalizing constant $Z$ by integrating $f(\theta)$ over the entire circle:
 
-\begin{align}
+$$
 Z = \int_{-\pi}^{\pi} f(\theta) d\theta
-(\#eq:z-integral)
-\end{align}
+$$
 
 This integral cannot be expressed in closed form, but it can be approximated using numerical integration methods. The results between the discrete and continuous formulations are nearly identical, for large number of response options (as in typical applications), but not when the number of response options is small, for example in 4-AFC tasks.
 

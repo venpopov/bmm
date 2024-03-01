@@ -17,3 +17,4 @@
 ^tests/internal-.*$
 ^tests/internal$
 ^.dev$
+^.Rprofile$
