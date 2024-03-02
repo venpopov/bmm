@@ -25,7 +25,7 @@ This document contains code snippets for internal model tests. Since official un
 
 Using this document, we can run the actual models and make sure they return the expected results even after changes to the code. The basic idea is that we have run and stored the model results at a point at which everything was working as expected. We can then compare the results of the models to the stored results. Passing a seed to the fit_model() function ensures that the results are reproducible. Differences might arise from changes in the underlying packages (brms, rstan, cmdstanr) or from changes to the model specifications. In which case we would have to make sure that the results are similar, even if not identical, and update the stored results.
 
-- [] TODO: for now it's visual inspection. Maybe add explicit test with a threshold for estimation differences in a testthat test that is run manually only, or on a server.
+-   [] TODO: for now it's visual inspection. Maybe add explicit test with a threshold for estimation differences in a testthat test that is run manually only, or on a server.
 
 ### Reference fits source
 
@@ -35,8 +35,8 @@ The reference fits are stored in the `tests/internal/ref_fits` directory. They w
 
 Set cache to true if you've done all the fits interactively and you want to knit the document without refitting for new tests. Set cache to false before you start. The whole file currently takes about 20 minutes to run for all seven models total.
 
-- note1: actually turns out the cache doesn't transfer between interactive mode and knitting the whole document. It is still use to keep it set to TRUE, if you just want to add another comparison, then knit the whole document without refitting everything else
-- note2: I can potentially change the caching to be based on this approach instead, which should work both interactively and knittingly (is that a word?): https://bookdown.org/yihui/rmarkdown-cookbook/cache-rds.html#cache-rds
+-   note1: actually turns out the cache doesn't transfer between interactive mode and knitting the whole document. It is still use to keep it set to TRUE, if you just want to add another comparison, then knit the whole document without refitting everything else
+-   note2: I can potentially change the caching to be based on this approach instead, which should work both interactively and knittingly (is that a word?): <https://bookdown.org/yihui/rmarkdown-cookbook/cache-rds.html#cache-rds>
 
 ```{r knitrcache}
 knitr::opts_chunk$set(cache=TRUE)
@@ -84,7 +84,8 @@ fit <- list()
 *Note: In the future if the API doesn't change, we can just use arguments from the reference fit. For now it doesn't work since the formula and model definition have changed since version 0.2.1.*
 
 <details>
-  <summary>Run the model</summary>
+
+<summary>Run the model</summary>
 
 ```{r sdmSimple_fit}
 data <- ref_fits$sdmSimple$data
@@ -97,7 +98,7 @@ model <- sdmSimple('dev_rad')
 fit$sdmSimple <- fit_model(formula, data, model,
                            parallel = TRUE,
                            chains = 4,
-                           iter = 2000,
+                           iter = 500,
                            refresh = 500,
                            init = 1,
                            silent = 2,
@@ -106,9 +107,12 @@ fit$sdmSimple <- fit_model(formula, data, model,
 ```
 
 </details>
+
 </br>
+
 <details>
-  <summary>The results:</summary>
+
+<summary>The results:</summary>
 
 ```{r sdmSimple_results}
 summary(fit$sdmSimple)
@@ -119,7 +123,8 @@ summary(fit$sdmSimple)
 </br>
 
 <details>
-  <summary>Compare with the reference fit:</summary>
+
+<summary>Compare with the reference fit:</summary>
 
 ```{r sdmSimple_ref_results}
 summary(ref_fits$sdmSimple)
@@ -138,7 +143,8 @@ fixef(fit$sdmSimple) - fixef(ref_fits$sdmSimple)
 ## Test: mixture3p
 
 <details>
-  <summary>Run the model</summary>
+
+<summary>Run the model</summary>
 
 ```{r mixture3p_fit}
 data <- ref_fits$mixture3p$data
@@ -154,7 +160,7 @@ model <- mixture3p(resp_err = 'dev_rad',
 fit$mixture3p <- fit_model(formula, data, model,
                            parallel = TRUE,
                            chains = 4,
-                           iter = 1000,
+                           iter = 500,
                            refresh = 500,
                            init = 1,
                            silent = 2,
@@ -162,28 +168,33 @@ fit$mixture3p <- fit_model(formula, data, model,
                            seed = seed)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Results </summary>
+
+<summary>Results</summary>
 
 ```{r mixture3p_results}
 summary(fit$mixture3p)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Compare with reference fit:</summary>
+
+<summary>Compare with reference fit:</summary>
 
 ```{r ref_fits_mixture3p}
 ref_fits$mixture3p
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 Difference in estimates
 
@@ -196,7 +207,8 @@ round(fixef(fit$mixture3p) - fixef(ref_fits$mixture3p)[fit_rows,],3)
 ## Test: mixture2p
 
 <details>
-  <summary>Run the model</summary>
+
+<summary>Run the model</summary>
 
 ```{r mixture2p_fit}
 data <- ref_fits$mixture2p$data
@@ -217,28 +229,33 @@ fit$mixture2p <- fit_model(formula, data, model,
                            seed = seed)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Results</summary>
+
+<summary>Results</summary>
 
 ```{r mixture2p_results}
 summary(fit$mixture2p)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Compare with the reference fit:</summary>
+
+<summary>Compare with the reference fit:</summary>
 
 ```{r ref_fits_mixture2p}
 summary(ref_fits$mixture2p)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 Difference in estimates
 
@@ -248,13 +265,11 @@ fit_rows <- rownames(fixef(fit$mixture2p))
 round(fixef(fit$mixture2p) - fixef(ref_fits$mixture2p)[fit_rows,],3)
 ```
 
-
 ## Test: IMMfull
 
 <details>
-  <summary>Run the model</summary>
 
-
+<summary>Run the model</summary>
 
 ```{r IMMfull_fit}
 data <- ref_fits$IMMfull$data
@@ -272,7 +287,7 @@ model <- IMMfull(resp_err = 'dev_rad',
 fit$IMMfull <- fit_model(formula, data, model,
                            parallel = TRUE,
                            chains = 4,
-                           iter = 1000,
+                           iter = 500,
                            refresh = 500,
                            init = 1,
                            silent = 2,
@@ -280,28 +295,33 @@ fit$IMMfull <- fit_model(formula, data, model,
                            seed = seed)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Results</summary>
+
+<summary>Results</summary>
 
 ```{r IMMfull_results}
 summary(fit$IMMfull)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Compare with reference fit:</summary>
+
+<summary>Compare with reference fit:</summary>
 
 ```{r ref_fits_IMMfull}
 ref_fits$IMMfull
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 Difference in estimates
 
@@ -311,11 +331,11 @@ fit_rows <- rownames(fixef(fit$IMMfull))
 round(fixef(fit$IMMfull) - fixef(ref_fits$IMMfull)[fit_rows,],3)
 ```
 
-
 ## Test: IMMbsc
 
 <details>
-  <summary>Run the model</summary>
+
+<summary>Run the model</summary>
 
 ```{r IMMbsc_fit}
 data <- ref_fits$IMMbsc$data
@@ -332,7 +352,7 @@ model <- IMMbsc(resp_err = 'dev_rad',
 fit$IMMbsc <- fit_model(formula, data, model,
                         parallel = TRUE,
                         chains = 4,
-                        iter = 1000,
+                        iter = 500,
                         refresh = 500,
                         init = 1,
                         silent = 2,
@@ -340,28 +360,33 @@ fit$IMMbsc <- fit_model(formula, data, model,
                         seed = seed)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Results</summary>
+
+<summary>Results</summary>
 
 ```{r IMMbsc_results}
 summary(fit$IMMbsc)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Compare with reference fit:</summary>
+
+<summary>Compare with reference fit:</summary>
 
 ```{r ref_fits_IMMbsc}
 ref_fits$IMMbsc
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 Difference in estimates
 
@@ -371,11 +396,11 @@ fit_rows <- rownames(fixef(fit$IMMbsc))
 round(fixef(fit$IMMbsc) - fixef(ref_fits$IMMbsc)[fit_rows,],3)
 ```
 
-
 ## Test: IMMabc
 
 <details>
-  <summary>Run the model</summary>
+
+<summary>Run the model</summary>
 
 ```{r IMMabc_fit}
 data <- ref_fits$IMMabc$data
@@ -391,7 +416,7 @@ model <- IMMabc(resp_err = 'dev_rad',
 fit$IMMabc <- fit_model(formula, data, model,
                         parallel = TRUE,
                         chains = 4,
-                        iter = 1000,
+                        iter = 500,
                         refresh = 500,
                         init = 1,
                         silent = 2,
@@ -399,28 +424,33 @@ fit$IMMabc <- fit_model(formula, data, model,
                         seed = seed)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Results</summary>
+
+<summary>Results</summary>
 
 ```{r IMMabc_results}
 summary(fit$IMMabc)
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 <details>
-  <summary>Compare with reference fit:</summary>
+
+<summary>Compare with reference fit:</summary>
 
 ```{r ref_fits_IMMabc}
 ref_fits$IMMabc
 ```
 
+</details>
 
-</details> </br>
+</br>
 
 Difference in estimates
 
@@ -431,3 +461,8 @@ round(fixef(fit$IMMabc) - fixef(ref_fits$IMMabc)[fit_rows,],3)
 ```
 
 
+save fit objects
+
+```{r}
+saveRDS(fit, here::here("tests/internal/ref_fits0301/", paste0("fit_objects_", packageVersion('bmm'), "_seed-", seed, "_", date, ".rds")))
+```
