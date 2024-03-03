@@ -32,9 +32,16 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' # if using brms >= 2.20.14
 #' default_prior(bmf(c ~ 1, kappa ~ 1),
 #'               data = OberauerLin_2017,
 #'               model = sdmSimple(resp_err = 'dev_rad'))
+#' # if using brms < 2.20.14
+#' get_prior(bmf(c ~ 1, kappa ~ 1),
+#'           data = OberauerLin_2017,
+#'           model = sdmSimple(resp_err = 'dev_rad'))
+#' }
 #' @export
 get_model_prior <- function(object, data, model, formula = object, ...) {
   if (utils::packageVersion('brms') >= "2.20.14") {
@@ -46,48 +53,6 @@ get_model_prior <- function(object, data, model, formula = object, ...) {
     warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
              " Please use 'object' instead.")
   }
-  default_prior.bmmformula(object = formula, data = data, model = model, ...)
-}
-
-#' Default priors for Bayesian models
-#'
-#' @description \code{default_prior} is a generic function that can be used to
-#'   get default priors for Bayesian models. It's original use is
-#'   within the \pkg{brms} package, but new methods for use
-#'   with objects from other packages can be registered to the same generic.
-#'
-#' @param object An object whose class will determine which method will
-#'   be used. A symbolic description of the model to be fitted.
-#' @param formula Synonym of \code{object} for use in \code{get_prior}.
-#' @param ... Further arguments passed to the specific method.
-#'
-#' @return Usually, a \code{brmsprior} object. See
-#'   \code{\link{default_prior.default}} for more details.
-#'
-#' @details
-#' See \code{\link{default_prior.default}} for the default method applied for
-#' \pkg{brms} models. You can view the available methods by typing
-#' \code{methods(default_prior)}.
-#'
-#' @seealso
-#'   \code{\link{brms:set_prior}}, \code{\link{default_prior.default}}
-#'
-#' @examples
-#' ## get all parameters and parameters classes to define priors on
-#' (prior <- default_prior(count ~ zAge + zBase * Trt + (1|patient) + (1|obs),
-#'                         data = epilepsy, family = poisson()))
-#' @noRd
-#' @rawNamespace if (utils::packageVersion("brms") < "2.20.14") export("default_prior")
-#' @rawNamespace if (utils::packageVersion("brms") >= "2.20.14") importFrom(brms, default_prior)
-default_prior <- function(object, ...) {
-  UseMethod("default_prior")
-}
-
-
-#' @rdname get_model_prior
-#' @rawNamespace if (utils::packageVersion("brms") < "2.20.14") S3method(default_prior, bmmformula)
-#' @rawNamespace if (utils::packageVersion("brms") >= "2.20.14") S3method(brms::default_prior, bmmformula)
-default_prior.bmmformula <- function(object, data, model, ...) {
   formula <- object
   model <- check_model(model, data)
   data <- check_data(model, data, formula)
@@ -100,6 +65,7 @@ default_prior.bmmformula <- function(object, data, model, ...) {
 
   combine_prior(brms_priors, prior_args$prior)
 }
+
 
 
 

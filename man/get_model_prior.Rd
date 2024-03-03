@@ -2,12 +2,9 @@
 % Please edit documentation in R/helpers-prior.R
 \name{get_model_prior}
 \alias{get_model_prior}
-\alias{default_prior.bmmformula}
 \title{Get Default priors for Measurement Models specified in BMM}
 \usage{
 get_model_prior(object, data, model, formula = object, ...)
-
-\method{default_prior}{bmmformula}(object, data, model, ...)
 }
 \arguments{
 \item{object}{A \code{bmmformula} object}
@@ -49,9 +46,16 @@ This function is deprecated. Please use \code{default_prior()} or \code{get_prio
 alias for \code{default_prior()}, and \code{default_prior()} is the recommended function to use.
 }
 \examples{
+\dontrun{
+# if using brms >= 2.20.14
 default_prior(bmf(c ~ 1, kappa ~ 1),
               data = OberauerLin_2017,
               model = sdmSimple(resp_err = 'dev_rad'))
+# if using brms < 2.20.14
+get_prior(bmf(c ~ 1, kappa ~ 1),
+          data = OberauerLin_2017,
+          model = sdmSimple(resp_err = 'dev_rad'))
+}
 }
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[brms:default_prior]{brms::get_prior()}}
