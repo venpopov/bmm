@@ -21,8 +21,8 @@ their required arguments}
 
 \item{formula}{Deprecated. Use \code{object} instead.}
 
-\item{...}{Further arguments passed to \code{\link[brms:default_prior]{brms::get_prior()}}. See the
-description of \code{\link[brms:default_prior]{brms::get_prior()}} for more details}
+\item{...}{Further arguments passed to \code{\link[brms:get_prior]{brms::get_prior()}}. See the
+description of \code{\link[brms:get_prior]{brms::get_prior()}} for more details}
 }
 \value{
 A data.frame with columns specifying the \code{prior}, the \code{class}, the
@@ -58,6 +58,6 @@ get_prior(bmf(c ~ 1, kappa ~ 1),
 }
 }
 \seealso{
-\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:default_prior]{brms::get_prior()}}
+\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:get_prior]{brms::get_prior()}}
 }
 \keyword{extract_info}
