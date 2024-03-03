@@ -8,20 +8,15 @@
 #'   need to be specified and also know which priors were used if no
 #'   user-specified priors were passed to the [fit_model()] function.
 #'
-#'   If you are using *brms* version 2.20.14 or later, you should use
-#'   [get_prior][brms::get_prior()] directly with the `bmmformula` object. If you are using an
-#'   older version of *brms*, you have to use [get_model_prior()] to obtain the
-#'   default priors. The usage of [get_model_prior()] is deprecated and will be
-#'   removed in future versions of *bmm*.
-#'
-#'
 #' @inheritParams fit_model
+#' @param object A `bmmformula` object
+#' @param formula Deprecated. Use `object` instead.
 #' @param ... Further arguments passed to [brms::get_prior()]. See the
 #'   description of [brms::get_prior()] for more details
 #'
-#' @details `r a= supported_models(); a`
-#'
-#'   Type `help(package=bmm)` for a full list of available help topics.
+#' @details This function is deprecated. Please use `default_prior()` or `get_prior()` (if using
+#' `brms` >= 2.20.14) instead. In `brms` >= 2.20.14, `get_prior()` became an
+#' alias for `default_prior()`, and `default_prior()` is the recommended function to use.
 #'
 #' @returns A data.frame with columns specifying the `prior`, the `class`, the
 #'   `coef` and `group` for each of the priors specified. Separate rows contain
@@ -37,41 +32,63 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # generate artificial data from the Signal Discrimination Model
-#' dat <- data.frame(y = rsdm(n=2000))
-#'
-#' # define formula
-#' ff <- bmf(y ~ 1,
-#'           c ~ 1,
-#'           kappa ~ 1)
-#'
-#'
-#' if (utils::packageVersion('brms') >= "2.20.14") {
-#'   # extract the default bmm prior (if using brms version 2.20.14 or later)
-#'   get_prior(formula = ff,
-#'             data = dat,
-#'             model = sdmSimple())
-#' } else {
-#'    # (if using an older version of brms)
-#'    get_model_prior(formula = ff,
-#'                    data = dat,
-#'                    model = sdmSimple())
-#' }
-#' }
+#' default_prior(bmf(c ~ 1, kappa ~ 1),
+#'               data = OberauerLin_2017,
+#'               model = sdmSimple(resp_err = 'dev_rad'))
 #' @export
-get_model_prior <- function(formula, data, model, ...) {
+get_model_prior <- function(object, data, model, formula = object, ...) {
   if (utils::packageVersion('brms') >= "2.20.14") {
+    message("get_model_prior is deprecated. Please use get_prior() or default_prior()")
+  } else {
     message("get_model_prior is deprecated. Please use get_prior() instead.")
-    return(brms::get_prior(formula = formula, data = data, model = model, ...))
   }
-  get_prior.bmmformula(formula = formula, data = data, model = model, ...)
+  if (missing(object) && !missing(formula)) {
+    warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
+             " Please use 'object' instead.")
+  }
+  default_prior.bmmformula(object = formula, data = data, model = model, ...)
+}
+
+#' Default priors for Bayesian models
+#'
+#' @description \code{default_prior} is a generic function that can be used to
+#'   get default priors for Bayesian models. It's original use is
+#'   within the \pkg{brms} package, but new methods for use
+#'   with objects from other packages can be registered to the same generic.
+#'
+#' @param object An object whose class will determine which method will
+#'   be used. A symbolic description of the model to be fitted.
+#' @param formula Synonym of \code{object} for use in \code{get_prior}.
+#' @param ... Further arguments passed to the specific method.
+#'
+#' @return Usually, a \code{brmsprior} object. See
+#'   \code{\link{default_prior.default}} for more details.
+#'
+#' @details
+#' See \code{\link{default_prior.default}} for the default method applied for
+#' \pkg{brms} models. You can view the available methods by typing
+#' \code{methods(default_prior)}.
+#'
+#' @seealso
+#'   \code{\link{brms:set_prior}}, \code{\link{default_prior.default}}
+#'
+#' @examples
+#' ## get all parameters and parameters classes to define priors on
+#' (prior <- default_prior(count ~ zAge + zBase * Trt + (1|patient) + (1|obs),
+#'                         data = epilepsy, family = poisson()))
+#' @noRd
+#' @rawNamespace if (utils::packageVersion("brms") < "2.20.14") export("default_prior")
+#' @rawNamespace if (utils::packageVersion("brms") >= "2.20.14") importFrom(brms, default_prior)
+default_prior <- function(object, ...) {
+  UseMethod("default_prior")
 }
 
 
-
 #' @rdname get_model_prior
-get_prior.bmmformula <- function(formula, data, model, ...) {
+#' @rawNamespace if (utils::packageVersion("brms") < "2.20.14") S3method(default_prior, bmmformula)
+#' @rawNamespace if (utils::packageVersion("brms") >= "2.20.14") S3method(brms::default_prior, bmmformula)
+default_prior.bmmformula <- function(object, data, model, ...) {
+  formula <- object
   model <- check_model(model, data)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
@@ -83,6 +100,9 @@ get_prior.bmmformula <- function(formula, data, model, ...) {
 
   combine_prior(brms_priors, prior_args$prior)
 }
+
+
+
 
 #' @title construct constant priors to fix fixed model parameters
 #' @param model a `bmmmodel` object
