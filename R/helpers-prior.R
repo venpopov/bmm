@@ -11,8 +11,8 @@
 #' @inheritParams fit_model
 #' @param object A `bmmformula` object
 #' @param formula Deprecated. Use `object` instead.
-#' @param ... Further arguments passed to [brms::get_prior()]. See the
-#'   description of [brms::get_prior()] for more details
+#' @param ... Further arguments passed to \code{\link[brms:get_prior]{brms::get_prior()}}. See the
+#'   description of \code{\link[brms:get_prior]{brms::get_prior()}} for more details
 #'
 #' @details This function is deprecated. Please use `default_prior()` or `get_prior()` (if using
 #' `brms` >= 2.20.14) instead. In `brms` >= 2.20.14, `get_prior()` became an
@@ -25,7 +25,7 @@
 #'
 #' @name get_model_prior
 #'
-#' @seealso [supported_models()], [brms::get_prior()]
+#' @seealso [supported_models()], \code{\link[brms:get_prior]{brms::get_prior()}}. 
 #'
 #' @keywords extract_info
 #'
