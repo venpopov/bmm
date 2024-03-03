@@ -108,6 +108,13 @@ is_try_error <- function(x) {
   inherits(x, "try-error")
 }
 
+seq_rows <- function(x) {
+  seq_len(NROW(x))
+}
+
+seq_cols <- function(x) {
+  seq_len(NCOL(x))
+}
 
 # find all namespace entries of a package, which are of
 # a particular type for instance all exported objects

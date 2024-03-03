@@ -4,7 +4,14 @@
 \alias{bmm_options}
 \title{View or change global bmm options}
 \usage{
-bmm_options(sort_data, parallel, default_priors, silent, reset_options = FALSE)
+bmm_options(
+  sort_data,
+  parallel,
+  default_priors,
+  silent,
+  color_summary,
+  reset_options = FALSE
+)
 }
 \arguments{
 \item{sort_data}{logical. If TRUE, the data will be sorted by the predictors.
@@ -25,6 +32,9 @@ TRUE}}
 most of the informational messages of compiler and sampler are suppressed.
 If 2, even more messages are suppressed. The actual sampling progress is
 still printed. \strong{Default: 1}}
+
+\item{color_summary}{logical. If TRUE, the summary of the model will be
+printed in color. \strong{Default: TRUE}}
 
 \item{reset_options}{logical. If TRUE, the options will be reset to their
 default values \strong{Default: FALSE}}

@@ -40,6 +40,10 @@ or to display the \emph{brms} summary method.}
 \description{
 Create a summary of a fitted model represented by a \code{bmmfit} object
 }
+\note{
+You can turn off the color output by setting the option
+options(bmm.color_summary = FALSE) or bmm_options(color_summary = FALSE)
+}
 \seealso{
 \code{\link{summary.brmsfit}}
 }

@@ -400,6 +400,8 @@ identical.formula <- function(x, y, ...) {
 #'   most of the informational messages of compiler and sampler are suppressed.
 #'   If 2, even more messages are suppressed. The actual sampling progress is
 #'   still printed. **Default: 1**
+#' @param color_summary logical. If TRUE, the summary of the model will be
+#'  printed in color. **Default: TRUE**
 #' @param reset_options logical. If TRUE, the options will be reset to their
 #'   default values **Default: FALSE**
 #' @details The `bmm_options` function is used to view or change the current bmm
@@ -438,7 +440,7 @@ identical.formula <- function(x, y, ...) {
 #' on.exit(bmm_options(old_op))
 #'
 #' @export
-bmm_options <- function(sort_data, parallel, default_priors, silent, reset_options = FALSE) {
+bmm_options <- function(sort_data, parallel, default_priors, silent, color_summary, reset_options = FALSE) {
   opts <- ls()
   if (!missing(sort_data) && sort_data != "check" && !is.logical(sort_data)) {
     stop2("sort_data must be one of TRUE, FALSE, or 'check'")
@@ -452,13 +454,17 @@ bmm_options <- function(sort_data, parallel, default_priors, silent, reset_optio
   if (!missing(silent) && (!is.numeric(silent) || silent < 0 || silent > 2)) {
     stop2("silent must be one of 0, 1, or 2")
   }
+  if (!missing(color_summary) && !is.logical(color_summary)) {
+    stop2("color_summary must be a logical value")
+  }
 
   # set default options if function is called for the first time or if reset_options is TRUE
   if (reset_options) {
     options(bmm.sort_data = "check",
             bmm.parallel = FALSE,
             bmm.default_priors = TRUE,
-            bmm.silent = 1)
+            bmm.silent = 1,
+            bmm.color_summary = TRUE)
   }
 
   # change options if arguments are provided. get argument name and loop over non-missing arguments
@@ -474,7 +480,8 @@ bmm_options <- function(sort_data, parallel, default_priors, silent, reset_optio
            crayon::green(paste0("  sort_data = ", getOption("bmm.sort_data"),"",
                                  "\n  parallel = ", getOption("bmm.parallel"),
                                  "\n  default_priors = ", getOption("bmm.default_priors"),
-                                 "\n  silent = ", getOption("bmm.silent"), "\n")),
+                                 "\n  silent = ", getOption("bmm.silent"),
+                                 "\n  color_summary = ", getOption("bmm.color_summary"), "\n")),
            "For more information on these options or how to change them, see help(bmm_options).\n")
   invisible(old_op)
 }
