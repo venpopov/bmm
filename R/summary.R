@@ -34,7 +34,8 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
 #' @export
 print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary', TRUE), ...) {
   options(bmm.color_summary = color)
-  pars_to_print <- names(x$formula)
+  pars_to_print <- names(x$model$info$parameters)
+
   # add check if the parameter is fixed by the user
 
   cat(style('#916af1')("  Model: "))
@@ -83,21 +84,23 @@ print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary
   }
   if (nrow(x$fixed)) {
     cat(style('darkgreen')("Regression Coefficients:\n"))
+    pars <- names(x$fixed)
     include <- sapply(paste0(pars_to_print,'_'), function(p) grepl(p, rownames(x$fixed)))
     include <- apply(include, 1, any)
     reduced <- x$fixed[include,]
     is_constant <- is.na(reduced$Rhat)
     print_format(reduced[!is_constant,], digits)
     cat("\n")
-  }
 
-  if (sum(is_constant)) {
-    cat(style('darkgreen')("Additional Fixed Constant Parmaters:\n"))
-    res <- reduced[is_constant,1]
-    const_names <- rownames(reduced[is_constant,])
-    res <- data.frame("Value" = res, row.names = paste0(const_names, "    "))
-    print_format(res, digits)
-    cat("\n")
+    if (sum(is_constant)) {
+      cat(style('darkgreen')("Constant Paramaters:\n"))
+      res <- reduced[is_constant,]
+      constants <- rownames(res)
+
+      res <- data.frame("Value" = res[,1], row.names = paste0(constants, "    "))
+      print_format(res, digits)
+      cat("\n")
+    }
   }
   # if (length(x[["mo"]])) {
   #   cat("Monotonic Simplex Parameters:\n")
