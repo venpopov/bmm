@@ -1,10 +1,8 @@
 .onLoad <- function(libname, pkgname) {
   suppressMessages(bmm_options(reset_options = TRUE))
-
-  if (utils::packageVersion('brms') >= "2.20.14") {
-    #' @exportS3Method brms::get_prior bmmformula
-    #' @exportS3Method brms::make_standata bmmformula
-    #' @exportS3Method brms::make_stancode bmmformula
+  if (utils::packageVersion('brms') >= '2.20.14') {
+    registerS3method("default_prior", "bmmformula", get_model_prior,
+                     envir = asNamespace("brms"))
   }
 }
 
