@@ -42,9 +42,9 @@ NULL
 #' softmaxinv(softmax(5:7))
 softmax <- function(eta, lambda = 1) {
   stopifnot(requireNamespace("matrixStats", quietly = TRUE))
-  m     <- length(eta)+1
-  DEN   <- matrixStats::logSumExp(c(lambda*eta, 0))
-  LSOFT <- c(lambda*eta, 0) - DEN
+  m <- length(eta) + 1
+  DEN <- matrixStats::logSumExp(c(lambda * eta, 0))
+  LSOFT <- c(lambda * eta, 0) - DEN
   exp(LSOFT)
 }
 
@@ -53,7 +53,7 @@ softmax <- function(eta, lambda = 1) {
 softmaxinv <- function(p, lambda = 1) {
   m <- length(p)
   if (m > 1) {
-    return((log(p) - log(p[m]))[1:(m-1)]/lambda)
+    return((log(p) - log(p[m]))[1:(m - 1)] / lambda)
   }
   numeric(0)
 }
@@ -77,7 +77,7 @@ configure_options <- function(opts, env=parent.frame()) {
       opts$chains <- parallel::detectCores()
     }
   } else {
-    cores = NULL
+    cores <- NULL
   }
   if (not_in_list('silent', opts)) {
     opts$silent <- getOption('bmm.silent', 1)
@@ -88,10 +88,11 @@ configure_options <- function(opts, env=parent.frame()) {
       bmm.silent = opts$silent,
       bmm.sort_data = opts$sort_data
     ),
-    .local_envir=env)
+    .local_envir = env
+  )
 
   # return only options that can be passed to brms/rstan/cmdstanr
-  exclude_args <- c('parallel', 'sort_data')
+  exclude_args <- c("parallel", "sort_data")
   opts[not_in(names(opts), exclude_args)]
 }
 
@@ -111,17 +112,17 @@ not_in_list <- function(key, list) {
 #' wrappers to construct a brms nlf and lf formulas from multiple string arguments
 #' @param ... string parts of the formula separated by commas
 #' @examples
-#' kappa_nts <- paste0('kappa_nt', 1:4)
-#' glue_nlf(kappa_nts[i], ' ~ kappa')  ## same as brms::nlf(kappa_nt1 ~ kappa)
+#' kappa_nts <- paste0("kappa_nt", 1:4)
+#' glue_nlf(kappa_nts[i], " ~ kappa") ## same as brms::nlf(kappa_nt1 ~ kappa)
 #' @noRd
 glue_nlf <- function(...) {
-  dots = list(...)
+  dots <- list(...)
   brms::nlf(stats::as.formula(collapse(...)))
 }
 
 # like glue_nlf but for lf formulas
 glue_lf <- function(...) {
-  dots = list(...)
+  dots <- list(...)
   brms::lf(stats::as.formula(collapse(...)))
 }
 
@@ -131,7 +132,7 @@ glue_lf <- function(...) {
 #' model configuration is correct. Avoids compiling and running the model
 #' @noRd
 call_brm <- function(fit_args) {
-  fit <- brms::do_call(brms::brm, fit_args)
+  brms::do_call(brms::brm, fit_args)
 }
 
 
@@ -145,10 +146,10 @@ combine_args <- function(args) {
     return(c(config_args, opts))
   }
   for (i in names(dots)) {
-    if (not_in(i, c('family'))) {
+    if (not_in(i, c("family"))) {
       config_args[[i]] <- dots[[i]]
     } else {
-      stop('You cannot provide a family argument to fit_model. Please use the model argument instead.')
+      stop("You cannot provide a family argument to fit_model. Please use the model argument instead.")
     }
   }
   c(config_args, opts)
@@ -157,7 +158,7 @@ combine_args <- function(args) {
 
 
 message2 <- function(...) {
-  silent <- getOption('bmm.silent', 1)
+  silent <- getOption("bmm.silent", 1)
   if (silent < 2) {
     message(...)
   }
@@ -166,7 +167,7 @@ message2 <- function(...) {
 
 
 # function to ensure proper reading of stan files
-read_lines2 <- function (con) {
+read_lines2 <- function(con) {
   lines <- readLines(con, n = -1L, warn = FALSE)
   paste(lines, collapse = "\n")
 }
@@ -175,14 +176,14 @@ read_lines2 <- function (con) {
 # for testing purposes
 install_and_load_bmm_version <- function(version) {
   if ("package:bmm" %in% search()) {
-    detach("package:bmm", unload=TRUE)
+    detach("package:bmm", unload = TRUE)
   }
   path <- paste0(.libPaths()[1], "/bmm-", version)
   if (!dir.exists(path) || length(list.files(path)) == 0 || length(list.files(paste0(path, "/bmm"))) == 0) {
     dir.create(path)
-    remotes::install_github(paste0("venpopov/bmm@",version), lib=path)
+    remotes::install_github(paste0("venpopov/bmm@", version), lib = path)
   }
-  library(bmm, lib.loc=path)
+  library(bmm, lib.loc = path)
 }
 
 
@@ -207,8 +208,8 @@ fit_info.brmsfit <- function(fit, what) {
   fit_attr <- attributes(fit$fit)
   metadata <- fit_attr$metadata
   switch(what,
-         time = metadata$time$chains,
-         time_mean = colMeans(metadata$time$chains),
+    time = metadata$time$chains,
+    time_mean = colMeans(metadata$time$chains),
   )
 }
 
@@ -270,16 +271,22 @@ order_data_query <- function(model, data, formula) {
       when using brms postprocessing methods that rely on the data order, such as
       generating predictions. Assuming you assigned the result of fit_model to a
       variable called `fit`, you can extract the sorted data from the fitted object
-      with:\n\n   data_sorted <- fit$fit_args$data", width=80), collapse = "\n")
+      with:\n\n   data_sorted <- fit$fit_args$data", width = 80), collapse = "\n")
     caution_msg <- crayon::red(caution_msg)
 
-    if(interactive()) {
-      var <- utils::menu(c("Yes (note: you will receive code to sort your data)",
-               paste0("Let bmm sort the data for you and continue with the faster model fitting ",
-                      crayon::red("(*)")),
-               paste0("No, I want to continue with the slower estimation\n\n", caution_msg, collapse = "\n")),
-               title="Do you want to stop and sort your data? (y/n): ")
-      if(var == 1) {
+    if (interactive()) {
+      var <- utils::menu(
+        c(
+          "Yes (note: you will receive code to sort your data)",
+          paste0(
+            "Let bmm sort the data for you and continue with the faster model fitting ",
+            crayon::red("(*)")
+          ),
+          paste0("No, I want to continue with the slower estimation\n\n", caution_msg, collapse = "\n")
+        ),
+        title = "Do you want to stop and sort your data? (y/n): "
+      )
+      if (var == 1) {
         message("Please sort your data by all predictors and then re-run the model.")
         data_name <- attr(data, "data_name")
         if (is.null(data_name)) {
@@ -305,10 +312,36 @@ order_data_query <- function(model, data, formula) {
         when using brms postprocessing methods that rely on the data order, such as
         generating predictions. Assuming you assigned the result of fit_model to a
         variable called `fit`, you can extract the sorted data from the fitted object
-        with:\n\n   data_sorted <- fit$fit_args$data", width=80), collapse = "\n")
+        with:\n\n   data_sorted <- fit$fit_args$data", width = 80), collapse = "\n")
     caution_msg <- crayon::red(caution_msg)
     message(caution_msg)
   }
+  data
+}
+
+
+#' @title Generic S3 Method to aggregate data for `bmmmodels`
+#' @description
+#'   Called by `check_data` if data should be aggregated to speed up model estimation. This
+#'   method will call the appropriate `check_data.bmmmodel` method to aggregate the data
+#'   according to requirements of the model and the predictors used in the formula.
+#' @param model The `bmmmodel` the method will be used with
+#' @param formula The `bmmformula` specified for the to-be-estimated model.
+#' @param data The data set the `bmmmodel` will be fit to
+#' @return An aggregated data set with the variables required for the specified `bmmmodel`.
+#' @export
+#' @keywords internal, developer
+aggregate_data <- function(model, formula, data) {
+  UseMethod("aggregate_data")
+}
+
+#' @export
+aggregate_data.bmmmodel <- function(model, formula, data) {
+  NextMethod("aggregate_data")
+}
+
+#' @export
+aggregate_data.default <- function(model, formula, data) {
   data
 }
 
@@ -376,7 +409,7 @@ identical.bmmformula <- function(x, y, ...) {
   res <- waldo::compare(x, y, ignore_formula_env = TRUE)
   length(res) == 0
 }
-
+                  
 #' @export
 identical.formula <- function(x, y, ...) {
   res <- waldo::compare(x, y, ignore_formula_env = TRUE)
