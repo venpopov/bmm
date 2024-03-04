@@ -219,12 +219,19 @@ test_that("make_standata() works with bmmformula if brms >= 2.20.14", {
   # fit the model
   if (utils::packageVersion("brms") >= "2.20.14") {
     sd <- make_standata(formula = ff,
-                           data = dat,
-                           model = mixture3p(resp_err = "dev_rad",
-                                         nt_features = 'col_nt',
-                                         setsize = "set_size", regex = T))
+                        data = dat,
+                        model = mixture3p(resp_err = "dev_rad",
+                                          nt_features = 'col_nt',
+                                          setsize = "set_size", regex = T))
     expect_equal(class(sd)[1], "standata")
   }
+
+  sd <- standata(ff,
+                 data = dat,
+                 model = mixture3p(resp_err = "dev_rad",
+                                   nt_features = 'col_nt',
+                                   setsize = "set_size", regex = T))
+  expect_equal(class(sd)[1], "standata")
 })
 
 test_that("get_standata() returns a standata class", {
@@ -236,11 +243,9 @@ test_that("get_standata() returns a standata class", {
                     nt1_loc = 2,
                     nt2_loc = -1.5)
 
-  standata <- get_standata(formula = ff,
-                           data = dat,
-                           model = mixture3p(resp_err = "y" ,
-                                             nt_features = paste0('nt',1,'_loc'),
-                                             setsize = 2))
+  standata <- get_standata(ff, dat, mixture3p(resp_err = "y" ,
+                                              nt_features = paste0('nt',1,'_loc'),
+                                              setsize = 2))
   expect_equal(class(standata)[1], "standata")
 })
 

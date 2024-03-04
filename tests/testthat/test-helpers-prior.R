@@ -27,7 +27,15 @@ test_that("get_prior() works with bmmformula if brms >= 2.20.14", {
                                          nt_features = 'col_nt',
                                          setsize = "set_size", regex = T))
     expect_equal(class(prior)[1], "brmsprior")
+
+    prior2 <- default_prior(object = ff,
+                            data = dat,
+                            model = mixture3p(resp_err = "dev_rad",
+                                              nt_features = 'col_nt',
+                                              setsize = "set_size", regex = T))
+    expect_equal(prior, prior2)
   }
+
 })
 
 test_that("combine prior returns a brmsprior object", {
