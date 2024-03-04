@@ -1,19 +1,41 @@
-test_that("get_model_prior() returns a brmsprior object", {
+test_that("get_prior() works with brmsformula", {
+  ff <- brms::bf(count ~ zAge + zBase * Trt + (1|patient))
+  prior <- get_prior(ff, data = brms::epilepsy, family = poisson())
+  expect_equal(class(prior)[1], "brmsprior")
+})
+
+test_that("get_prior() works with formula", {
+  ff <- count ~ zAge + zBase * Trt + (1|patient)
+  prior <- get_prior(ff, data = brms::epilepsy, family = poisson())
+  expect_equal(class(prior)[1], "brmsprior")
+})
+
+test_that("get_prior() works with bmmformula if brms >= 2.20.14", {
   # define formula
   ff <- bmmformula(kappa ~ 1,
-                    thetat ~ 1,
-                    thetant ~ 1)
+                   thetat ~ 1,
+                   thetant ~ 1)
 
   # simulate data
-  dat <- data.frame(y = rmixture3p(n = 200),
-                    nt1_loc = 2,
-                    nt2_loc = -1.5)
+  dat <- OberauerLin_2017
 
   # fit the model
-  prior <- get_model_prior(formula = ff,
-                           data = dat,
-                           model = mixture3p(resp_err = "y", nt_features = paste0('nt',1,'_loc'), setsize = 2))
-  expect_equal(class(prior)[1], "brmsprior")
+  if (utils::packageVersion("brms") >= "2.20.14") {
+    prior <- get_prior(formula = ff,
+                       data = dat,
+                       model = mixture3p(resp_err = "dev_rad",
+                                         nt_features = 'col_nt',
+                                         setsize = "set_size", regex = T))
+    expect_equal(class(prior)[1], "brmsprior")
+
+    prior2 <- default_prior(object = ff,
+                            data = dat,
+                            model = mixture3p(resp_err = "dev_rad",
+                                              nt_features = 'col_nt',
+                                              setsize = "set_size", regex = T))
+    expect_equal(prior, prior2)
+  }
+
 })
 
 test_that("combine prior returns a brmsprior object", {

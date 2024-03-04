@@ -1,6 +1,6 @@
 Package: bmm
 Title: Easy and Accesible Bayesian Measurement Models using 'brms'
-Version: 0.4.0.9000
+Version: 0.4.2.9000
 Authors@R: c(
     person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph")),
     person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")),
@@ -51,6 +51,6 @@ Additional_repositories:
     https://paul-buerkner.github.io/brms/
 VignetteBuilder: knitr
 Depends: 
-    R (>= 2.10),
+    R (>= 3.6.0),
     brms
 LazyData: true

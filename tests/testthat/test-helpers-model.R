@@ -92,8 +92,47 @@ test_that("get_stancode() returns a string", {
                     nt2_loc = -1.5)
 
   # fit the model
-  stancode <- get_stancode(formula = ff,
+  stancode <- get_stancode(ff,
                            data = dat,
                            model = mixture3p(resp_err = "y", nt_features = paste0('nt',1,'_loc'), setsize = 2))
   expect_equal(class(stancode)[1], "character")
+})
+
+test_that("make_stancode() works with brmsformula", {
+  ff <- brms::bf(count ~ zAge + zBase * Trt + (1|patient))
+  sd <- make_stancode(ff, data = brms::epilepsy, family = poisson())
+  expect_equal(class(sd)[1], "character")
+})
+
+test_that("make_stancode() works with formula", {
+  ff <- count ~ zAge + zBase * Trt + (1|patient)
+  sd <- make_stancode(ff, data = brms::epilepsy, family = poisson())
+  expect_equal(class(sd)[1], "character")
+})
+
+test_that("make_stancode() works with bmmformula if brms >= 2.20.14", {
+  # define formula
+  ff <- bmmformula(kappa ~ 1,
+                   thetat ~ 1,
+                   thetant ~ 1)
+
+  # simulate data
+  dat <- OberauerLin_2017
+
+  # fit the model
+  if (utils::packageVersion("brms") >= "2.20.14") {
+    sd <- make_stancode(ff,
+                        data = dat,
+                        model = mixture3p(resp_err = "dev_rad",
+                                          nt_features = 'col_nt',
+                                          setsize = "set_size", regex = T))
+    expect_equal(class(sd)[1], "character")
+  }
+
+  sd <- stancode(ff,
+                 data = dat,
+                 model = mixture3p(resp_err = "dev_rad",
+                                   nt_features = 'col_nt',
+                                   setsize = "set_size", regex = T))
+  expect_equal(class(sd)[1], "character")
 })

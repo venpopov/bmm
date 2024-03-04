@@ -1,47 +1,31 @@
-# internal function to combine two priors (e.g. the default prior with the user given prior)
-# parts present in prior2 will overwrite the corresponding parts in prior1
-combine_prior <- function(prior1, prior2) {
-  if (!is.null(prior2)) {
-    combined_prior <- dplyr::anti_join(prior1, prior2, by=c('class', 'dpar','nlpar','coef','group','resp'))
-    prior <- combined_prior + prior2
-  } else {
-    prior <- prior1
-  }
-  return(prior)
-}
-
-
-#' @title Get Default priors for Measurement Models specified in BRMS
-#' @description Obtain the default priors for a Bayesian multilevel measurement model,
-#'   as well as information for which parameters priors can be specified.
-#'   Given the `model`, the `data` and the `formula` for the model, this function will return
-#'   the default priors that would be used to estimate the model. Additionally, it will
-#'   return all model parameters that have no prior specified (flat priors). This can help to
-#'   get an idea about which priors need to be specified and also know which priors were
-#'   used if no user-specified priors were passed to the [fit_model()] function.
-#' @param formula An object of class `bmmformula`. A symbolic description of
-#'   the model to be fitted.
-#' @param data An object of class data.frame, containing data of all variables
-#'   used in the model. The names of the variables must match the variable names
-#'   passed to the `bmmmodel` object for required argurments.
-#' @param model A description of the model to be fitted. This is a call to a
-#'   `bmmmodel` such as `mixture3p()` function. Every model function has a
-#'   number of required arguments which need to be specified within the function
-#'   call. Call [supported_models()] to see the list of supported models and
-#'   their required arguments
-#' @param ... Further arguments passed to [brms::get_prior()]. See the
-#'   description of [brms::get_prior()] for more details
+#' @title Get Default priors for Measurement Models specified in BMM
+#' @description Obtain the default priors for a Bayesian multilevel measurement
+#'   model, as well as information for which parameters priors can be specified.
+#'   Given the `model`, the `data` and the `formula` for the model, this
+#'   function will return the default priors that would be used to estimate the
+#'   model. Additionally, it will return all model parameters that have no prior
+#'   specified (flat priors). This can help to get an idea about which priors
+#'   need to be specified and also know which priors were used if no
+#'   user-specified priors were passed to the [fit_model()] function.
 #'
-#' @details `r a= supported_models(); a`
+#' @inheritParams fit_model
+#' @param object A `bmmformula` object
+#' @param formula Deprecated. Use `object` instead.
+#' @param ... Further arguments passed to \code{\link[brms:get_prior]{brms::get_prior()}}. See the
+#'   description of \code{\link[brms:get_prior]{brms::get_prior()}} for more details
 #'
-#'   Type `help(package=bmm)` for a full list of available help topics.
+#' @details This function is deprecated. Please use `default_prior()` or `get_prior()` (if using
+#' `brms` >= 2.20.14) instead. In `brms` >= 2.20.14, `get_prior()` became an
+#' alias for `default_prior()`, and `default_prior()` is the recommended function to use.
 #'
-#' @returns A data.frame with columns specifying the `prior`, the `class`, the `coef` and `group`
-#'    for each of the priors specified. Separate rows contain the information on the
-#'    parameters (or parameter classes) for which priors can be specified.
+#' @returns A data.frame with columns specifying the `prior`, the `class`, the
+#'   `coef` and `group` for each of the priors specified. Separate rows contain
+#'   the information on the parameters (or parameter classes) for which priors
+#'   can be specified.
 #'
+#' @name get_model_prior
 #'
-#' @seealso [supported_models()], [brms::get_prior()]
+#' @seealso [supported_models()], \code{\link[brms:get_prior]{brms::get_prior()}}. 
 #'
 #' @keywords extract_info
 #'
@@ -49,22 +33,27 @@ combine_prior <- function(prior1, prior2) {
 #'
 #' @examples
 #' \dontrun{
-#' # generate artificial data from the Signal Discrimination Model
-#' dat <- data.frame(y = rsdm(n=2000))
-#'
-#' # define formula
-#' ff <- bmf(y ~ 1,
-#'           c ~ 1,
-#'           kappa ~ 1)
-#'
-#' # fit the model
-#' get_model_prior(formula = ff,
-#'                 data = dat,
-#'                 model = sdmSimple()
-#' )
+#' # if using brms >= 2.20.14
+#' default_prior(bmf(c ~ 1, kappa ~ 1),
+#'               data = OberauerLin_2017,
+#'               model = sdmSimple(resp_err = 'dev_rad'))
+#' # if using brms < 2.20.14
+#' get_prior(bmf(c ~ 1, kappa ~ 1),
+#'           data = OberauerLin_2017,
+#'           model = sdmSimple(resp_err = 'dev_rad'))
 #' }
-#'
-get_model_prior <- function(formula, data, model, ...) {
+#' @export
+get_model_prior <- function(object, data, model, formula = object, ...) {
+  if (utils::packageVersion('brms') >= "2.20.14") {
+    message("get_model_prior is deprecated. Please use get_prior() or default_prior()")
+  } else {
+    message("get_model_prior is deprecated. Please use get_prior() instead.")
+  }
+  if (missing(object) && !missing(formula)) {
+    warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
+             " Please use 'object' instead.")
+  }
+  formula <- object
   model <- check_model(model, data)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
@@ -76,6 +65,9 @@ get_model_prior <- function(formula, data, model, ...) {
 
   combine_prior(brms_priors, prior_args$prior)
 }
+
+
+
 
 
 #' @title construct constant priors to fix fixed model parameters
@@ -232,4 +224,17 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     }
   }
   prior
+}
+
+
+# internal function to combine two priors (e.g. the default prior with the user given prior)
+# parts present in prior2 will overwrite the corresponding parts in prior1
+combine_prior <- function(prior1, prior2) {
+  if (!is.null(prior2)) {
+    combined_prior <- dplyr::anti_join(prior1, prior2, by=c('class', 'dpar','nlpar','coef','group','resp'))
+    prior <- combined_prior + prior2
+  } else {
+    prior <- prior1
+  }
+  return(prior)
 }
