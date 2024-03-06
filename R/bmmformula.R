@@ -310,6 +310,21 @@ rhs_vars.formula <- function(formula, ...) {
 }
 
 
+# adds an attribute nl to each component of the the formula indicating if the
+# any of the predictors of the component are also predicted in another component
+assign_nl <- function(formula) {
+  dpars <- names(formula)
+  preds <- rhs_vars(formula, collapse = FALSE)
+  for (dpar in dpars) {
+    if (any(preds[[dpar]] %in% dpars)) {
+      attr(formula[[dpar]], "nl") <- TRUE
+    } else {
+      attr(formula[[dpar]], "nl") <- FALSE
+    }
+  }
+  formula
+}
+
 is.formula <- function(x) {
   inherits(x, "formula")
 }
