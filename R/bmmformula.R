@@ -84,7 +84,8 @@ bmmformula <- function(formula, ...){
   for (f in dots) {
     formula <- formula + f
   }
-  formula
+  # assign attribute nl TRUE/FALSE to each component of the formula
+  assign_nl(formula)
 }
 
 
@@ -98,17 +99,17 @@ bmf <- function(formula, ...) {
 # method for adding formulas to a bmmformula
 #' @export
 "+.bmmformula" <- function(f1,f2) {
-  if (!is.bmmformula(f1)) {
+  if (!is_bmmformula(f1)) {
     stop("The first argument must be a bmmformula.")
   }
-  if (is.formula(f2)) {
+  if (is_formula(f2)) {
     par2 <- all.vars(f2)[1]
     if (par2 %in% names(f1)) {
       message2(paste("The parameter", par2, "is already part of the formula.",
                     "Overwriting the initial formula."))
     }
     f1[[par2]] <- f2
-  } else if (is.bmmformula(f2)) {
+  } else if (is_bmmformula(f2)) {
     for (par2 in names(f2)) {
       if (par2 %in% names(f1)) {
         message2(paste("The parameter", par2, "is already part of the formula.",
@@ -119,7 +120,8 @@ bmf <- function(formula, ...) {
   } else if(!is.null(f2)) {
     stop("The second argument must be a formula or a bmmformula.")
   }
-  f1
+  # reassign attribute nl to each component of the formula
+  assign_nl(f1)
 }
 
 
@@ -131,7 +133,8 @@ bmf <- function(formula, ...) {
   out <- out[pars]
   attributes(out) <- attrs
   names(out) <- pars
-  out
+  # reassign attribute nl to each component of the formula
+  assign_nl(out)
 }
 
 #' checks if the formula is valid for the specified model
@@ -146,8 +149,8 @@ check_formula <- function(model, data, formula) {
 
 #' @export
 check_formula.bmmmodel <- function(model, data, formula) {
-  if (!is.bmmformula(formula)) {
-    if (is.brmsformula(formula)) {
+  if (!is_bmmformula(formula)) {
+    if (is_brmsformula(formula)) {
       stop("The provided formula is a brms formula.
         Please specify formula with the bmmformula() function instead of
         the brmsformula() or bf() function.
@@ -231,11 +234,8 @@ bmf2bf.bmmmodel <- function(model, formula) {
 
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function
-  dpars <- names(formula)
-  for (dpar in dpars) {
-    pform <- formula[[dpar]]
-    predictors <- rhs_vars(pform)
-    if (any(predictors %in% dpars)) {
+  for (pform in formula) {
+    if (is_nl(pform)) {
       brms_formula <- brms_formula + brms::nlf(pform)
     } else {
       brms_formula <- brms_formula + brms::lf(pform)
@@ -243,7 +243,6 @@ bmf2bf.bmmmodel <- function(model, formula) {
   }
   brms_formula
 }
-
 
 
 
@@ -276,7 +275,7 @@ wrong_parameters <- function(model, formula) {
 has_intercept <- function(formula) {
   if (is.null(formula)) {
     return(FALSE)
-  } else if (!is.formula(formula)) {
+  } else if (!is_formula(formula)) {
     stop("The formula must be a formula object.")
   }
   as.logical(attr(stats::terms(formula), "intercept"))
@@ -325,14 +324,28 @@ assign_nl <- function(formula) {
   formula
 }
 
-is.formula <- function(x) {
+is_nl <- function(object, ...) {
+  UseMethod("is_nl")
+}
+
+#' @export
+is_nl.bmmformula <- function(object, ...) {
+  sapply(object, is_nl)
+}
+
+#' @export
+is_nl.formula <- function(object, ...) {
+  attr(object, "nl")
+}
+
+is_formula <- function(x) {
   inherits(x, "formula")
 }
 
-is.bmmformula <- function(x) {
+is_bmmformula <- function(x) {
   inherits(x, "bmmformula")
 }
 
-is.brmsformula <- function(x) {
+is_brmsformula <- function(x) {
   inherits(x, "brmsformula")
 }

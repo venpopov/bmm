@@ -62,11 +62,19 @@ test_that('rhs_vars works', {
 test_that('assign_nl works', {
   x <- bmf(y ~ c, c ~ a + b, a ~ d, m ~ 1)
   x <- assign_nl(x)
-  types <- sapply(x, function(i) attr(i, "nl"))
+  types <- is_nl(x)
   expect_equal(types, c(y = TRUE, c = TRUE, a = FALSE, m = FALSE))
 
   x <- bmf(y ~ 1)
   x <- assign_nl(x)
-  types <- sapply(x, function(i) attr(i, "nl"))
+  types <- is_nl(x)
   expect_equal(types, c(y = FALSE))
+
+  f1 <- bmf(y ~ a)
+  f2 <- bmf(a ~ 1)
+  f3 <- f1 + f2
+  f4 <- bmf(y ~ a, a ~ 1)
+  expect_equal(f3, f4)
+  types3 <- is_nl(f3)
+  expect_equal(types3, c(y = TRUE, a = FALSE))
 })
