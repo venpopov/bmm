@@ -235,6 +235,10 @@ is_supported_bmmmodel <- function(x) {
   is_bmmmodel(x) && inherits(x, valid_models)
 }
 
+is_bmmfit <- function(x) {
+  inherits(x, "bmmfit")
+}
+
 as_numeric_vector <- function(x) {
   out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
   if (is_try_warning(out)) {
