@@ -154,7 +154,7 @@ check_data.M3 <- function(model, data, formula) {
 
   # Check if the response variables are legal or not.
   if (sum(grepl("[[:punct:]]|\\s", resp_name)) > 0) {
-    stop("Space and punctuation are not allowed in the response variable names.")
+    stop2("Space and punctuation are not allowed in the response variable names.")
   }
 
   # Check if the response variables are all present in the data
@@ -179,7 +179,7 @@ check_data.M3 <- function(model, data, formula) {
 
   # Check whether the option variables have the same length as the response variables.
   if (length(nOpt_vect) != length(resp_name)) {
-    stop("The option variables should have the same length as the response variables.")
+    stop2("The option variables should have the same length as the response variables.")
   }
 
   # If the number of options is a string, then it is the name of the column in the data
@@ -188,7 +188,7 @@ check_data.M3 <- function(model, data, formula) {
 
     # Check if the name of the number of options is legal or not.
     if (sum(grepl("[[:punct:]]|\\s", option_name)) > 0) {
-      stop("Space and punctuation are not allowed in the number of options variable name.")
+      stop2("Space and punctuation are not allowed in the number of options variable name.")
     }
 
     # Check if the number of options is present in the data
@@ -210,6 +210,7 @@ check_data.M3 <- function(model, data, formula) {
       }
 
       data[[nOpt_idx_vars[i]]] <- ifelse(data[[nOpt_vect[i]]] > 0, 1, 0)
+      data[[nOpt_vect[i]]] <- ifelse(data[[nOpt_vect[i]]] == 0, 0.0001, data[[nOpt_vect[i]]])
     }
 
     # If the number of options is a numeric vector,
@@ -228,7 +229,7 @@ check_data.M3 <- function(model, data, formula) {
     # Add the number of options to the data
     data <- dplyr::cross_join(data, nOpt_data)
   } else {
-    stop("The number of options should be a string or a numeric vector.")
+    stop2("The number of options should be a string or a numeric vector.")
   }
   NextMethod("check_data")
 }

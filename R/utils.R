@@ -114,14 +114,12 @@ not_in_list <- function(key, list) {
 #' kappa_nts <- paste0('kappa_nt', 1:4)
 #' glue_nlf(kappa_nts[i], ' ~ kappa')  ## same as brms::nlf(kappa_nt1 ~ kappa)
 #' @noRd
-glue_nlf <- function(...) {
-  dots = list(...)
-  brms::nlf(stats::as.formula(collapse(...)))
+glue_nlf <- function(..., loop = TRUE) {
+  brms::nlf(stats::as.formula(collapse(...)),loop = loop)
 }
 
 # like glue_nlf but for lf formulas
 glue_lf <- function(...) {
-  dots = list(...)
   brms::lf(stats::as.formula(collapse(...)))
 }
 

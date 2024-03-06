@@ -3,10 +3,15 @@
 #############################################################################!
 # see file 'R/bmm_model_mixture3p.R' for an example
 
-.model_M3custom <- function(resp_cats = NULL, num_options = NULL, choice_rule = "softmax", ...) {
+.model_M3custom <- function(resp_cats = NULL, num_options = NULL, choice_rule = "softmax", links = NULL, ...) {
+   # name the number of options in each response categories if no names are provided
+   if (is.null(names(num_options))) names(num_options) <- resp_cats
+
+   # save model information
    out <- list(
       resp_vars = nlist(resp_cats),
       other_vars = nlist(num_options, choice_rule, ...),
+      links = links,
       info = list(
          domain = 'Working Memory (categorical)',
          task = 'n-AFC retrieval',
@@ -32,6 +37,8 @@
    class(out) <- c('bmmmodel','M3', 'M3custom')
    out
 }
+
+
 # user facing alias
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_M3()$info
@@ -58,6 +65,13 @@
 #'   exponentiating them. For details on the differences of these choice rules please see
 #'   the appendix of Oberauer & Lewandowsky (2019) "Simple measurement models for complex
 #'   working memory tasks. Psychological Review"
+#' @param links A named list that provides the link functions that should be used for all M3
+#'   parameters used in the model calls. Current options for the link functions are: "identity",
+#'   "log", and "logit". The "identity" link should be used for all parameters with an unbounded
+#'   range from minus to plus infinity. The "log" link should be used for all parameters with a bounded
+#'   range from zero to plus infinity (i.e., most activation sources). The "logit" link should be
+#'   used for all parameters bounded between zero and one (i.e. proportional reductions in activations,
+#'   such as filtering or removal)
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #'
@@ -97,18 +111,26 @@ bmf2bf.M3 <- function(model, formula) {
    # add transformation to activations according to choice rules
    transform_act <- ifelse(choice_rule == "luce","log(","")
    end_act <- ifelse(choice_rule == "luce",")","")
+   zero_Opt <- ifelse(model$other_vars$choice_rule == "softmax","(-100)","(exp(-100))")
+   op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","+","*")
+   trans_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","log(","")
+   end_Nopts <- ifelse(model$other_vars$choice_rule == "softmax",")","")
 
    # set the base brmsformula based
-   brms_formula <- brms::bf(paste0("Y | trials(nTrials)", " ~", transform_act,"act", resp_cats[1],end_act),nl = TRUE)
+   brms_formula <- brms::bf(paste0("Y | trials(nTrials)", " ~", transform_act, nOpt_idx_vars[resp_cats[1]],"*(act", resp_cats[1],
+                                   op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[1]],end_Nopts,")",
+                                   " + (1-",nOpt_idx_vars[resp_cats[1]],") *",zero_Opt,end_act),nl = TRUE)
 
    # for each dependent parameter, check if it is used as a non-linear predictor of
    # another parameter and add the corresponding brms function
    for (i in 2:length(resp_cats) ) {
       brms_formula <- brms_formula +
-         glue_nlf(paste0("mu",resp_cats[i]), " ~", transform_act,"act", resp_cats[i],end_act)
+         glue_nlf(paste0("mu",resp_cats[i]), " ~", transform_act, nOpt_idx_vars[resp_cats[i]],"*(act", resp_cats[i],
+                  op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[i]],end_Nopts,")",
+                  " + (1-",nOpt_idx_vars[resp_cats[i]],") *",zero_Opt,end_act)
    }
 
-   par_links <- model$other_vars$par_links
+   links <- model$links
    if ("M3custom" %in% class(model)) {
       # for each dependent parameter, check if it is used as a non-linear predictor of
       # another parameter and add the corresponding brms function
@@ -120,24 +142,17 @@ bmf2bf.M3 <- function(model, formula) {
 
          for (par in names(par_links)) {
             if (is.numeric(par_links[[par]])) {
-               replace <- as.character(par_links[[par]])
+               replace <- as.character(links[[par]])
             } else {
-               replace <- dplyr::case_when(par_links[[par]] == "log" ~ paste0(" exp(",par,") "),
-                                           par_links[[par]] == "logit" ~ paste0(" inv_logit(",par,") "),
+               replace <- dplyr::case_when(links[[par]] == "log" ~ paste0(" exp(",par,") "),
+                                           links[[par]] == "logit" ~ paste0(" inv_logit(",par,") "),
                                            TRUE ~ par)
             }
-           par_name <- paste0("\\b", par, "\\b") # match whole word only
-           split_form <- gsub(par_name,replace,split_form)
+            par_name <- paste0("\\b", par, "\\b") # match whole word only
+            split_form <- gsub(par_name,replace,split_form)
          }
 
-         op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","+","*")
-         trans_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","log(","")
-         end_Nopts <- ifelse(model$other_vars$choice_rule == "softmax",")","")
-         zero_Opt <- ifelse(model$other_vars$choice_rule == "softmax","(-100)","(exp(-100))")
-
-         brms_formula <- brms_formula + glue_nlf("act",split_form[1],"~",nOpt_idx_vars[dpar],"*((",split_form[2],")",
-                                                 op_Nopts, trans_Nopts, model$other_vars$num_options[dpar],end_Nopts,
-                                                 ") + (1-",nOpt_idx_vars[dpar],")*",zero_Opt)
+         brms_formula <- brms_formula + glue_nlf("act",split_form[1],"~",split_form[2])
       }
    }
 
