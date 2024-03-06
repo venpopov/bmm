@@ -168,8 +168,10 @@ check_data.M3 <- function(model, data, formula) {
   }
 
   # Transfer all of the response variables to a matrix and name it 'Y'
-  data$nTrials <- rowSums(data[, resp_name])
-  data$Y <- as.matrix(data[, resp_name])
+  data$nTrials <- rowSums(data[, resp_name], na.rm = TRUE)
+  resp_matrix <- as.matrix(data[, resp_name])
+  resp_matrix[is.na(resp_matrix)] <- 0
+  data$Y <- resp_matrix
   data <- dplyr::select(data, -dplyr::all_of(resp_name))
 
   # Get the vector of the options variables
@@ -198,9 +200,26 @@ check_data.M3 <- function(model, data, formula) {
         "' is not present in the data."
       ))
     }
+
+    # create index variables for any number of Option being zero in one row
+    nOpt_idx_vars <- paste0("Idx_", resp_name)
+    for (i in 1:length(nOpt_vect)) {
+      if (all(data[[nOpt_vect[i]]] == 0)) {
+        stop2("At least one of the specified number of candidates in the response categories is zero for all oberservations.\n
+            Please remove this category from the model, as it is not identified.")
+      }
+
+      data[[nOpt_idx_vars[i]]] <- ifelse(data[[nOpt_vect[i]]] > 0, 1, 0)
+    }
+
     # If the number of options is a numeric vector,
     # then it represents the number of options for each response variable in all conditions.
   } else if (is.numeric(nOpt_vect)) {
+    if (any(nOpt_vect == 0)) {
+      stop2("At least one of the specified number of candidates in the response categories is zero for all oberservations.\n
+            Please remove this category from the model, as it is not identified.")
+    }
+
     nOpt_name <- paste0("nOpt", resp_name)
 
     nOpt_data <- data.frame(nOpt_name, nOpt_vect) %>%

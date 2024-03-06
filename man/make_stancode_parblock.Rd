@@ -25,8 +25,8 @@ or related functions and combined using the c method or the + operator. See
 also \code{\link[=get_model_prior]{get_model_prior()}} for more help. Not necessary for the default model
 fitting, but you can provide prior constraints to model parameters}
 
-\item{...}{Further arguments passed to \code{\link[brms:make_stancode]{brms::make_stancode()}}. See the
-description of \code{\link[brms:make_stancode]{brms::make_stancode()}} for more details}
+\item{...}{Further arguments passed to \code{\link[brms:stancode]{brms::make_stancode()}}. See the
+description of \code{\link[brms:stancode]{brms::make_stancode()}} for more details}
 }
 \value{
 A character string containing the parameter block of fully commented

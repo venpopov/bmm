@@ -47,24 +47,20 @@
 #' conditions using different types of distractor words.
 #'
 #' @format ## `OberauerLewandowsky_2019_E1`
-#' A data frame with 120 rows and 7 columns:
+#' A data frame with 120 rows and 10 columns:
 #' \describe{
 #'   \item{ID}{Integer uniquely identifying each subject}
-#'   \item{cond}{Factor sperating the three experimental conditions: `new_dist` refers to
-#'   new words being used as distractors, `old_reorder` refers to the to be remembered words
-#'   being the distractors, but reordered relative to the serial position, `old_same` refers
+#'   \item{cond}{Factor sperating the three experimental conditions: `new distractors` refers to
+#'   new words being used as distractors, `old reordered` refers to the to be remembered words
+#'   being the distractors, but reordered relative to the serial position, `old same` refers
 #'   to the to be remebered words being the distractors, and appearing in the same order as
 #'   the to be remembered words.}
-#'   \item{IIP}{The frequency a subject recalled the item-in-position (IIP), that is the correct
-#'   item}
-#'   \item{IOP}{The frequency a subject recalled an item from an other position (IOP), that is one
-#'   of the other to be remebered words}
-#'   \item{DIP}{The frequency a subject recalled a distractor in position (DIP), that is the distractor
-#'   immediately following the to-be remebered word}
-#'   \item{DOP}{The frequency a subject recalled a distractor from an other position (DOP), that is one
-#'   of the distractors appearing after other to-be remembered words}
-#'   \item{NPL}{The frequency a subject recalled a not-presented lure (NPL), that is a word
+#'   \item{corr}{The frequency a subject recalled the correct item}
+#'   \item{other}{The frequency a subject recalled one of the other to be remebered words}
+#'   \item{dist}{The frequency a subject recalled one of the distractors}
+#'   \item{npl}{The frequency a subject recalled a not-presented lure (NPL), that is a word
 #'   that was not presented during a trial}
+#'   \item{nCorr, nOther, nDist, nNPL}{The number of candidataes in each of the response categories}
 #' }
 #'
 "OberauerLewandowsky_2019_E1"

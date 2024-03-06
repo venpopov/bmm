@@ -7,7 +7,7 @@
 \usage{
 get_standata(formula, data, model, prior = NULL, ...)
 
-\method{make_standata}{bmmformula}(formula, data, model, prior = NULL, ...)
+make_standata.bmmformula(formula, data, model, prior = NULL, ...)
 }
 \arguments{
 \item{formula}{An object of class \code{bmmformula}. A symbolic description of the
@@ -28,8 +28,8 @@ or related functions and combined using the c method or the + operator. See
 also \code{\link[=get_model_prior]{get_model_prior()}} for more help. Not necessary for the default model
 fitting, but you can provide prior constraints to model parameters}
 
-\item{...}{Further arguments passed to \code{\link[brms:make_standata]{brms::make_standata()}}. See the
-description of \code{\link[brms:make_standata]{brms::make_standata()}} for more details}
+\item{...}{Further arguments passed to \code{\link[brms:standata]{brms::make_standata()}}. See the
+description of \code{\link[brms:standata]{brms::make_standata()}} for more details}
 }
 \value{
 A named list of objects containing the required data to fit a bmm
@@ -58,21 +58,25 @@ ff <- bmf(
   kappa ~ 1
 )
 
-if (utils::packageVersion('brms') >= "2.20.14") {
+if (utils::packageVersion("brms") >= "2.20.14") {
   # generate the stan data (if using brms version 2.20.14 or later)
-  make_standata(formula = ff,
-                data = dat,
-                model = sdmSimple(resp_err = "y"))
+  make_standata(
+    formula = ff,
+    data = dat,
+    model = sdmSimple(resp_err = "y")
+  )
 } else {
   # generate the stan data (if using an older version of brms)
-  get_standata(formula = ff,
-               data = dat,
-               model = sdmSimple(resp_err = "y"))
+  get_standata(
+    formula = ff,
+    data = dat,
+    model = sdmSimple(resp_err = "y")
+  )
 }
 }
 
 }
 \seealso{
-\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:make_standata]{brms::make_standata()}}
+\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:standata]{brms::make_standata()}}
 }
 \keyword{extract_info}

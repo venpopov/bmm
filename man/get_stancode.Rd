@@ -7,7 +7,7 @@
 \usage{
 get_stancode(formula, data, model, prior = NULL, ...)
 
-\method{make_stancode}{bmmformula}(formula, data, model, prior = NULL, ...)
+make_stancode.bmmformula(formula, data, model, prior = NULL, ...)
 }
 \arguments{
 \item{formula}{An object of class \code{bmmformula}. A symbolic description of the
@@ -28,8 +28,8 @@ or related functions and combined using the c method or the + operator. See
 also \code{\link[=get_model_prior]{get_model_prior()}} for more help. Not necessary for the default model
 fitting, but you can provide prior constraints to model parameters}
 
-\item{...}{Further arguments passed to \code{\link[brms:make_stancode]{brms::make_stancode()}}. See the
-description of \code{\link[brms:make_stancode]{brms::make_stancode()}} for more details}
+\item{...}{Further arguments passed to \code{\link[brms:stancode]{brms::make_stancode()}}. See the
+description of \code{\link[brms:stancode]{brms::make_stancode()}} for more details}
 }
 \value{
 A character string containing the fully commented Stan code to fit a
@@ -69,6 +69,6 @@ get_stancode(formula = ff,
 
 }
 \seealso{
-\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:make_stancode]{brms::make_stancode()}}
+\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:stancode]{brms::make_stancode()}}
 }
 \keyword{extract_info}

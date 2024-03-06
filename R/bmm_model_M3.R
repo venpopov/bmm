@@ -88,6 +88,8 @@ M3custom <- function(resp_cats, num_options, choice_rule = "softmax", ...) {
 bmf2bf.M3 <- function(model, formula) {
    # retrieve required response arguments
    resp_cats <- model$resp_vars$resp_cats
+   nOpt_idx_vars <- paste0("Idx_", resp_cats)
+   names(nOpt_idx_vars) <- resp_cats
 
    # retrieve choice rule
    choice_rule <- tolower(model$other_vars$choice_rule)
@@ -115,12 +117,13 @@ bmf2bf.M3 <- function(model, formula) {
          pform <- formula[[dpar]]
          deparse_form <- deparse(pform)
          split_form <- gsub("[[:space:]]", "", strsplit(deparse_form,"~")[[1]])
+
          for (par in names(par_links)) {
-            if(is.numeric(par_links[[par]])) {
+            if (is.numeric(par_links[[par]])) {
                replace <- as.character(par_links[[par]])
             } else {
                replace <- dplyr::case_when(par_links[[par]] == "log" ~ paste0(" exp(",par,") "),
-                                           par_links[[par]] == "logit" ~ paste0(" inv.logit(",par,") "),
+                                           par_links[[par]] == "logit" ~ paste0(" inv_logit(",par,") "),
                                            TRUE ~ par)
             }
            par_name <- paste0("\\b", par, "\\b") # match whole word only
@@ -130,9 +133,11 @@ bmf2bf.M3 <- function(model, formula) {
          op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","+","*")
          trans_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","log(","")
          end_Nopts <- ifelse(model$other_vars$choice_rule == "softmax",")","")
+         zero_Opt <- ifelse(model$other_vars$choice_rule == "softmax","(-100)","(exp(-100))")
 
-         brms_formula <- brms_formula + glue_nlf("act",split_form[1],"~ (",split_form[2],")",
-                                                 op_Nopts, trans_Nopts, model$other_vars$num_options[dpar],end_Nopts)
+         brms_formula <- brms_formula + glue_nlf("act",split_form[1],"~",nOpt_idx_vars[dpar],"*((",split_form[2],")",
+                                                 op_Nopts, trans_Nopts, model$other_vars$num_options[dpar],end_Nopts,
+                                                 ") + (1-",nOpt_idx_vars[dpar],")*",zero_Opt)
       }
    }
 

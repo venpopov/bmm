@@ -7,7 +7,7 @@
 \usage{
 get_model_prior(formula, data, model, ...)
 
-\method{get_prior}{bmmformula}(formula, data, model, ...)
+get_prior.bmmformula(formula, data, model, ...)
 }
 \arguments{
 \item{formula}{An object of class \code{bmmformula}. A symbolic description of the
@@ -23,8 +23,8 @@ number of required arguments which need to be specified within the function
 call. Call \code{\link[=supported_models]{supported_models()}} to see the list of supported models and
 their required arguments}
 
-\item{...}{Further arguments passed to \code{\link[brms:get_prior]{brms::get_prior()}}. See the
-description of \code{\link[brms:get_prior]{brms::get_prior()}} for more details}
+\item{...}{Further arguments passed to \code{\link[brms:default_prior]{brms::get_prior()}}. See the
+description of \code{\link[brms:default_prior]{brms::get_prior()}} for more details}
 }
 \value{
 A data.frame with columns specifying the \code{prior}, the \code{class}, the
@@ -43,7 +43,7 @@ need to be specified and also know which priors were used if no
 user-specified priors were passed to the \code{\link[=fit_model]{fit_model()}} function.
 
 If you are using \emph{brms} version 2.20.14 or later, you should use
-\link[brms:get_prior]{get_prior} directly with the \code{bmmformula} object. If you are using an
+\link[brms:default_prior]{get_prior} directly with the \code{bmmformula} object. If you are using an
 older version of \emph{brms}, you have to use \code{\link[=get_model_prior]{get_model_prior()}} to obtain the
 default priors. The usage of \code{\link[=get_model_prior]{get_model_prior()}} is deprecated and will be
 removed in future versions of \emph{bmm}.
@@ -89,6 +89,6 @@ if (utils::packageVersion('brms') >= "2.20.14") {
 }
 }
 \seealso{
-\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:get_prior]{brms::get_prior()}}
+\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:default_prior]{brms::get_prior()}}
 }
 \keyword{extract_info}
