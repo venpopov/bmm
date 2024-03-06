@@ -58,3 +58,15 @@ test_that('rhs_vars works', {
   f <- bmf(y ~ a + b + a:b + (a | d), x ~ c + d, d ~ exp(m+j))
   expect_equal(rhs_vars(f),c("a","b","d","c","m","j"))
 })
+
+test_that('assign_nl works', {
+  x <- bmf(y ~ c, c ~ a + b, a ~ d, m ~ 1)
+  x <- assign_nl(x)
+  types <- sapply(x, function(i) attr(i, "nl"))
+  expect_equal(types, c(y = TRUE, c = TRUE, a = FALSE, m = FALSE))
+
+  x <- bmf(y ~ 1)
+  x <- assign_nl(x)
+  types <- sapply(x, function(i) attr(i, "nl"))
+  expect_equal(types, c(y = FALSE))
+})
