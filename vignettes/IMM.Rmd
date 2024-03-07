@@ -33,7 +33,13 @@ margin-bottom: 1.5em ;
 options(crayon.enabled = TRUE)
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = "jpeg",
+  dpi = 100,
+  fig.asp = 0.8,
+  fig.width = 5,
+  out.width = "80%",
+  fig.align = "center"
 )
 fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 ```
@@ -100,7 +106,7 @@ Additionally, because we use the `softmax` normalization for translating activat
 
 You should start by loading the `bmm` package:
 
-```{r}
+```{r setup, message=FALSE, warning=FALSE}
 library(bmm)
 ```
 

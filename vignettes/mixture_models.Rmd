@@ -33,7 +33,11 @@ margin-bottom: 1.5em ;
 options(crayon.enabled = TRUE)
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = "jpeg",
+  dpi = 100,
+  fig.asp = 0.8,
+  fig.align = "center"
 )
 fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 options(width = 300)
@@ -91,7 +95,7 @@ $$
 
 Begin by loading the `bmm` package:
 
-```{r}
+```{r setup, message=FALSE, warning=FALSE}
 library(bmm)
 ```
 
@@ -249,7 +253,7 @@ round(pmem,3)
 
 It is even better to visualize the entire posterior distribution of the parameters. 
 
-```{r, message=FALSE, warning=FALSE, fig.show='hold', fig.width=4, fig.height=4}
+```{r, message=FALSE, warning=FALSE, fig.show='hold', fig.width=4, fig.height=4, fig.align=NA}
 library(tidybayes)
 library(tidyr)
 
@@ -273,7 +277,7 @@ as.data.frame(draws_theta) %>%
 as.data.frame(draws_kappa) %>% 
   gather(par, value) %>%
   mutate(value = k2sd(value)) %>% 
-  mutate(par = gsub("b_kappa_set_size", "Set size ", par)) %>%
+  mutate(par = gsub("b_kappa_set_size", "", par)) %>%
   ggplot(aes(par,value)) +
   tidybayes::stat_halfeyeh(normalize = "groups", orientation = "vertical") +
   labs(y = "Memory imprecision (SD)", x = "Set size", parse = TRUE)
