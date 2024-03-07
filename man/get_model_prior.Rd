@@ -2,16 +2,12 @@
 % Please edit documentation in R/helpers-prior.R
 \name{get_model_prior}
 \alias{get_model_prior}
-\alias{get_prior.bmmformula}
 \title{Get Default priors for Measurement Models specified in BMM}
 \usage{
-get_model_prior(formula, data, model, ...)
-
-get_prior.bmmformula(formula, data, model, ...)
+get_model_prior(object, data, model, formula = object, ...)
 }
 \arguments{
-\item{formula}{An object of class \code{bmmformula}. A symbolic description of the
-model to be fitted.}
+\item{object}{A \code{bmmformula} object}
 
 \item{data}{An object of class data.frame, containing data of all variables
 used in the model. The names of the variables must match the variable names
@@ -23,8 +19,10 @@ number of required arguments which need to be specified within the function
 call. Call \code{\link[=supported_models]{supported_models()}} to see the list of supported models and
 their required arguments}
 
-\item{...}{Further arguments passed to \code{\link[brms:default_prior]{brms::get_prior()}}. See the
-description of \code{\link[brms:default_prior]{brms::get_prior()}} for more details}
+\item{formula}{Deprecated. Use \code{object} instead.}
+
+\item{...}{Further arguments passed to \code{\link[brms:get_prior]{brms::get_prior()}}. See the
+description of \code{\link[brms:get_prior]{brms::get_prior()}} for more details}
 }
 \value{
 A data.frame with columns specifying the \code{prior}, the \code{class}, the
@@ -49,43 +47,20 @@ default priors. The usage of \code{\link[=get_model_prior]{get_model_prior()}} i
 removed in future versions of \emph{bmm}.
 }
 \details{
-The following models are supported:
-\itemize{
-\item IMMabc(resp_err, nt_features, setsize, regex)
-\item IMMbsc(resp_err, nt_features, nt_distances, setsize, regex)
-\item IMMfull(resp_err, nt_features, nt_distances, setsize, regex)
-\item M3custom(resp_cats, num_options, choice_rule)
-\item mixture2p(resp_err)
-\item mixture3p(resp_err, nt_features, setsize, regex)
-\item sdmSimple(resp_err)
-}
-
-Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
-
-Type \code{help(package=bmm)} for a full list of available help topics.
+This function is deprecated. Please use \code{default_prior()} or \code{get_prior()} (if using
+\code{brms} >= 2.20.14) instead. In \code{brms} >= 2.20.14, \code{get_prior()} became an
+alias for \code{default_prior()}, and \code{default_prior()} is the recommended function to use.
 }
 \examples{
 \dontrun{
-# generate artificial data from the Signal Discrimination Model
-dat <- data.frame(y = rsdm(n=2000))
-
-# define formula
-ff <- bmf(y ~ 1,
-          c ~ 1,
-          kappa ~ 1)
-
-
-if (utils::packageVersion('brms') >= "2.20.14") {
-  # extract the default bmm prior (if using brms version 2.20.14 or later)
-  get_prior(formula = ff,
-            data = dat,
-            model = sdmSimple())
-} else {
-   # (if using an older version of brms)
-   get_model_prior(formula = ff,
-                   data = dat,
-                   model = sdmSimple())
-}
+# if using brms >= 2.20.14
+default_prior(bmf(c ~ 1, kappa ~ 1),
+              data = OberauerLin_2017,
+              model = sdmSimple(resp_err = 'dev_rad'))
+# if using brms < 2.20.14
+get_prior(bmf(c ~ 1, kappa ~ 1),
+          data = OberauerLin_2017,
+          model = sdmSimple(resp_err = 'dev_rad'))
 }
 }
 \seealso{
