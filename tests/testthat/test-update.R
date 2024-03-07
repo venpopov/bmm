@@ -1,7 +1,7 @@
 test_that('update.bmmfit works', {
   skip_on_cran()
   fit1 <- bmmfit_example1
-  data <- fit1$bmm$fit_args$data
+  data <- fit1$data
 
   # formula is replaced
   up <- update(fit1, formula. = bmf(c ~ 1, kappa ~ 1), testmode = TRUE)

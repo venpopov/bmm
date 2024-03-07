@@ -37,7 +37,7 @@ update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ..
   fit_args <- object$bmm$fit_args
   model <- object$bmm$model
   old_user_formula <- object$bmm$user_formula
-  olddata <- fit_args$data
+  olddata <- object$data
   configure_opts <- object$bmm$configure_opts
 
   # revert some postprocessing changes to brmsfit from postprocess_brm

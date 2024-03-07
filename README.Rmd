@@ -262,7 +262,7 @@ implement in the bmm package.
 
 
 ```{r bmm-logic, echo=F, fig.cap="", out.width=600, fig.align = 'center'}
-knitr::include_graphics("man/figures/README-bmmLogic.jpg")
+knitr::include_graphics("man/figures/README-bmmLogic.png")
 ```
 
 As these function can become complicated and their implementation changes with
@@ -287,7 +287,7 @@ and will perform several steps:
 This process is illustrated in the Figure below:
 
 ```{r fitModel, echo=F, fig.cap="", out.width=600, fig.align = 'center'}
-knitr::include_graphics("man/figures/README-fitModel_process.jpg")
+knitr::include_graphics("man/figures/README-fitModel_process.png")
 ```
 
 ## Contributing to the `bmm` package

@@ -30,7 +30,8 @@ Suggests:
     cowplot,
     stringr,
     remotes, 
-    waldo
+    waldo,
+    fansi
 Config/testthat/edition: 3
 Imports: 
     magrittr,
