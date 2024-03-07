@@ -209,6 +209,7 @@ fit_info.brmsfit <- function(fit, what) {
   switch(what,
          time = metadata$time$chains,
          time_mean = colMeans(metadata$time$chains),
+         inv_metric = metadata$inv_metric,
   )
 }
 

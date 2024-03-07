@@ -40,18 +40,18 @@ print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary
   pars_to_print <- select_pars(x)
   # add check if the parameter is fixed by the user
 
-  cat(style('#916af1')("  Model: "))
+  cat(style('purple1')("  Model: "))
   cat(summarise_model(x$model, newline = TRUE, wsp = 9), "\n")
-  cat(style('#916af1')("  Links: "))
+  cat(style('purple1')("  Links: "))
   cat(summarise_links(x$model$links), "\n")
-  cat(style('#916af1')("Formula: "))
+  cat(style('purple1')("Formula: "))
   cat(summarise_formula.bmmformula(x$formula, newline = TRUE, wsp = 9, model = x$model),'\n')
-  cat(style('#916af1')("   Data:"), attr(x$data, 'data_name'),
+  cat(style('purple1')("   Data:"), attr(x$data, 'data_name'),
       "(Number of observations:", paste0(nrow(x$data), ")"))
   cat("\n")
   total_ndraws <- ceiling((x$iter - x$warmup) / x$thin * x$chains)
   cat(paste0(
-    style('#916af1')("  Draws: "), x$chains, " chains, each with iter = ", x$iter,
+    style('purple1')("  Draws: "), x$chains, " chains, each with iter = ", x$iter,
     "; warmup = ", x$warmup, "; thin = ", x$thin, ";\n",
     "         total post-warmup draws = ", total_ndraws, "\n\n"
   ))
