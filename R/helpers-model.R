@@ -147,7 +147,6 @@ check_model.M3 <- function(model, data = NULL) {
   NextMethod("check_model")
 }
 
-
 # check if the user has provided a regular expression for any model variables and
 # replace the regular expression with the actual variables
 replace_regex_variables <- function(model, data) {

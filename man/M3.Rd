@@ -26,6 +26,14 @@ the appendix of Oberauer & Lewandowsky (2019) "Simple measurement models for com
 working memory tasks. Psychological Review"}
 
 \item{...}{used internally for testing, ignore it}
+
+\item{links}{A named list that provides the link functions that should be used for all M3
+parameters used in the model calls. Current options for the link functions are: "identity",
+"log", and "logit". The "identity" link should be used for all parameters with an unbounded
+range from minus to plus infinity. The "log" link should be used for all parameters with a bounded
+range from zero to plus infinity (i.e., most activation sources). The "logit" link should be
+used for all parameters bounded between zero and one (i.e. proportional reductions in activations,
+such as filtering or removal)}
 }
 \value{
 An object of class \code{bmmmodel}

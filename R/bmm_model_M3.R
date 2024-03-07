@@ -117,7 +117,7 @@ bmf2bf.M3 <- function(model, formula) {
    end_Nopts <- ifelse(model$other_vars$choice_rule == "softmax",")","")
 
    # set the base brmsformula based
-   brms_formula <- brms::bf(paste0("Y | trials(nTrials)", " ~", transform_act, nOpt_idx_vars[resp_cats[1]],"*(act", resp_cats[1],
+   brms_formula <- brms::bf(paste0("Y | trials(nTrials)", " ~", transform_act, nOpt_idx_vars[resp_cats[1]],"*(", resp_cats[1],
                                    op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[1]],end_Nopts,")",
                                    " + (1-",nOpt_idx_vars[resp_cats[1]],") *",zero_Opt,end_act),nl = TRUE)
 
@@ -125,35 +125,9 @@ bmf2bf.M3 <- function(model, formula) {
    # another parameter and add the corresponding brms function
    for (i in 2:length(resp_cats) ) {
       brms_formula <- brms_formula +
-         glue_nlf(paste0("mu",resp_cats[i]), " ~", transform_act, nOpt_idx_vars[resp_cats[i]],"*(act", resp_cats[i],
+         glue_nlf(paste0("mu",resp_cats[i]), " ~", transform_act, nOpt_idx_vars[resp_cats[i]],"*(", resp_cats[i],
                   op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[i]],end_Nopts,")",
                   " + (1-",nOpt_idx_vars[resp_cats[i]],") *",zero_Opt,end_act)
-   }
-
-   links <- model$links
-   if ("M3custom" %in% class(model)) {
-      # for each dependent parameter, check if it is used as a non-linear predictor of
-      # another parameter and add the corresponding brms function
-      dpars <- names(formula)
-      for (dpar in dpars[dpars %in% model$resp_vars$resp_cats]) {
-         pform <- formula[[dpar]]
-         deparse_form <- deparse(pform)
-         split_form <- gsub("[[:space:]]", "", strsplit(deparse_form,"~")[[1]])
-
-         for (par in names(par_links)) {
-            if (is.numeric(par_links[[par]])) {
-               replace <- as.character(links[[par]])
-            } else {
-               replace <- dplyr::case_when(links[[par]] == "log" ~ paste0(" exp(",par,") "),
-                                           links[[par]] == "logit" ~ paste0(" inv_logit(",par,") "),
-                                           TRUE ~ par)
-            }
-            par_name <- paste0("\\b", par, "\\b") # match whole word only
-            split_form <- gsub(par_name,replace,split_form)
-         }
-
-         brms_formula <- brms_formula + glue_nlf("act",split_form[1],"~",split_form[2])
-      }
    }
 
    brms_formula

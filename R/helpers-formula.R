@@ -48,7 +48,7 @@ check_formula.nontargets <- function(model, data, formula) {
       ss_form <- formula[[dpar]]
       if (has_intercept(ss_form)) {
         stop2("The formula for parameter ", dpar, " contains an intercept and also uses setsize as a predictor.",
-             " This model requires that the intercept is supressed when setsize is used as predictor.")
+              " This model requires that the intercept is supressed when setsize is used as predictor.")
       }
     }
   }
@@ -126,10 +126,14 @@ bmf2bf.bmmmodel <- function(model, formula) {
     brms_formula <- brms::bf(paste0(resp, "~ 1"))
   }
 
+  if("M3custom" %in% class(model)){
+    formula <- apply_links(formula, model$links)
+  }
+
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function
   dpars <- names(formula)
-  for (dpar in dpars[!dpars %in% model$resp_vars$resp_cats]) {
+  for (dpar in dpars) {
     pform <- formula[[dpar]]
     predictors <- rhs_vars(pform)
     if (any(predictors %in% dpars)) {
@@ -149,4 +153,51 @@ has_intercept <- function(formula) {
     stop("The formula must be a formula object.")
   }
   as.logical(attr(stats::terms(formula), "intercept"))
+}
+
+
+#' @title Apply link functions for parameters in a `bmmformula`
+#' @description
+#'   This function applies the specified link functions in the list of `links` to the
+#'   `bmmformula` that is passed to it. This function is mostly used internally for configuring
+#'   `bmmmodels`.
+#' @param formula A `bmmformula` that the links should be applied to
+#' @param links A list of `links` that should be applied to the formula. Each element in this list
+#'   should be named using the parameter labels the links should be applied for and contain
+#'   a character variable specifying the link to be applied. Currently implemented links are:
+#'   "log", "logit", "probit", and "identity".
+#' @return The `bmmformula` the links have been applied to
+#'
+#' @examples
+#' # specify a bmmformula
+#' form <- bmf(c ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
+#' links <- list(a = "log", c = "logit")
+#'
+#' apply_links(form, links)
+#'
+#' @export
+apply_links <- function(formula, links) {
+  dpars <- names(formula)
+
+  for (dpar in dpars) {
+    pform <- formula[[dpar]]
+    deparse_form <- deparse(pform)
+    split_form <- gsub("[[:space:]]", "", strsplit(deparse_form,"~")[[1]])
+
+    for (par in names(links)) {
+      if (is.numeric(links[[par]])) {
+        replace <- as.character(links[[par]])
+      } else {
+        replace <- dplyr::case_when(links[[par]] == "log" ~ paste0(" exp(",par,") "),
+                                    links[[par]] == "logit" ~ paste0(" inv_logit(",par,") "),
+                                    links[[par]] == "probit" ~ paste0("Phi(",par,")"),
+                                    TRUE ~ par)
+      }
+      par_name <- paste0("\\b", par, "\\b") # match whole word only
+      split_form[2] <- gsub(par_name,replace,split_form[2])
+    }
+    formula[[dpar]] <- stats::as.formula(paste0(split_form[1],"~",split_form[2]))
+  }
+
+  formula
 }
