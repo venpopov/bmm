@@ -2,38 +2,47 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_sdmSimple <- function(resp_err = NULL, ...) {
-
-   out <- list(
+.model_sdmSimple <- function(resp_err = NULL,
+                             links = NULL,
+                             ...) {
+  out <- structure(
+    list(
       resp_vars = nlist(resp_err),
       other_vars = nlist(),
-      info = list(
-         domain = 'Visual working memory',
-         task = 'Continuous reproduction',
-         name = 'Signal Discrimination Model (SDM) by Oberauer (2023)',
-         citation = paste0('Oberauer, K. (2023). Measurement models for visual working memory - ',
-                           'A factorial model comparison. Psychological Review, 130(3), 841-852'),
-         version = 'Simple (no non-targets)',
-         requirements = '- The response variable should be in radians and represent the angular error relative to the target',
-         parameters = list(
-            mu = 'Location parameter of the SDM distribution (in radians; by default fixed internally to 0)',
-            c = 'Memory strength parameter of the SDM distribution',
-            kappa = 'Precision parameter of the SDM distribution (log scale)'
-         ),
-         fixed_parameters = list(
-            mu = 0
-         )),
+      domain = 'Visual working memory',
+      task = 'Continuous reproduction',
+      name = 'Signal Discrimination Model (SDM) by Oberauer (2023)',
+      citation = glue(
+        'Oberauer, K. (2023). Measurement models for visual working memory - \\
+        A factorial model comparison. Psychological Review, 130(3), 841-852'
+      ),
+      version = 'Simple (no non-targets)',
+      requirements = glue(
+        '- The response variable should be in radians and represent the angular \\
+        error relative to the target'
+      ),
+      parameters = list(
+        mu = 'Location parameter of the SDM distribution (in radians; by default fixed internally to 0)',
+        c = 'Memory strength parameter of the SDM distribution',
+        kappa = 'Precision parameter of the SDM distribution'
+      ),
+      links = list(mu = 'identity',
+                   c = 'log',
+                   kappa = 'log'),
+      fixed_parameters = list(mu = 0),
       void_mu = FALSE
-   )
-   class(out) <- c('bmmmodel', 'vwm', 'sdmSimple')
-   out
+    ),
+    class = c('bmmmodel', 'vwm', 'sdmSimple')
+  )
+  out$links[names(links)] <- links
+  out
 }
 
 # user facing alias
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_sdmSimple(NA)$info
 
-#' @title `r .model_sdmSimple()$info$name`
+#' @title `r .model_sdmSimple()$name`
 #' @name SDM
 #' @details see `vignette("sdm-simple")` for a detailed description of the model
 #'   and how to use it.
@@ -42,6 +51,8 @@
 #'   response error. The response error should code the response relative to the
 #'   to-be-recalled target in radians. You can transform the response error in
 #'   degrees to radians using the `deg2rad` function.
+#' @param links A list of links for the parameters. *Currently does not affect
+#'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @export
@@ -77,9 +88,9 @@
 #' lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
 #'               kappa=coef['kappa_Intercept']), col='red')
 #' }
-sdmSimple <- function(resp_err, ...) {
+sdmSimple <- function(resp_err, links = NULL, ...) {
   stop_missing_args()
-  .model_sdmSimple(resp_err = resp_err, ...)
+  .model_sdmSimple(resp_err = resp_err, links = links, ...)
 }
 
 #############################################################################!

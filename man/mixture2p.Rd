@@ -4,13 +4,16 @@
 \alias{mixture2p}
 \title{Two-parameter mixture model by Zhang and Luck (2008).}
 \usage{
-mixture2p(resp_err, ...)
+mixture2p(resp_err, links = NULL, ...)
 }
 \arguments{
 \item{resp_err}{The name of the variable in the provided dataset containing
 the response error. The response Error should code the response relative to
 the to-be-recalled target in radians. You can transform the response error
 in degrees to radian using the \code{deg2rad} function.}
+
+\item{links}{A list of links for the parameters. \emph{Currently does not affect
+the model fits, but it will in the future.}}
 
 \item{...}{used internally for testing, ignore it}
 }
@@ -35,14 +38,17 @@ Two-parameter mixture model by Zhang and Luck (2008).
 }
 \item \strong{Parameters:}
 \itemize{
-\item \code{mu1}: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.
-\item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
+\item \code{mu1}: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.
+\item \code{kappa}: Concentration parameter of the von Mises distribution
 \item \code{thetat}: Mixture weight for target responses
 }
 \item \strong{Fixed parameters:}
 \itemize{
 \item \code{mu1} = 0
 }
+\item \strong{Default parameter links:}
+
+mu1 = identity; kappa = log; thetat = identity
 }
 }
 \examples{

@@ -279,10 +279,10 @@ order_data_query <- function(model, data, formula) {
 
     if(interactive()) {
       var <- utils::menu(c("Yes (note: you will receive code to sort your data)",
-               paste0("Let bmm sort the data for you and continue with the faster model fitting ",
-                      crayon::red("(*)")),
-               paste0("No, I want to continue with the slower estimation\n\n", caution_msg, collapse = "\n")),
-               title="Do you want to stop and sort your data? (y/n): ")
+                           paste0("Let bmm sort the data for you and continue with the faster model fitting ",
+                                  crayon::red("(*)")),
+                           paste0("No, I want to continue with the slower estimation\n\n", caution_msg, collapse = "\n")),
+                         title="Do you want to stop and sort your data? (y/n): ")
       if(var == 1) {
         message("Please sort your data by all predictors and then re-run the model.")
         data_name <- attr(data, "data_name")
@@ -516,3 +516,5 @@ tryCatch2 <- function(expr, capture = FALSE) {
     return(toreturn)
   }
 }
+
+

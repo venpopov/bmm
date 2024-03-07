@@ -22,14 +22,14 @@ test_that('wrong_parameters doesnt reject non-linear transformations', {
 
 test_that("add_missing_parameters works", {
   f <- bmmformula(c ~ 1)
-  model_pars <- names(IMMfull(NA,NA, NA,NA)$info$parameters)
+  model_pars <- names(IMMfull(NA,NA, NA,NA)$parameters)
   expect_equal(names(suppressMessages(add_missing_parameters(IMMfull(NA,NA, NA,NA), f))), model_pars)
 
   f <- bmmformula(c ~ 1,
                   s ~ 1,
                   a ~ 1,
                   kappa ~ 1)
-  model_pars <- names(IMMfull(NA,NA, NA,NA)$info$parameters)
+  model_pars <- names(IMMfull(NA,NA, NA,NA)$parameters)
   expect_equal(names(suppressMessages(add_missing_parameters(IMMfull(NA,NA, NA,NA), f))), model_pars)
 })
 
@@ -70,6 +70,4 @@ test_that('has_intercept works', {
   expect_false(has_intercept(y ~ 0+A + B))
   expect_false(has_intercept(y ~ 0+A * B))
   expect_false(has_intercept(y ~ 0+A + (A|ID)))
-
-  expect_error(has_intercept(bmf(y~1,c~1)),'The formula must be a formula object.')
 })

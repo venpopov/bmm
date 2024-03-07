@@ -248,8 +248,8 @@ bmf2bf.bmmmodel <- function(model, formula) {
 
 add_missing_parameters <- function(model, formula) {
   formula_pars <- names(formula)
-  model_pars <- names(model$info$parameters)
-  fixed_pars <- names(model$info$fixed_parameters)
+  model_pars <- names(model$parameters)
+  fixed_pars <- names(model$fixed_parameters)
   missing_pars <- setdiff(model_pars,formula_pars)
   is_fixed <- missing_pars %in% fixed_pars
   names(is_fixed) <- missing_pars
@@ -266,7 +266,7 @@ add_missing_parameters <- function(model, formula) {
 
 wrong_parameters <- function(model, formula) {
   fpars <- names(formula)
-  mpars <- names(model$info$parameters)
+  mpars <- names(model$parameters)
   rhs_vars <- rhs_vars(formula)
   wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
   fpars[wpars]
@@ -330,7 +330,7 @@ is_nl <- function(object, ...) {
 
 #' @export
 is_nl.bmmformula <- function(object, ...) {
-  sapply(object, is_nl)
+  unlist(sapply(object, is_nl))
 }
 
 #' @export

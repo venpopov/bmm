@@ -5,13 +5,16 @@
 \alias{sdmSimple}
 \title{Signal Discrimination Model (SDM) by Oberauer (2023)}
 \usage{
-sdmSimple(resp_err, ...)
+sdmSimple(resp_err, links = NULL, ...)
 }
 \arguments{
 \item{resp_err}{The name of the variable in the dataset containing the
 response error. The response error should code the response relative to the
 to-be-recalled target in radians. You can transform the response error in
 degrees to radians using the \code{deg2rad} function.}
+
+\item{links}{A list of links for the parameters. \emph{Currently does not affect
+the model fits, but it will in the future.}}
 
 \item{...}{used internally for testing, ignore it}
 }
@@ -41,12 +44,15 @@ and how to use it.
 \itemize{
 \item \code{mu}: Location parameter of the SDM distribution (in radians; by default fixed internally to 0)
 \item \code{c}: Memory strength parameter of the SDM distribution
-\item \code{kappa}: Precision parameter of the SDM distribution (log scale)
+\item \code{kappa}: Precision parameter of the SDM distribution
 }
 \item \strong{Fixed parameters:}
 \itemize{
 \item \code{mu} = 0
 }
+\item \strong{Default parameter links:}
+
+mu = identity; c = log; kappa = log
 }
 }
 \examples{

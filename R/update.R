@@ -22,8 +22,8 @@
 update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ...) {
   dots <- list(...)
 
-  if (isTRUE(object$version$bmm < "0.3.6")) {
-    stop2("Updating bmm models works only with models fitted with version 0.3.6 or higher")
+  if (isTRUE(object$version$bmm < "0.3.0")) {
+    stop2("Updating bmm models works only with models fitted with version 0.3.0 or higher")
   }
   if ("data" %in% names(dots)) {
     stop2("Please use argument 'newdata' to update the data.")
@@ -32,6 +32,7 @@ update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ..
     stop2("You cannot update with a different model.\n",
           "If you want to use a different model, please use `fit_model()` instead.")
   }
+  object <- restructure.bmm(object)
 
   fit_args <- object$bmm$fit_args
   model <- object$bmm$model

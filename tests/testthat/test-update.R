@@ -6,7 +6,7 @@ test_that('update.bmmfit works', {
   # formula is replaced
   up <- update(fit1, formula. = bmf(c ~ 1, kappa ~ 1), testmode = TRUE)
   expect_true(is(up, "bmmfit"))
-  expect_equal(up$bmm$fit_args$formula$pforms$c, c ~ 1)
+  expect_equal(up$bmm$fit_args$formula$pforms$c, c ~ 1, ignore_attr = TRUE)
 
   # data is replaced, old formula is kept
   new_data <- data
@@ -15,7 +15,7 @@ test_that('update.bmmfit works', {
                testmode = TRUE)
   expect_true(is(up, "bmmfit"))
   expect_equal(attr(up$data, "data_name"), "new_data")
-  expect_equal(up$bmm$fit_args$formula$pforms$c, c ~ 0 + set_size, ignore_formula_env=T)
+  expect_equal(up$bmm$fit_args$formula$pforms$c, c ~ 0 + set_size, ignore_formula_env=T, ignore_attr = TRUE)
 
   # prior is replaced
   up <- update(fit1, formula. = bmf(c ~ 1, kappa ~ 1), testmode = TRUE,

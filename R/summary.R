@@ -8,6 +8,7 @@
 #' options(bmm.color_summary = FALSE) or bmm_options(color_summary = FALSE)
 #' @export
 summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE,  mc_se = FALSE, ..., backend = 'bmm') {
+  object <- restructure.bmm(object)
   backend <- match.arg(backend, c('bmm', 'brms'))
 
   # get summary object from brms, since it contains a lot of necessary information:
@@ -15,6 +16,8 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
   if (backend == 'brms') {
     return(out)
   }
+
+  out <- rename_mu_smry(out, get_mu_pars(object))
 
   # get the bmm specific information
   bmmargs <- object$bmm$fit_args
@@ -34,14 +37,13 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
 #' @export
 print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary', TRUE), ...) {
   options(bmm.color_summary = color)
-  pars_to_print <- names(x$model$info$parameters)
-
+  pars_to_print <- select_pars(x)
   # add check if the parameter is fixed by the user
 
   cat(style('#916af1')("  Model: "))
   cat(summarise_model(x$model, newline = TRUE, wsp = 9), "\n")
   cat(style('#916af1')("  Links: "))
-  cat(summarise_links(x$model, x$formula), "\n")
+  cat(summarise_links(x$model$links), "\n")
   cat(style('#916af1')("Formula: "))
   cat(summarise_formula.bmmformula(x$formula, newline = TRUE, wsp = 9, model = x$model),'\n')
   cat(style('#916af1')("   Data:"), attr(x$data, 'data_name'),
@@ -71,7 +73,7 @@ print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary
   #   cat("\n")
   # }
   if (length(x$random)) {
-    cat(style('darkgreen')("Multilevel Hyperparameters:\n"))
+    cat(style('green')("Multilevel Hyperparameters:\n"))
     for (i in seq_along(x$random)) {
       g <- names(x$random)[i]
       cat(paste0("~", g, " (Number of levels: ", x$ngrps[[g]], ") \n"))
@@ -83,8 +85,7 @@ print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary
     }
   }
   if (nrow(x$fixed)) {
-    cat(style('darkgreen')("Regression Coefficients:\n"))
-    pars <- names(x$fixed)
+    cat(style('green')("Regression Coefficients:\n"))
     include <- sapply(paste0(pars_to_print,'_'), function(p) grepl(p, rownames(x$fixed)))
     include <- apply(include, 1, any)
     reduced <- x$fixed[include,]
@@ -93,7 +94,7 @@ print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary
     cat("\n")
 
     if (sum(is_constant)) {
-      cat(style('darkgreen')("Constant Paramaters:\n"))
+      cat(style('green')("Constant Parameters:\n"))
       res <- reduced[is_constant,]
       constants <- rownames(res)
 
@@ -131,8 +132,24 @@ print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary
   invisible(x)
 }
 
-summarise_links <- function(model, formula) {
-  return(invisible(NULL))
+rename_mu_smry <- function(x, mu_pars) {
+  for (i in seq_along(x)) {
+    if (is.data.frame(x[[i]])) {
+      rownames(x[[i]])[rownames(x[[i]]) %in% mu_pars] <- paste0("mu_", mu_pars)
+    }
+  }
+  x
+}
+
+select_pars <- function(x) {
+  model_pars <- names(x$model$parameters)
+  provided_dpars <- names(x$formula)[!is_nl(x$formula)]
+  union(model_pars, provided_dpars)
+}
+
+summarise_links <- function(links) {
+  out <- paste0(names(links), " = ", links)
+  paste(out, sep = "", collapse = "; ")
 }
 
 summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp=0, model = NULL) {
@@ -140,7 +157,7 @@ summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp=0, model =
   wspace <- collapse(rep(' ', wsp))
   sep <- paste0(ifelse(newline, '\n', ','), wspace)
   if (!is.null(model)) {
-    fixpars <- model$info$fixed_parameters
+    fixpars <- model$fixed_parameters
     # TODO: abstract this from here and summarize_model
     fpnames <- names(fixpars)
     fpforms <- sapply(fpnames, function(fpar) {
@@ -218,3 +235,5 @@ style <- function(...) {
     function(x) x
   }
 }
+
+
