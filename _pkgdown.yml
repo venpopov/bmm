@@ -37,6 +37,7 @@ reference:
    - "fit_model"
    - "bmmformula"
    - "update.bmmfit"
+   - "summary.bmmfit"
  - title: "Extract model information"
    desc: "Utility functions for extracting default priors, generate stan code, stan data, etc."
  - contents:
