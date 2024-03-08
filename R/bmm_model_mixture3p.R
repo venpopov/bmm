@@ -2,44 +2,58 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture3p <- function(resp_err = NULL, nt_features = NULL, setsize = NULL, regex = FALSE, ...) {
+.model_mixture3p <- function(resp_err = NULL, nt_features = NULL, setsize = NULL,
+                             regex = FALSE, links = NULL, ...) {
 
-  out <- list(
-    resp_vars = nlist(resp_err),
-    other_vars = nlist(nt_features, setsize),
-    info = list(
+  out <- structure(
+    list(
+      resp_vars = nlist(resp_err),
+      other_vars = nlist(nt_features, setsize),
       domain = "Visual working memory",
       task = "Continuous reproduction",
       name = "Three-parameter mixture model by Bays et al (2009).",
       version = "NA",
-      citation = paste0("Bays, P. M., Catalao, R. F. G., & Husain, M. (2009). ",
-                        "The precision of visual working memory is set by allocation ",
-                        "of a shared resource. Journal of Vision, 9(10), 1-11"),
-      requirements = paste0('- The response vairable should be in radians and ',
-                            'represent the angular error relative to the target\n  ',
-                            '- The non-target features should be in radians and be ',
-                            'centered relative to the target'),
+      citation = glue(
+        "Bays, P. M., Catalao, R. F. G., & Husain, M. (2009). \\
+        The precision of visual working memory is set by allocation \\
+        of a shared resource. Journal of Vision, 9(10), 1-11"
+      ),
+      requirements = glue(
+        '- The response vairable should be in radians and \\
+        represent the angular error relative to the target
+        - The non-target features should be in radians and be \\
+        centered relative to the target'
+      ),
       parameters = list(
-        mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
-                     "(in radians). Fixed internally to 0 by default."),
-        kappa = "Concentration parameter of the von Mises distribution (log scale)",
+        mu1 = glue(
+          "Location parameter of the von Mises distribution for memory responses \\
+          (in radians). Fixed internally to 0 by default."
+        ),
+        kappa = "Concentration parameter of the von Mises distribution",
         thetat = "Mixture weight for target responses",
         thetant = "Mixture weight for non-target responses"
       ),
-      fixed_parameters = list(
-        mu1 = 0
-      )),
-    void_mu = FALSE
+      links = list(
+        mu1 = "identity",
+        kappa = "log",
+        thetat = "identity",
+        thetant = "identity"
+      ),
+      fixed_parameters = list(mu1 = 0),
+      void_mu = FALSE
+    ),
+    # attributes
+    regex = regex,
+    regex_vars = c('nt_features'),
+    class =  c("bmmmodel", "vwm", "nontargets", "mixture3p")
   )
-  attr(out, "regex") <- regex
-  attr(out, "regex_vars") <- c('nt_features') # variables that can be specified via regular expression
-  class(out) = c("bmmmodel", "vwm", "nontargets", "mixture3p")
+  out$links[names(links)] <- links
   out
 }
 
 
 # user facing alias
-#' @title `r .model_mixture3p()$info$name`
+#' @title `r .model_mixture3p()$name`
 #' @details `r model_info(.model_mixture3p())`
 #' @param resp_err The name of the variable in the dataset containing
 #'   the response error. The response error should code the response relative to
@@ -55,6 +69,8 @@
 #'   fixed.
 #' @param regex Logical. If TRUE, the `nt_features` argument is interpreted as
 #'  a regular expression to match the non-target feature columns in the dataset.
+#' @param links A list of links for the parameters. *Currently does not affect
+#'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel
@@ -99,10 +115,11 @@
 #'                  iter = 500,
 #'                  backend='cmdstanr')
 #' }
-mixture3p <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
+mixture3p <- function(resp_err, nt_features, setsize, regex = FALSE,
+                      links = NULL, ...) {
   stop_missing_args()
   .model_mixture3p(resp_err = resp_err, nt_features = nt_features,
-                   setsize = setsize, regex = regex, ...)
+                   setsize = setsize, regex = regex, links = links, ...)
 }
 
 #############################################################################!

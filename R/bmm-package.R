@@ -2,6 +2,8 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @importFrom brms save_pars
+#' @importFrom glue glue
+#' @import stats
+#'
 ## usethis namespace: end
 NULL

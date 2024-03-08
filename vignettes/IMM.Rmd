@@ -30,10 +30,18 @@ margin-bottom: 1.5em ;
 </style>
 
 ```{r, include = FALSE}
+options(crayon.enabled = TRUE)
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = "jpeg",
+  dpi = 100,
+  fig.asp = 0.8,
+  fig.width = 5,
+  out.width = "80%",
+  fig.align = "center"
 )
+fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 ```
 
 # Introduction to the model
@@ -98,7 +106,7 @@ Additionally, because we use the `softmax` normalization for translating activat
 
 You should start by loading the `bmm` package:
 
-```{r}
+```{r setup, message=FALSE, warning=FALSE}
 library(bmm)
 ```
 
@@ -211,12 +219,12 @@ fit <- fit_model(
 Running this model takes about 2 to 5 minutes (depending on the speed of your computer). Here we load an already saved fit object, but on your machine you will have to wait until the model finishes sampling. Both `brms` and `cmdstanr` typically print out some information on the sampling progress.
 
 ```{r}
-fit <- readRDS(system.file("imm_vignette_fit.rds", package='bmm'))
+fit <- bmm:::bmmfit_imm_vignette
 ```
 
 Using this `fit` object we can have a quick look at the summary of the fitted model:
 
-```{r}
+```{r, comment=NA}
 summary(fit)
 ```
 
@@ -267,7 +275,7 @@ as.data.frame(draws) %>%
                                value = c(kappas, As, Cs, Ss)),
              aes(value,par), color = "red",
              shape = "diamond", size = 2.5) +
-  scale_x_continuous(lim=c(0,20))
+  scale_x_continuous(lim=c(-1.5,20))
 
 colnames(draws)
 ```

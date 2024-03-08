@@ -42,7 +42,7 @@ test_that('Available mock models run without errors',{
   expect_type(mock_fit$bmm$fit_args, "list")
   expect_equal(names(mock_fit$bmm$fit_args[1:4]), c("formula", "data", "family", "prior"))
 
-  # IMMbsc model mock fit
+  # IMMfull model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, a ~ 1, s ~ 1)
   mock_fit <- fit_model(f, dat, IMMfull(resp_err = "resp_err", setsize=3, nt_features = paste0('Item',2:3,'_rel'), nt_distances=paste0('spaD',2:3)), backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)

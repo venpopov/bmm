@@ -237,8 +237,8 @@ print_pretty_models_md <- function() {
     args_list <- formals(m)
     test_args <- lapply(args_list, function(x) {NULL})
     m <- brms::do_call(m, test_args)
-    domains <- c(domains, m$info$domain)
-    models <- c(models, m$info$name)
+    domains <- c(domains, m$domain)
+    models <- c(models, m$name)
   }
   unique_domains <- unique(domains)
   for (dom in unique_domains) {
@@ -260,7 +260,7 @@ model_info <- function(model, components = 'all') {
 
 #' @export
 model_info.bmmmodel <- function(model, components = 'all') {
-  pars <- model$info$parameters
+  pars <- model$parameters
   par_info <- ""
   if (length(pars) > 0) {
     for (par in names(pars)) {
@@ -268,7 +268,7 @@ model_info.bmmmodel <- function(model, components = 'all') {
     }
   }
 
-  fixed_pars <- model$info$fixed_parameters
+  fixed_pars <- model$fixed_parameters
   fixed_par_info <- ""
   if (length(fixed_pars) > 0) {
     for (fixed_par in names(fixed_pars)) {
@@ -276,22 +276,26 @@ model_info.bmmmodel <- function(model, components = 'all') {
     }
   }
 
+  links <- model$links
+  links_info <- summarise_links(links)
+
   info_all <-   list(
-    domain = paste0("* **Domain:** ", model$info$domain, "\n\n"),
-    task = paste0("* **Task:** ", model$info$task, "\n\n"),
-    name = paste0("* **Name:** ", model$info$name, "\n\n"),
-    citation = paste0("* **Citation:** \n\n   - ", model$info$citation, "\n\n"),
-    version = paste0("* **Version:** ", model$info$version, "\n\n"),
-    requirements = paste0("* **Requirements:** \n\n  ", model$info$requirements, "\n\n"),
-    parameters = paste0("* **Parameters:** \n\n  ", par_info, "\n\n"),
-    fixed_parameters = paste0("* **Fixed parameters:** \n\n  ", fixed_par_info, "\n\n")
+    domain = paste0("* **Domain:** ", model$domain, "\n\n"),
+    task = paste0("* **Task:** ", model$task, "\n\n"),
+    name = paste0("* **Name:** ", model$name, "\n\n"),
+    citation = paste0("* **Citation:** \n\n   - ", model$citation, "\n\n"),
+    version = paste0("* **Version:** ", model$version, "\n\n"),
+    requirements = paste0("* **Requirements:** \n\n  ", model$requirements, "\n\n"),
+    parameters = paste0("* **Parameters:** \n\n  ", par_info, "\n"),
+    fixed_parameters = paste0("* **Fixed parameters:** \n\n  ", fixed_par_info, "\n"),
+    links = paste0("* **Default parameter links:** \n\n  ", links_info, "\n")
   )
 
   if (length(components) == 1 && components == 'all') {
     components <- names(info_all)
   }
 
-  if (model$info$version == "NA" || model$info$version == "") {
+  if (model$version == "NA" || model$version == "") {
     components <- components[components != "version"]
   }
 
@@ -446,7 +450,7 @@ use_model_template <- function(model_name,
   user_facing_alias <- glue::glue("# user facing alias\n",
                                   "# information in the title and details sections will be filled in\n",
                                   "# automatically based on the information in the .model_<<model_name>>()$info\n \n",
-                                  "#' @title `r .model_<<model_name>>()$info$name`\n",
+                                  "#' @title `r .model_<<model_name>>()$name`\n",
                                   "#' @name Model Name",
                                   "#' @details `r model_info(model_<<model_name>>())`\n",
                                   "#' @param resp_var1 A description of the response variable\n",
