@@ -74,13 +74,13 @@ model.
 \details{
 The following models are supported:
 \itemize{
-\item IMMabc(resp_err, nt_features, setsize, regex)
-\item IMMbsc(resp_err, nt_features, nt_distances, setsize, regex)
-\item IMMfull(resp_err, nt_features, nt_distances, setsize, regex)
-\item M3custom(resp_cats, num_options, choice_rule)
-\item mixture2p(resp_err)
-\item mixture3p(resp_err, nt_features, setsize, regex)
-\item sdmSimple(resp_err)
+\item IMMabc(resp_err, nt_features, setsize, regex, links)
+\item IMMbsc(resp_err, nt_features, nt_distances, setsize, regex, links)
+\item IMMfull(resp_err, nt_features, nt_distances, setsize, regex, links)
+\item M3custom(resp_cats, num_options, links, choice_rule)
+\item mixture2p(resp_err, links)
+\item mixture3p(resp_err, nt_features, setsize, regex, links)
+\item sdmSimple(resp_err, links)
 }
 
 Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull

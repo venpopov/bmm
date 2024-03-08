@@ -5,7 +5,7 @@
 \alias{M3custom}
 \title{The Memory Measurement Model by Oberauer & Lewandowsky (2019)}
 \usage{
-M3custom(resp_cats, num_options, choice_rule, ...)
+M3custom(resp_cats, num_options, links, choice_rule = "softmax", ...)
 }
 \arguments{
 \item{resp_cats}{The variable names that contain the number of responses for each of the
@@ -16,6 +16,14 @@ of candidates in the respective response categories are constant across all cond
 in the experiment. Or a vector specifying the variable names that contain the number of
 candidates in each response category. The order of these variables should be in the
 same order as the names of the response categories passed to \code{resp_cats}}
+
+\item{links}{A named list that provides the link functions that should be used for all M3
+parameters used in the model calls. Current options for the link functions are: "identity",
+"log", and "logit". The "identity" link should be used for all parameters with an unbounded
+range from minus to plus infinity. The "log" link should be used for all parameters with a bounded
+range from zero to plus infinity (i.e., most activation sources). The "logit" link should be
+used for all parameters bounded between zero and one (i.e. proportional reductions in activations,
+such as filtering or removal)}
 
 \item{choice_rule}{The choice rule that should be used for the M3. The options are "softmax"
 or "luce". The "softmax" option implements the softmax normalization of activation into

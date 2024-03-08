@@ -29,10 +29,14 @@ margin-bottom: 1.5em ;
 </style>
 
 ```{r, include = FALSE}
+options(crayon.enabled = TRUE)
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = "jpeg",
+  dpi = 100
 )
+fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 ```
 
 # Introduction to the model
@@ -107,7 +111,7 @@ This integral cannot be expressed in closed form, but it can be approximated usi
 
 Begin by loading the `bmm` package:
 
-```{r setup}
+```{r setup, message=FALSE, warning=FALSE}
 library(bmm)
 ```
 
@@ -134,7 +138,7 @@ dat <- data.frame(y = y,
 
 This gives us the following distribution of response errors, with lines overlaying the predicted density generated with `dsdm`:
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, fig.width=8, fig.height=3}
 # generate predicted SDM density:
 dd <- data.frame(y = rep(seq(-pi, pi, length.out=1000),3),
                  cond = factor(rep(c('A','B','C'), each=1000)),
@@ -190,20 +194,20 @@ fit <- fit_model(
   parallel = T,
   chains = 4,
   init = 0.5,
-  iter=2000,
+  iter = 2000,
   backend='cmdstanr'
 )
 ```
 
-The model takes about 30 seconds to fit after it is compiled. Here we just preload the results of the model fit, but in practice you would have to wait for the model to finish fitting.
+The model takes about 30 seconds to fit after it is compiled. 
 
-```{r}
-fit <- readRDS(system.file("sdm_vignette_fit.rds", package='bmm'))
+```{r, echo=FALSE}
+fit <- bmm:::bmmfit_sdm_vignette
 ```
 
 We can now inspect the results of the model fit:
 
-```{r}
+```{r, comment=NA, collapse=TRUE}
 summary(fit)
 ```
 
@@ -221,7 +225,7 @@ par_labels[,1:3]
 
 We can see that even though the estimated parameters are close, they are not exactly the same as the true parameters. To get a better picture, we can plot the estimated posterior distributions of the parameters:
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.width=5}
 library(tidybayes)
 library(dplyr)
 library(tidyr)
@@ -248,7 +252,7 @@ The true parameters all lie within the 50% credible intervals, which is a good s
 
 As a final step, we can plot our data again, adding another line overlay with the density predicted by the estimated parameters:
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, fig.width=8, fig.height=4}
 # generate predicted SDM density:
 ddest <- data.frame(y = rep(seq(-pi, pi, length.out=1000),3),
                     cond = factor(rep(c('A','B','C'), each=1000)),

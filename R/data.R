@@ -40,3 +40,27 @@
 #'
 #' @source <https://osf.io/m4shu>
 "OberauerLin_2017"
+
+#' Data from Experiment 1 reported by Oberauer & Lewandowsky (2019)
+#'
+#' Raw data of 40 subjects that completed a verbal memory recall task in three different
+#' conditions using different types of distractor words.
+#'
+#' @format ## `OberauerLewandowsky_2019_E1`
+#' A data frame with 120 rows and 10 columns:
+#' \describe{
+#'   \item{ID}{Integer uniquely identifying each subject}
+#'   \item{cond}{Factor sperating the three experimental conditions: `new distractors` refers to
+#'   new words being used as distractors, `old reordered` refers to the to be remembered words
+#'   being the distractors, but reordered relative to the serial position, `old same` refers
+#'   to the to be remebered words being the distractors, and appearing in the same order as
+#'   the to be remembered words.}
+#'   \item{corr}{The frequency a subject recalled the correct item}
+#'   \item{other}{The frequency a subject recalled one of the other to be remebered words}
+#'   \item{dist}{The frequency a subject recalled one of the distractors}
+#'   \item{npl}{The frequency a subject recalled a not-presented lure (NPL), that is a word
+#'   that was not presented during a trial}
+#'   \item{nCorr, nOther, nDist, nNPL}{The number of candidataes in each of the response categories}
+#' }
+#'
+"OberauerLewandowsky_2019_E1"

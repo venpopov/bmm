@@ -3,46 +3,50 @@
 #############################################################################!
 # see file 'R/bmm_model_mixture3p.R' for an example
 
-.model_M3custom <- function(resp_cats = NULL, num_options = NULL, choice_rule = "softmax", ...) {
+.model_M3custom <- function(resp_cats = NULL, num_options = NULL, links = NULL, choice_rule = "softmax", ...) {
+   # name the number of options in each response categories if no names are provided
+   if (is.null(names(num_options))) names(num_options) <- resp_cats
+
+   # save model information
    out <- list(
       resp_vars = nlist(resp_cats),
-      other_vars = nlist(num_options, choice_rule),
-      info = list(
-         domain = 'Working Memory (categorical)',
-         task = 'n-AFC retrieval',
-         name = 'The Memory Measurement Model by Oberauer & Lewandowsky (2019)',
-         citation = 'Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.',
-         version = 'custom',
-         requirements = '- Provide names for variables specifying the number of responses in a set of response categories.',
-         parameters = list(
-            custom_activations = "Dependent of the provided activation functions, the user
-              decides which activation sources for the different categories exist and how
-              they are labeled",
-            b = "Background activation. This source of activation should be added to the
+      other_vars = nlist(num_options, choice_rule, ...),
+      links = links,
+      domain = 'Working Memory (categorical)',
+      task = 'n-AFC retrieval',
+      name = 'The Memory Measurement Model by Oberauer & Lewandowsky (2019)',
+      citation = 'Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.',
+      version = 'custom',
+      requirements = '- Provide names for variables specifying the number of responses in a set of response categories.\n
+         - Specify activation sources for each response categories \n
+         - Include at least an activation source "b" for all response categories \n
+         - Predict the specified activation at least by a fixed intercept and any additional predictors from your data',
+      parameters = list(
+         b = "Background activation. This source of activation should be added to the
               activation function for each response category, and represents the background
               noise. This parameter is fixed for scaling, but needs to be included in all
               models."
-         ),
-         fixed_parameters = list(
-            b = 0
-         )
+      ),
+      fixed_parameters = list(
+         b = ifelse(choice_rule == "softmax", 0, 0.1)
       ),
       void_mu = FALSE
    )
    class(out) <- c('bmmmodel','M3', 'M3custom')
    out
 }
+
+
 # user facing alias
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_M3()$info
 
-#' @title `r .model_M3custom()$info$name`
+#' @title `r .model_M3custom()$name`
 #' @name M3
 #'
 #' @details
 #'   #### Version: `M3custom`
 #'   `r model_info(.model_M3custom(), components =c('domain', 'task', 'name', 'citation'))`
-#'
 #'
 #' @param resp_cats The variable names that contain the number of responses for each of the
 #'   response categories used for the M3.
@@ -51,6 +55,13 @@
 #'   in the experiment. Or a vector specifying the variable names that contain the number of
 #'   candidates in each response category. The order of these variables should be in the
 #'   same order as the names of the response categories passed to `resp_cats`
+#' @param links A named list that provides the link functions that should be used for all M3
+#'   parameters used in the model calls. Current options for the link functions are: "identity",
+#'   "log", and "logit". The "identity" link should be used for all parameters with an unbounded
+#'   range from minus to plus infinity. The "log" link should be used for all parameters with a bounded
+#'   range from zero to plus infinity (i.e., most activation sources). The "logit" link should be
+#'   used for all parameters bounded between zero and one (i.e. proportional reductions in activations,
+#'   such as filtering or removal)
 #' @param choice_rule The choice rule that should be used for the M3. The options are "softmax"
 #'   or "luce". The "softmax" option implements the softmax normalization of activation into
 #'   probabilities for choosing the different response categories. The "luce" option implements
@@ -69,37 +80,10 @@
 #' }
 #'
 #' @export
-M3custom <- function(resp_cats, num_options, choice_rule, ...) {
+M3custom <- function(resp_cats, num_options, links, choice_rule = "softmax", ...) {
    stop_missing_args()
-   .model_M3(resp_cats = resp_cats, num_options = num_options, choice_rule = choice_rule, ...)
-}
-
-
-#############################################################################!
-# CHECK_DATA S3 methods                                                  ####
-#############################################################################!
-# A check_data.* function should be defined for each class of the model.
-# If a model shares methods with other models, the shared methods should be
-# defined in data-helpers.R. Put here only the methods that are specific to
-# the model. See ?check_data for details.
-# (YOU CAN DELETE THIS SECTION IF YOU DO NOT REQUIRE ADDITIONAL DATA CHECKS)
-
-#' @export
-check_data.M3 <- function(model, data, formula) {
-   # retrieve required arguments
-   required_arg1 <- model$other_vars$required_arg1
-   required_arg2 <- model$other_vars$required_arg2
-
-   # check the data (required)
-
-
-   # compute any necessary transformations (optional)
-
-   # save some variables as attributes of the data for later use (optional)
-
-   data = NextMethod('check_data')
-
-   return(data)
+   .model_M3custom(resp_cats = resp_cats, num_options = num_options,
+                   choice_rule = choice_rule, links = links, ...)
 }
 
 
@@ -115,27 +99,36 @@ check_data.M3 <- function(model, data, formula) {
 #' @export
 bmf2bf.M3 <- function(model, formula) {
    # retrieve required response arguments
-   resp_var1 <- model$resp_vars$resp_var1
-   resp_var2 <- model$resp_vars$resp_arg2
+   resp_cats <- model$resp_vars$resp_cats
+   nOpt_idx_vars <- paste0("Idx_", resp_cats)
+   names(nOpt_idx_vars) <- resp_cats
+
+   # retrieve choice rule
+   choice_rule <- tolower(model$other_vars$choice_rule)
+
+   # add transformation to activations according to choice rules
+   transform_act <- ifelse(choice_rule == "luce","log(","")
+   end_act <- ifelse(choice_rule == "luce",")","")
+   zero_Opt <- ifelse(model$other_vars$choice_rule == "softmax","(-100)","(exp(-100))")
+   op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","+","*")
+   trans_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","log(","")
+   end_Nopts <- ifelse(model$other_vars$choice_rule == "softmax",")","")
 
    # set the base brmsformula based
-   brms_formula <- brms::bf(paste0(resp_var1," | ", vreal(resp_var2), " ~ 1" ),)
+   brms_formula <- brms::bf(paste0("Y | trials(nTrials)", " ~", transform_act, nOpt_idx_vars[resp_cats[1]],"*(", resp_cats[1],
+                                   op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[1]],end_Nopts,")",
+                                   " + (1-",nOpt_idx_vars[resp_cats[1]],") *",zero_Opt,end_act),nl = TRUE)
 
-   # add bmmformula to the brms_formula
-   # check if parameters are used as non-linear predictors in other formulas
-   # and use the brms::lf() or brms::nlf() accordingly.
-   dpars <- names(formula)
-   for (dpar in dpars) {
-     pform <- formula[[dpar]]
-     predictors <- rhs_vars(pform)
-     if (any(predictors %in% dpars)) {
-       brms_formula <- brms_formula + brms::nlf(pform)
-     } else {
-       brms_formula <- brms_formula + brms::lf(pform)
-     }
+   # for each dependent parameter, check if it is used as a non-linear predictor of
+   # another parameter and add the corresponding brms function
+   for (i in 2:length(resp_cats) ) {
+      brms_formula <- brms_formula +
+         glue_nlf(paste0("mu",resp_cats[i]), " ~", transform_act, nOpt_idx_vars[resp_cats[i]],"*(", resp_cats[i],
+                  op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[i]],end_Nopts,")",
+                  " + (1-",nOpt_idx_vars[resp_cats[i]],") *",zero_Opt,end_act)
    }
 
-   return(brms_formula)
+   brms_formula
 }
 
 
@@ -147,39 +140,24 @@ bmf2bf.M3 <- function(model, formula) {
 
 #' @export
 configure_model.M3 <- function(model, data, formula) {
-   # retrieve required arguments
-   required_arg1 <- model$other_vars$required_arg1
-   required_arg2 <- model$other_vars$required_arg2
-
-   # retrieve arguments from the data check
-   my_precomputed_var <- attr(data, 'my_precomputed_var')
-
    # construct brms formula from the bmm formula
    bmm_formula <- formula
    formula <- bmf2bf(model, bmm_formula)
 
    # construct the family
-   family <- NULL
+   family <- brms::multinomial(refcat = NA)
 
    # construct the default prior
-   prior <- NULL
+   prior <- fixed_pars_priors(model, partype = "nlpar", class = "b")
+   # if (getOption("bmm.default_priors", TRUE)) {
+   #    prior <- prior +
+   #       set_default_prior(bmm_formula, data,
+   #                         prior_list=list(kappa =list(main = 'normal(2,1)',effects = 'normal(0,1)', nlpar = T),
+   #                                         c = list(main = 'normal(0,1)',effects = 'normal(0,1)', nlpar = T),
+   #                                         s = list(main = 'normal(0,1)',effects = 'normal(0,1)', nlpar = T)))
+   # }
 
    # return the list
    out <- nlist(formula, data, family, prior)
    return(out)
 }
-
-
-#############################################################################!
-# POSTPROCESS METHODS                                                    ####
-#############################################################################!
-# A postprocess_brm.* function should be defined for the model class. See
-# ?postprocess_brm for details
-
-#' @export
-postprocess_brm.M3 <- function(model, fit) {
-   # any required postprocessing (if none, delete this section)
-
-   return(fit)
-}
-

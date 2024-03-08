@@ -1,6 +1,6 @@
-#############################################################################!
+############################################################################# !
 # CHECK_DATA METHODS                                                     ####
-#############################################################################!
+############################################################################# !
 
 
 #' @title Generic S3 method for checking data based on model type
@@ -47,8 +47,8 @@ check_data.bmmmodel <- function(model, data, formula) {
     stop("Argument 'data' does not contain observations.")
   }
 
-  attr(data, 'data_name') <- substitute_name(data, envir = eval(parent.frame()))
-  attr(data, 'checked') <- TRUE
+  attr(data, "data_name") <- substitute_name(data, envir = eval(parent.frame()))
+  attr(data, "checked") <- TRUE
   NextMethod("check_data")
 }
 
@@ -59,23 +59,22 @@ check_data.vwm <- function(model, data, formula) {
   if (not_in(resp_name, colnames(data))) {
     stop(paste0("The response variable '", resp_name, "' is not present in the data."))
   }
-  if (max(abs(data[[resp_name]]), na.rm = T) > 2*pi) {
-    warning('It appears your response variable is in degrees.\n
+  if (max(abs(data[[resp_name]]), na.rm = T) > 2 * pi) {
+    warning("It appears your response variable is in degrees.\n
              The model requires the response variable to be in radians.\n
-             The model will continue to run, but the results may be compromised.')
+             The model will continue to run, but the results may be compromised.")
   }
 
   NextMethod("check_data")
 }
 
-
 #' @export
 check_data.nontargets <- function(model, data, formula) {
   nt_features <- model$other_vars$nt_features
-  if (max(abs(data[,nt_features]), na.rm = T) > 2*pi) {
-    warning('It appears at least one of your non_target variables are in degrees.\n
+  if (max(abs(data[, nt_features]), na.rm = T) > 2 * pi) {
+    warning("It appears at least one of your non_target variables are in degrees.\n
              The model requires these variable to be in radians.\n
-             The model will continue to run, but the results may be compromised.')
+             The model will continue to run, but the results may be compromised.")
   }
 
   ss <- check_var_setsize(model$other_vars$setsize, data)
@@ -83,48 +82,55 @@ check_data.nontargets <- function(model, data, formula) {
   ss_numeric <- ss$ss_numeric
 
   if (!isTRUE(all.equal(length(nt_features), max_setsize - 1))) {
-    stop("The number of columns for non-target values in the argument ",
-         "'nt_features' should equal max(setsize)-1")
+    stop(
+      "The number of columns for non-target values in the argument ",
+      "'nt_features' should equal max(setsize)-1"
+    )
   }
 
 
   # create index variables for nt_features and correction variable for theta due to setsize
-  lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
+  lure_idx_vars <- paste0("LureIdx", 1:(max_setsize - 1))
   for (i in 1:(max_setsize - 1)) {
     data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
   }
   data$ss_numeric <- ss_numeric
-  data$inv_ss = 1/(ss_numeric - 1)
-  data$inv_ss = ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
-  data[,nt_features][is.na(data[,nt_features])] <- 0
+  data$inv_ss <- 1 / (ss_numeric - 1)
+  data$inv_ss <- ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
+  data[, nt_features][is.na(data[, nt_features])] <- 0
 
   # save some variables for later use
-  attr(data, 'max_setsize') <- max_setsize
-  attr(data, 'lure_idx_vars') <- lure_idx_vars
+  attr(data, "max_setsize") <- max_setsize
+  attr(data, "lure_idx_vars") <- lure_idx_vars
 
   NextMethod("check_data")
 }
 
-
 check_var_setsize <- function(setsize, data) {
   if (length(setsize) > 1) {
-    stop2("The setsize variable '", setsize, "' must be a single numeric value or a single variable in your data",
-          " You provided a vector of length ", length(setsize))
+    stop2(
+      "The setsize variable '", setsize, "' must be a single numeric value or a single variable in your data",
+      " You provided a vector of length ", length(setsize)
+    )
   }
   # class check - is setsize a single numeric value or a variable in the data
   # coericble to a numeric vector?
   if (is_data_var(setsize, data)) {
-    ss_numeric <- try(as_numeric_vector(data[[setsize]]), silent=T)
+    ss_numeric <- try(as_numeric_vector(data[[setsize]]), silent = T)
     if (is_try_error(ss_numeric)) {
-      stop2("The setsize variable '", setsize, "' must be coercible to a numeric vector.\n",
-            "Did you code your set size as a character vector?")
+      stop2(
+        "The setsize variable '", setsize, "' must be coercible to a numeric vector.\n",
+        "Did you code your set size as a character vector?"
+      )
     }
     max_setsize <- max(ss_numeric, na.rm = T)
   } else {
-    max_setsize <- try(as_one_integer(setsize), silent=T)
+    max_setsize <- try(as_one_integer(setsize), silent = T)
     if (is_try_error(max_setsize) | is.logical(setsize)) {
-      stop2("The setsize variable '", setsize, "' must be either a variable in your data or ",
-            "a single numeric value")
+      stop2(
+        "The setsize variable '", setsize, "' must be either a variable in your data or ",
+        "a single numeric value"
+      )
     }
     ss_numeric <- rep(max_setsize, nrow(data))
   }
@@ -139,10 +145,8 @@ check_var_setsize <- function(setsize, data) {
   list(max_setsize = max_setsize, ss_numeric = ss_numeric)
 }
 
-
-
+#' @export
 check_data.M3 <- function(model, data, formula) {
-
   # Get the vector of the response variables
   resp_name <- model$resp_vars$resp_cats
   # Get the names for each columns
@@ -150,7 +154,7 @@ check_data.M3 <- function(model, data, formula) {
 
   # Check if the response variables are legal or not.
   if (sum(grepl("[[:punct:]]|\\s", resp_name)) > 0) {
-    stop("Space and punctuation are not allowed in the response variable names.")
+    stop2("Space and punctuation are not allowed in the response variable names.")
   }
 
   # Check if the response variables are all present in the data
@@ -158,20 +162,24 @@ check_data.M3 <- function(model, data, formula) {
   if (length(missing_list) > 0) {
     stop(paste0(
       "The response variable(s) '",
-      paste0(missing_list,collapse="', '"),
-      "' is not present in the data."))
+      paste0(missing_list, collapse = "', '"),
+      "' is not present in the data."
+    ))
   }
 
   # Transfer all of the response variables to a matrix and name it 'Y'
-  data$Y <- as.matrix(data[,resp_name])
-  data <- dplyr::select(data, -all_of(resp_name))
+  data$nTrials <- rowSums(data[, resp_name], na.rm = TRUE)
+  resp_matrix <- as.matrix(data[, resp_name])
+  resp_matrix[is.na(resp_matrix)] <- 0
+  data$Y <- resp_matrix
+  data <- dplyr::select(data, -dplyr::all_of(resp_name))
 
   # Get the vector of the options variables
   nOpt_vect <- model$other_vars$num_options
 
   # Check whether the option variables have the same length as the response variables.
   if (length(nOpt_vect) != length(resp_name)) {
-    stop("The option variables should have the same length as the response variables.")
+    stop2("The option variables should have the same length as the response variables.")
   }
 
   # If the number of options is a string, then it is the name of the column in the data
@@ -180,7 +188,7 @@ check_data.M3 <- function(model, data, formula) {
 
     # Check if the name of the number of options is legal or not.
     if (sum(grepl("[[:punct:]]|\\s", option_name)) > 0) {
-      stop("Space and punctuation are not allowed in the number of options variable name.")
+      stop2("Space and punctuation are not allowed in the number of options variable name.")
     }
 
     # Check if the number of options is present in the data
@@ -188,34 +196,50 @@ check_data.M3 <- function(model, data, formula) {
     if (length(missing_list) > 0) {
       stop(paste0(
         "The variable(s) '",
-        paste0(missing_list,collapse="', '"),
-        "' is not present in the data."))
+        paste0(missing_list, collapse = "', '"),
+        "' is not present in the data."
+      ))
     }
+
+    # create index variables for any number of Option being zero in one row
+    nOpt_idx_vars <- paste0("Idx_", resp_name)
+    for (i in 1:length(nOpt_vect)) {
+      if (all(data[[nOpt_vect[i]]] == 0)) {
+        stop2("At least one of the specified number of candidates in the response categories is zero for all oberservations.\n
+            Please remove this category from the model, as it is not identified.")
+      }
+
+      data[[nOpt_idx_vars[i]]] <- ifelse(data[[nOpt_vect[i]]] > 0, 1, 0)
+      data[[nOpt_vect[i]]] <- ifelse(data[[nOpt_vect[i]]] == 0, 0.0001, data[[nOpt_vect[i]]])
+    }
+
     # If the number of options is a numeric vector,
     # then it represents the number of options for each response variable in all conditions.
-    } else if (is.numeric(nOpt_vect)) {
-
-      nOpt_name <- paste0("nOpt",resp_name)
-
-      nOpt_data <- data.frame(nOpt_name, nOpt_vect) %>%
-        tidyr::pivot_wider(names_from = nOpt_name, values_from = nOpt_vect)
-
-      # Add the number of options to the data
-      data <- dplyr::cross_join(data, nOpt_data)
-
-    } else {
-      stop("The number of options should be a string or a numeric vector.")
+  } else if (is.numeric(nOpt_vect)) {
+    if (any(nOpt_vect == 0)) {
+      stop2("At least one of the specified number of candidates in the response categories is zero for all oberservations.\n
+            Please remove this category from the model, as it is not identified.")
     }
 
+    nOpt_name <- paste0("nOpt", resp_name)
+
+    nOpt_data <- data.frame(nOpt_name, nOpt_vect) %>%
+      tidyr::pivot_wider(names_from = nOpt_name, values_from = nOpt_vect)
+
+    # Add the number of options to the data
+    data <- dplyr::cross_join(data, nOpt_data)
+  } else {
+    stop2("The number of options should be a string or a numeric vector.")
+  }
   NextMethod("check_data")
 }
 
 
 
 
-#############################################################################!
+############################################################################# !
 # HELPER FUNCTIONS                                                       ####
-#############################################################################!
+############################################################################# !
 
 #' Calculate response error relative to non-target values
 #'
@@ -239,7 +263,7 @@ calc_error_relative_to_nontargets <- function(data, response, nt_features) {
   data <- data %>%
     tidyr::gather(non_target_name, non_target_value, eval(nt_features))
 
-  data$y_nt <- wrap(data[[response]]-data[["non_target_value"]])
+  data$y_nt <- wrap(data[[response]] - data[["non_target_value"]])
   data
 }
 
@@ -259,17 +283,17 @@ calc_error_relative_to_nontargets <- function(data, response, nt_features) {
 #' @examples
 #' x <- runif(1000, -pi, pi)
 #' y <- runif(1000, -pi, pi)
-#' diff <- x-y
+#' diff <- x - y
 #' hist(diff)
-#' wrapped_diff <- wrap(x-y)
+#' wrapped_diff <- wrap(x - y)
 #' hist(wrapped_diff)
 #'
-wrap <- function(x, radians=TRUE) {
+wrap <- function(x, radians = TRUE) {
   stopifnot(is.logical(radians))
   if (radians) {
-    return(((x+pi) %% (2*pi)) - pi)
+    return(((x + pi) %% (2 * pi)) - pi)
   }
-  ((x+180) %% (2*180)) - 180
+  ((x + 180) %% (2 * 180)) - 180
 }
 
 #' @title Convert degrees to radians or radians to degrees.
@@ -284,16 +308,16 @@ wrap <- function(x, radians=TRUE) {
 #' @keywords transform
 #' @export
 #' @examples
-#'   degrees <- runif(100, min = 0, max = 360)
-#'   radians <- deg2rad(degrees)
-#'   degrees_again <- rad2deg(radians)
-deg2rad <- function(deg){
+#' degrees <- runif(100, min = 0, max = 360)
+#' radians <- deg2rad(degrees)
+#' degrees_again <- rad2deg(radians)
+deg2rad <- function(deg) {
   deg * pi / 180
 }
 
 #' @rdname circle_transform
 #' @export
-rad2deg <- function(rad){
+rad2deg <- function(rad) {
   rad * 180 / pi
 }
 
@@ -325,22 +349,27 @@ rad2deg <- function(rad){
 #'
 #' @examples
 #' sdata1 <- standata(bmf(c ~ 1, kappa ~ 1),
-#'                    data = OberauerLin_2017,
-#'                    model = sdmSimple(resp_err = "dev_rad"))
+#'   data = OberauerLin_2017,
+#'   model = sdmSimple(resp_err = "dev_rad")
+#' )
 #' str(sdata1)
 #' @export
-get_standata <- function(object, data, model, prior=NULL, formula = object, ...) {
-  if (utils::packageVersion('brms') >= "2.20.14") {
+get_standata <- function(object, data, model, prior = NULL, formula = object, ...) {
+  if (utils::packageVersion("brms") >= "2.20.14") {
     message("get_standata is deprecated. Please use standata() or make_standata() instead.")
   } else {
     message("get_standata is deprecated. Please use standata() instead.")
   }
   if (missing(object) && !missing(formula)) {
-    warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
-            " Please use 'object' instead.")
+    warning2(
+      "The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
+      " Please use 'object' instead."
+    )
   }
-  standata.bmmformula(object = formula, data = data,
-                      model = model, prior = prior, ...)
+  standata.bmmformula(
+    object = formula, data = data,
+    model = model, prior = prior, ...
+  )
 }
 
 #' @export
@@ -370,9 +399,9 @@ is_data_ordered <- function(data, formula) {
   predictors <- rhs_vars(formula)
   predictors <- predictors[not_in(predictors, dpars)]
   predictors <- predictors[predictors %in% colnames(data)]
-  data <- data[,predictors]
+  data <- data[, predictors]
   if (length(predictors) > 1) {
-    gr_idx <- do.call(paste, c(data, list(sep="_")))
+    gr_idx <- do.call(paste, c(data, list(sep = "_")))
   } else {
     gr_idx <- unlist(data)
   }
@@ -385,13 +414,9 @@ is_data_ordered <- function(data, formula) {
 has_nonconsecutive_duplicates <- function(vec) {
   unique_vals <- unique(vec)
   cond <- TRUE
-  for(val in unique_vals) {
+  for (val in unique_vals) {
     positions <- which(vec == val)
     cond <- cond & all(diff(positions) == 1)
   }
   !cond
 }
-
-
-
-

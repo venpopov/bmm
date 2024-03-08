@@ -49,15 +49,17 @@ alias for \code{default_prior()}, and \code{default_prior()} is the recommended 
 \dontrun{
 # if using brms >= 2.20.14
 default_prior(bmf(c ~ 1, kappa ~ 1),
-              data = OberauerLin_2017,
-              model = sdmSimple(resp_err = 'dev_rad'))
+  data = OberauerLin_2017,
+  model = sdmSimple(resp_err = "dev_rad")
+)
 # if using brms < 2.20.14
 get_prior(bmf(c ~ 1, kappa ~ 1),
-          data = OberauerLin_2017,
-          model = sdmSimple(resp_err = 'dev_rad'))
+  data = OberauerLin_2017,
+  model = sdmSimple(resp_err = "dev_rad")
+)
 }
 }
 \seealso{
-\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:get_prior]{brms::get_prior()}}
+\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:get_prior]{brms::get_prior()}}.
 }
 \keyword{extract_info}

@@ -36,22 +36,28 @@ data <- OberauerLin_2017
 data$session <- as.factor(data$session)
 # suppressed intercept on thetat, intercept present for kappa
 formula <- bmf(thetat ~ 0 + set_size, kappa ~ session)
-prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
-                   kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
+prior_list <- list(
+  thetat = list(main = "logistic(0,1)", nlpar = TRUE),
+  kappa = list(main = "normal(2,1)", effects = "normal(0,1)", nlpar = TRUE)
+)
 prior <- set_default_prior(formula, data, prior_list)
 print(prior)
 
 # suppressed intercept on both thetat and kappa
 formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + session)
-prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
-                   kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
+prior_list <- list(
+  thetat = list(main = "logistic(0,1)", nlpar = TRUE),
+  kappa = list(main = "normal(2,1)", effects = "normal(0,1)", nlpar = TRUE)
+)
 prior <- set_default_prior(formula, data, prior_list)
 print(prior)
 
 # suppressed intercept on both thetat and kappa, with interaction for kappa
-formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + set_size*session)
-prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
-                   kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
+formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + set_size * session)
+prior_list <- list(
+  thetat = list(main = "logistic(0,1)", nlpar = TRUE),
+  kappa = list(main = "normal(2,1)", effects = "normal(0,1)", nlpar = TRUE)
+)
 prior <- set_default_prior(formula, data, prior_list)
 print(prior)
 }

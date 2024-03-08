@@ -7,11 +7,27 @@
 \alias{IMMabc}
 \title{Interference measurement model by Oberauer and Lin (2017).}
 \usage{
-IMMfull(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...)
+IMMfull(
+  resp_err,
+  nt_features,
+  nt_distances,
+  setsize,
+  regex = FALSE,
+  links = NULL,
+  ...
+)
 
-IMMbsc(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...)
+IMMbsc(
+  resp_err,
+  nt_features,
+  nt_distances,
+  setsize,
+  regex = FALSE,
+  links = NULL,
+  ...
+)
 
-IMMabc(resp_err, nt_features, setsize, regex = FALSE, ...)
+IMMabc(resp_err, nt_features, setsize, regex = FALSE, links = NULL, ...)
 }
 \arguments{
 \item{resp_err}{The name of the variable in the provided dataset containing
@@ -38,6 +54,9 @@ fixed.}
 are interpreted as a regular expression to match the non-target feature
 columns in the dataset.}
 
+\item{links}{A list of links for the parameters. \emph{Currently does not affect
+the model fits, but it will in the future.}}
+
 \item{...}{used internally for testing, ignore it}
 }
 \value{
@@ -61,12 +80,16 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \strong{Requirements:}
 \itemize{
 \item The response vairable should be in radians and represent the angular error relative to the target
+}
+}
+\itemize{
 \item The non-target features should be in radians and be centered relative to the target
 }
+\itemize{
 \item \strong{Parameters:}
 \itemize{
-\item \code{mu1}: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.
-\item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
+\item \code{mu1}: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.
+\item \code{kappa}: Concentration parameter of the von Mises distribution
 \item \code{a}: General activation of memory items
 \item \code{c}: Context activation
 \item \code{s}: Spatial similarity gradient
@@ -83,12 +106,16 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \strong{Requirements:}
 \itemize{
 \item The response vairable should be in radians and represent the angular error relative to the target
-\item The non-target variables should be in radians and be centered relative to the target
 }
+}
+\itemize{
+\item The non-target features should be in radians and be centered relative to the target
+}
+\itemize{
 \item \strong{Parameters:}
 \itemize{
-\item \code{mu1}: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.
-\item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
+\item \code{mu1}: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.
+\item \code{kappa}: Concentration parameter of the von Mises distribution
 \item \code{c}: Context activation
 \item \code{s}: Spatial similarity gradient
 }
@@ -104,12 +131,16 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \strong{Requirements:}
 \itemize{
 \item The response vairable should be in radians and represent the angular error relative to the target
+}
+}
+\itemize{
 \item The non-target features should be in radians and be centered relative to the target
 }
+\itemize{
 \item \strong{Parameters:}
 \itemize{
-\item \code{mu1}: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.
-\item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
+\item \code{mu1}: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.
+\item \code{kappa}: Concentration parameter of the von Mises distribution
 \item \code{a}: General activation of memory items
 \item \code{c}: Context activation
 }

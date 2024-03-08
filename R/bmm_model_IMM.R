@@ -2,114 +2,163 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <- function(resp_err = NULL, nt_features = NULL, setsize = NULL,
-                          regex = FALSE, ...) {
-  out <- list(
-    resp_vars = nlist(resp_err),
-    other_vars = nlist(nt_features, setsize),
-    info = list(
-      domain = "Visual working memory",
-      task = "Continuous reproduction",
-      name = "Interference measurement model by Oberauer and Lin (2017).",
-      version = "abc",
-      citation = paste0("Oberauer, K., & Lin, H.Y. (2017). An interference model ",
-                        "of visual working memory. Psychological Review, 124(1), 21-59"),
-      requirements = paste0('- The response vairable should be in radians and ',
-                            'represent the angular error relative to the target\n  ',
-                            '- The non-target features should be in radians and be ',
-                            'centered relative to the target'),
-      parameters = list(
-        mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
-                     "(in radians). Fixed internally to 0 by default."),
-        kappa = "Concentration parameter of the von Mises distribution (log scale)",
-        a = "General activation of memory items",
-        c = "Context activation"
+.model_IMMabc <-
+  function(resp_err = NULL,
+           nt_features = NULL,
+           setsize = NULL,
+           regex = FALSE,
+           links = NULL,
+           ...) {
+    out <- structure(
+      list(
+        resp_vars = nlist(resp_err),
+        other_vars = nlist(nt_features, setsize),
+        domain = "Visual working memory",
+        task = "Continuous reproduction",
+        name = "Interference measurement model by Oberauer and Lin (2017).",
+        version = "abc",
+        citation = glue(
+          "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
+          of visual working memory. Psychological Review, 124(1), 21-59"
+        ),
+        requirements = glue(
+          '- The response vairable should be in radians and \\
+          represent the angular error relative to the target
+          - The non-target features should be in radians and be \\
+          centered relative to the target'
+        ),
+        parameters = list(
+          mu1 = glue(
+            "Location parameter of the von Mises distribution for memory \\
+            responses (in radians). Fixed internally to 0 by default."
+          ),
+          kappa = "Concentration parameter of the von Mises distribution",
+          a = "General activation of memory items",
+          c = "Context activation"
+        ),
+        links = list(kappa = "log",
+                     a = "identity",
+                     c = "identity"),
+        fixed_parameters = list(mu1 = 0),
+        void_mu = FALSE
       ),
-      fixed_parameters = list(
-        mu1 = 0
-      )),
-    void_mu = FALSE
-  )
-  attr(out, "regex") <- regex
-  attr(out, "regex_vars") <- c('nt_features') # variables that can be specified via regular expression
-  class(out) <- c("bmmmodel", "vwm","nontargets","IMMabc")
+      # attributes
+      regex = regex,
+      regex_vars = c('nt_features'),
+      class = c("bmmmodel", "vwm", "nontargets", "IMMabc")
+    )
+    out$links[names(links)] <- links
+    out
+}
+
+
+.model_IMMbsc <-
+  function(resp_err = NULL,
+           nt_features = NULL,
+           nt_distances = NULL,
+           setsize = NULL,
+           regex = FALSE,
+           links = NULL,
+           ...) {
+    out <- structure(
+      list(
+        resp_vars = nlist(resp_err),
+        other_vars = nlist(nt_features, nt_distances, setsize),
+        domain = "Visual working memory",
+        task = "Continuous reproduction",
+        name = "Interference measurement model by Oberauer and Lin (2017).",
+        version = "bsc",
+        citation = glue(
+          "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
+          of visual working memory. Psychological Review, 124(1), 21-59"
+        ),
+        requirements = glue(
+          '- The response vairable should be in radians and \\
+          represent the angular error relative to the target
+          - The non-target features should be in radians and be \\
+          centered relative to the target'
+        ),
+        parameters = list(
+          mu1 = glue(
+            "Location parameter of the von Mises distribution for memory \\
+            responses (in radians). Fixed internally to 0 by default."
+          ),
+          kappa = "Concentration parameter of the von Mises distribution",
+          c = "Context activation",
+          s = "Spatial similarity gradient"
+        ),
+        links = list(kappa = "log",
+                     c = "identity",
+                     s = "log"),
+        fixed_parameters = list(mu1 = 0),
+        void_mu = FALSE
+      ),
+      # attributes
+      regex = regex,
+      regex_vars = c('nt_features', 'nt_distances'),
+      class = c("bmmmodel", "vwm", "nontargets", "IMMspatial", "IMMbsc")
+    )
+  out$links[names(links)] <- links
   out
 }
 
-.model_IMMbsc <- function(resp_err = NULL, nt_features = NULL, nt_distances = NULL,
-                          setsize = NULL, regex = FALSE, ...) {
-  out <- list(
-    resp_vars = nlist(resp_err),
-    other_vars = nlist(nt_features, nt_distances, setsize),
-    info = list(
-      domain = "Visual working memory",
-      task = "Continuous reproduction",
-      name = "Interference measurement model by Oberauer and Lin (2017).",
-      version = "bsc",
-      citation = paste0("Oberauer, K., & Lin, H.Y. (2017). An interference model ",
-                        "of visual working memory. Psychological Review, 124(1), 21-59"),
-      requirements = paste0('- The response vairable should be in radians and ',
-                            'represent the angular error relative to the target\n  ',
-                            '- The non-target variables should be in radians and be ',
-                            'centered relative to the target'),
-      parameters = list(
-        mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
-                     "(in radians). Fixed internally to 0 by default."),
-        kappa = "Concentration parameter of the von Mises distribution (log scale)",
-        c = "Context activation",
-        s = "Spatial similarity gradient"
+.model_IMMfull <-
+  function(resp_err = NULL,
+           nt_features = NULL,
+           nt_distances = NULL,
+           setsize = NULL,
+           regex = FALSE,
+           links = NULL,
+           ...) {
+    out <- structure(
+      list(
+        resp_vars = nlist(resp_err),
+        other_vars = nlist(nt_features, nt_distances, setsize),
+        domain = "Visual working memory",
+        task = "Continuous reproduction",
+        name = "Interference measurement model by Oberauer and Lin (2017).",
+        version = "full",
+        citation = glue(
+          "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
+          of visual working memory. Psychological Review, 124(1), 21-59"
+        ),
+        requirements = glue(
+          '- The response vairable should be in radians and \\
+          represent the angular error relative to the target
+          - The non-target features should be in radians and be \\
+          centered relative to the target'
+        ),
+        parameters = list(
+          mu1 = glue(
+            "Location parameter of the von Mises distribution for memory \\
+            responses (in radians). Fixed internally to 0 by default."
+          ),
+          kappa = "Concentration parameter of the von Mises distribution",
+          a = "General activation of memory items",
+          c = "Context activation",
+          s = "Spatial similarity gradient"
+        ),
+        links = list(
+          kappa = "log",
+          a = "identity",
+          c = "identity",
+          s = "log"
+        ),
+        fixed_parameters = list(mu1 = 0),
+        void_mu = FALSE
       ),
-      fixed_parameters = list(
-        mu1 = 0
-      )),
-    void_mu = FALSE
-  )
-  attr(out, "regex") <- regex
-  # variables that can be specified via regular expression
-  attr(out, "regex_vars") <- c('nt_features', 'nt_distances')
-  class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMbsc")
-  out
-}
-
-.model_IMMfull <- function(resp_err = NULL,  nt_features = NULL, nt_distances = NULL,
-                           setsize = NULL, regex = FALSE, ...) {
-  out <- list(
-    resp_vars = nlist(resp_err),
-    other_vars = nlist(nt_features, nt_distances, setsize),
-    info = list(
-      domain = "Visual working memory",
-      task = "Continuous reproduction",
-      name = "Interference measurement model by Oberauer and Lin (2017).",
-      version = "full",
-      citation = paste0("Oberauer, K., & Lin, H.Y. (2017). An interference model ",
-                        "of visual working memory. Psychological Review, 124(1), 21-59"),
-      requirements = paste0('- The response vairable should be in radians and ',
-                            'represent the angular error relative to the target\n  ',
-                            '- The non-target features should be in radians and be ',
-                            'centered relative to the target'),
-      parameters = list(
-        mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
-                     "(in radians). Fixed internally to 0 by default."),
-        kappa = "Concentration parameter of the von Mises distribution (log scale)",
-        a = "General activation of memory items",
-        c = "Context activation",
-        s = "Spatial similarity gradient"
-      ),
-      fixed_parameters = list(
-        mu1 = 0
-      )),
-    void_mu = FALSE
-  )
-  attr(out, "regex") <- regex
-  # variables that can be specified via regular expression
-  attr(out, "regex_vars") <- c('nt_features', 'nt_distances')
-  class(out) <- c("bmmmodel","vwm","nontargets","IMMspatial","IMMfull")
-  out
-}
+      # attributes
+      regex = regex,
+      regex_vars = c('nt_features', 'nt_distances'),
+      class = c("bmmmodel", "vwm", "nontargets", "IMMspatial", "IMMfull")
+    )
+    out$links[names(links)] <- links
+    out
+  }
 
 # user facing alias
 
-#' @title `r .model_IMMfull()$info$name`
+#' @title `r .model_IMMfull()$name`
 #' @name IMM
 #' @details `r model_info(.model_IMMfull(), components =c('domain', 'task', 'name', 'citation'))`
 #' #### Version: `IMMfull`
@@ -144,6 +193,8 @@
 #' @param regex Logical. If TRUE, the `nt_features` and `nt_distances` arguments
 #'   are interpreted as a regular expression to match the non-target feature
 #'   columns in the dataset.
+#' @param links A list of links for the parameters. *Currently does not affect
+#'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel
@@ -191,28 +242,34 @@
 #'                  backend='cmdstanr')
 #'}
 #' @export
-IMMfull <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...) {
+IMMfull <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE,
+                    links = NULL,
+                    ...) {
   stop_missing_args()
   .model_IMMfull(resp_err = resp_err, nt_features = nt_features,
-                 nt_distances = nt_distances, setsize = setsize, regex = regex, ...)
+                 nt_distances = nt_distances, setsize = setsize, regex = regex,
+                 links = links, ...)
 }
 
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE, ...) {
+IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE,
+                   links = NULL, ...) {
   stop_missing_args()
   .model_IMMbsc(resp_err = resp_err, nt_features = nt_features,
-                nt_distances = nt_distances, setsize = setsize, regex = regex, ...)
+                nt_distances = nt_distances, setsize = setsize, regex = regex,
+                links = links, ...)
 }
 
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMabc <- function(resp_err, nt_features, setsize, regex = FALSE, ...) {
+IMMabc <- function(resp_err, nt_features, setsize, regex = FALSE, links = NULL,
+                   ...) {
   stop_missing_args()
   .model_IMMabc(resp_err = resp_err, nt_features = nt_features,
-                setsize = setsize, regex = regex,...)
+                setsize = setsize, regex = regex, links = links, ...)
 }
 
 #############################################################################!

@@ -25,7 +25,7 @@
 #'
 #' @name get_model_prior
 #'
-#' @seealso [supported_models()], \code{\link[brms:get_prior]{brms::get_prior()}}. 
+#' @seealso [supported_models()], \code{\link[brms:get_prior]{brms::get_prior()}}.
 #'
 #' @keywords extract_info
 #'
@@ -35,23 +35,27 @@
 #' \dontrun{
 #' # if using brms >= 2.20.14
 #' default_prior(bmf(c ~ 1, kappa ~ 1),
-#'               data = OberauerLin_2017,
-#'               model = sdmSimple(resp_err = 'dev_rad'))
+#'   data = OberauerLin_2017,
+#'   model = sdmSimple(resp_err = "dev_rad")
+#' )
 #' # if using brms < 2.20.14
 #' get_prior(bmf(c ~ 1, kappa ~ 1),
-#'           data = OberauerLin_2017,
-#'           model = sdmSimple(resp_err = 'dev_rad'))
+#'   data = OberauerLin_2017,
+#'   model = sdmSimple(resp_err = "dev_rad")
+#' )
 #' }
 #' @export
 get_model_prior <- function(object, data, model, formula = object, ...) {
-  if (utils::packageVersion('brms') >= "2.20.14") {
+  if (utils::packageVersion("brms") >= "2.20.14") {
     message("get_model_prior is deprecated. Please use get_prior() or default_prior()")
   } else {
     message("get_model_prior is deprecated. Please use get_prior() instead.")
   }
   if (missing(object) && !missing(formula)) {
-    warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
-             " Please use 'object' instead.")
+    warning2(
+      "The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
+      " Please use 'object' instead."
+    )
   }
   formula <- object
   model <- check_model(model, data)
@@ -87,12 +91,16 @@ get_model_prior <- function(object, data, model, formula = object, ...) {
 #'   class="Intercept", dpar=parameter_name) for all fixed parameters in the
 #'   model
 #' @noRd
-fixed_pars_priors <- function(model, additional_pars = list()) {
-  par_list <- c(model$info$fixed_parameters, additional_pars)
+fixed_pars_priors <- function(model, additional_pars = list(), class = "Intercept", partype = "dpar") {
+  par_list <- c(model$fixed_parameters, additional_pars)
   pars <- names(par_list)
   values <- unlist(par_list)
   priors <- glue::glue("constant({values})")
-  brms::set_prior(priors, class = "Intercept", dpar = pars)
+  if (partype == "dpar") {
+    brms::set_prior(priors, class = class, dpar = pars)
+  } else {
+    brms::set_prior(priors, class = class, nlpar = pars)
+  }
 }
 
 
@@ -123,22 +131,28 @@ fixed_pars_priors <- function(model, additional_pars = list()) {
 #' data$session <- as.factor(data$session)
 #' # suppressed intercept on thetat, intercept present for kappa
 #' formula <- bmf(thetat ~ 0 + set_size, kappa ~ session)
-#' prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
-#'                    kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
+#' prior_list <- list(
+#'   thetat = list(main = "logistic(0,1)", nlpar = TRUE),
+#'   kappa = list(main = "normal(2,1)", effects = "normal(0,1)", nlpar = TRUE)
+#' )
 #' prior <- set_default_prior(formula, data, prior_list)
 #' print(prior)
 #'
 #' # suppressed intercept on both thetat and kappa
 #' formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + session)
-#' prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
-#'                    kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
+#' prior_list <- list(
+#'   thetat = list(main = "logistic(0,1)", nlpar = TRUE),
+#'   kappa = list(main = "normal(2,1)", effects = "normal(0,1)", nlpar = TRUE)
+#' )
 #' prior <- set_default_prior(formula, data, prior_list)
 #' print(prior)
 #'
 #' # suppressed intercept on both thetat and kappa, with interaction for kappa
-#' formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + set_size*session)
-#' prior_list <- list(thetat = list(main = 'logistic(0,1)', nlpar=TRUE),
-#'                    kappa = list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=TRUE))
+#' formula <- bmf(thetat ~ 0 + set_size, kappa ~ 0 + set_size * session)
+#' prior_list <- list(
+#'   thetat = list(main = "logistic(0,1)", nlpar = TRUE),
+#'   kappa = list(main = "normal(2,1)", effects = "normal(0,1)", nlpar = TRUE)
+#' )
 #' prior <- set_default_prior(formula, data, prior_list)
 #' print(prior)
 #' @export
@@ -154,13 +168,15 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     stop("The prior_list should be a list of lists")
   }
   for (i in 1:length(prior_list)) {
-    if(!is.list(prior_list[[i]])) {
+    if (!is.list(prior_list[[i]])) {
       stop("The prior_list should be a list of lists")
     }
   }
 
   pars <- dpars[dpars %in% pars_key]
-  is_nlpar <- sapply(prior_list[pars], function(x) {isTRUE(x$nlpar)})
+  is_nlpar <- sapply(prior_list[pars], function(x) {
+    isTRUE(x$nlpar)
+  })
   for (par in pars) {
     bform <- bmmformula[[par]]
     bterms <- stats::terms(bform)
@@ -170,7 +186,7 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     all_rhs_names <- rhs_vars(bform)
     all_rhs_terms <- attr(bterms, "term.labels")
     fixef <- all_rhs_terms[all_rhs_terms %in% all_rhs_names]
-    inter <- all_rhs_terms[attr(bterms,'order') > 1]
+    inter <- all_rhs_terms[attr(bterms, "order") > 1]
     nfixef <- length(fixef)
     ninter <- length(inter)
     interaction_only <- nfixef == 0 && ninter > 0
@@ -212,7 +228,7 @@ set_default_prior <- function(bmmformula, data, prior_list) {
     }
 
     # if there are multiple predictors, set the main prior on the levels of the first predictor
-    first_term <- attr(bterms,"term.labels")[1]
+    first_term <- attr(bterms, "term.labels")[1]
     levels <- levels(data[[first_term]])
     coefs <- paste0(first_term, levels)
     for (coef in coefs) {
@@ -231,7 +247,7 @@ set_default_prior <- function(bmmformula, data, prior_list) {
 # parts present in prior2 will overwrite the corresponding parts in prior1
 combine_prior <- function(prior1, prior2) {
   if (!is.null(prior2)) {
-    combined_prior <- dplyr::anti_join(prior1, prior2, by=c('class', 'dpar','nlpar','coef','group','resp'))
+    combined_prior <- dplyr::anti_join(prior1, prior2, by = c("class", "dpar", "nlpar", "coef", "group", "resp"))
     prior <- combined_prior + prior2
   } else {
     prior <- prior1

@@ -30,10 +30,16 @@ margin-bottom: 1.5em ;
 ```
 
 ```{r, include = FALSE}
+options(crayon.enabled = TRUE)
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = "jpeg",
+  dpi = 100,
+  fig.asp = 0.8,
+  fig.align = "center"
 )
+fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 options(width = 300)
 
 ggplot2::theme_set(tidybayes::theme_tidybayes() + cowplot::panel_border())
@@ -89,7 +95,7 @@ $$
 
 Begin by loading the `bmm` package:
 
-```{r}
+```{r setup, message=FALSE, warning=FALSE}
 library(bmm)
 ```
 
@@ -166,8 +172,8 @@ The model formula has three components:
 [^fn-1]: `brms` does not directly estimate the probabilities that each response comes from each distribution (e.g. $p_{mem}$ and $p_{guess}$). Instead, brms estimates mixing proportions that are weights applied to each of the mixture distributions and they are transformed into probabilities (e.g. $p_{mem}$ and $p_{guess}$) using a softmax normalization. To get $p_{mem}$ we can use the softmax function, that is: $p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})}$
 
 ```{r}
-ff <- bmmformula(thetat ~ 0 + set_size + (0 + set_size | id),
-                 kappa ~ 0 + set_size + (0 + set_size | id))
+ff <- bmf(thetat ~ 0 + set_size + (0 + set_size | id),
+          kappa ~ 0 + set_size + (0 + set_size | id))
 ```
 
 
@@ -193,14 +199,14 @@ fit <- fit_model(
 ```
 
 ```{r, include=FALSE, warning=FALSE, message=FALSE}
-fit <- readRDS(system.file("mixture2p_vignette_fit.rds", package = "bmm"))
+fit <- bmm:::bmmfit_mixture2p_vignette
 ```
 
 # Results of the 2-parameter mixture model
 
 We can now inspect the model fit:
 
-```{r, out.width=1000}
+```{r, out.width=1000, comment=NA}
 summary(fit)
 ```
 
@@ -247,7 +253,7 @@ round(pmem,3)
 
 It is even better to visualize the entire posterior distribution of the parameters. 
 
-```{r, message=FALSE, warning=FALSE, fig.show='hold', fig.width=4, fig.height=4}
+```{r, message=FALSE, warning=FALSE, fig.show='hold', fig.width=4, fig.height=4, fig.align=NA}
 library(tidybayes)
 library(tidyr)
 
@@ -271,7 +277,7 @@ as.data.frame(draws_theta) %>%
 as.data.frame(draws_kappa) %>% 
   gather(par, value) %>%
   mutate(value = k2sd(value)) %>% 
-  mutate(par = gsub("b_kappa_set_size", "Set size ", par)) %>%
+  mutate(par = gsub("b_kappa_set_size", "", par)) %>%
   ggplot(aes(par,value)) +
   tidybayes::stat_halfeyeh(normalize = "groups", orientation = "vertical") +
   labs(y = "Memory imprecision (SD)", x = "Set size", parse = TRUE)
