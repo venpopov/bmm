@@ -2,41 +2,57 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture2p <- function(resp_err = NULL, ...) {
-  out <- list(
-    resp_vars = nlist(resp_err),
-    other_vars = nlist(),
-    info = list(
+.model_mixture2p <- function(resp_err = NULL,
+                             links = NULL,
+                             ...) {
+  out <- structure(
+    list(
+      resp_vars = nlist(resp_err),
+      other_vars = nlist(),
       domain = "Visual working memory",
       task = "Continuous reproduction",
       name = "Two-parameter mixture model by Zhang and Luck (2008).",
       version = "NA",
-      citation = paste0("Zhang, W., & Luck, S. J. (2008). Discrete fixed-resolution ",
-                        "representations in visual working memory. Nature, 453(7192), 233-235"),
-      requirements = paste0('- The response vairable should be in radians and ',
-                            'represent the angular error relative to the target'),
+      citation = glue(
+        "Zhang, W., & Luck, S. J. (2008). Discrete fixed-resolution \\
+        representations in visual working memory. Nature, 453(7192), 233-235"
+      ),
+      requirements = glue(
+        '- The response vairable should be in radians and \\
+        represent the angular error relative to the target'
+      ),
       parameters = list(
-        mu1 = paste0("Location parameter of the von Mises distribution for memory responses",
-                     "(in radians). Fixed internally to 0 by default."),
-        kappa = "Concentration parameter of the von Mises distribution (log scale)",
+        mu1 = glue(
+          "Location parameter of the von Mises distribution for memory responses \\
+          (in radians). Fixed internally to 0 by default."
+        ),
+        kappa = "Concentration parameter of the von Mises distribution",
         thetat = "Mixture weight for target responses"
       ),
-      fixed_parameters = list(
-        mu1 = 0
-      )),
-    void_mu = FALSE
+      links = list(
+        mu1 = "identity",
+        kappa = "log",
+        thetat = "identity"
+      ),
+      fixed_parameters = list(mu1 = 0),
+      void_mu = FALSE
+    ),
+    class = c("bmmmodel", "vwm", "mixture2p")
   )
-  class(out) <- c("bmmmodel", "vwm", "mixture2p")
+  out$links[names(links)] <- links
   out
 }
 
 # user facing alias
-#' @title `r .model_mixture2p()$info$name`
+
+#' @title `r .model_mixture2p()$name`
 #' @details `r model_info(.model_mixture2p())`
 #' @param resp_err The name of the variable in the provided dataset containing
 #'   the response error. The response Error should code the response relative to
 #'   the to-be-recalled target in radians. You can transform the response error
 #'   in degrees to radian using the `deg2rad` function.
+#' @param links A list of links for the parameters. *Currently does not affect
+#'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #' @keywords bmmmodel
@@ -60,9 +76,11 @@
 #'                  backend='cmdstanr')
 #' }
 #' @export
-mixture2p <- function(resp_err, ...) {
+mixture2p <- function(resp_err,
+                      links = NULL,
+                      ...) {
   stop_missing_args()
-  .model_mixture2p(resp_err, ...)
+  .model_mixture2p(resp_err = resp_err, links = links, ...)
 }
 
 #############################################################################!

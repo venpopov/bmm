@@ -88,7 +88,7 @@ get_model_prior <- function(object, data, model, formula = object, ...) {
 #'   model
 #' @noRd
 fixed_pars_priors <- function(model, additional_pars = list()) {
-  par_list <- c(model$info$fixed_parameters, additional_pars)
+  par_list <- c(model$fixed_parameters, additional_pars)
   pars <- names(par_list)
   values <- unlist(par_list)
   priors <- glue::glue("constant({values})")

@@ -4,7 +4,7 @@
 \alias{mixture3p}
 \title{Three-parameter mixture model by Bays et al (2009).}
 \usage{
-mixture3p(resp_err, nt_features, setsize, regex = FALSE, ...)
+mixture3p(resp_err, nt_features, setsize, regex = FALSE, links = NULL, ...)
 }
 \arguments{
 \item{resp_err}{The name of the variable in the dataset containing
@@ -24,6 +24,9 @@ fixed.}
 
 \item{regex}{Logical. If TRUE, the \code{nt_features} argument is interpreted as
 a regular expression to match the non-target feature columns in the dataset.}
+
+\item{links}{A list of links for the parameters. \emph{Currently does not affect
+the model fits, but it will in the future.}}
 
 \item{...}{used internally for testing, ignore it}
 }
@@ -45,12 +48,16 @@ Three-parameter mixture model by Bays et al (2009).
 \item \strong{Requirements:}
 \itemize{
 \item The response vairable should be in radians and represent the angular error relative to the target
+}
+}
+\itemize{
 \item The non-target features should be in radians and be centered relative to the target
 }
+\itemize{
 \item \strong{Parameters:}
 \itemize{
-\item \code{mu1}: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.
-\item \code{kappa}: Concentration parameter of the von Mises distribution (log scale)
+\item \code{mu1}: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.
+\item \code{kappa}: Concentration parameter of the von Mises distribution
 \item \code{thetat}: Mixture weight for target responses
 \item \code{thetant}: Mixture weight for non-target responses
 }
@@ -58,6 +65,9 @@ Three-parameter mixture model by Bays et al (2009).
 \itemize{
 \item \code{mu1} = 0
 }
+\item \strong{Default parameter links:}
+
+mu1 = identity; kappa = log; thetat = identity; thetant = identity
 }
 }
 \examples{

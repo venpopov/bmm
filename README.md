@@ -67,12 +67,12 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  IMMabc(resp_err, nt_features, setsize, regex) 
-#> -  IMMbsc(resp_err, nt_features, nt_distances, setsize, regex) 
-#> -  IMMfull(resp_err, nt_features, nt_distances, setsize, regex) 
-#> -  mixture2p(resp_err) 
-#> -  mixture3p(resp_err, nt_features, setsize, regex) 
-#> -  sdmSimple(resp_err) 
+#> -  IMMabc(resp_err, nt_features, setsize, regex, links) 
+#> -  IMMbsc(resp_err, nt_features, nt_distances, setsize, regex, links) 
+#> -  IMMfull(resp_err, nt_features, nt_distances, setsize, regex, links) 
+#> -  mixture2p(resp_err, links) 
+#> -  mixture3p(resp_err, nt_features, setsize, regex, links) 
+#> -  sdmSimple(resp_err, links) 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
 ```
@@ -282,7 +282,7 @@ function of cognitive measurement model parameters. These functions that
 translate the cognitive measurement model parameters into distributional
 parameters is what we implement in the bmm package.
 
-<img src="man/figures/README-bmmLogic.jpg" width="600" style="display: block; margin: auto;" />
+<img src="man/figures/README-bmmLogic.png" width="600" style="display: block; margin: auto;" />
 
 As these function can become complicated and their implementation
 changes with differences in experimental designs, the bmm package
@@ -307,7 +307,7 @@ steps:
 
 This process is illustrated in the Figure below:
 
-<img src="man/figures/README-fitModel_process.jpg" width="600" style="display: block; margin: auto;" />
+<img src="man/figures/README-fitModel_process.png" width="600" style="display: block; margin: auto;" />
 
 ## Contributing to the `bmm` package
 
