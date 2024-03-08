@@ -1,6 +1,5 @@
 generate_bmm_examples <- function(seed = 123) {
-  withr::local_options(brms.backend = 'cmdstanr',
-                       cmdstanr_write_stan_file_dir = "local/cmdstanr",
+  withr::local_options(brms.backend = 'rstan',
                        bmm.parallel = TRUE,
                        bmm.sort_data = TRUE)
   withr::local_package('dplyr')
@@ -21,7 +20,8 @@ generate_bmm_examples <- function(seed = 123) {
                                iter = 100,
                                refresh = 0,
                                init = 1,
-                               chains = 1)
+                               chains = 1,
+                               backend = 'rstan')
   bmmfit_example1$bmm$fit_args$data <- NULL
 
 
@@ -123,3 +123,5 @@ generate_bmm_examples <- function(seed = 123) {
   usethis::use_data(bmmfit_example1, bmmfit_sdm_vignette, bmmfit_mixture2p_vignette, bmmfit_imm_vignette, internal = TRUE, overwrite = TRUE)
 
 }
+
+generate_bmm_examples()
