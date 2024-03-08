@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.3.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +57,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mixture2p</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mixture2p</span><span class="op">(</span><span class="va">resp_err</span>, links <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,6 +67,11 @@
 the response error. The response Error should code the response relative to
 the to-be-recalled target in radians. You can transform the response error
 in degrees to radian using the <code>deg2rad</code> function.</p></dd>
+
+
+<dt>links</dt>
+<dd><p>A list of links for the parameters. <em>Currently does not affect
+the model fits, but it will in the future.</em></p></dd>
 
 
 <dt>...</dt>
@@ -91,12 +96,14 @@ in degrees to radian using the <code>deg2rad</code> function.</p></dd>
 </ul></li>
 <li><p><strong>Requirements:</strong></p><ul><li><p>The response vairable should be in radians and represent the angular error relative to the target</p></li>
 </ul></li>
-<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.</p></li>
-<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
+<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.</p></li>
+<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution</p></li>
 <li><p><code>thetat</code>: Mixture weight for target responses</p></li>
 </ul></li>
 <li><p><strong>Fixed parameters:</strong></p><ul><li><p><code>mu1</code> = 0</p></li>
 </ul></li>
+<li><p><strong>Default parameter links:</strong></p>
+<p>mu1 = identity; kappa = log; thetat = identity</p></li>
 </ul></div>
 
     <div class="section level2">

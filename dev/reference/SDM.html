@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.3.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +57,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sdmSimple</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sdmSimple</span><span class="op">(</span><span class="va">resp_err</span>, links <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,6 +67,11 @@
 response error. The response error should code the response relative to the
 to-be-recalled target in radians. You can transform the response error in
 degrees to radians using the <code>deg2rad</code> function.</p></dd>
+
+
+<dt>links</dt>
+<dd><p>A list of links for the parameters. <em>Currently does not affect
+the model fits, but it will in the future.</em></p></dd>
 
 
 <dt>...</dt>
@@ -94,10 +99,12 @@ and how to use it.</p><ul><li><p><strong>Domain:</strong> Visual working memory<
 </ul></li>
 <li><p><strong>Parameters:</strong></p><ul><li><p><code>mu</code>: Location parameter of the SDM distribution (in radians; by default fixed internally to 0)</p></li>
 <li><p><code>c</code>: Memory strength parameter of the SDM distribution</p></li>
-<li><p><code>kappa</code>: Precision parameter of the SDM distribution (log scale)</p></li>
+<li><p><code>kappa</code>: Precision parameter of the SDM distribution</p></li>
 </ul></li>
 <li><p><strong>Fixed parameters:</strong></p><ul><li><p><code>mu</code> = 0</p></li>
 </ul></li>
+<li><p><strong>Default parameter links:</strong></p>
+<p>mu = identity; c = log; kappa = log</p></li>
 </ul></div>
 
     <div class="section level2">

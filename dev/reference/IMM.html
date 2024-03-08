@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.3.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,11 +57,27 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">IMMfull</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">nt_distances</span>, <span class="va">setsize</span>, regex <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">IMMfull</span><span class="op">(</span></span>
+<span>  <span class="va">resp_err</span>,</span>
+<span>  <span class="va">nt_features</span>,</span>
+<span>  <span class="va">nt_distances</span>,</span>
+<span>  <span class="va">setsize</span>,</span>
+<span>  regex <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  links <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">IMMbsc</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">nt_distances</span>, <span class="va">setsize</span>, regex <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">IMMbsc</span><span class="op">(</span></span>
+<span>  <span class="va">resp_err</span>,</span>
+<span>  <span class="va">nt_features</span>,</span>
+<span>  <span class="va">nt_distances</span>,</span>
+<span>  <span class="va">setsize</span>,</span>
+<span>  regex <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  links <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">IMMabc</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">setsize</span>, regex <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">IMMabc</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">nt_features</span>, <span class="va">setsize</span>, regex <span class="op">=</span> <span class="cn">FALSE</span>, links <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -100,6 +116,11 @@ are interpreted as a regular expression to match the non-target feature
 columns in the dataset.</p></dd>
 
 
+<dt>links</dt>
+<dd><p>A list of links for the parameters. <em>Currently does not affect
+the model fits, but it will in the future.</em></p></dd>
+
+
 <dt>...</dt>
 <dd><p>used internally for testing, ignore it</p></dd>
 
@@ -124,10 +145,10 @@ columns in the dataset.</p></dd>
 <h3 id="version-immfull">Version: <code>IMMfull</code><a class="anchor" aria-label="anchor" href="#version-immfull"></a></h3>
 
 <ul><li><p><strong>Requirements:</strong></p><ul><li><p>The response vairable should be in radians and represent the angular error relative to the target</p></li>
-<li><p>The non-target features should be in radians and be centered relative to the target</p></li>
 </ul></li>
-<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.</p></li>
-<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
+</ul><ul><li><p>The non-target features should be in radians and be centered relative to the target</p></li>
+</ul><ul><li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.</p></li>
+<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution</p></li>
 <li><p><code>a</code>: General activation of memory items</p></li>
 <li><p><code>c</code>: Context activation</p></li>
 <li><p><code>s</code>: Spatial similarity gradient</p></li>
@@ -140,10 +161,10 @@ columns in the dataset.</p></dd>
 <h3 id="version-immbsc">Version: <code>IMMbsc</code><a class="anchor" aria-label="anchor" href="#version-immbsc"></a></h3>
 
 <ul><li><p><strong>Requirements:</strong></p><ul><li><p>The response vairable should be in radians and represent the angular error relative to the target</p></li>
-<li><p>The non-target variables should be in radians and be centered relative to the target</p></li>
 </ul></li>
-<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.</p></li>
-<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
+</ul><ul><li><p>The non-target features should be in radians and be centered relative to the target</p></li>
+</ul><ul><li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.</p></li>
+<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution</p></li>
 <li><p><code>c</code>: Context activation</p></li>
 <li><p><code>s</code>: Spatial similarity gradient</p></li>
 </ul></li>
@@ -155,10 +176,10 @@ columns in the dataset.</p></dd>
 <h3 id="version-immabc">Version: <code>IMMabc</code><a class="anchor" aria-label="anchor" href="#version-immabc"></a></h3>
 
 <ul><li><p><strong>Requirements:</strong></p><ul><li><p>The response vairable should be in radians and represent the angular error relative to the target</p></li>
-<li><p>The non-target features should be in radians and be centered relative to the target</p></li>
 </ul></li>
-<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.</p></li>
-<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
+</ul><ul><li><p>The non-target features should be in radians and be centered relative to the target</p></li>
+</ul><ul><li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.</p></li>
+<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution</p></li>
 <li><p><code>a</code>: General activation of memory items</p></li>
 <li><p><code>c</code>: Context activation</p></li>
 </ul></li>

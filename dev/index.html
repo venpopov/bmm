@@ -39,7 +39,7 @@
     
     <a class="navbar-brand me-2" href="index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.3.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,12 +125,12 @@
 <code class="sourceCode R"><span><span class="fu">bmm</span><span class="fu">::</span><span class="fu"><a href="reference/supported_models.html">supported_models</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; The following models are supported:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; -  IMMabc(resp_err, nt_features, setsize, regex) </span></span>
-<span><span class="co">#&gt; -  IMMbsc(resp_err, nt_features, nt_distances, setsize, regex) </span></span>
-<span><span class="co">#&gt; -  IMMfull(resp_err, nt_features, nt_distances, setsize, regex) </span></span>
-<span><span class="co">#&gt; -  mixture2p(resp_err) </span></span>
-<span><span class="co">#&gt; -  mixture3p(resp_err, nt_features, setsize, regex) </span></span>
-<span><span class="co">#&gt; -  sdmSimple(resp_err) </span></span>
+<span><span class="co">#&gt; -  IMMabc(resp_err, nt_features, setsize, regex, links) </span></span>
+<span><span class="co">#&gt; -  IMMbsc(resp_err, nt_features, nt_distances, setsize, regex, links) </span></span>
+<span><span class="co">#&gt; -  IMMfull(resp_err, nt_features, nt_distances, setsize, regex, links) </span></span>
+<span><span class="co">#&gt; -  mixture2p(resp_err, links) </span></span>
+<span><span class="co">#&gt; -  mixture3p(resp_err, nt_features, setsize, regex, links) </span></span>
+<span><span class="co">#&gt; -  sdmSimple(resp_err, links) </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull</span></span></code></pre></div>
 </div>
@@ -241,7 +241,7 @@
 <h2 id="the-general-structure-of-the-bmm-package">The general structure of the bmm package<a class="anchor" aria-label="anchor" href="#the-general-structure-of-the-bmm-package"></a>
 </h2>
 <p>The main building block of the bmm package is that cognitive measurement models can often be specified as distributional models for which the distributional parameters of the generalized linear mixed model are a function of cognitive measurement model parameters. These functions that translate the cognitive measurement model parameters into distributional parameters is what we implement in the bmm package.</p>
-<p><img src="reference/figures/README-bmmLogic.jpg" width="600" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-bmmLogic.png" width="600" style="display: block; margin: auto;"></p>
 <p>As these function can become complicated and their implementation changes with differences in experimental designs, the bmm package provides general translation functions that eases the use of the cognitive measurement models for end users. This way researchers that face challenges in writing their own STAN code to implement such models themselves can still use these models in almost any experimental design.</p>
 <p>Under the hood, the main <code>bmm</code> <code><a href="reference/fit_model.html">fit_model()</a></code> function will then call the appropriate functions for the specified model and will perform several steps:</p>
 <ol style="list-style-type: decimal">
@@ -258,7 +258,7 @@
 <li>Posprocessing the output and passing it to the user</li>
 </ol>
 <p>This process is illustrated in the Figure below:</p>
-<p><img src="reference/figures/README-fitModel_process.jpg" width="600" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-fitModel_process.png" width="600" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="contributing-to-the-bmm-package">Contributing to the <code>bmm</code> package<a class="anchor" aria-label="anchor" href="#contributing-to-the-bmm-package"></a>

@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.3.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -152,17 +152,7 @@ Z = \int_{-\pi}^{\pi} f(\theta) d\theta
 </h2>
 <p>Begin by loading the <code>bmm</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/venpopov/bmm" class="external-link">bmm</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: brms</span></span>
-<span><span class="co">#&gt; Loading required package: Rcpp</span></span>
-<span><span class="co">#&gt; Loading 'brms' package (version 2.20.4). Useful instructions</span></span>
-<span><span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span></span>
-<span><span class="co">#&gt; to the package is available through vignette('brms_overview').</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'brms'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     ar</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/venpopov/bmm" class="external-link">bmm</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3" number="3.1">
 <h3 id="generating-simulated-data">
 <span class="header-section-number">3.1</span> Generating simulated data<a class="anchor" aria-label="anchor" href="#generating-simulated-data"></a>
@@ -209,7 +199,7 @@ Z = \int_{-\pi}^{\pi} f(\theta) d\theta
 <span>       x <span class="op">=</span> <span class="st">"Response error (radians)"</span>,</span>
 <span>       y <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">par_labels</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="op">-</span><span class="va">pi</span>, y<span class="op">=</span><span class="fl">0.5</span>, label<span class="op">=</span><span class="va">label</span><span class="op">)</span>, hjust<span class="op">=</span><span class="fl">0</span>, vjust<span class="op">=</span><span class="fl">0</span>, size<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sdm-simple_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
+<p><img src="sdm-simple_files/figure-html/unnamed-chunk-3-1.jpeg" width="800"></p>
 </div>
 <div class="section level3" number="3.2">
 <h3 id="estimating-the-model-with-bmm">
@@ -233,52 +223,53 @@ Z = \int_{-\pi}^{\pi} f(\theta) d\theta
 <span>  parallel <span class="op">=</span> <span class="cn">T</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  init <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  iter<span class="op">=</span><span class="fl">2000</span>,</span>
+<span>  iter <span class="op">=</span> <span class="fl">2000</span>,</span>
 <span>  backend<span class="op">=</span><span class="st">'cmdstanr'</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The model takes about 30 seconds to fit after it is compiled. Here we just preload the results of the model fit, but in practice you would have to wait for the model to finish fitting.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"sdm_vignette_fit.rds"</span>, package<span class="op">=</span><span class="st">'bmm'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The model takes about 30 seconds to fit after it is compiled.</p>
 <p>We can now inspect the results of the model fit:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  Family: sdm_simple </span></span>
-<span><span class="co">#&gt;   Links: mu = identity; c = log; kappa = log </span></span>
-<span><span class="co">#&gt; Formula: y ~ 1 </span></span>
-<span><span class="co">#&gt;          mu ~ 1</span></span>
-<span><span class="co">#&gt;          c ~ 0 + cond</span></span>
-<span><span class="co">#&gt;          kappa ~ 0 + cond</span></span>
-<span><span class="co">#&gt;    Data: .x2 (Number of observations: 3000) </span></span>
-<span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
-<span><span class="co">#&gt;          total post-warmup draws = 4000</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Population-Level Effects: </span></span>
-<span><span class="co">#&gt;             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept       0.00      0.00     0.00     0.00   NA       NA       NA</span></span>
-<span><span class="co">#&gt; c_condA         0.70      0.12     0.47     0.96 1.00     2152     1578</span></span>
-<span><span class="co">#&gt; c_condB         2.38      0.20     2.05     2.82 1.00     1621     1211</span></span>
-<span><span class="co">#&gt; c_condC         0.64      0.06     0.52     0.76 1.00     2089     2228</span></span>
-<span><span class="co">#&gt; kappa_condA     0.99      0.19     0.59     1.34 1.00     2128     1895</span></span>
-<span><span class="co">#&gt; kappa_condB    -0.13      0.19    -0.55     0.20 1.00     1626     1256</span></span>
-<span><span class="co">#&gt; kappa_condC     2.14      0.11     1.93     2.36 1.00     2080     2214</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
-<span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
-<span><span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">sdmSimple</span>(resp_err = "y") 
+<span style="color: #AF5FFF;">  Links: </span>mu = identity; c = log; kappa = log 
+<span style="color: #AF5FFF;">Formula: </span>mu = 0
+         c ~ 0 + cond
+         kappa ~ 0 + cond 
+<span style="color: #AF5FFF;">   Data:</span> dat (Number of observations: 3000)
+<span style="color: #AF5FFF;">  Draws: </span>2 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 2000
+
+<span style="color: #00BB00;">Regression Coefficients:
+</span>            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+c_condA         0.71      0.11     0.50     0.92 1.00     1068      867
+c_condB         2.30      0.16     2.01     2.64 1.00     1031     1044
+c_condC         0.65      0.06     0.54     0.77 1.00     1161     1320
+kappa_condA     0.99      0.17     0.65     1.32 1.00     1084      965
+kappa_condB    -0.06      0.16    -0.38     0.24 1.00     1049     1068
+kappa_condC     2.12      0.11     1.92     2.33 1.00     1103     1268
+
+<span style="color: #00BB00;">Constant Parameters:
+</span>                 Value
+mu_Intercept      0.00
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).
+</code></pre>
 <p>We see that all Rhat values are less than 1.01, which is a good sign that the chains have converged. In principle you have to do more inspection, but let us see the estimated parameters. The model uses a log-link function for the <code>c</code> and <code>kappa</code> parameters, so we have to exponentiate the coefficients to get the estimated parameters:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     c_condA     c_condB     c_condC kappa_condA kappa_condB kappa_condC </span></span>
-<span><span class="co">#&gt;   2.0190774  10.7968361   1.9006473   2.6808832   0.8739757   8.5365045</span></span></code></pre></div>
+<span><span class="co">#&gt;   2.0267546   9.9572058   1.9222065   2.6855853   0.9445482   8.3574474</span></span></code></pre></div>
 <p>which are close to the true values we used to simulate the data:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par_labels</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
 <span><span class="co">#&gt;   cond c kappa</span></span>
 <span><span class="co">#&gt; 1    A 2     3</span></span>
 <span><span class="co">#&gt; 2    B 9     1</span></span>
 <span><span class="co">#&gt; 3    C 2     8</span></span></code></pre></div>
 <p>We can see that even though the estimated parameters are close, they are not exactly the same as the true parameters. To get a better picture, we can plot the estimated posterior distributions of the parameters:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mjskay.github.io/tidybayes/" class="external-link">tidybayes</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
@@ -299,10 +290,10 @@ Z = \int_{-\pi}^{\pi} f(\theta) d\theta
 <span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">value</span>,<span class="va">par</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"red"</span>,</span>
 <span>             shape <span class="op">=</span> <span class="st">"diamond"</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>lim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sdm-simple_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
+<p><img src="sdm-simple_files/figure-html/unnamed-chunk-10-1.jpeg" width="500"></p>
 <p>The true parameters all lie within the 50% credible intervals, which is a good sign that the model is able to recover the true parameters from the data.</p>
 <p>As a final step, we can plot our data again, adding another line overlay with the density predicted by the estimated parameters:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># generate predicted SDM density:</span></span>
 <span><span class="va">ddest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="va">pi</span>, <span class="va">pi</span>, length.out<span class="op">=</span><span class="fl">1000</span><span class="op">)</span>,<span class="fl">3</span><span class="op">)</span>,</span>
 <span>                    cond <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'A'</span>,<span class="st">'B'</span>,<span class="st">'C'</span><span class="op">)</span>, each<span class="op">=</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -333,7 +324,7 @@ Z = \int_{-\pi}^{\pi} f(\theta) d\theta
 <span>       y <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">par_labels</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="op">-</span><span class="va">pi</span>, y<span class="op">=</span><span class="fl">0.9</span>, label<span class="op">=</span><span class="va">label</span><span class="op">)</span>, hjust<span class="op">=</span><span class="fl">0</span>, vjust<span class="op">=</span><span class="fl">0</span>, size<span class="op">=</span><span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sdm-simple_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<p><img src="sdm-simple_files/figure-html/unnamed-chunk-11-1.jpeg" width="800"></p>
 <p>The histograms represent the data, the black lines represent the predicted density from the true parameters, and the red lines represent the predicted density from the estimated parameters. We can see that the estimated parameters are able to capture the main features of the data.</p>
 </div>
 </div>

@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.2.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.3.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -147,17 +147,7 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 </h2>
 <p>You should start by loading the <code>bmm</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/venpopov/bmm" class="external-link">bmm</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: brms</span></span>
-<span><span class="co">#&gt; Loading required package: Rcpp</span></span>
-<span><span class="co">#&gt; Loading 'brms' package (version 2.20.4). Useful instructions</span></span>
-<span><span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span></span>
-<span><span class="co">#&gt; to the package is available through vignette('brms_overview').</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'brms'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     ar</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/venpopov/bmm" class="external-link">bmm</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3" number="3.1">
 <h3 id="generating-simulated-data">
 <span class="header-section-number">3.1</span> Generating simulated data<a class="anchor" aria-label="anchor" href="#generating-simulated-data"></a>
@@ -254,64 +244,51 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span><span class="op">)</span></span></code></pre></div>
 <p>Running this model takes about 2 to 5 minutes (depending on the speed of your computer). Here we load an already saved fit object, but on your machine you will have to wait until the model finishes sampling. Both <code>brms</code> and <code>cmdstanr</code> typically print out some information on the sampling progress.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"imm_vignette_fit.rds"</span>, package<span class="op">=</span><span class="st">'bmm'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">bmm</span><span class="fu">:::</span><span class="va">bmmfit_imm_vignette</span></span></code></pre></div>
 <p>Using this <code>fit</code> object we can have a quick look at the summary of the fitted model:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  Family: mixture(von_mises, von_mises, von_mises, von_mises, von_mises, von_mises) </span></span>
-<span><span class="co">#&gt;   Links: mu1 = identity; kappa1 = log; mu2 = identity; kappa2 = log; mu3 = identity; kappa3 = log; mu4 = identity; kappa4 = log; mu5 = identity; kappa5 = log; mu6 = identity; kappa6 = log; theta1 = identity; theta2 = identity; theta3 = identity; theta4 = identity; theta5 = identity; theta6 = identity </span></span>
-<span><span class="co">#&gt; Formula: resp_err ~ 1 </span></span>
-<span><span class="co">#&gt;          mu1 ~ 1</span></span>
-<span><span class="co">#&gt;          kappa ~ 0 + cond</span></span>
-<span><span class="co">#&gt;          a ~ 0 + cond</span></span>
-<span><span class="co">#&gt;          c ~ 0 + cond</span></span>
-<span><span class="co">#&gt;          s ~ 0 + cond</span></span>
-<span><span class="co">#&gt;          kappa6 ~ 1</span></span>
-<span><span class="co">#&gt;          mu6 ~ 1</span></span>
-<span><span class="co">#&gt;          theta1 ~ c + a</span></span>
-<span><span class="co">#&gt;          kappa1 ~ kappa</span></span>
-<span><span class="co">#&gt;          expS ~ exp(s)</span></span>
-<span><span class="co">#&gt;          kappa2 ~ kappa</span></span>
-<span><span class="co">#&gt;          theta2 ~ LureIdx1 * (exp(-expS * dist_item2) * c + a) + (1 - LureIdx1) * (-100)</span></span>
-<span><span class="co">#&gt;          mu2 ~ color_item2</span></span>
-<span><span class="co">#&gt;          kappa3 ~ kappa</span></span>
-<span><span class="co">#&gt;          theta3 ~ LureIdx2 * (exp(-expS * dist_item3) * c + a) + (1 - LureIdx2) * (-100)</span></span>
-<span><span class="co">#&gt;          mu3 ~ color_item3</span></span>
-<span><span class="co">#&gt;          kappa4 ~ kappa</span></span>
-<span><span class="co">#&gt;          theta4 ~ LureIdx3 * (exp(-expS * dist_item4) * c + a) + (1 - LureIdx3) * (-100)</span></span>
-<span><span class="co">#&gt;          mu4 ~ color_item4</span></span>
-<span><span class="co">#&gt;          kappa5 ~ kappa</span></span>
-<span><span class="co">#&gt;          theta5 ~ LureIdx4 * (exp(-expS * dist_item5) * c + a) + (1 - LureIdx4) * (-100)</span></span>
-<span><span class="co">#&gt;          mu5 ~ color_item5</span></span>
-<span><span class="co">#&gt;    Data: .x2 (Number of observations: 4000) </span></span>
-<span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
-<span><span class="co">#&gt;          total post-warmup draws = 4000</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Population-Level Effects: </span></span>
-<span><span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; mu1_Intercept        0.00      0.00     0.00     0.00   NA       NA       NA</span></span>
-<span><span class="co">#&gt; mu6_Intercept        0.00      0.00     0.00     0.00   NA       NA       NA</span></span>
-<span><span class="co">#&gt; kappa6_Intercept  -100.00      0.00  -100.00  -100.00   NA       NA       NA</span></span>
-<span><span class="co">#&gt; kappa_cond1          2.65      0.05     2.55     2.75 1.00     5592     2606</span></span>
-<span><span class="co">#&gt; kappa_cond2          2.40      0.06     2.29     2.51 1.00     5322     3325</span></span>
-<span><span class="co">#&gt; kappa_cond3          2.69      0.07     2.56     2.83 1.00     4160     2846</span></span>
-<span><span class="co">#&gt; kappa_cond4          2.24      0.12     2.00     2.47 1.00     4301     2852</span></span>
-<span><span class="co">#&gt; a_cond1              0.47      0.51    -0.47     1.54 1.00     4334     3240</span></span>
-<span><span class="co">#&gt; a_cond2              0.09      0.62    -1.05     1.39 1.00     4118     2629</span></span>
-<span><span class="co">#&gt; a_cond3              0.55      0.62    -0.49     1.95 1.00     3434     2704</span></span>
-<span><span class="co">#&gt; a_cond4              0.57      0.24     0.12     1.06 1.00     5028     2743</span></span>
-<span><span class="co">#&gt; c_cond1              4.01      0.16     3.72     4.33 1.00     3598     2918</span></span>
-<span><span class="co">#&gt; c_cond2              4.23      0.27     3.75     4.80 1.00     3748     2647</span></span>
-<span><span class="co">#&gt; c_cond3              2.17      0.10     2.00     2.38 1.00     3666     2945</span></span>
-<span><span class="co">#&gt; c_cond4              1.90      0.12     1.68     2.14 1.00     4141     2718</span></span>
-<span><span class="co">#&gt; s_cond1              2.61      0.38     2.03     3.48 1.00     3621     2327</span></span>
-<span><span class="co">#&gt; s_cond2              1.71      0.31     1.23     2.47 1.00     3321     2287</span></span>
-<span><span class="co">#&gt; s_cond3              1.37      0.13     1.12     1.64 1.00     4572     2761</span></span>
-<span><span class="co">#&gt; s_cond4              1.84      0.40     1.29     2.84 1.00     3163     1885</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
-<span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
-<span><span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">IMMfull</span>(resp_err = "resp_err",
+                 nt_features = c("color_item2", "color_item3", "color_item4", "color_item5"),
+                 nt_distances = c("dist_item2", "dist_item3", "dist_item4", "dist_item5"),
+                 setsize = 5) 
+<span style="color: #AF5FFF;">  Links: </span>kappa = log; a = identity; c = identity; s = log 
+<span style="color: #AF5FFF;">Formula: </span>mu1 = 0
+         c ~ 0 + cond
+         a ~ 0 + cond
+         s ~ 0 + cond
+         kappa ~ 0 + cond 
+<span style="color: #AF5FFF;">   Data:</span> simData (Number of observations: 4000)
+<span style="color: #AF5FFF;">  Draws: </span>2 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 2000
+
+<span style="color: #00BB00;">Regression Coefficients:
+</span>            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+kappa_cond1     2.65      0.05     2.55     2.75 1.00     1976     1652
+kappa_cond2     2.39      0.05     2.29     2.50 1.00     2018     1442
+kappa_cond3     2.68      0.07     2.55     2.82 1.00     2455     1386
+kappa_cond4     2.25      0.12     1.98     2.47 1.00     2082     1264
+a_cond1         0.48      0.52    -0.48     1.62 1.00     2226     1364
+a_cond2         0.10      0.61    -0.95     1.44 1.00     2170     1263
+a_cond3         0.57      0.64    -0.46     2.05 1.00     1800     1376
+a_cond4         0.56      0.24     0.12     1.07 1.00     2130     1373
+c_cond1         4.01      0.15     3.72     4.33 1.00     2130     1549
+c_cond2         4.22      0.25     3.76     4.74 1.00     1711     1465
+c_cond3         2.17      0.10     1.99     2.38 1.00     1883     1471
+c_cond4         1.90      0.13     1.67     2.16 1.00     1573     1400
+s_cond1         2.62      0.38     2.05     3.49 1.00     1638     1216
+s_cond2         1.70      0.31     1.27     2.46 1.00     1813     1102
+s_cond3         1.37      0.14     1.11     1.66 1.00     2084     1237
+s_cond4         1.85      0.41     1.26     2.76 1.00     1787     1276
+
+<span style="color: #00BB00;">Constant Parameters:
+</span>                  Value
+mu1_Intercept      0.00
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).
+</code></pre>
 <p>The first thing you might notice is that below the parts of the formula that was passed to the <code>fit_model</code> function, <code>bmm</code> has added a lot of additional specifications to implement the IMM. This is nothing that you have to check. But if you are interested in customizing and exploring different assumptions imposed by the IMM, you could start by taking this formula and adapting it accordingly.</p>
 <p>Next, we can have a look at the estimated parameters. The first thing we should check is if the sampling converged, this is indicated by all <code>Rhat</code> values being close to one. If you want to do more inspection of the sampling, you can check out the functionality implemented in <code>brms</code>to do this.</p>
 <p>The parameter estimates for <code>c</code> and <code>a</code> are already on their native scale, but both <code>s</code> and <code>kappa</code> are estimated using a <code>log</code> link function, so we have to transform these back to the native scale.</p>
@@ -320,35 +297,35 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span></span>
 <span><span class="co"># print posterior means for the s parameter</span></span>
 <span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span>,<span class="st">"c_"</span><span class="op">)</span>,<span class="op">]</span></span>
-<span><span class="co">#&gt;         Estimate  Est.Error     Q2.5    Q97.5</span></span>
-<span><span class="co">#&gt; c_cond1 4.012462 0.15836617 3.719861 4.332995</span></span>
-<span><span class="co">#&gt; c_cond2 4.228149 0.26676563 3.747774 4.802395</span></span>
-<span><span class="co">#&gt; c_cond3 2.173904 0.09743776 1.996452 2.378122</span></span>
-<span><span class="co">#&gt; c_cond4 1.895900 0.11708231 1.682690 2.135075</span></span>
+<span><span class="co">#&gt;         Estimate Est.Error     Q2.5    Q97.5</span></span>
+<span><span class="co">#&gt; c_cond1 4.006365 0.1540218 3.723778 4.327814</span></span>
+<span><span class="co">#&gt; c_cond2 4.220944 0.2469081 3.760590 4.737412</span></span>
+<span><span class="co">#&gt; c_cond3 2.172225 0.0967064 1.992021 2.376198</span></span>
+<span><span class="co">#&gt; c_cond4 1.896768 0.1253333 1.673340 2.158503</span></span>
 <span></span>
 <span><span class="co"># print posterior means for the s parameter</span></span>
 <span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span>,<span class="st">"a_"</span><span class="op">)</span>,<span class="op">]</span></span>
-<span><span class="co">#&gt;           Estimate Est.Error       Q2.5    Q97.5</span></span>
-<span><span class="co">#&gt; a_cond1 0.46999481 0.5074066 -0.4742546 1.540851</span></span>
-<span><span class="co">#&gt; a_cond2 0.09354965 0.6160964 -1.0495725 1.392102</span></span>
-<span><span class="co">#&gt; a_cond3 0.54726549 0.6240536 -0.4881612 1.952763</span></span>
-<span><span class="co">#&gt; a_cond4 0.56573692 0.2425880  0.1158614 1.056425</span></span>
+<span><span class="co">#&gt;          Estimate Est.Error       Q2.5    Q97.5</span></span>
+<span><span class="co">#&gt; a_cond1 0.4849243 0.5245535 -0.4811216 1.622143</span></span>
+<span><span class="co">#&gt; a_cond2 0.1045386 0.6099981 -0.9481660 1.444586</span></span>
+<span><span class="co">#&gt; a_cond3 0.5730334 0.6402724 -0.4562681 2.051471</span></span>
+<span><span class="co">#&gt; a_cond4 0.5638559 0.2443944  0.1168784 1.068508</span></span>
 <span></span>
 <span><span class="co"># print posterior means for the s parameter</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"s_"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;          Estimate Est.Error     Q2.5     Q97.5</span></span>
-<span><span class="co">#&gt; s_cond1 13.593814  1.463169 7.650729 32.583939</span></span>
-<span><span class="co">#&gt; s_cond2  5.502626  1.366229 3.432698 11.796286</span></span>
-<span><span class="co">#&gt; s_cond3  3.940115  1.141465 3.052264  5.138603</span></span>
-<span><span class="co">#&gt; s_cond4  6.326804  1.485378 3.630883 17.035076</span></span>
+<span><span class="co">#&gt; s_cond1 13.798054  1.456866 7.738250 32.941038</span></span>
+<span><span class="co">#&gt; s_cond2  5.499778  1.358736 3.569686 11.699159</span></span>
+<span><span class="co">#&gt; s_cond3  3.954253  1.152316 3.030156  5.258137</span></span>
+<span><span class="co">#&gt; s_cond4  6.368609  1.501818 3.517774 15.857549</span></span>
 <span></span>
 <span><span class="co"># print posterior means for the s parameter</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"kappa_"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              Estimate Est.Error      Q2.5    Q97.5</span></span>
-<span><span class="co">#&gt; kappa_cond1 14.146652  1.051153 12.829244 15.61609</span></span>
-<span><span class="co">#&gt; kappa_cond2 10.974421  1.058337  9.838101 12.25941</span></span>
-<span><span class="co">#&gt; kappa_cond3 14.683366  1.069195 12.943306 16.87006</span></span>
-<span><span class="co">#&gt; kappa_cond4  9.424614  1.128771  7.366675 11.78818</span></span></code></pre></div>
+<span><span class="co">#&gt; kappa_cond1 14.169354  1.050895 12.863444 15.58298</span></span>
+<span><span class="co">#&gt; kappa_cond2 10.958754  1.056496  9.830687 12.13389</span></span>
+<span><span class="co">#&gt; kappa_cond3 14.655252  1.072666 12.816372 16.82502</span></span>
+<span><span class="co">#&gt; kappa_cond4  9.449505  1.132294  7.210386 11.80726</span></span></code></pre></div>
 <p>These results indicate that all parameters, except for <code>s</code> were well recovered. As already noted by <span class="citation">Oberauer et al. (2017)</span>, a good recovery of the generalization gradient <code>s</code> requires a lot of data. Thus you might consider opting for the simplified version of the IMM without the <code>s</code> parameter, the <code>IMMabc</code>.</p>
 <p>We can illustrate the recovery of the data generating parameters by plotting the full posterior distributions alongside the data generating parameters. For this we need to extract the posterior draws using the <code>tidybayes</code> package and include the data generating parameters into the plots of the posteriors.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -372,8 +349,8 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span>                               value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">kappas</span>, <span class="va">As</span>, <span class="va">Cs</span>, <span class="va">Ss</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">value</span>,<span class="va">par</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"red"</span>,</span>
 <span>             shape <span class="op">=</span> <span class="st">"diamond"</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>lim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="IMM_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>lim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.5</span>,<span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="IMM_files/figure-html/unnamed-chunk-9-1.jpeg" width="80%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">draws</span><span class="op">)</span></span>
