@@ -3,6 +3,8 @@
   if (utils::packageVersion('brms') >= '2.20.14') {
     registerS3method("default_prior", "bmmformula", get_model_prior,
                      envir = asNamespace("brms"))
+    registerS3method("restructure", "bmmfit", restructure.bmmfit,
+                     envir = asNamespace("brms"))
   }
 }
 

@@ -1,6 +1,21 @@
-#' @importFrom assertthat assert_that
-restructure.bmm <- function(x) {
-  assert_that(is_bmmfit(x) | !is.null(x$version$bmm), msg = "Please provide a bmmfit object")
+#' Restructure Old \code{bmmfit} Objects
+#'
+#' Restructure old \code{bmmfit} objects to work with
+#' the latest \pkg{bmm} version. This function is called
+#' internally when applying post-processing methods.
+#' However, in order to avoid unnecessary run time caused
+#' by the restructuring, I recommend explicitly calling
+#' \code{restructure} once per model after updating \pkg{bmm}.
+#'
+#' @param x An object of class \code{bmmfit}.
+#' @param ... Currently ignored.
+#'
+#' @return A \code{bmmfit} object compatible with the latest version
+#'   of \pkg{bmm} and \pkg{brms}.
+#' @keywords transform
+#' @export
+#' @importFrom utils packageVersion
+restructure.bmmfit <- function(x, ...) {
   version <- x$version$bmm
   if (is.null(version)) {
     version <- as.package_version('0.1.1')
@@ -9,6 +24,11 @@ restructure.bmm <- function(x) {
   restr_version <- restructure_version.bmm(x)
 
   if (restr_version >= current_version) {
+    if (packageVersion("brms") >= "2.20.15") {
+      x <- NextMethod('restructure')
+    } else {
+      brms::restructure(x)
+    }
     return(x)
   }
 
@@ -25,8 +45,17 @@ restructure.bmm <- function(x) {
     x$bmm$user_formula <- assign_nl(x$bmm$user_formula)
   }
 
+  if (restr_version < "0.4.4") {
+    x$bmm$fit_args <- NULL
+  }
+
   x$version$bmm_restructure <- current_version
-  brms::restructure(x)
+  if (packageVersion("brms") >= "2.20.15") {
+    x <- NextMethod('restructure')
+  } else {
+    brms::restructure(x)
+  }
+  x
 }
 
 restructure_version.bmm <- function(x) {

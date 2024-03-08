@@ -13,8 +13,7 @@ test_that('Available mock models run without errors',{
   f <- bmmformula(kappa ~ 1, thetat ~ 1)
   mock_fit <- fit_model(f, dat, mixture2p(resp_err =  "resp_err"), backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
-  expect_type(mock_fit$bmm$fit_args, "list")
-  expect_equal(names(mock_fit$bmm$fit_args[1:4]), c("formula", "data", "family", "prior"))
+  expect_type(mock_fit$bmm, "list")
 
   # three-parameter model mock fit
   f <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
@@ -22,8 +21,7 @@ test_that('Available mock models run without errors',{
                                           nt_features = paste0('Item',2:3,'_rel')),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
-  expect_type(mock_fit$bmm$fit_args, "list")
-  expect_equal(names(mock_fit$bmm$fit_args[1:4]), c("formula", "data", "family", "prior"))
+  expect_type(mock_fit$bmm, "list")
 
   # IMMabc model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, a ~ 1)
@@ -31,23 +29,20 @@ test_that('Available mock models run without errors',{
                                        nt_features = paste0('Item',2:3,'_rel')),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
-  expect_type(mock_fit$bmm$fit_args, "list")
-  expect_equal(names(mock_fit$bmm$fit_args[1:4]), c("formula", "data", "family", "prior"))
+  expect_type(mock_fit$bmm, "list")
 
   # IMMbsc model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, s ~ 1)
   mock_fit <- fit_model(f, dat, IMMbsc(resp_err = "resp_err", setsize=3, nt_features = paste0('Item',2:3,'_rel'), nt_distances=paste0('spaD',2:3)),
                         backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
-  expect_type(mock_fit$bmm$fit_args, "list")
-  expect_equal(names(mock_fit$bmm$fit_args[1:4]), c("formula", "data", "family", "prior"))
+  expect_type(mock_fit$bmm, "list")
 
   # IMMfull model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, a ~ 1, s ~ 1)
   mock_fit <- fit_model(f, dat, IMMfull(resp_err = "resp_err", setsize=3, nt_features = paste0('Item',2:3,'_rel'), nt_distances=paste0('spaD',2:3)), backend="mock", mock_fit=1, rename=FALSE)
   expect_equal(mock_fit$fit, 1)
-  expect_type(mock_fit$bmm$fit_args, "list")
-  expect_equal(names(mock_fit$bmm$fit_args[1:4]), c("formula", "data", "family", "prior"))
+  expect_type(mock_fit$bmm, "list")
 })
 
 test_that('Available models produce expected errors', {

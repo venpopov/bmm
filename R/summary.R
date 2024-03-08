@@ -8,7 +8,11 @@
 #' options(bmm.color_summary = FALSE) or bmm_options(color_summary = FALSE)
 #' @export
 summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE,  mc_se = FALSE, ..., backend = 'bmm') {
-  object <- restructure.bmm(object)
+  if (packageVersion('brms') < '2.20.15') {
+    object <- restructure.bmmfit(object)
+  } else {
+    object <- brms::restructure(object)
+  }
   backend <- match.arg(backend, c('bmm', 'brms'))
 
   # get summary object from brms, since it contains a lot of necessary information:
@@ -20,7 +24,6 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
   out <- rename_mu_smry(out, get_mu_pars(object))
 
   # get the bmm specific information
-  bmmargs <- object$bmm$fit_args
   bmmmodel <- object$bmm$model
   bmmform <- object$bmm$user_formula
 

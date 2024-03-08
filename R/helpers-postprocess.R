@@ -25,14 +25,12 @@ postprocess_brm <- function(model, fit, ...) {
 postprocess_brm.bmmmodel <- function(model, fit, ...) {
   dots <- list(...)
   class(fit) <- c('bmmfit','brmsfit')
-  fit$bmm$fit_args <- dots$fit_args
   fit$version$bmm <- utils::packageVersion('bmm')
-  fit$bmm$model <- model
-  fit$bmm$user_formula <- dots$user_formula
-  fit$bmm$configure_opts <- dots$configure_opts
+  fit$bmm <- nlist(model, user_formula = dots$user_formula, configure_opts = dots$configure_opts)
   attr(fit$data, 'data_name') <- attr(dots$fit_args$data, 'data_name')
-
-  NextMethod('postprocess_brm')
+  fit <- NextMethod('postprocess_brm')
+  # clean up environments stored in the fit object
+  reset_env(fit)
 }
 
 #' @export
