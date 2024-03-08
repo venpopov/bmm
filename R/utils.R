@@ -267,7 +267,7 @@ order_data_query <- function(model, data, formula) {
   predictors <- predictors[not_in(predictors, dpars)]
   predictors <- predictors[predictors %in% colnames(data)]
 
-  if(is.null(sort_data) && !is_data_ordered(data, formula)) {
+  if (sort_data == "check" && !is_data_ordered(data, formula)) {
     message("\n\nData is not ordered by predictors.\nYou can speed up the model ",
             "estimation up to several times (!) by ordering the data by all your ",
             "predictor columns.\n\n")
@@ -275,16 +275,19 @@ order_data_query <- function(model, data, formula) {
       when using brms postprocessing methods that rely on the data order, such as
       generating predictions. Assuming you assigned the result of fit_model to a
       variable called `fit`, you can extract the sorted data from the fitted object
-      with:\n\n   data_sorted <- fit$fit_args$data", width=80), collapse = "\n")
+      with:\n\n   data_sorted <- fit$data", width = 80), collapse = "\n")
     caution_msg <- crayon::red(caution_msg)
+    disable_msg <- glue("To disable this check and query, use options('bmm.sort_data' \\
+      = TRUE) to always sort or options('bmm.sort_data' = FALSE) to never check nor \\
+      prompt this question.")
 
-    if(interactive()) {
+    if (interactive()) {
       var <- utils::menu(c("Yes (note: you will receive code to sort your data)",
                            paste0("Let bmm sort the data for you and continue with the faster model fitting ",
                                   crayon::red("(*)")),
                            paste0("No, I want to continue with the slower estimation\n\n", caution_msg, collapse = "\n")),
-                         title="Do you want to stop and sort your data? (y/n): ")
-      if(var == 1) {
+                         title = "Do you want to stop and sort your data? (y/n): ")
+      if (var == 1) {
         message("Please sort your data by all predictors and then re-run the model.")
         data_name <- attr(data, "data_name")
         if (is.null(data_name)) {
@@ -295,14 +298,15 @@ order_data_query <- function(model, data, formula) {
         message(crayon::green(data_name, "_sorted <- ", data_name, " %>% arrange(",
                               paste(predictors, collapse = ", "),
                               ")\n\n",
-                              sep=""))
-        message("Then re-run the model with the newly sorted data.")
+                              sep = ""))
+        message("Then re-run the model with the newly sorted data.\n\n", disable_msg)
         stop_quietly()
       } else if (var == 2) {
         message("Your data has been sorted by the following predictors: ", paste(predictors, collapse = ", "),'\n')
         data <- dplyr::arrange_at(data, predictors)
       }
     }
+    message("\n\n", disable_msg)
   } else if (isTRUE(sort_data)) {
     data <- dplyr::arrange_at(data, predictors)
     message("\nYour data has been sorted by the following predictors: ", paste(predictors, collapse = ", "),'\n')
