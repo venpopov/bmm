@@ -32,9 +32,12 @@ update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ..
     stop2("You cannot update with a different model.\n",
           "If you want to use a different model, please use `fit_model()` instead.")
   }
-  object <- restructure.bmm(object)
+  if (packageVersion('brms') < '2.20.15') {
+    object <- restructure_bmm(object)
+  } else {
+    object <- brms::restructure(object)
+  }
 
-  fit_args <- object$bmm$fit_args
   model <- object$bmm$model
   old_user_formula <- object$bmm$user_formula
   olddata <- object$data
@@ -75,7 +78,7 @@ update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ..
   new_fit_args <- combine_args(nlist(config_args, dots))
 
   # construct the new formula and data only if they have changed
-  if (!identical(new_fit_args$formula, fit_args$formula)) {
+  if (!identical(new_fit_args$formula, object$formula)) {
     formula. <- new_fit_args$formula
   }
   if (!identical(new_fit_args$data, olddata)) {

@@ -519,3 +519,64 @@ tryCatch2 <- function(expr, capture = FALSE) {
 }
 
 
+# resets the environments stored within an objects
+reset_env <- function(object, env = NULL, ...) {
+  UseMethod("reset_env")
+}
+
+#' @export
+reset_env.bmmfit <- function(object, env = NULL, ...) {
+  if (is.null(env)) {
+    env <- globalenv()
+  }
+  object$formula <- reset_env(object$formula, env)
+  object$family <- reset_env(object$family, env)
+  object$bmm$user_formula <- reset_env(object$bmm$user_formula, env)
+  object
+}
+
+#' @export
+reset_env.bmmformula <- function(object, env = NULL, ...) {
+  if (is.null(env)) {
+    env <- globalenv()
+  }
+  for (par in names(object)) {
+    object[[par]] <- reset_env(object[[par]], env)
+  }
+  object
+}
+
+#' @export
+reset_env.brmsformula <- function(object, env = NULL, ...) {
+  if (is.null(env)) {
+    env <- globalenv()
+  }
+  object$formula <- reset_env(object$formula, env)
+  for (par in names(object$pforms)) {
+    object$pforms[[par]] <- reset_env(object$pforms[[par]], env)
+  }
+  if (!is.null(object$family)) {
+    object$family <- reset_env(object$family, env)
+  }
+  object
+}
+
+#' @export
+reset_env.formula <- function(object, env = NULL, ...) {
+  if (is.null(env)) {
+    env <- globalenv()
+  }
+  environment(object) <- env
+  object
+}
+
+#' @export
+reset_env.brmsfamily <- function(object, env = NULL, ...) {
+  if (is.null(env)) {
+    env <- globalenv()
+  }
+  if (!is.null(object$env)) {
+    object$env <- env
+  }
+  object
+}

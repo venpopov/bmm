@@ -50,7 +50,7 @@ reference:
    desc: "Functions for special distributions"
  - contents:
    - has_keyword("distribution")
- - title: "Data and parameter transformations"
+ - title: "Data, model and parameter transformations"
    desc: "Utility functions for transforming data and parameters"
  - contents:
    - has_keyword("transform")

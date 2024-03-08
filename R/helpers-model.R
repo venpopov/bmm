@@ -427,36 +427,37 @@ use_model_template <- function(model_name,
     "# ?postprocess_brm for details\n\n")
 
 
-  model_object <- glue::glue(".model_<<model_name>> <- function(resp_var1 = NULL, required_arg1 = NULL, required_arg2 = NULL, ...) {\n",
-                             "   out <- list(\n",
-                             "      resp_vars = nlist(resp_var1),\n",
-                             "      other_vars = nlist(required_arg1, required_arg2),\n",
-                             "      info = list(\n",
-                             "         domain = '',\n",
-                             "         task = '',\n",
-                             "         name = '',\n",
-                             "         citation = '',\n",
-                             "         version = '',\n",
-                             "         requirements = '',\n",
-                             "         parameters = list(),\n",
-                             "         fixed_parameters = list()\n",
-                             "      ),\n",
-                             "      void_mu = FALSE\n",
-                             "   )\n",
-                             "   class(out) <- c('bmmmodel', '<<model_name>>')\n",
-                             "   out\n",
-                             "}\n\n",
-                             .open = "<<", .close = ">>")
+  model_object <- glue(".model_<<model_name>> <- function(resp_var1 = NULL, required_arg1 = NULL, required_arg2 = NULL, links = NULL, ...) {\n",
+                       "   out <- list(\n",
+                       "      resp_vars = nlist(resp_var1),\n",
+                       "      other_vars = nlist(required_arg1, required_arg2),\n",
+                       "      domain = '',\n",
+                       "      task = '',\n",
+                       "      name = '',\n",
+                       "      citation = '',\n",
+                       "      version = '',\n",
+                       "      requirements = '',\n",
+                       "      parameters = list(),\n",
+                       "      links = list(),\n",
+                       "      fixed_parameters = list()\n",
+                       "      void_mu = FALSE\n",
+                       "   )\n",
+                       "   class(out) <- c('bmmmodel', '<<model_name>>')\n",
+                       "   out$links[names(links)] <- links\n",
+                       "   out\n",
+                       "}\n\n",
+                       .open = "<<", .close = ">>")
 
   user_facing_alias <- glue::glue("# user facing alias\n",
                                   "# information in the title and details sections will be filled in\n",
                                   "# automatically based on the information in the .model_<<model_name>>()$info\n \n",
                                   "#' @title `r .model_<<model_name>>()$name`\n",
                                   "#' @name Model Name",
-                                  "#' @details `r model_info(model_<<model_name>>())`\n",
+                                  "#' @details `r model_info(.model_<<model_name>>())`\n",
                                   "#' @param resp_var1 A description of the response variable\n",
                                   "#' @param required_arg1 A description of the required argument\n",
                                   "#' @param required_arg2 A description of the required argument\n",
+                                  "#' @param links A list of links for the parameters.",
                                   "#' @param ... used internally for testing, ignore it\n",
                                   "#' @return An object of class `bmmmodel`\n",
                                   "#' @export\n",
@@ -464,10 +465,10 @@ use_model_template <- function(model_name,
                                   "#' \\dontrun{\n",
                                   "#' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)\n",
                                   "#' }\n",
-                                  "<<model_name>> <- function(resp_var1, required_arg1, required_arg2, ...) {\n",
+                                  "<<model_name>> <- function(resp_var1, required_arg1, required_arg2, links = NULL, ...) {\n",
                                   "   stop_missing_args()\n",
                                   "   .model_<<model_name>>(resp_var1 = resp_var1, required_arg1 = required_arg1,",
-                                  " required_arg2 = required_arg2, ...)\n",
+                                  " required_arg2 = required_arg2, links = links, ...)\n",
                                   "}\n\n",
                                   .open = "<<", .close = ">>")
 
@@ -479,8 +480,7 @@ use_model_template <- function(model_name,
                                   "   # check the data (required)\n\n\n",
                                   "   # compute any necessary transformations (optional)\n\n",
                                   "   # save some variables as attributes of the data for later use (optional)\n\n",
-                                  "   data = NextMethod('check_data')\n\n",
-                                  "   return(data)\n",
+                                  "   NextMethod('check_data')\n\n",
                                   "}\n\n",
                                   .open = "<<", .close = ">>")
 
@@ -505,7 +505,7 @@ use_model_template <- function(model_name,
                               "       brms_formula <- brms_formula + brms::lf(pform)\n",
                               "     }\n",
                               "   }\n\n",
-                              "   return(brms_formula)\n",
+                              "   brms_formula\n",
                               "}\n\n",
                               .open = "<<", .close = ">>")
 
@@ -551,9 +551,9 @@ use_model_template <- function(model_name,
   }
 
   if (custom_family) {
-    out_template <- "   out <- nlist(formula, data, family, prior, stanvars)\n"
+    out_template <- "   nlist(formula, data, family, prior, stanvars)\n"
   } else {
-    out_template <- "   out <- nlist(formula, data, family, prior)\n"
+    out_template <- "   nlist(formula, data, family, prior)\n"
   }
 
 
@@ -574,14 +574,13 @@ use_model_template <- function(model_name,
                                        "   prior <- NULL\n\n",
                                        "   # return the list\n",
                                        out_template,
-                                       "   return(out)\n",
                                        "}\n\n",
                                        .open = "<<", .close = ">>")
 
   postprocess_brm_method <- glue::glue("#' @export\n",
                                        "postprocess_brm.<<model_name>> <- function(model, fit) {\n",
                                        "   # any required postprocessing (if none, delete this section)\n\n",
-                                       "   return(fit)\n",
+                                       "   fit\n",
                                        "}\n\n",
                                        .open = "<<", .close = ">>")
 

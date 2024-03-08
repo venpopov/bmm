@@ -25,7 +25,7 @@
 #'
 #' @name get_model_prior
 #'
-#' @seealso [supported_models()], \code{\link[brms:get_prior]{brms::get_prior()}}. 
+#' @seealso [supported_models()], \code{\link[brms:get_prior]{brms::get_prior()}}.
 #'
 #' @keywords extract_info
 #'
@@ -44,10 +44,13 @@
 #' }
 #' @export
 get_model_prior <- function(object, data, model, formula = object, ...) {
-  if (utils::packageVersion('brms') >= "2.20.14") {
-    message("get_model_prior is deprecated. Please use get_prior() or default_prior()")
-  } else {
-    message("get_model_prior is deprecated. Please use get_prior() instead.")
+  fcall <- as.character(match.call()[1])
+  if (fcall == "get_model_prior") {
+    if (utils::packageVersion('brms') >= "2.20.14") {
+      message("get_model_prior is deprecated. Please use get_prior() or default_prior()")
+    } else {
+      message("get_model_prior is deprecated. Please use get_prior() instead.")
+    }
   }
   if (missing(object) && !missing(formula)) {
     warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",

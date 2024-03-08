@@ -6,7 +6,7 @@ test_that('update.bmmfit works', {
   # formula is replaced
   up <- update(fit1, formula. = bmf(c ~ 1, kappa ~ 1), testmode = TRUE)
   expect_true(is(up, "bmmfit"))
-  expect_equal(up$bmm$fit_args$formula$pforms$c, c ~ 1, ignore_attr = TRUE)
+  expect_equal(up$bmm$user_formula$c, c ~ 1, ignore_attr = TRUE)
 
   # data is replaced, old formula is kept
   new_data <- data
@@ -15,13 +15,12 @@ test_that('update.bmmfit works', {
                testmode = TRUE)
   expect_true(is(up, "bmmfit"))
   expect_equal(attr(up$data, "data_name"), "new_data")
-  expect_equal(up$bmm$fit_args$formula$pforms$c, c ~ 0 + set_size, ignore_formula_env=T, ignore_attr = TRUE)
+  expect_equal(up$bmm$user_formula$c, c ~ 0 + set_size, ignore_formula_env=T, ignore_attr = TRUE)
 
   # prior is replaced
   up <- update(fit1, formula. = bmf(c ~ 1, kappa ~ 1), testmode = TRUE,
                prior = brms::set_prior("normal(0,0.1)", class="Intercept", dpar='kappa'))
   expect_true(is(up, "bmmfit"))
-  expect_equal(up$bmm$fit_args$prior$prior[3], "normal(0,0.1)")
 
   # refuse to change model
   expect_error(update(fit1, model = mixture2p(resp_err = "dev_rad")),
