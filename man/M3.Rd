@@ -5,7 +5,7 @@
 \alias{M3custom}
 \title{The Memory Measurement Model by Oberauer & Lewandowsky (2019)}
 \usage{
-M3custom(resp_cats, num_options, choice_rule = "softmax", ...)
+M3custom(resp_cats, num_options, links, choice_rule = "softmax", ...)
 }
 \arguments{
 \item{resp_cats}{The variable names that contain the number of responses for each of the
@@ -17,6 +17,14 @@ in the experiment. Or a vector specifying the variable names that contain the nu
 candidates in each response category. The order of these variables should be in the
 same order as the names of the response categories passed to \code{resp_cats}}
 
+\item{links}{A named list that provides the link functions that should be used for all M3
+parameters used in the model calls. Current options for the link functions are: "identity",
+"log", and "logit". The "identity" link should be used for all parameters with an unbounded
+range from minus to plus infinity. The "log" link should be used for all parameters with a bounded
+range from zero to plus infinity (i.e., most activation sources). The "logit" link should be
+used for all parameters bounded between zero and one (i.e. proportional reductions in activations,
+such as filtering or removal)}
+
 \item{choice_rule}{The choice rule that should be used for the M3. The options are "softmax"
 or "luce". The "softmax" option implements the softmax normalization of activation into
 probabilities for choosing the different response categories. The "luce" option implements
@@ -26,14 +34,6 @@ the appendix of Oberauer & Lewandowsky (2019) "Simple measurement models for com
 working memory tasks. Psychological Review"}
 
 \item{...}{used internally for testing, ignore it}
-
-\item{links}{A named list that provides the link functions that should be used for all M3
-parameters used in the model calls. Current options for the link functions are: "identity",
-"log", and "logit". The "identity" link should be used for all parameters with an unbounded
-range from minus to plus infinity. The "log" link should be used for all parameters with a bounded
-range from zero to plus infinity (i.e., most activation sources). The "logit" link should be
-used for all parameters bounded between zero and one (i.e. proportional reductions in activations,
-such as filtering or removal)}
 }
 \value{
 An object of class \code{bmmmodel}
@@ -43,15 +43,8 @@ The Memory Measurement Model by Oberauer & Lewandowsky (2019)
 }
 \details{
 \subsection{Version: \code{M3custom}}{
-\itemize{
-\item \strong{Domain:} Working Memory (categorical)
-\item \strong{Task:} n-AFC retrieval
-\item \strong{Name:} The Memory Measurement Model by Oberauer & Lewandowsky (2019)
-\item \strong{Citation:}
-\itemize{
-\item Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.
-}
-}
+
+\verb{r model_info(.model_M3custom(), components =c('domain', 'task', 'name', 'citation'))}
 }
 }
 \examples{

@@ -6,6 +6,7 @@
 \title{Stan data for \code{bmm} models}
 \usage{
 get_standata(object, data, model, prior = NULL, formula = object, ...)
+
 \method{standata}{bmmformula}(object, data, model, prior = NULL, ...)
 }
 \arguments{
@@ -47,8 +48,9 @@ alias for \code{standata()}, and \code{standata()} is the recommended function t
 }
 \examples{
 sdata1 <- standata(bmf(c ~ 1, kappa ~ 1),
-                   data = OberauerLin_2017,
-                   model = sdmSimple(resp_err = "dev_rad"))
+  data = OberauerLin_2017,
+  model = sdmSimple(resp_err = "dev_rad")
+)
 str(sdata1)
 }
 \seealso{

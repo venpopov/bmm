@@ -3,7 +3,7 @@
 #############################################################################!
 # see file 'R/bmm_model_mixture3p.R' for an example
 
-.model_M3custom <- function(resp_cats = NULL, num_options = NULL, choice_rule = "softmax", links = NULL, ...) {
+.model_M3custom <- function(resp_cats = NULL, num_options = NULL, links = NULL, choice_rule = "softmax", ...) {
    # name the number of options in each response categories if no names are provided
    if (is.null(names(num_options))) names(num_options) <- resp_cats
 
@@ -12,25 +12,23 @@
       resp_vars = nlist(resp_cats),
       other_vars = nlist(num_options, choice_rule, ...),
       links = links,
-      info = list(
-         domain = 'Working Memory (categorical)',
-         task = 'n-AFC retrieval',
-         name = 'The Memory Measurement Model by Oberauer & Lewandowsky (2019)',
-         citation = 'Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.',
-         version = 'custom',
-         requirements = '- Provide names for variables specifying the number of responses in a set of response categories.\n
+      domain = 'Working Memory (categorical)',
+      task = 'n-AFC retrieval',
+      name = 'The Memory Measurement Model by Oberauer & Lewandowsky (2019)',
+      citation = 'Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.',
+      version = 'custom',
+      requirements = '- Provide names for variables specifying the number of responses in a set of response categories.\n
          - Specify activation sources for each response categories \n
          - Include at least an activation source "b" for all response categories \n
          - Predict the specified activation at least by a fixed intercept and any additional predictors from your data',
-         parameters = list(
-            b = "Background activation. This source of activation should be added to the
+      parameters = list(
+         b = "Background activation. This source of activation should be added to the
               activation function for each response category, and represents the background
               noise. This parameter is fixed for scaling, but needs to be included in all
               models."
-         ),
-         fixed_parameters = list(
-            b = ifelse(choice_rule == "softmax", 0, 0.1)
-         )
+      ),
+      fixed_parameters = list(
+         b = ifelse(choice_rule == "softmax", 0, 0.1)
       ),
       void_mu = FALSE
    )
@@ -43,13 +41,12 @@
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_M3()$info
 
-#' @title `r .model_M3custom()$info$name`
+#' @title `r .model_M3custom()$name`
 #' @name M3
 #'
 #' @details
 #'   #### Version: `M3custom`
 #'   `r model_info(.model_M3custom(), components =c('domain', 'task', 'name', 'citation'))`
-#'
 #'
 #' @param resp_cats The variable names that contain the number of responses for each of the
 #'   response categories used for the M3.
@@ -58,13 +55,6 @@
 #'   in the experiment. Or a vector specifying the variable names that contain the number of
 #'   candidates in each response category. The order of these variables should be in the
 #'   same order as the names of the response categories passed to `resp_cats`
-#' @param choice_rule The choice rule that should be used for the M3. The options are "softmax"
-#'   or "luce". The "softmax" option implements the softmax normalization of activation into
-#'   probabilities for choosing the different response categories. The "luce" option implements
-#'   the normalization of the different activations over the sum of all activations without
-#'   exponentiating them. For details on the differences of these choice rules please see
-#'   the appendix of Oberauer & Lewandowsky (2019) "Simple measurement models for complex
-#'   working memory tasks. Psychological Review"
 #' @param links A named list that provides the link functions that should be used for all M3
 #'   parameters used in the model calls. Current options for the link functions are: "identity",
 #'   "log", and "logit". The "identity" link should be used for all parameters with an unbounded
@@ -72,6 +62,13 @@
 #'   range from zero to plus infinity (i.e., most activation sources). The "logit" link should be
 #'   used for all parameters bounded between zero and one (i.e. proportional reductions in activations,
 #'   such as filtering or removal)
+#' @param choice_rule The choice rule that should be used for the M3. The options are "softmax"
+#'   or "luce". The "softmax" option implements the softmax normalization of activation into
+#'   probabilities for choosing the different response categories. The "luce" option implements
+#'   the normalization of the different activations over the sum of all activations without
+#'   exponentiating them. For details on the differences of these choice rules please see
+#'   the appendix of Oberauer & Lewandowsky (2019) "Simple measurement models for complex
+#'   working memory tasks. Psychological Review"
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
 #'
@@ -83,9 +80,10 @@
 #' }
 #'
 #' @export
-M3custom <- function(resp_cats, num_options, choice_rule = "softmax", ...) {
+M3custom <- function(resp_cats, num_options, links, choice_rule = "softmax", ...) {
    stop_missing_args()
-   .model_M3custom(resp_cats = resp_cats, num_options = num_options, choice_rule = choice_rule, ...)
+   .model_M3custom(resp_cats = resp_cats, num_options = num_options,
+                   choice_rule = choice_rule, links = links, ...)
 }
 
 

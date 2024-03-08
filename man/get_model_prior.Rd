@@ -39,12 +39,6 @@ model. Additionally, it will return all model parameters that have no prior
 specified (flat priors). This can help to get an idea about which priors
 need to be specified and also know which priors were used if no
 user-specified priors were passed to the \code{\link[=fit_model]{fit_model()}} function.
-
-If you are using \emph{brms} version 2.20.14 or later, you should use
-\link[brms:default_prior]{get_prior} directly with the \code{bmmformula} object. If you are using an
-older version of \emph{brms}, you have to use \code{\link[=get_model_prior]{get_model_prior()}} to obtain the
-default priors. The usage of \code{\link[=get_model_prior]{get_model_prior()}} is deprecated and will be
-removed in future versions of \emph{bmm}.
 }
 \details{
 This function is deprecated. Please use \code{default_prior()} or \code{get_prior()} (if using
@@ -64,6 +58,6 @@ get_prior(bmf(c ~ 1, kappa ~ 1),
 }
 }
 \seealso{
-\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:default_prior]{brms::get_prior()}}
+\code{\link[=supported_models]{supported_models()}}, \code{\link[brms:get_prior]{brms::get_prior()}}.
 }
 \keyword{extract_info}
