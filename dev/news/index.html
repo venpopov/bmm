@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.3.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.4.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,6 +57,7 @@
 <ul><li>add a custom summary() method for bmm models (<a href="https://github.com/venpopov/bmm/issues/144" class="external-link">#144</a>)</li>
 <li>add a global options bmm.summary_backend to control the backend used for the summary() method (choices are “bmm” and “brms”)</li>
 <li>deprecate get_model_prior(), get_stancode() and get_standata(). These functions will be removed in future versions of the package. Due to <a href="https://github.com/paul-buerkner/brms/pull/1604" class="external-link">recent changes</a> in <em>brms</em> version 2.20.14, you can now use the <em>brms</em> functions <code>default_prior</code>, <code>stancode</code> and <code>standata</code> directly with <em>bmm</em> models (alternatively, their older aliases, “get_prior”, “make_stancode”, “make_standata”).</li>
+<li>function restructure() now allows to apply methods introduced in newer bmm versions to bmmfit objects created by older bmm versions</li>
 </ul></div>
 </div>
     <div class="section level2">
