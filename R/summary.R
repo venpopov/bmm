@@ -9,7 +9,7 @@
 #' @export
 summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE,  mc_se = FALSE, ..., backend = 'bmm') {
   if (packageVersion('brms') < '2.20.15') {
-    object <- restructure.bmmfit(object)
+    object <- restructure_bmm(object)
   } else {
     object <- brms::restructure(object)
   }

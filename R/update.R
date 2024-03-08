@@ -33,7 +33,7 @@ update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ..
           "If you want to use a different model, please use `fit_model()` instead.")
   }
   if (packageVersion('brms') < '2.20.15') {
-    object <- restructure.bmmfit(object)
+    object <- restructure_bmm(object)
   } else {
     object <- brms::restructure(object)
   }
