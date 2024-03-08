@@ -43,8 +43,15 @@ The Memory Measurement Model by Oberauer & Lewandowsky (2019)
 }
 \details{
 \subsection{Version: \code{M3custom}}{
-
-\verb{r model_info(.model_M3custom(), components =c('domain', 'task', 'name', 'citation'))}
+\itemize{
+\item \strong{Domain:} Working Memory (categorical)
+\item \strong{Task:} n-AFC retrieval
+\item \strong{Name:} The Memory Measurement Model by Oberauer & Lewandowsky (2019)
+\item \strong{Citation:}
+\itemize{
+\item Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.
+}
+}
 }
 }
 \examples{

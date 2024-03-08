@@ -224,13 +224,22 @@ bmf2bf.bmmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE
   resp <- model$resp_vars
   if (length(resp) > 1) {
-    formula <- NextMethod("bmf2bf")
+    brms_formula <- NextMethod("bmf2bf")
     return(formula)
-  }
-  resp <- resp[[1]]
+  } else if("M3" %in% class(model)) {
+    brms_formula <- NextMethod("bmf2bf")
+  } else {
+    resp <- resp[[1]]
 
-  # set base brms formula based on response
-  brms_formula <- brms::bf(paste0(resp, "~ 1"))
+    # set base brms formula based on response
+    brms_formula <- brms::bf(paste0(resp, "~ 1"))
+  }
+
+
+  if("M3custom" %in% class(model)){
+    formula <- apply_links(formula, model$links)
+    formula <- assign_nl(formula)
+  }
 
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function
@@ -268,7 +277,8 @@ wrong_parameters <- function(model, formula) {
   fpars <- names(formula)
   mpars <- names(model$parameters)
   rhs_vars <- rhs_vars(formula)
-  wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
+  resp_vars <- model$resp_vars$resp_cats
+  wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars) & not_in(fpars,resp_vars)
   fpars[wpars]
 }
 
@@ -348,4 +358,50 @@ is_bmmformula <- function(x) {
 
 is_brmsformula <- function(x) {
   inherits(x, "brmsformula")
+}
+
+#' @title Apply link functions for parameters in a `bmmformula`
+#' @description
+#'   This function applies the specified link functions in the list of `links` to the
+#'   `bmmformula` that is passed to it. This function is mostly used internally for configuring
+#'   `bmmmodels`.
+#' @param formula A `bmmformula` that the links should be applied to
+#' @param links A list of `links` that should be applied to the formula. Each element in this list
+#'   should be named using the parameter labels the links should be applied for and contain
+#'   a character variable specifying the link to be applied. Currently implemented links are:
+#'   "log", "logit", "probit", and "identity".
+#' @return The `bmmformula` the links have been applied to
+#'
+#' @examples
+#' # specify a bmmformula
+#' form <- bmf(c ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
+#' links <- list(a = "log", c = "logit")
+#'
+#' apply_links(form, links)
+#'
+#' @export
+apply_links <- function(formula, links) {
+  dpars <- names(formula)
+
+  for (dpar in dpars) {
+    pform <- formula[[dpar]]
+    deparse_form <- deparse(pform)
+    split_form <- gsub("[[:space:]]", "", strsplit(deparse_form,"~")[[1]])
+
+    for (par in names(links)) {
+      if (is.numeric(links[[par]])) {
+        replace <- as.character(links[[par]])
+      } else {
+        replace <- dplyr::case_when(links[[par]] == "log" ~ paste0(" exp(",par,") "),
+                                    links[[par]] == "logit" ~ paste0(" inv_logit(",par,") "),
+                                    links[[par]] == "probit" ~ paste0("Phi(",par,")"),
+                                    TRUE ~ par)
+      }
+      par_name <- paste0("\\b", par, "\\b") # match whole word only
+      split_form[2] <- gsub(par_name,replace,split_form[2])
+    }
+    formula[[dpar]] <- stats::as.formula(paste0(split_form[1],"~",split_form[2]))
+  }
+
+  formula
 }
