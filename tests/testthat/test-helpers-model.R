@@ -1,6 +1,6 @@
 test_that("supported_models() returns a non-empty character vector", {
-  expect_type(supported_models(print_call=FALSE), "character")
-  expect_gt(length(supported_models(print_call=FALSE)), 0)
+  expect_type(supported_models(print_call = FALSE), "character")
+  expect_gt(length(supported_models(print_call = FALSE)), 0)
 })
 
 test_that("get_model() returns the correct function", {
@@ -9,8 +9,9 @@ test_that("get_model() returns the correct function", {
 
 test_that("check_model() refuses invalid models and accepts valid models", {
   expect_error(check_model("invalid_model"))
-  expect_error(check_model(structure(list(), class='invalid')))
-  okmodels <- supported_models(print_call=FALSE)
+  expect_error(check_model(structure(list(), class = "invalid")))
+  expect_error(check_model(sdmSimple), "Did you forget")
+  okmodels <- supported_models(print_call = FALSE)
   for (model in okmodels) {
     model <- get_model(model)()
     expect_silent(check_model(model))
@@ -20,40 +21,50 @@ test_that("check_model() refuses invalid models and accepts valid models", {
 
 test_that("check_model() works with regular expressions", {
   dat <- OberauerLin_2017
-  models1 <- list(mixture3p("dev_rad",
-                            nt_features = paste0('col_nt',1:7),
-                            setsize = 'set_size'),
-                  IMMfull('dev_rad',
-                          nt_features = paste0('col_nt',1:7),
-                          nt_distances = paste0('dist_nt',1:7),
-                          setsize = 'set_size'),
-                  IMMbsc('dev_rad',
-                          nt_features = paste0('col_nt',1:7),
-                          nt_distances = paste0('dist_nt',1:7),
-                          setsize = 'set_size'),
-                  IMMabc('dev_rad',
-                          nt_features = paste0('col_nt',1:7),
-                          setsize = 'set_size')
-                  )
-  models2 <- list(mixture3p("dev_rad",
-                            nt_features = 'col_nt',
-                            setsize = 'set_size',
-                            regex = TRUE),
-                  IMMfull('dev_rad',
-                          nt_features = 'col_nt',
-                          nt_distances = 'dist_nt',
-                          setsize = 'set_size',
-                          regex = TRUE),
-                  IMMbsc('dev_rad',
-                          nt_features = 'col_nt',
-                          nt_distances = 'dist_nt',
-                          setsize = 'set_size',
-                          regex = TRUE),
-                  IMMabc('dev_rad',
-                          nt_features = 'col_nt',
-                          setsize = 'set_size',
-                          regex = TRUE)
-                  )
+  models1 <- list(
+    mixture3p("dev_rad",
+      nt_features = paste0("col_nt", 1:7),
+      setsize = "set_size"
+    ),
+    IMMfull("dev_rad",
+      nt_features = paste0("col_nt", 1:7),
+      nt_distances = paste0("dist_nt", 1:7),
+      setsize = "set_size"
+    ),
+    IMMbsc("dev_rad",
+      nt_features = paste0("col_nt", 1:7),
+      nt_distances = paste0("dist_nt", 1:7),
+      setsize = "set_size"
+    ),
+    IMMabc("dev_rad",
+      nt_features = paste0("col_nt", 1:7),
+      setsize = "set_size"
+    )
+  )
+  models2 <- list(
+    mixture3p("dev_rad",
+      nt_features = "col_nt",
+      setsize = "set_size",
+      regex = TRUE
+    ),
+    IMMfull("dev_rad",
+      nt_features = "col_nt",
+      nt_distances = "dist_nt",
+      setsize = "set_size",
+      regex = TRUE
+    ),
+    IMMbsc("dev_rad",
+      nt_features = "col_nt",
+      nt_distances = "dist_nt",
+      setsize = "set_size",
+      regex = TRUE
+    ),
+    IMMabc("dev_rad",
+      nt_features = "col_nt",
+      setsize = "set_size",
+      regex = TRUE
+    )
+  )
 
   for (i in 1:length(models1)) {
     check1 <- check_model(models1[[i]], dat)
@@ -66,7 +77,7 @@ test_that("check_model() works with regular expressions", {
 
 test_that("use_model_template() prevents duplicate models", {
   skip_on_cran()
-  okmodels <- supported_models(print_call=FALSE)
+  okmodels <- supported_models(print_call = FALSE)
   for (model in okmodels) {
     expect_error(use_model_template(model))
   }
@@ -82,39 +93,46 @@ test_that("use_model_template() prevents duplicate models", {
 
 test_that("get_stancode() returns a string", {
   # define formula
-  ff <- bmmformula(kappa ~ 1,
-                    thetat ~ 1,
-                    thetant ~ 1)
+  ff <- bmmformula(
+    kappa ~ 1,
+    thetat ~ 1,
+    thetant ~ 1
+  )
 
   # simulate data
-  dat <- data.frame(y = rmixture3p(n = 200),
-                    nt1_loc = 2,
-                    nt2_loc = -1.5)
+  dat <- data.frame(
+    y = rmixture3p(n = 200),
+    nt1_loc = 2,
+    nt2_loc = -1.5
+  )
 
   # fit the model
   stancode <- get_stancode(ff,
-                           data = dat,
-                           model = mixture3p(resp_err = "y", nt_features = paste0('nt',1,'_loc'), setsize = 2))
+    data = dat,
+    model = mixture3p(resp_err = "y", nt_features = paste0("nt", 1, "_loc"), setsize = 2)
+  )
   expect_equal(class(stancode)[1], "character")
 })
 
 test_that("make_stancode() works with brmsformula", {
-  ff <- brms::bf(count ~ zAge + zBase * Trt + (1|patient))
+  ff <- brms::bf(count ~ zAge + zBase * Trt + (1 | patient))
   sd <- make_stancode(ff, data = brms::epilepsy, family = poisson())
   expect_equal(class(sd)[1], "character")
 })
 
 test_that("make_stancode() works with formula", {
-  ff <- count ~ zAge + zBase * Trt + (1|patient)
+  ff <- count ~ zAge + zBase * Trt + (1 | patient)
   sd <- make_stancode(ff, data = brms::epilepsy, family = poisson())
   expect_equal(class(sd)[1], "character")
 })
 
 test_that("make_stancode() works with bmmformula if brms >= 2.20.14", {
   # define formula
-  ff <- bmmformula(kappa ~ 1,
-                   thetat ~ 1,
-                   thetant ~ 1)
+  ff <- bmmformula(
+    kappa ~ 1,
+    thetat ~ 1,
+    thetant ~ 1
+  )
 
   # simulate data
   dat <- OberauerLin_2017
@@ -122,17 +140,30 @@ test_that("make_stancode() works with bmmformula if brms >= 2.20.14", {
   # fit the model
   if (utils::packageVersion("brms") >= "2.20.14") {
     sd <- make_stancode(ff,
-                        data = dat,
-                        model = mixture3p(resp_err = "dev_rad",
-                                          nt_features = 'col_nt',
-                                          setsize = "set_size", regex = T))
+      data = dat,
+      model = mixture3p(
+        resp_err = "dev_rad",
+        nt_features = "col_nt",
+        setsize = "set_size", regex = T
+      )
+    )
     expect_equal(class(sd)[1], "character")
   }
 
   sd <- stancode(ff,
-                 data = dat,
-                 model = mixture3p(resp_err = "dev_rad",
-                                   nt_features = 'col_nt',
-                                   setsize = "set_size", regex = T))
+    data = dat,
+    model = mixture3p(
+      resp_err = "dev_rad",
+      nt_features = "col_nt",
+      setsize = "set_size", regex = T
+    )
+  )
   expect_equal(class(sd)[1], "character")
+})
+
+
+test_that("change_constants() works", {
+  model <- sdmSimple(resp_err = "y")
+  formula <- bmf(mu ~ set_size, kappa = 3, c ~ 1)
+  model <- change_constants(model, formula)
 })

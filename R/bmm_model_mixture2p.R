@@ -34,7 +34,11 @@
         kappa = "log",
         thetat = "identity"
       ),
-      fixed_parameters = list(mu1 = 0),
+      fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
+      default_priors = list(
+        kappa = list(main = "normal(2,1)", effects = "normal(0,1)"),
+        thetat = list(main = "logistic(0, 1)")
+      ),
       void_mu = FALSE
     ),
     class = c("bmmmodel", "vwm", "mixture2p")
@@ -91,28 +95,15 @@ mixture2p <- function(resp_err,
 
 #' @export
 configure_model.mixture2p <- function(model, data, formula) {
-  # construct main brms formula from the bmm formula
-  bmm_formula <- formula
-  formula <- bmf2bf(model, bmm_formula)
 
-  # provide additional formulas for implementing the mixture2p
-  formula <- formula +
+  # construct the brmsformula
+  formula <- bmf2bf(model, formula) +
     brms::lf(kappa2 ~ 1, mu2 ~ 1) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(theta1 ~ thetat)
 
   # specify the mixture family
-  family <- brms::mixture("von_mises", "von_mises", order = "none")
+  formula$family <- brms::mixture("von_mises", "von_mises", order = "none")
 
-  # set priors for the estimated parameters
-  additional_constants <- list(kappa2 = -100, mu2 = 0)
-  prior <- fixed_pars_priors(model, additional_constants)
-  if (getOption("bmm.default_priors", TRUE)) {
-    prior <- prior +
-      set_default_prior(bmm_formula, data,
-                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
-                                        thetat=list(main='logistic(0, 1)', nlpar=T)))
-  }
-
-  nlist(formula, data, family, prior)
+  nlist(formula, data)
 }

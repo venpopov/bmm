@@ -255,10 +255,10 @@ get_standata <- function(object, data, model, prior=NULL, formula = object, ...)
   } else {
     message("get_standata is deprecated. Please use standata() instead.")
   }
-  if (missing(object) && !missing(formula)) {
-    warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
-            " Please use 'object' instead.")
-  }
+  warnif(missing(object) && !missing(formula),
+         "The 'formula' argument is deprecated for consistency with brms (>= 2.20.14). \\
+         Please use 'object' instead.")
+
   standata.bmmformula(object = formula, data = data,
                       model = model, prior = prior, ...)
 }
@@ -268,19 +268,19 @@ get_standata <- function(object, data, model, prior=NULL, formula = object, ...)
 standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # check model, formula and data, and transform data if necessary
   formula <- object
-  model <- check_model(model, data)
+  model <- check_model(model, data, formula)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
 
-  # combine the default prior plus user given prior
-  config_args$prior <- combine_prior(config_args$prior, prior)
+  # configure the default prior and combine with user-specified prior
+  prior <- configure_prior(model, data, config_args$formula, prior)
 
   # extract stan code
   dots <- list(...)
-  fit_args <- c(config_args, dots)
+  fit_args <- combine_args(nlist(config_args, dots, prior))
   brms::do_call(brms::make_standata, fit_args)
 }
 

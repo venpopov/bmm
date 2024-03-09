@@ -5,12 +5,13 @@
 \alias{bmf}
 \title{Create formula for predicting parameters of a \code{bmmmodel}}
 \usage{
-bmmformula(formula, ...)
+bmmformula(...)
+
+bmf(...)
 }
 \arguments{
-\item{formula}{Formula for predicting a \code{bmmmodel} parameter.}
-
-\item{...}{Additional formulas for more than a single model parameter.}
+\item{...}{Formulas for predicting a \code{bmmmodel} parameter. Each formula for a
+parameter should be specified as a separate argument, separated by commas}
 }
 \value{
 A list of formulas for each parameters being predicted

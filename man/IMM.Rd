@@ -97,6 +97,8 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \strong{Fixed parameters:}
 \itemize{
 \item \code{mu1} = 0
+\item \code{mu2} = 0
+\item \code{kappa2} = -100
 }
 }
 }
@@ -122,6 +124,8 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \strong{Fixed parameters:}
 \itemize{
 \item \code{mu1} = 0
+\item \code{mu2} = 0
+\item \code{kappa2} = -100
 }
 }
 }
@@ -147,6 +151,8 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \strong{Fixed parameters:}
 \itemize{
 \item \code{mu1} = 0
+\item \code{mu2} = 0
+\item \code{kappa2} = -100
 }
 }
 
