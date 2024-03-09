@@ -68,7 +68,7 @@ as_one_integer <- function(x, allow_na = FALSE) {
   x <- SW(as.integer(x))
   if (length(x) != 1L || anyNA(x) && !allow_na) {
     s <- deparse0(s, max_char = 100L)
-    stop2("Cannot coerce '", s, "' to a single integer value.")
+    stop2("Cannot coerce '{s}' to a single integer value.")
   }
   x
 }
@@ -79,7 +79,7 @@ as_one_numeric <- function(x, allow_na = FALSE) {
   x <- SW(as.numeric(x))
   if (length(x) != 1L || anyNA(x) && !allow_na) {
     s <- deparse0(s, max_char = 100L)
-    stop2("Cannot coerce '", s, "' to a single numeric value.")
+    stop2("Cannot coerce '{s}' to a single numeric value.")
   }
   x
 }
@@ -90,17 +90,9 @@ as_one_character <- function(x, allow_na = FALSE) {
   x <- SW(as.character(x))
   if (length(x) != 1L || anyNA(x) && !allow_na) {
     s <- deparse0(s, max_char = 100L)
-    stop2("Cannot coerce '", s, "' to a single character value.")
+    stop2("Cannot coerce '{s}' to a single character value.")
   }
   x
-}
-
-stop2 <- function(...) {
-  stop(..., call. = FALSE)
-}
-
-warning2 <- function(...) {
-  warning(..., call. = FALSE)
 }
 
 # check if x is a try-error resulting from try()
