@@ -141,8 +141,7 @@ configure_model.sdmSimple <- function(model, data, formula) {
     brms::stanvar(scode = stan_likelihood, block = "likelihood", position = "end")
 
   # construct main brms formula from the bmm formula
-  bmm_formula <- formula
-  formula <- bmf2bf(model, bmm_formula)
+  formula <- bmf2bf(model, formula)
   formula$family <- sdm_simple
 
   # set initial values to be sampled between [-1,1] to avoid extreme SDs that
