@@ -61,9 +61,10 @@ get_model_prior <- function(object, data, model, formula = object, ...) {
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
   config_args <- configure_model(model, data, formula)
+  prior <- configure_prior(model, data, config_args$formula, user_prior = NULL)
 
   dots <- list(...)
-  prior_args <- c(config_args, dots)
+  prior_args <- combine_args(nlist(config_args, dots, prior))
   brms_priors <- brms::do_call(brms::get_prior, prior_args)
 
   combine_prior(brms_priors, prior_args$prior)
