@@ -100,7 +100,7 @@ bmf <- function(formula, ...) {
 #' @export
 "+.bmmformula" <- function(f1,f2) {
   if (!is_bmmformula(f1)) {
-    stop("The first argument must be a bmmformula.")
+    stop2("The first argument must be a bmmformula.")
   }
   if (is_formula(f2)) {
     par2 <- all.vars(f2)[1]
@@ -118,7 +118,7 @@ bmf <- function(formula, ...) {
       f1[[par2]] <- f2[[par2]]
     }
   } else if(!is.null(f2)) {
-    stop("The second argument must be a formula or a bmmformula.")
+    stop2("The second argument must be a formula or a bmmformula.")
   }
   # reassign attribute nl to each component of the formula
   assign_nl(f1)
@@ -151,12 +151,12 @@ check_formula <- function(model, data, formula) {
 check_formula.bmmmodel <- function(model, data, formula) {
   if (!is_bmmformula(formula)) {
     if (is_brmsformula(formula)) {
-      stop("The provided formula is a brms formula.
+      stop2("The provided formula is a brms formula.
         Please specify formula with the bmmformula() function instead of
         the brmsformula() or bf() function.
         E.g.: bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
     } else {
-      stop("The provided formula is not a valid bmm formula.
+      stop2("The provided formula is not a valid bmm formula.
         Please specify formula with the bmmformula() function.
         E.g.: bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
     }
@@ -164,7 +164,7 @@ check_formula.bmmmodel <- function(model, data, formula) {
 
   wpar <- wrong_parameters(model, formula)
   if (length(wpar) > 0) {
-    stop("The formula contains parameters that are not part of the model: ",
+    stop2("The formula contains parameters that are not part of the model: ",
          collapse_comma(wpar))
   }
 
@@ -277,8 +277,12 @@ wrong_parameters <- function(model, formula) {
   fpars <- names(formula)
   mpars <- names(model$parameters)
   rhs_vars <- rhs_vars(formula)
-  resp_vars <- model$resp_vars$resp_cats
-  wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars) & not_in(fpars,resp_vars)
+  if ("M3" %in% class(model)) {
+    resp_vars <- model$resp_vars$resp_cats
+    wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars) & not_in(fpars,resp_vars)
+  } else {
+    wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
+  }
   fpars[wpars]
 }
 
@@ -286,7 +290,7 @@ has_intercept <- function(formula) {
   if (is.null(formula)) {
     return(FALSE)
   } else if (!is_formula(formula)) {
-    stop("The formula must be a formula object.")
+    stop2("The formula must be a formula object.")
   }
   as.logical(attr(stats::terms(formula), "intercept"))
 }

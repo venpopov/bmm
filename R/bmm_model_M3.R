@@ -3,7 +3,8 @@
 #############################################################################!
 # see file 'R/bmm_model_mixture3p.R' for an example
 
-.model_M3custom <- function(resp_cats = NULL, num_options = NULL, links = NULL, choice_rule = "softmax", ...) {
+.model_M3custom <- function(resp_cats = NULL, num_options = NULL, links = NULL,
+                            choice_rule = "softmax", ...) {
    # name the number of options in each response categories if no names are provided
    if (is.null(names(num_options))) names(num_options) <- resp_cats
 
