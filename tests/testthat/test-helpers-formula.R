@@ -43,7 +43,7 @@ test_that("check_formula gives expected errors", {
   expect_error(check_formula(sdmSimple('dev_rad'),
                              data = NULL,
                              formula = bmf(c ~ 1, kappa1 ~ 1)),
-               'The formula contains parameters that are not part of the model')
+               'Unrecognized model parameters')
 })
 
 test_that("check_formula works", {

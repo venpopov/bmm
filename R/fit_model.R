@@ -36,6 +36,10 @@
 #'   printed. Set refresh = 0 to turn this off as well. If using backend =
 #'   "rstan" you can also set open_progress = FALSE to prevent opening
 #'   additional progress bars.
+#' @param backend Character. The backend to use for fitting the model. Can be
+#'  "rstan" or "cmdstanr". If NULL (the default), "cmdstanr" will be used if
+#'  the cmdstanr package is installed, otherwise "rstan" will be used. You can
+#'  set the default backend using global `options(brms.backend = "rstan"/"cmdstanr")`
 #' @param ... Further arguments passed to [brms::brm()] or Stan. See the
 #'   description of [brms::brm()] for more details
 #'
@@ -80,38 +84,32 @@ fit_model <- function(formula, data, model,
                       parallel = getOption('bmm.parallel', FALSE),
                       sort_data = getOption('bmm.sort_data', "check"),
                       silent = getOption('bmm.silent', 1),
+                      backend = getOption('brms.backend', NULL),
                       ...) {
-  # warning for using old version
+  deprecated_args(...)
   dots <- list(...)
-  if ("model_type" %in% names(dots)) {
-    stop('The "model_type" argument was deprecated on Feb 3, 2024. Either:
-         - See ?fit_model for the new usage;
-         - or install the old version of the package with: devtools::install_github("venpopov/bmm@v0.0.1")')
-  }
 
   # set temporary global options and return modified arguments for brms
-  configure_opts <- nlist(parallel, chains, sort_data, silent)
+  configure_opts <- nlist(parallel, chains, sort_data, silent, backend)
   opts <- configure_options(configure_opts)
 
   # check model, formula and data, and transform data if necessary
-  model <- check_model(model, data)
-  data <- check_data(model, data, formula)
   user_formula <- formula
+  model <- check_model(model, data, formula)
+  data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
-
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
 
-  # combine the default prior plus user given prior
-  config_args$prior <- combine_prior(config_args$prior, prior)
+  # configure the default prior and combine with user-specified prior
+  prior <- configure_prior(model, data, config_args$formula, prior)
 
   # estimate the model
-  dots <- list(...)
-  fit_args <- combine_args(nlist(config_args, opts, dots))
+  fit_args <- combine_args(nlist(config_args, opts, dots, prior))
   fit <- call_brm(fit_args)
 
-  # model postprocessing
+  # model post-processing
   postprocess_brm(model, fit, fit_args = fit_args, user_formula = user_formula,
                   configure_opts = configure_opts)
 }

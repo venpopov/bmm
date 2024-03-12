@@ -54,9 +54,8 @@
 #' You can also use the `bmf()` function as a shorthand for `bmmformula()`.
 #'
 #'
-#' @param formula Formula for predicting a `bmmmodel` parameter.
-#' @param ... Additional formulas for more than a single model parameter.
-#'
+#' @param ... Formulas for predicting a `bmmmodel` parameter. Each formula for a
+#' parameter should be specified as a separate argument, separated by commas
 #' @return A list of formulas for each parameters being predicted
 #' @export
 #' @examples
@@ -75,33 +74,41 @@
 #' identical(imm_formula, imm_formula2)
 #'
 #'
-bmmformula <- function(formula, ...){
-  # paste formulas into a single list
+bmmformula <- function(...){
   dots <- list(...)
-  formula <- list(formula)
-  names(formula) <- all.vars(formula[[1]])[1]
-  class(formula) <- "bmmformula"
-  for (f in dots) {
-    formula <- formula + f
+  formula <- list()
+  for (i in seq_along(dots)) {
+    arg <- dots[[i]]
+    if (is_formula(arg)) {
+      par <- all.vars(arg)[1]
+    } else if (is.numeric(arg) && length(arg) == 1) {
+      par <- names(dots)[i]
+    } else {
+      stop2("The arguments must be formulas or numeric values.")
+    }
+    stopif(par %in% names(formula), "Duplicated formula for parameter {par}")
+    formula[[par]] <- arg
   }
+  class(formula) <- "bmmformula"
   # assign attribute nl TRUE/FALSE to each component of the formula
-  assign_nl(formula)
+  formula <- assign_nl(formula)
+  assign_constants(formula)
 }
 
 
 # alias of bmmformula
+#' @rdname bmmformula
 #' @export
-bmf <- function(formula, ...) {
-  bmmformula(formula, ...)
+bmf <- function(...) {
+  bmmformula(...)
 }
 
 
 # method for adding formulas to a bmmformula
 #' @export
 "+.bmmformula" <- function(f1,f2) {
-  if (!is_bmmformula(f1)) {
-    stop2("The first argument must be a bmmformula.")
-  }
+  stopif(!is_bmmformula(f1), "The first argument must be a bmmformula.")
+
   if (is_formula(f2)) {
     par2 <- all.vars(f2)[1]
     if (par2 %in% names(f1)) {
@@ -117,25 +124,45 @@ bmf <- function(formula, ...) {
       }
       f1[[par2]] <- f2[[par2]]
     }
-  } else if(!is.null(f2)) {
+  } else if (!is.null(f2)) {
     stop2("The second argument must be a formula or a bmmformula.")
   }
   # reassign attribute nl to each component of the formula
-  assign_nl(f1)
+  f1 <- assign_nl(f1)
+  assign_constants(f1)
 }
 
 
 # method for subsetting a bmmformula, ensuring the attributes are preserved
 #' @export
-'[.bmmformula' <- function(formula, pars) {
+`[.bmmformula` <- function(formula, pars) {
   attrs <- attributes(formula)
+  attrs <- attrs[sapply(attrs, length) == 1]
   out <- unclass(formula)
   out <- out[pars]
   attributes(out) <- attrs
-  names(out) <- pars
+  if (is.character(pars)) {
+    names(out) <- pars
+  } else if (is.numeric(pars) | is.logical(pars)) {
+    names(out) <- names(formula)[pars]
+  }
+
   # reassign attribute nl to each component of the formula
   assign_nl(out)
 }
+
+#' @export
+`[<-.bmmformula` <- function(formula, pars, value) {
+  if (!is.list(value)) {
+    values <- list(value)
+  }
+  out <- unclass(formula)
+  out[pars] <- value
+  class(out) <- "bmmformula"
+  out <- assign_nl(out)
+  out
+}
+
 
 #' checks if the formula is valid for the specified model
 #' @param model a model list object returned from check_model()
@@ -149,24 +176,16 @@ check_formula <- function(model, data, formula) {
 
 #' @export
 check_formula.bmmmodel <- function(model, data, formula) {
-  if (!is_bmmformula(formula)) {
-    if (is_brmsformula(formula)) {
-      stop2("The provided formula is a brms formula.
-        Please specify formula with the bmmformula() function instead of
-        the brmsformula() or bf() function.
-        E.g.: bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
-    } else {
-      stop2("The provided formula is not a valid bmm formula.
-        Please specify formula with the bmmformula() function.
-        E.g.: bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
-    }
-  }
+  stopif(is_brmsformula(formula),
+         "The provided formula is a brms formula. Please use the bmf() function. E.g.:
+         bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
+
+  stopif(!is_bmmformula(formula),
+         "The provided formula is not a bmm formula. Please use the bmf() function. E.g.:
+         bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
 
   wpar <- wrong_parameters(model, formula)
-  if (length(wpar) > 0) {
-    stop2("The formula contains parameters that are not part of the model: ",
-         collapse_comma(wpar))
-  }
+  stopif(length(wpar), "Unrecognized model parameters: {collapse_comma(wpar)}")
 
   formula <- add_missing_parameters(model, formula)
   NextMethod("check_formula")
@@ -180,17 +199,15 @@ check_formula.default <- function(model, data, formula) {
 #' @export
 check_formula.nontargets <- function(model, data, formula) {
   setsize_var <- model$other_vars$setsize
-  dpars <- names(formula)
-  for (dpar in dpars) {
-    dpar_pred <- rhs_vars(formula[[dpar]])
-    if (setsize_var %in% dpar_pred) {
-      ss_form <- formula[[dpar]]
-      if (has_intercept(ss_form)) {
-        stop2("The formula for parameter ", dpar, " contains an intercept and also uses setsize as a predictor.",
-              " This model requires that the intercept is supressed when setsize is used as predictor.")
-      }
-    }
-  }
+  pred_list <- rhs_vars(formula, collapse = FALSE)
+  has_setsize <- sapply(pred_list, function(x) setsize_var %in% x)
+  ss_forms <- formula[has_setsize]
+  intercepts <- sapply(ss_forms, has_intercept)
+  stopif(any(intercepts),
+         "The formula for parameter(s) {names(ss_forms)[intercepts]} contains \\
+         an intercept and also uses setsize as a predictor. This model requires \\
+         that the intercept is supressed when setsize is used as predictor. \\
+         Try using 0 + {setsize_var} instead.")
   NextMethod("check_formula")
 }
 
@@ -223,6 +240,9 @@ bmf2bf <- function(model, formula) {
 bmf2bf.bmmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE
   resp <- model$resp_vars
+  constants <- model$fixed_parameters
+
+
   if (length(resp) > 1) {
     brms_formula <- NextMethod("bmf2bf")
     return(formula)
@@ -255,19 +275,26 @@ bmf2bf.bmmmodel <- function(model, formula) {
 
 
 
-add_missing_parameters <- function(model, formula) {
+add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
   formula_pars <- names(formula)
   model_pars <- names(model$parameters)
   fixed_pars <- names(model$fixed_parameters)
+  # remove constants
+  if (replace_fixed) {
+    formula_pars <- formula_pars[!formula_pars %in% fixed_pars]
+  }
   missing_pars <- setdiff(model_pars,formula_pars)
   is_fixed <- missing_pars %in% fixed_pars
   names(is_fixed) <- missing_pars
   for (mpar in missing_pars) {
-    formula <- formula + stats::as.formula(paste(mpar,"~ 1"))
-    if (!is_fixed[mpar]) {
-      message2(paste("No formula for parameter",mpar,"provided","\n",
-                     "For this parameter only a fixed intercept will be estimated."))
+    add <- stats::as.formula(paste(mpar,"~ 1"))
+    if (is_fixed[mpar]) {
+      attr(add, "constant") <- TRUE
+    } else {
+      message2("No formula for parameter {mpar} provided. Only a fixed \\
+                intercept will be estimated.")
     }
+    formula[mpar] <- list(add)
   }
   all_pars <- unique(c(model_pars,formula_pars))
   formula[all_pars] # reorder formula to match model parameters order
@@ -307,12 +334,16 @@ rhs_vars.bmmformula <- function(formula, collapse = TRUE, ...) {
   lhs_vars <- names(formula)
   rhs_vars <- list()
   for (var in lhs_vars) {
-    rhs_vars[[var]] <- rhs_vars(formula[[var]])
+    if (is_formula(formula[[var]])) {
+      rhs_vars[[var]] <- rhs_vars(formula[[var]])
+    } else {
+      rhs_vars[[var]] <- character(0)
+    }
   }
   if (!collapse) {
     return(rhs_vars)
   }
-  out <- unlist(rhs_vars, use.names=F)
+  out <- unlist(rhs_vars, use.names = F)
   unique(out)
 }
 
@@ -321,7 +352,6 @@ rhs_vars.formula <- function(formula, ...) {
   all_vars <- all.vars(formula)
   all_vars[-1]
 }
-
 
 # adds an attribute nl to each component of the the formula indicating if the
 # any of the predictors of the component are also predicted in another component
@@ -348,8 +378,8 @@ is_nl.bmmformula <- function(object, ...) {
 }
 
 #' @export
-is_nl.formula <- function(object, ...) {
-  attr(object, "nl")
+is_nl.default <- function(object, ...) {
+  isTRUE(attr(object, "nl"))
 }
 
 is_formula <- function(x) {
@@ -362,6 +392,33 @@ is_bmmformula <- function(x) {
 
 is_brmsformula <- function(x) {
   inherits(x, "brmsformula")
+}
+
+# add attribute if parameter is fixed or predicted
+assign_constants <- function(formula) {
+  dpars <- names(formula)
+  for (dpar in dpars) {
+    if (is_formula(formula[[dpar]])) {
+      attr(formula[[dpar]], "constant") <- FALSE
+    } else {
+      attr(formula[[dpar]], "constant") <- TRUE
+    }
+  }
+  formula
+}
+
+is_constant <- function(x) {
+  UseMethod("is_constant")
+}
+
+#' @export
+is_constant.bmmformula <- function(x) {
+  unlist(sapply(x, is_constant))
+}
+
+#' @export
+is_constant.default <- function(x) {
+  isTRUE(attr(x, "constant"))
 }
 
 #' @title Apply link functions for parameters in a `bmmformula`
@@ -409,3 +466,5 @@ apply_links <- function(formula, links) {
 
   formula
 }
+
+

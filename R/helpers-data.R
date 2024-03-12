@@ -36,16 +36,10 @@ check_data.default <- function(model, data, formula) {
 
 #' @export
 check_data.bmmmodel <- function(model, data, formula) {
-  if (missing(data)) {
-    stop("Data must be specified using the 'data' argument.")
-  }
+  stopif(missing(data), "Data must be specified using the 'data' argument.")
   data <- try(as.data.frame(data), silent = TRUE)
-  if (is_try_error(data)) {
-    stop("Argument 'data' must be coercible to a data.frame.")
-  }
-  if (!isTRUE(nrow(data) > 0L)) {
-    stop("Argument 'data' does not contain observations.")
-  }
+  stopif(is_try_error(data), "Argument 'data' must be coercible to a data.frame.")
+  stopif(!isTRUE(nrow(data) > 0L), "Argument 'data' does not contain observations.")
 
   attr(data, "data_name") <- substitute_name(data, envir = eval(parent.frame()))
   attr(data, "checked") <- TRUE
@@ -56,14 +50,16 @@ check_data.bmmmodel <- function(model, data, formula) {
 #' @export
 check_data.vwm <- function(model, data, formula) {
   resp_name <- model$resp_vars[[1]]
-  if (not_in(resp_name, colnames(data))) {
-    stop(paste0("The response variable '", resp_name, "' is not present in the data."))
-  }
-  if (max(abs(data[[resp_name]]), na.rm = T) > 2 * pi) {
-    warning("It appears your response variable is in degrees.\n
-             The model requires the response variable to be in radians.\n
-             The model will continue to run, but the results may be compromised.")
-  }
+  stopif(
+    not_in(resp_name, colnames(data)),
+    "The response variable '{resp_name}' is not present in the data."
+  )
+  warnif(
+    max(abs(data[[resp_name]]), na.rm = T) > 2 * pi,
+    "It appears your response variable is in degrees.
+          The model requires the response variable to be in radians.
+          The model will continue to run, but the results may be compromised."
+  )
 
   NextMethod("check_data")
 }
@@ -71,23 +67,22 @@ check_data.vwm <- function(model, data, formula) {
 #' @export
 check_data.nontargets <- function(model, data, formula) {
   nt_features <- model$other_vars$nt_features
-  if (max(abs(data[, nt_features]), na.rm = T) > 2 * pi) {
-    warning("It appears at least one of your non_target variables are in degrees.\n
-             The model requires these variable to be in radians.\n
-             The model will continue to run, but the results may be compromised.")
-  }
+  warnif(
+    max(abs(data[, nt_features]), na.rm = T) > 2 * pi,
+    "It appears at least one of your non_target variables are in degrees.
+          The model requires these variable to be in radians.
+          The model will continue to run, but the results may be compromised."
+  )
 
   ss <- check_var_setsize(model$other_vars$setsize, data)
   max_setsize <- ss$max_setsize
   ss_numeric <- ss$ss_numeric
 
-  if (!isTRUE(all.equal(length(nt_features), max_setsize - 1))) {
-    stop(
-      "The number of columns for non-target values in the argument ",
-      "'nt_features' should equal max(setsize)-1"
-    )
-  }
-
+  stopif(
+    !isTRUE(all.equal(length(nt_features), max_setsize - 1)),
+    "The number of columns for non-target values in the argument \\
+         'nt_features' should equal max(setsize)-1"
+  )
 
   # create index variables for nt_features and correction variable for theta due to setsize
   lure_idx_vars <- paste0("LureIdx", 1:(max_setsize - 1))
@@ -107,40 +102,47 @@ check_data.nontargets <- function(model, data, formula) {
 }
 
 check_var_setsize <- function(setsize, data) {
-  if (length(setsize) > 1) {
-    stop2(
-      "The setsize variable '", setsize, "' must be a single numeric value or a single variable in your data",
-      " You provided a vector of length ", length(setsize)
-    )
-  }
+  stopif(
+    length(setsize) > 1,
+    "The setsize variable '{setsize}' must be a single numeric value or \\
+          a single variable in your data. You provided a vector of length \\
+          {length(setsize)}"
+  )
+
   # class check - is setsize a single numeric value or a variable in the data
   # coericble to a numeric vector?
   if (is_data_var(setsize, data)) {
     ss_numeric <- try(as_numeric_vector(data[[setsize]]), silent = T)
-    if (is_try_error(ss_numeric)) {
-      stop2(
-        "The setsize variable '", setsize, "' must be coercible to a numeric vector.\n",
-        "Did you code your set size as a character vector?"
-      )
-    }
+
+    stopif(
+      is_try_error(ss_numeric),
+      "The setsize variable '{setsize}' must be coercible to a numeric \\
+           vector. Did you code your set size as a character vector?"
+    )
+
     max_setsize <- max(ss_numeric, na.rm = T)
   } else {
     max_setsize <- try(as_one_integer(setsize), silent = T)
-    if (is_try_error(max_setsize) | is.logical(setsize)) {
-      stop2(
-        "The setsize variable '", setsize, "' must be either a variable in your data or ",
-        "a single numeric value"
-      )
-    }
+
+    stopif(
+      is_try_error(max_setsize) | is.logical(setsize),
+      "The setsize variable '{setsize}' must be either a variable in your \\
+       data or a single numeric value"
+    )
+
     ss_numeric <- rep(max_setsize, nrow(data))
   }
+
   # value check
-  if (any(ss_numeric < 1, na.rm = T)) {
-    stop2("Values of the setsize variable '", setsize, "' must be greater than 0")
-  }
-  if (any(ss_numeric %% 1 != 0, na.rm = T)) {
-    stop2("Values of the setsize variable '", setsize, "' must be whole numbers")
-  }
+  stopif(
+    any(ss_numeric < 1, na.rm = T),
+    "Values of the setsize variable '{setsize}' must be greater than 0"
+  )
+
+  stopif(
+    any(ss_numeric %% 1 != 0, na.rm = T),
+    "Values of the setsize variable '{setsize}' must be whole numbers"
+  )
 
   list(max_setsize = max_setsize, ss_numeric = ss_numeric)
 }
@@ -297,9 +299,9 @@ wrap <- function(x, radians = TRUE) {
 }
 
 #' @title Convert degrees to radians or radians to degrees.
-#' @description
-#'   The helper functions `deg2rad` and `rad2deg` should add convenience in transforming
-#'   data from degrees to radians and from radians to degrees.
+#' @description The helper functions `deg2rad` and `rad2deg` should add
+#' convenience in transforming data from degrees to radians and from radians to
+#' degrees.
 #'
 #' @name circle_transform
 #' @param deg A numeric vector of values in degrees.
@@ -326,9 +328,10 @@ rad2deg <- function(rad) {
 #'   this function will return the combined stan data generated by `bmm` and
 #'   `brms`
 #'
-#' @details This function is deprecated. Please use `standata()` or `make_standata()` (if using
-#' `brms` >= 2.20.14) instead. In `brms` >= 2.20.14, `make_standata()` became an
-#' alias for `standata()`, and `standata()` is the recommended function to use.
+#' @details This function is deprecated. Please use `standata()` or
+#'   `make_standata()` (if using `brms` >= 2.20.14) instead. In `brms` >=
+#'   2.20.14, `make_standata()` became an alias for `standata()`, and
+#'   `standata()` is the recommended function to use.
 #'
 #' @inheritParams fit_model
 #' @param object A `bmmformula` object
@@ -360,12 +363,12 @@ get_standata <- function(object, data, model, prior = NULL, formula = object, ..
   } else {
     message("get_standata is deprecated. Please use standata() instead.")
   }
-  if (missing(object) && !missing(formula)) {
-    warning2(
-      "The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
-      " Please use 'object' instead."
-    )
-  }
+  warnif(
+    missing(object) && !missing(formula),
+    "The 'formula' argument is deprecated for consistency with brms (>= 2.20.14). \\
+         Please use 'object' instead."
+  )
+
   standata.bmmformula(
     object = formula, data = data,
     model = model, prior = prior, ...
@@ -377,19 +380,19 @@ get_standata <- function(object, data, model, prior = NULL, formula = object, ..
 standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # check model, formula and data, and transform data if necessary
   formula <- object
-  model <- check_model(model, data)
+  model <- check_model(model, data, formula)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
 
-  # combine the default prior plus user given prior
-  config_args$prior <- combine_prior(config_args$prior, prior)
+  # configure the default prior and combine with user-specified prior
+  prior <- configure_prior(model, data, config_args$formula, prior)
 
   # extract stan code
   dots <- list(...)
-  fit_args <- c(config_args, dots)
+  fit_args <- combine_args(nlist(config_args, dots, prior))
   brms::do_call(brms::make_standata, fit_args)
 }
 
@@ -410,7 +413,8 @@ is_data_ordered <- function(data, formula) {
 }
 
 # checks if all repetitions of a given value are consecutive in a vector
-# by iterating over unique values and checking if all their positions are consecutive
+# by iterating over unique values and checking if all their positions are
+# consecutive
 has_nonconsecutive_duplicates <- function(vec) {
   unique_vals <- unique(vec)
   cond <- TRUE

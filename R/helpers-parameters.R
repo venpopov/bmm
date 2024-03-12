@@ -1,7 +1,8 @@
-#' Transform kappa of the von Mises distribution to the circular standard deviation
-#' @description This function transforms the precision parameter kappa of the von Mises
-#'    distribution to the circular standard deviation.
-#'    Adapted from Matlab code by Paul Bays (https://www.paulbays.com/code.php)
+#' Transform kappa of the von Mises distribution to the circular standard
+#' deviation
+#' @description This function transforms the precision parameter kappa of the
+#'   von Mises distribution to the circular standard deviation. Adapted from
+#'   Matlab code by Paul Bays (https://www.paulbays.com/code.php)
 #'
 #' @param K numeric. A vector of kappa values.
 #' @return A vector of sd values.
@@ -20,13 +21,13 @@
 #' plot(kappas,SDs)
 #' plot(kappas,SDs_degress)
 #'
-k2sd <- function (K) {
-  S <- matrix(0,1,length(K))
+k2sd <- function(K) {
+  S <- matrix(0, 1, length(K))
   for (j in 1:length(K)) {
-    if (K[j]==0) S[j] = Inf
-    if (is.infinite(K[j])) S[j] = 0
+    if (K[j] == 0) S[j] <- Inf
+    if (is.infinite(K[j])) S[j] <- 0
     if (K[j] >= 0 & !is.infinite(K[j])) {
-      S[j] = sqrt(-2*log(besselI(K[j],1)/besselI(K[j],0)));
+      S[j] <- sqrt(-2 * log(besselI(K[j], 1) / besselI(K[j], 0)))
     }
   }
   as.numeric(S)
@@ -47,14 +48,8 @@ k2sd <- function (K) {
 #'   `bmm` package.
 #' @export
 c_sqrtexp2bessel <- function(c, kappa) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
-
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(c < 0)), "c must be non-negative")
   c * besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa)
 }
 
@@ -62,11 +57,7 @@ c_sqrtexp2bessel <- function(c, kappa) {
 #' @keywords transform
 #' @export
 c_bessel2sqrtexp <- function(c, kappa) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(c < 0)), "c must be non-negative")
   c / (besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa))
 }

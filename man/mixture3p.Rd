@@ -64,6 +64,8 @@ Three-parameter mixture model by Bays et al (2009).
 \item \strong{Fixed parameters:}
 \itemize{
 \item \code{mu1} = 0
+\item \code{mu2} = 0
+\item \code{kappa2} = -100
 }
 \item \strong{Default parameter links:}
 

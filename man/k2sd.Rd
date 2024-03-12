@@ -2,7 +2,8 @@
 % Please edit documentation in R/helpers-parameters.R
 \name{k2sd}
 \alias{k2sd}
-\title{Transform kappa of the von Mises distribution to the circular standard deviation}
+\title{Transform kappa of the von Mises distribution to the circular standard
+deviation}
 \usage{
 k2sd(K)
 }
@@ -13,9 +14,9 @@ k2sd(K)
 A vector of sd values.
 }
 \description{
-This function transforms the precision parameter kappa of the von Mises
-distribution to the circular standard deviation.
-Adapted from Matlab code by Paul Bays (https://www.paulbays.com/code.php)
+This function transforms the precision parameter kappa of the
+von Mises distribution to the circular standard deviation. Adapted from
+Matlab code by Paul Bays (https://www.paulbays.com/code.php)
 }
 \examples{
 kappas <- runif(1000, 0.01, 100)

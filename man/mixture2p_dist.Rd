@@ -34,15 +34,17 @@ rmixture2p(n, mu = 0, kappa = 5, pMem = 0.6)
 \item{n}{Number of observations to generate data for}
 }
 \value{
-\code{dmixture2p} gives the density of the two-parameter mixture model, \code{pmixture2p}
-gives the cumulative distribution function of the two-parameter mixture model,
-\code{qmixture2p} gives the quantile function of the two-parameter mixture model, and
-\code{rmixture2p} gives the random generation function for the two-parameter mixture model.
+\code{dmixture2p} gives the density of the two-parameter mixture model,
+\code{pmixture2p} gives the cumulative distribution function of the
+two-parameter mixture model, \code{qmixture2p} gives the quantile function of
+the two-parameter mixture model, and \code{rmixture2p} gives the random
+generation function for the two-parameter mixture model.
 }
 \description{
 Density, distribution, and random generation functions for the
 two-parameter mixture model with the location of \code{mu}, precision of memory
-representations \code{kappa} and probability of recalling items from memory \code{pMem}.
+representations \code{kappa} and probability of recalling items from memory
+\code{pMem}.
 }
 \examples{
 # example code

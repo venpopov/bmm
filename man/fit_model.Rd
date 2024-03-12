@@ -13,6 +13,7 @@ fit_model(
   parallel = getOption("bmm.parallel", FALSE),
   sort_data = getOption("bmm.sort_data", "check"),
   silent = getOption("bmm.silent", 1),
+  backend = getOption("brms.backend", NULL),
   ...
 )
 }
@@ -54,6 +55,11 @@ more messages are suppressed. The actual sampling progress is still
 printed. Set refresh = 0 to turn this off as well. If using backend =
 "rstan" you can also set open_progress = FALSE to prevent opening
 additional progress bars.}
+
+\item{backend}{Character. The backend to use for fitting the model. Can be
+"rstan" or "cmdstanr". If NULL (the default), "cmdstanr" will be used if
+the cmdstanr package is installed, otherwise "rstan" will be used. You can
+set the default backend using global \code{options(brms.backend = "rstan"/"cmdstanr")}}
 
 \item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See the
 description of \code{\link[brms:brm]{brms::brm()}} for more details}
