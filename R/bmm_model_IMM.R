@@ -3,12 +3,8 @@
 #############################################################################!
 
 .model_IMMabc <-
-  function(resp_err = NULL,
-           nt_features = NULL,
-           setsize = NULL,
-           regex = FALSE,
-           links = NULL,
-           ...) {
+  function(resp_err = NULL, nt_features = NULL, setsize = NULL, regex = FALSE,
+           links = NULL, ...) {
     out <- structure(
       list(
         resp_vars = nlist(resp_err),
@@ -22,10 +18,10 @@
           of visual working memory. Psychological Review, 124(1), 21-59"
         ),
         requirements = glue(
-          '- The response vairable should be in radians and \\
+          "- The response vairable should be in radians and \\
           represent the angular error relative to the target
           - The non-target features should be in radians and be \\
-          centered relative to the target'
+          centered relative to the target"
         ),
         parameters = list(
           mu1 = glue(
@@ -36,30 +32,32 @@
           a = "General activation of memory items",
           c = "Context activation"
         ),
-        links = list(kappa = "log",
-                     a = "identity",
-                     c = "identity"),
-        fixed_parameters = list(mu1 = 0),
+        links = list(
+          kappa = "log",
+          a = "identity",
+          c = "identity"
+        ),
+        fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
+        default_priors = list(
+          kappa = list(main = "normal(2,1)", effects = "normal(0,1)"),
+          a = list(main = "normal(0,1)", effects = "normal(0,1)"),
+          c = list(main = "normal(0,1)", effects = "normal(0,1)")
+        ),
         void_mu = FALSE
       ),
       # attributes
       regex = regex,
-      regex_vars = c('nt_features'),
+      regex_vars = c("nt_features"),
       class = c("bmmmodel", "vwm", "nontargets", "IMMabc")
     )
     out$links[names(links)] <- links
     out
-}
+  }
 
 
 .model_IMMbsc <-
-  function(resp_err = NULL,
-           nt_features = NULL,
-           nt_distances = NULL,
-           setsize = NULL,
-           regex = FALSE,
-           links = NULL,
-           ...) {
+  function(resp_err = NULL, nt_features = NULL, nt_distances = NULL,
+           setsize = NULL, regex = FALSE, links = NULL, ...) {
     out <- structure(
       list(
         resp_vars = nlist(resp_err),
@@ -90,7 +88,12 @@
         links = list(kappa = "log",
                      c = "identity",
                      s = "log"),
-        fixed_parameters = list(mu1 = 0),
+        fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
+        default_priors = list(
+          kappa = list(main = "normal(2,1)", effects = "normal(0,1)"),
+          c = list(main = "normal(0,1)", effects = "normal(0,1)"),
+          s = list(main = "normal(0,1)", effects = "normal(0,1)")
+        ),
         void_mu = FALSE
       ),
       # attributes
@@ -103,13 +106,8 @@
 }
 
 .model_IMMfull <-
-  function(resp_err = NULL,
-           nt_features = NULL,
-           nt_distances = NULL,
-           setsize = NULL,
-           regex = FALSE,
-           links = NULL,
-           ...) {
+  function(resp_err = NULL, nt_features = NULL, nt_distances = NULL,
+           setsize = NULL, regex = FALSE, links = NULL, ...) {
     out <- structure(
       list(
         resp_vars = nlist(resp_err),
@@ -144,7 +142,13 @@
           c = "identity",
           s = "log"
         ),
-        fixed_parameters = list(mu1 = 0),
+        fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
+        default_priors = list(
+          kappa = list(main = "normal(2,1)", effects = "normal(0,1)"),
+          a = list(main = "normal(0,1)", effects = "normal(0,1)"),
+          c = list(main = "normal(0,1)", effects = "normal(0,1)"),
+          s = list(main = "normal(0,1)", effects = "normal(0,1)")
+        ),
         void_mu = FALSE
       ),
       # attributes
@@ -285,14 +289,12 @@ check_data.IMMspatial <- function(model, data, formula) {
   nt_distances <- model$other_vars$nt_distances
   max_setsize <- attr(data, 'max_setsize')
 
-  if (!isTRUE(all.equal(length(nt_distances), max_setsize - 1))) {
-    stop("The number of columns for non-target distances in the argument ",
-         "'nt_distances' should equal max(setsize)-1")
-  }
+  stopif(!isTRUE(all.equal(length(nt_distances), max_setsize - 1)),
+         "The number of columns for non-target distances in the argument \\
+         'nt_distances' should equal max(setsize)-1})")
 
-  if (any(data[,nt_distances] < 0)) {
-    stop('All non-target distances to the target need to be postive.')
-  }
+  stopif(any(data[,nt_distances] < 0),
+         "All non-target distances to the target need to be postive.")
 
   NextMethod("check_data")
 }
@@ -307,189 +309,162 @@ check_data.IMMspatial <- function(model, data, formula) {
 configure_model.IMMabc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
-  lure_idx_vars <- attr(data, "lure_idx_vars")
+  lure_idx <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
 
   # construct main brms formula from the bmm formula
-  bmm_formula <- formula
-  formula <- bmf2bf(model, bmm_formula)
-
-  # additional internal terms for the mixture model formula
-  kappa_nts <- paste0('kappa', 2:max_setsize)
-  kappa_unif <- paste0('kappa',max_setsize + 1)
-  theta_nts <- paste0('theta',2:max_setsize)
-  mu_nts <- paste0('mu', 2:max_setsize)
-  mu_unif <- paste0('mu', max_setsize + 1)
-
-  formula <- formula +
-    glue_lf(kappa_unif,' ~ 1') +
-    glue_lf(mu_unif, ' ~ 1') +
+  formula <- bmf2bf(model, formula) +
+    brms::lf(kappa2 ~ 1) +
+    brms::lf(mu2 ~ 1) +
     brms::nlf(theta1 ~ c + a) +
     brms::nlf(kappa1 ~ kappa)
 
+  # additional internal terms for the mixture model formula
+  kappa_nts <- paste0("kappa", 3:(max_setsize + 1))
+  theta_nts <- paste0("theta", 3:(max_setsize + 1))
+  mu_nts <- paste0("mu", 3:(max_setsize + 1))
+
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
-      glue_nlf(kappa_nts[i], ' ~ kappa') +
-      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(a) + ',
-               '(1-', lure_idx_vars[i], ')*(-100)') +
-      glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
+      glue_nlf("{kappa_nts[i]} ~ kappa") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * a + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
   # define mixture family
   vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
   vm_list$order = "none"
-  family <- brms::do_call(brms::mixture, vm_list)
+  formula$family <- brms::do_call(brms::mixture, vm_list)
 
-  # define prior
-  additional_constants <- list()
-  additional_constants[[kappa_unif]] <- -100
-  additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants)
-  if (getOption("bmm.default_priors", TRUE)) {
-    prior <- prior +
-      set_default_prior(bmm_formula, data,
-                        prior_list=list(kappa=list(main = 'normal(2,1)', effects = 'normal(0,1)', nlpar=T),
-                                        a=list(main = 'normal(0,1)', effects = 'normal(0,1)', nlpar=T),
-                                        c=list(main = 'normal(0,1)', effects = 'normal(0,1)', nlpar=T)))
-  }
-
-  # if there is setsize 1 in the data, set constant prior over a for setsize1
-  a_preds <- rhs_vars(bmm_formula$a)
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% a_preds) {
-    prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a"))
-  }
-
-  nlist(formula, data, family, prior)
+  nlist(formula, data)
 }
+
+
+#' @export
+configure_prior.IMMabc <- function(model, data, formula, user_prior, ...) {
+  # retrieve arguments from the data check
+  setsize_var <- model$other_vars$setsize
+  a_preds <- rhs_vars(formula$pforms$a)
+  prior <- NULL
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% a_preds) {
+    prior <- brms::prior_("constant(0)",
+                          class = "b",
+                          coef = paste0(setsize_var, 1),
+                          nlpar = "a")
+  }
+  prior
+}
+
 
 #' @export
 configure_model.IMMbsc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
-  lure_idx_vars <- attr(data, "lure_idx_vars")
+  lure_idx <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
   nt_distances <- model$other_vars$nt_distances
 
   # construct main brms formula from the bmm formula
-  bmm_formula <- formula
-  formula <- bmf2bf(model, bmm_formula)
-
-  # additional internal terms for the mixture model formula
-  kappa_nts <- paste0('kappa', 2:max_setsize)
-  kappa_unif <- paste0('kappa',max_setsize + 1)
-  theta_nts <- paste0('theta',2:max_setsize)
-  mu_nts <- paste0('mu', 2:max_setsize)
-  mu_unif <- paste0('mu', max_setsize + 1)
-
-  formula <- formula +
-    glue_lf(kappa_unif,' ~ 1') +
-    glue_lf(mu_unif, ' ~ 1') +
+  formula <- bmf2bf(model, formula) +
+    brms::lf(kappa2 ~ 1) +
+    brms::lf(mu2 ~ 1) +
     brms::nlf(theta1 ~ c) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
 
+  # additional internal terms for the mixture model formula
+  kappa_nts <- paste0("kappa", 3:(max_setsize + 1))
+  theta_nts <- paste0("theta", 3:(max_setsize + 1))
+  mu_nts <- paste0("mu", 3:(max_setsize + 1))
+
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
-      glue_nlf(kappa_nts[i], ' ~ kappa') +
-      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distances[i],')*c) + ',
-               '(1-', lure_idx_vars[i], ')*(-100)') +
-      glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
+      glue_nlf("{kappa_nts[i]} ~ kappa") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * exp(-expS*{nt_distances[i]}) * c + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
   # define mixture family
   vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
   vm_list$order = "none"
-  family <- brms::do_call(brms::mixture, vm_list)
+  formula$family <- brms::do_call(brms::mixture, vm_list)
 
-  # define prior
-  additional_constants <- list()
-  additional_constants[[kappa_unif]] <- -100
-  additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants)
-  if (getOption("bmm.default_priors", TRUE)) {
-    prior <- prior +
-      set_default_prior(bmm_formula, data,
-                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
-                                        c=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T),
-                                        s=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T)))
-  }
+  nlist(formula, data)
+}
 
-  # if there is setsize 1 in the data, set constant prior over s for setsize1
-  s_preds <- rhs_vars(bmm_formula$s)
+#' @export
+configure_prior.IMMbsc <- function(model, data, formula, user_prior, ...) {
+  # retrieve arguments from the data check
+  setsize_var <- model$other_vars$setsize
+  s_preds <- rhs_vars(formula$pforms$s)
+  prior <- NULL
   if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% s_preds) {
-    prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s"))
+    prior <- brms::prior_("constant(0)",
+                          class = "b",
+                          coef = paste0(setsize_var, 1),
+                          nlpar = "s")
   }
-
-  nlist(formula, data, family, prior)
+  prior
 }
 
 #' @export
 configure_model.IMMfull <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_setsize <- attr(data, 'max_setsize')
-  lure_idx_vars <- attr(data, "lure_idx_vars")
+  lure_idx <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
   setsize_var <- model$other_vars$setsize
   nt_distances <- model$other_vars$nt_distances
 
   # construct main brms formula from the bmm formula
-  bmm_formula <- formula
-  formula <- bmf2bf(model, bmm_formula)
-
-  # additional internal terms for the mixture model formula
-  kappa_nts <- paste0('kappa', 2:max_setsize)
-  kappa_unif <- paste0('kappa',max_setsize + 1)
-  theta_nts <- paste0('theta',2:max_setsize)
-  mu_nts <- paste0('mu', 2:max_setsize)
-  mu_unif <- paste0('mu', max_setsize + 1)
-
-  formula <- formula +
-    glue_lf(kappa_unif,' ~ 1') +
-    glue_lf(mu_unif, ' ~ 1') +
+  formula <- bmf2bf(model, formula) +
+    brms::lf(kappa2 ~ 1) +
+    brms::lf(mu2 ~ 1) +
     brms::nlf(theta1 ~ c + a) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
 
+  # additional internal terms for the mixture model formula
+  kappa_nts <- paste0("kappa", 3:(max_setsize + 1))
+  theta_nts <- paste0("theta", 3:(max_setsize + 1))
+  mu_nts <- paste0("mu", 3:(max_setsize + 1))
+
   for (i in 1:(max_setsize - 1)) {
     formula <- formula +
-      glue_nlf(kappa_nts[i], ' ~ kappa') +
-      glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(exp(-expS*',nt_distances[i],')*c + a) + ',
-               '(1-', lure_idx_vars[i], ')*(-100)') +
-      glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
+      glue_nlf("{kappa_nts[i]} ~ kappa") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (exp(-expS*{nt_distances[i]}) * c + a) + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
+
 
   # define mixture family
   vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
   vm_list$order = "none"
-  family <- brms::do_call(brms::mixture, vm_list)
+  formula$family <- brms::do_call(brms::mixture, vm_list)
 
-  # define prior
-  additional_constants <- list()
-  additional_constants[[kappa_unif]] <- -100
-  additional_constants[[mu_unif]] <- 0
-  prior <- fixed_pars_priors(model, additional_constants)
-  if (getOption("bmm.default_priors", TRUE)) {
-    prior <- prior +
-      set_default_prior(bmm_formula, data,
-                        prior_list=list(kappa=list(main='normal(2,1)',effects='normal(0,1)', nlpar=T),
-                                        a=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T),
-                                        c=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T),
-                                        s=list(main='normal(0,1)',effects='normal(0,1)', nlpar=T)))
+  nlist(formula, data)
+}
+
+#' @export
+configure_prior.IMMfull <- function(model, data, formula, user_prior, ...) {
+  # retrieve arguments from the data check
+  setsize_var <- model$other_vars$setsize
+  s_preds <- rhs_vars(formula$pforms$s)
+  a_preds <- rhs_vars(formula$pforms$a)
+  prior <- brms::empty_prior()
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% a_preds) {
+    prior <- brms::prior_("constant(0)",
+                          class = "b",
+                          coef = paste0(setsize_var, 1),
+                          nlpar = "a")
   }
-
-  # if there is setsize 1 in the data, set constant prior over a and s for setsize1
-  a_preds <- rhs_vars(bmm_formula$a)
-  s_preds <- rhs_vars(bmm_formula$s)
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]])) {
-    if (setsize_var %in% a_preds) {
-      prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="a"))
-    }
-    if (setsize_var %in% s_preds) {
-      prior <- combine_prior(prior, brms::prior_("constant(0)", class="b", coef = paste0(setsize_var, 1), nlpar="s"))
-    }
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% s_preds) {
+    prior <- prior + brms::prior_("constant(0)",
+                                  class = "b",
+                                  coef = paste0(setsize_var, 1),
+                                  nlpar = "s")
   }
-
-  nlist(formula, data, family, prior)
+  prior
 }

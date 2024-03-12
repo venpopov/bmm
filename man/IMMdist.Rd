@@ -79,10 +79,11 @@ rIMM(
 \item{n}{Number of observations to generate data for}
 }
 \value{
-\code{dIMM} gives the density of the interference measurement model, \code{pIMM}
-gives the cumulative distribution function of the interference measurement model,
-\code{qIMM} gives the quantile function of the interference measurement model, and
-\code{rIMM} gives the random generation function for the interference measurement model.
+\code{dIMM} gives the density of the interference measurement model,
+\code{pIMM} gives the cumulative distribution function of the interference
+measurement model, \code{qIMM} gives the quantile function of the interference
+measurement model, and \code{rIMM} gives the random generation function for the
+interference measurement model.
 }
 \description{
 Density, distribution, and random generation functions for the
@@ -97,7 +98,7 @@ generalization gradient \code{s}, and the precision of memory representations
 }
 \references{
 Oberauer, K., Stoneking, C., Wabersich, D., & Lin, H.-Y. (2017).
-Hierarchical Bayesian measurement models for continuous reproduction of visual
-features from working memory. Journal of Vision, 17(5), 11.
+Hierarchical Bayesian measurement models for continuous reproduction of
+visual features from working memory. Journal of Vision, 17(5), 11.
 }
 \keyword{distribution}

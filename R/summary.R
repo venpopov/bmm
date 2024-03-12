@@ -160,15 +160,14 @@ summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp=0, model =
   wspace <- collapse(rep(' ', wsp))
   sep <- paste0(ifelse(newline, '\n', ','), wspace)
   if (!is.null(model)) {
+    formula <- suppressMessages(add_missing_parameters(model, formula, replace_fixed = FALSE))
     fixpars <- model$fixed_parameters
-    # TODO: abstract this from here and summarize_model
     fpnames <- names(fixpars)
-    fpforms <- sapply(fpnames, function(fpar) {
-      collapse(fpar, " = ", fixpars[[fpar]], sep)
-    })
+    fpnames <- fpnames[fpnames %in% names(model$parameters)]
+    fpforms <- collapse(paste0(fpnames, " = ", fixpars[fpnames], sep))
   }
-
-  paste0(fpforms, paste0(formula, collapse=sep))
+  formula <- formula[!is_constant(formula)]
+  paste0(fpforms, paste0(formula, collapse = sep))
 }
 
 summarise_model <- function(model, ...) {

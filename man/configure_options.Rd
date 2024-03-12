@@ -9,16 +9,17 @@ configure_options(opts, env = parent.frame())
 \arguments{
 \item{opts}{A list of options}
 
-\item{env}{The environment in which to set the options - when set to parent.frame()
-the changes would apply to the environment of the function that called it. In our
-case, this is the environment of the fit_model() function. Changes will not be
-propagated to the user environment.}
+\item{env}{The environment in which to set the options - when set to
+parent.frame() the changes would apply to the environment of the function
+that called it. In our case, this is the environment of the fit_model()
+function. Changes will not be propagated to the user environment.}
 }
 \value{
 A list of options to pass to brm()
 }
 \description{
-Currently it serves to set local options for parallel processing and update
-number of chains if the number of chains is greater than the number of cores.
+Currently it serves to set local options for parallel processing
+and update number of chains if the number of chains is greater than the
+number of cores.
 }
 \keyword{internal}

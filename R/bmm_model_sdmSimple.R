@@ -2,9 +2,7 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_sdmSimple <- function(resp_err = NULL,
-                             links = NULL,
-                             ...) {
+.model_sdmSimple <- function(resp_err = NULL, links = NULL, ...) {
   out <- structure(
     list(
       resp_vars = nlist(resp_err),
@@ -26,10 +24,16 @@
         c = 'Memory strength parameter of the SDM distribution',
         kappa = 'Precision parameter of the SDM distribution'
       ),
-      links = list(mu = 'identity',
-                   c = 'log',
-                   kappa = 'log'),
+      links = list(
+        mu = 'identity',
+        c = 'log',
+        kappa = 'log'
+      ),
       fixed_parameters = list(mu = 0),
+      default_priors = list(
+        kappa = list(main = "student_t(5,1.75,0.75)", effects = "normal(0,1)"),
+        c = list(main = "student_t(5,2,0.75)", effects = "normal(0,1)")
+      ),
       void_mu = FALSE
     ),
     class = c('bmmmodel', 'vwm', 'sdmSimple')
@@ -114,46 +118,38 @@ check_data.sdmSimple <- function(model, data, formula) {
 
 #' @export
 configure_model.sdmSimple <- function(model, data, formula) {
-    # construct the family
-    # note - c has a log link, but I've coded it manually for computational efficiency
-    sdm_simple <- brms::custom_family(
-      "sdm_simple", dpars = c("mu", "c","kappa"),
-      links = c("identity","identity", "log"), lb = c(NA, NA, NA),
-      type = "real", loop=FALSE,
-      log_lik = log_lik_sdm_simple,
-      posterior_predict = posterior_predict_sdm_simple
-    )
-    family <- sdm_simple
+  # construct the family
+  # note - c has a log link, but I've coded it manually for computational efficiency
+  sdm_simple <- brms::custom_family(
+    "sdm_simple",
+    dpars = c("mu", "c", "kappa"),
+    links = c("identity", "identity", "log"),
+    lb = c(-pi, NA, NA),
+    ub = c(pi, NA, NA),
+    type = "real", loop = FALSE,
+    log_lik = log_lik_sdm_simple,
+    posterior_predict = posterior_predict_sdm_simple
+  )
 
-    # prepare initial stanvars to pass to brms, model formula and priors
-    sc_path <- system.file("stan_chunks", package="bmm")
-    stan_funs <- read_lines2(paste0(sc_path, '/sdmSimple_funs.stan'))
-    stan_tdata <- read_lines2(paste0(sc_path, '/sdmSimple_tdata.stan'))
-    stan_likelihood <- read_lines2(paste0(sc_path, '/sdmSimple_likelihood.stan'))
-    stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
-      brms::stanvar(scode = stan_tdata, block = 'tdata') +
-      brms::stanvar(scode = stan_likelihood, block = 'likelihood', position ="end")
+  # prepare initial stanvars to pass to brms, model formula and priors
+  sc_path <- system.file("stan_chunks", package = "bmm")
+  stan_funs <- read_lines2(paste0(sc_path, "/sdmSimple_funs.stan"))
+  stan_tdata <- read_lines2(paste0(sc_path, "/sdmSimple_tdata.stan"))
+  stan_likelihood <- read_lines2(paste0(sc_path, "/sdmSimple_likelihood.stan"))
+  stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
+    brms::stanvar(scode = stan_tdata, block = "tdata") +
+    brms::stanvar(scode = stan_likelihood, block = "likelihood", position = "end")
 
-    # construct main brms formula from the bmm formula
-    bmm_formula <- formula
-    formula <- bmf2bf(model, bmm_formula)
+  # construct main brms formula from the bmm formula
+  formula <- bmf2bf(model, formula)
+  formula$family <- sdm_simple
 
-    # construct the default prior
-    # TODO: for now it just fixes mu to 0, I have to add proper priors
-    prior <- fixed_pars_priors(model)
-    if (getOption("bmm.default_priors", TRUE)) {
-      prior <- prior +
-        set_default_prior(bmm_formula, data,
-                          prior_list=list(kappa = list(main = 'student_t(5,1.75,0.75)',effects = 'normal(0,1)'),
-                                          c = list(main = 'student_t(5,2,0.75)', effects = 'normal(0,1)')))
-    }
+  # set initial values to be sampled between [-1,1] to avoid extreme SDs that
+  # can cause the sampler to fail
+  init <- 1
 
-    # set initial values to be sampled between [-1,1] to avoid extreme SDs that
-    # can cause the sampler to fail
-    init = 1
-
-    # return the list
-    nlist(formula, data, family, prior, stanvars, init)
+  # return the list
+  nlist(formula, data, stanvars, init)
 }
 
 
@@ -183,7 +179,7 @@ log_lik_sdm_simple <- function(i, prep) {
   c <- brms::get_dpar(prep, "c", i = i)
   kappa <- brms::get_dpar(prep, "kappa", i = i)
   y <- prep$data$Y[i]
-  dsdm(y, mu, c, kappa, log=T)
+  dsdm(y, mu, c, kappa, log = T)
 }
 
 posterior_predict_sdm_simple <- function(i, prep, ...) {

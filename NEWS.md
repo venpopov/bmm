@@ -1,10 +1,18 @@
 # bmm 0.4.0+
 
 ### New features
-* add a custom summary() method for bmm models (#144) 
-* add a global options bmm.summary_backend to control the backend used for the summary() method (choices are "bmm" and "brms")
-* deprecate get_model_prior(), get_stancode() and get_standata(). These functions will be removed in future versions of the package. Due to [recent changes](https://github.com/paul-buerkner/brms/pull/1604) in *brms* version 2.20.14, you can now use the *brms* functions `default_prior`, `stancode` and `standata` directly with *bmm* models (alternatively, their older aliases, "get_prior", "make_stancode", "make_standata").
-* function restructure() now allows to apply methods introduced in newer bmm versions to bmmfit objects created by older bmm versions
+* add a custom **summary()** method for bmm models (#144) 
+* add a global options **bmm.summary_backend** to control the backend used for the summary() method (choices are "bmm" and "brms")
+* deprecate **get_model_prior(), get_stancode() and get_standata()**. These functions will be removed in future versions of the package. Due to [recent changes](https://github.com/paul-buerkner/brms/pull/1604) in *brms* version 2.20.14, you can now use the *brms* functions `default_prior`, `stancode` and `standata` directly with *bmm* models (alternatively, their older aliases, "get_prior", "make_stancode", "make_standata").
+* function **restructure()** now allows to apply methods introduced in newer bmm versions to bmmfit objects created by older bmm versions
+* you can now specify any model parameter to be a constant by using an equal sign in the `bmmformula` (#142)
+* you can now choose to estimate parameters that are fixed to a constant by default for all models (#145)
+* default priors for all models are now specified via the configure_prior() S3 method (#145)
+* `cmdstanr` will be used as the default backend for `brms` if the user has it installed (#145)
+
+### Bug fixes
+* fix a bug preventing the sort_data check from being executed (#72)
+* fix a bug with the summary() function not displaying implicit parameters (#152)
 
 # bmm 0.4.0
 

@@ -19,8 +19,9 @@ rad2deg(rad)
 A numeric vector of the same length as \code{deg} or \code{rad}.
 }
 \description{
-The helper functions \code{deg2rad} and \code{rad2deg} should add convenience in transforming
-data from degrees to radians and from radians to degrees.
+The helper functions \code{deg2rad} and \code{rad2deg} should add
+convenience in transforming data from degrees to radians and from radians to
+degrees.
 }
 \examples{
   degrees <- runif(100, min = 0, max = 360)

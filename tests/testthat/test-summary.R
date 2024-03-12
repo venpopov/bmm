@@ -1,0 +1,14 @@
+test_that("summary has reasonable outputs", {
+  summary1 <- suppressWarnings(summary(bmmfit_example1))
+  expect_true(is.data.frame(summary1$fixed))
+  expect_equal(rownames(summary1$fixed),
+               c("mu_Intercept", "kappa_Intercept", "c_set_size1", "c_set_size2",
+                 "c_set_size3", "c_set_size4"))
+  expect_equal(colnames(summary1$fixed),
+               c("Estimate", "Est.Error", "l-95% CI",
+                 "u-95% CI", "Rhat", "Bulk_ESS", "Tail_ESS"))
+  expect_output(print(summary1), "Constant Parameters:")
+  expect_output(print(summary1), "Model: sdmSimple")
+  expect_output(print(summary1), "Links: mu = identity; c = log; kappa = log")
+  expect_output(print(summary1), "Formula: mu = 0")
+})

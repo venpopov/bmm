@@ -50,6 +50,14 @@ restructure_bmm <- function(x, ...) {
     x$bmm$fit_args <- NULL
   }
 
+  if (restr_version < "0.4.5") {
+    prev_model <- x$bmm$model
+    prev_model_name <- class(prev_model)[length(class(prev_model))]
+    new_model <- get_model(prev_model_name)
+    new_model <- brms::do_call(new_model, c(prev_model$resp_vars, prev_model$other_vars))
+    x$bmm$model <- check_model(new_model, x$data, x$bmm$user_formula)
+  }
+
   x$version$bmm_restructure <- current_version
   if (packageVersion("brms") >= "2.20.15") {
     x <- NextMethod('restructure')
@@ -88,7 +96,8 @@ add_links.bmmmodel <- function(x) {
 add_bmm_info <- function(x) {
   env <- x$family$env
   if (is.null(env)) {
-    stop2("Unable to restructure the object for use with the latest version of bmm. Please refit.")
+    stop2("Unable to restructure the object for use with the latest version \\
+           of bmm. Please refit.")
   }
   pforms <- env$formula$pforms
   names(pforms) <- NULL
@@ -102,7 +111,7 @@ add_bmm_info <- function(x) {
   } else {
     model$info$parameters$mu1 = glue(
       "Location parameter of the von Mises distribution for memory responses \\
-          (in radians). Fixed internally to 0 by default."
+       (in radians). Fixed internally to 0 by default."
     )
   }
 
