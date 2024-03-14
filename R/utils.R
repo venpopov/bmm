@@ -166,14 +166,14 @@ stop2 <- function(..., env.frame = -1) {
   stop(msg, call. = FALSE)
 }
 
-warning2 <- function(...) {
-  msg <- glue(..., .envir = sys.frame(-1))
-  warning(..., call. = FALSE)
+warning2 <- function(..., env.frame = -1) {
+  msg <- glue(..., .envir = sys.frame(env.frame))
+  warning(msg, call. = FALSE)
 }
 
-message2 <- function(...) {
+message2 <- function(..., env.frame = -1) {
   silent <- getOption('bmm.silent', 1)
-  msg <- glue(..., .envir = sys.frame(-1))
+  msg <- glue(..., .envir = sys.frame(env.frame))
   if (silent < 2) {
     message(msg)
   }
