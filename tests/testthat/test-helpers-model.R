@@ -161,6 +161,14 @@ test_that("make_stancode() works with bmmformula if brms >= 2.20.14", {
   expect_equal(class(sd)[1], "character")
 })
 
+test_that("no check for with make_stancode function", {
+  withr::local_options('bmm.sort_data' = 'check')
+  expect_no_message(make_stancode(bmf(kappa ~ set_size, c ~ set_size),
+                                  OberauerLin_2017,
+                                  sdmSimple('dev_rad')))
+})
+
+
 
 test_that("change_constants() works", {
   model <- sdmSimple(resp_err = "y")

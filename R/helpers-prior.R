@@ -56,6 +56,8 @@ get_model_prior <- function(object, data, model, formula = object, ...) {
     warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
              " Please use 'object' instead.")
   }
+  withr::local_options(bmm.sort_data = FALSE)
+
   formula <- object
   model <- check_model(model, data, formula)
   data <- check_data(model, data, formula)
