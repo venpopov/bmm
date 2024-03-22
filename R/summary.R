@@ -157,18 +157,27 @@ summarise_links <- function(links) {
 
 summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp=0, model = NULL) {
   fixpars <- NULL
-  wspace <- collapse(rep(' ', wsp))
-  sep <- paste0(ifelse(newline, '\n', ','), wspace)
   if (!is.null(model)) {
     formula <- suppressMessages(add_missing_parameters(model, formula, replace_fixed = FALSE))
     fixpars <- model$fixed_parameters
-    fpnames <- names(fixpars)
-    fpnames <- fpnames[fpnames %in% names(model$parameters)]
-    fpforms <- collapse(paste0(fpnames, " = ", fixpars[fpnames], sep))
+    formula[names(fixpars)] <- fixpars
   }
-  formula <- formula[!is_constant(formula)]
-  paste0(fpforms, paste0(formula, collapse = sep))
+  print(formula, newline = newline, wsp = wsp)
 }
+
+
+#' @export
+print.bmmformula <- function(x, newline = TRUE, wsp=0, ...) {
+  wspace <- collapse(rep(' ', wsp))
+  sep <- paste0(ifelse(newline, '\n', ','), wspace)
+  for (i in 1:length(x)) {
+    if (is.numeric(x[[i]])) {
+      x[[i]] <- paste0(names(x)[i], " = ", x[[i]])
+    }
+  }
+  cat(paste0(x, collapse = sep))
+}
+
 
 summarise_model <- function(model, ...) {
   UseMethod('summarise_model')
