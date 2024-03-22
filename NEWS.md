@@ -14,6 +14,7 @@
 ### Bug fixes
 * fix a bug preventing the sort_data check from being executed (#72)
 * fix a bug with the summary() function not displaying implicit parameters (#152)
+* fix a bug in which the sort_data check occured in cases where it shouldn't (#158)
 
 # bmm 0.4.0
 
