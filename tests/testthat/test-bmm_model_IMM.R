@@ -147,13 +147,13 @@ test_that('IMM models run when setsize is a predictor and intercept is supressed
   formula <- bmf(
     kappa ~ 1,
     c ~ 1,
-    s ~ 0+set_size
+    s ~ 0 + set_size
   )
   model <- IMMbsc(resp_err = 'dev_rad',
                   nt_features = paste0("col_nt",1:7),
                   nt_distances = paste0("dist_nt",1:7),
                   setsize = "set_size")
-  expect_silent(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F))
+  expect_silent(fit_model(formula, dat, model, backend = 'mock', mock = 1, rename = F))
 
 
   formula <- bmf(
