@@ -12,7 +12,7 @@ different parameters of a bmmmodel."><meta name="robots" content="noindex"><!-- 
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.4.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.6.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,17 +60,16 @@ different parameters of a <code>bmmmodel</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bmmformula</span><span class="op">(</span><span class="va">formula</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bmmformula</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">bmf</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>formula</dt>
-<dd><p>Formula for predicting a <code>bmmmodel</code> parameter.</p></dd>
-
-
-<dt>...</dt>
-<dd><p>Additional formulas for more than a single model parameter.</p></dd>
+    <dl><dt>...</dt>
+<dd><p>Formulas for predicting a <code>bmmmodel</code> parameter. Each formula for a
+parameter should be specified as a separate argument, separated by commas</p></dd>
 
 </dl></div>
     <div class="section level2">

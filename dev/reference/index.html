@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.4.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.6.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,7 +93,7 @@
         <dd>Fit Measurement Models using BRMS</dd>
       </dl><dl><dt>
           
-          <code><a href="bmmformula.html">bmmformula()</a></code> 
+          <code><a href="bmmformula.html">bmmformula()</a></code> <code><a href="bmmformula.html">bmf()</a></code> 
         </dt>
         <dd>Create formula for predicting parameters of a <code>bmmmodel</code></dd>
       </dl><dl><dt>
@@ -234,7 +234,8 @@
           
           <code><a href="k2sd.html">k2sd()</a></code> 
         </dt>
-        <dd>Transform kappa of the von Mises distribution to the circular standard deviation</dd>
+        <dd>Transform kappa of the von Mises distribution to the circular standard
+deviation</dd>
       </dl><dl><dt>
           
           <code><a href="restructure_bmm.html">restructure_bmm()</a></code> 
@@ -309,6 +310,11 @@
         <dd>Generic S3 method for configuring the model to be fit by brms</dd>
       </dl><dl><dt>
           
+          <code><a href="configure_prior.html">configure_prior()</a></code> 
+        </dt>
+        <dd>Generic S3 method for configuring the default prior for a bmmmodel</dd>
+      </dl><dl><dt>
+          
           <code><a href="postprocess_brm.html">postprocess_brm()</a></code> 
         </dt>
         <dd>Generic S3 method for postprocessing the fitted brm model</dd>
@@ -317,11 +323,6 @@
           <code><a href="revert_postprocess_brm.html">revert_postprocess_brm()</a></code> 
         </dt>
         <dd>Generic S3 method for reverting any postprocessing of the fitted brm model</dd>
-      </dl><dl><dt>
-          
-          <code><a href="set_default_prior.html">set_default_prior()</a></code> 
-        </dt>
-        <dd>Set default priors for a bmmmodel</dd>
       </dl><dl><dt>
           
           <code><a href="use_model_template.html">use_model_template()</a></code> 

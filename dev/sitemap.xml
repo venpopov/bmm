@@ -85,6 +85,9 @@
     <loc>https://venpopov.github.io/bmm/dev/reference/configure_options.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/configure_prior.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/fit_info.html</loc>
   </url>
   <url>
@@ -134,9 +137,6 @@
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/revert_postprocess_brm.html</loc>
-  </url>
-  <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/set_default_prior.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/softmax.html</loc>
