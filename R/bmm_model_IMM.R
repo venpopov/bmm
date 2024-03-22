@@ -293,6 +293,9 @@ check_data.IMMspatial <- function(model, data, formula) {
          "The number of columns for non-target distances in the argument \\
          'nt_distances' should equal max(setsize)-1})")
 
+  # replace nt_distances
+  data[,nt_distances][is.na(data[,nt_distances])] <- max(data[,nt_distances], na.rm = T)
+
   stopif(any(data[,nt_distances] < 0),
          "All non-target distances to the target need to be postive.")
 
