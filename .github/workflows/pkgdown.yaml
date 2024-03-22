@@ -35,8 +35,6 @@ jobs:
         with:
           dependencies: NA
           extra-packages: |
-            any::pkgdown
-            local::.
             rmarkdown
             withr
             knitr
@@ -54,7 +52,8 @@ jobs:
             remotes
             waldo
             fansi
-          needs: website
+            any::pkgdown
+            local::.
 
       - name: Build Cmdstan
         run: |
