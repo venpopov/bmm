@@ -652,6 +652,8 @@ get_stancode <- function(object, data, model, prior=NULL, formula = object, ...)
 #' @rdname get_stancode
 #' @export
 stancode.bmmformula <- function(object, data, model, prior = NULL, ...) {
+  withr::local_options(bmm.sort_data = FALSE)
+
   # check model, formula and data, and transform data if necessary
   formula <- object
   model <- check_model(model, data, formula)

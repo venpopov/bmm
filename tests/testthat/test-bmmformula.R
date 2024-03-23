@@ -78,3 +78,9 @@ test_that('assign_nl works', {
   types3 <- is_nl(f3)
   expect_equal(types3, c(y = TRUE, a = FALSE))
 })
+
+
+test_that('print.bmmformula works', {
+  res <- utils::capture.output(bmf(a ~ 1, b = 2))
+  expect_equal(res, c("a ~ 1", "b = 2"))
+})

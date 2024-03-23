@@ -87,3 +87,11 @@ test_that("default priors are returned correctly", {
   expect_equal(dp[dp$coef == "" & dp$class == "b", ]$prior, c("","normal(0, 1)"))
   expect_equal(dp[dp$coef == "Intercept", ]$prior, c("normal(2, 1)", "logistic(0, 1)"))
 })
+
+test_that("no check for sort_data with default_priors function", {
+  withr::local_options('bmm.sort_data' = 'check')
+  res <- capture_messages(get_model_prior(bmf(kappa ~ set_size, c ~ set_size),
+                                       OberauerLin_2017,
+                                       sdmSimple('dev_rad')))
+  expect_false(any(grepl("sort", res)))
+})

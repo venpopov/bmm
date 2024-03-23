@@ -9,10 +9,12 @@
 * you can now choose to estimate parameters that are fixed to a constant by default for all models (#145)
 * default priors for all models are now specified via the configure_prior() S3 method (#145)
 * `cmdstanr` will be used as the default backend for `brms` if the user has it installed (#145)
+* various updates to the documentation and data sets
 
 ### Bug fixes
 * fix a bug preventing the sort_data check from being executed (#72)
 * fix a bug with the summary() function not displaying implicit parameters (#152)
+* fix a bug in which the sort_data check occured in cases where it shouldn't (#158)
 
 # bmm 0.4.0
 
