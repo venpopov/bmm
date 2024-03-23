@@ -135,7 +135,45 @@ bmm model.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">scode1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> // generated with brms 2.21.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> functions {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     // utility function trick for converting real to integer type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /* compute the tan_half link</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    * Args:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    *   x: a scalar in (-pi, pi)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    * Returns:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    *   a scalar in (-Inf, Inf)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    */</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    real tan_half(real x) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      return tan(x / 2);</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /* compute the tan_half link (vectorized)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    * Args:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    *   x: a vector in (-pi, pi)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    * Returns:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    *   a vector in (-Inf, Inf)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    */</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    vector tan_half(vector x) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      return tan(x / 2);</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /* compute the inverse of the tan_half link</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    * Args:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    *   y: a scalar in (-Inf, Inf)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    * Returns:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    *   a scalar in (-pi, pi)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    */</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    real inv_tan_half(real y) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      return 2 * atan(y);</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /* compute the inverse of the tan_half link (vectorized)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    * Args:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    *   y: a vector in (-Inf, Inf)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    * Returns:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    *   a vector in (-pi, pi)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    */</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    vector inv_tan_half(vector y) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      return 2 * atan(y);</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   // utility function trick for converting real to integer type</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   int bin_search(real x, int min_val, int max_val) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       int mid_p;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       int L = min_val;</span>
@@ -215,6 +253,7 @@ bmm model.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     mu += Intercept;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     c += Intercept_c;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     kappa += Intercept_kappa;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     mu = inv_tan_half(mu);</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     kappa = exp(kappa);</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     target += sdm_simple_lpdf(Y | mu, c, kappa);</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       // adaptive calculation of the normalization constant</span>

@@ -231,7 +231,7 @@ Z = \int_{-\pi}^{\pi} f(\theta) d\theta
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">sdmSimple</span>(resp_err = "y") 
-<span style="color: #AF5FFF;">  Links: </span>mu = identity; c = log; kappa = log 
+<span style="color: #AF5FFF;">  Links: </span>mu = tan_half; c = log; kappa = log 
 <span style="color: #AF5FFF;">Formula: </span>mu = 0
          c ~ 0 + cond
          kappa ~ 0 + cond 
