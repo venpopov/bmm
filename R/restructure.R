@@ -12,7 +12,8 @@
 #' @keywords transform
 #' @export
 #' @importFrom utils packageVersion
-restructure_bmm <- function(x, ...) {
+#' @importFrom brms restructure
+restructure.bmmfit <- function(x, ...) {
   version <- x$version$bmm
   if (is.null(version)) {
     version <- as.package_version('0.2.1')
@@ -25,11 +26,7 @@ restructure_bmm <- function(x, ...) {
   restr_version <- restructure_version.bmm(x)
 
   if (restr_version >= current_version) {
-    if (packageVersion("brms") >= "2.20.15") {
-      x <- NextMethod('restructure')
-    } else {
-      x <- brms::restructure(x)
-    }
+    x <- NextMethod('restructure')
     return(x)
   }
 
@@ -59,12 +56,7 @@ restructure_bmm <- function(x, ...) {
   }
 
   x$version$bmm_restructure <- current_version
-  if (packageVersion("brms") >= "2.20.15") {
-    x <- NextMethod('restructure')
-  } else {
-    x <- brms::restructure(x)
-  }
-  x
+  NextMethod('restructure')
 }
 
 restructure_version.bmm <- function(x) {

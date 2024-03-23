@@ -90,85 +90,34 @@ test_that("use_model_template() prevents duplicate models", {
   }
 })
 
-
-test_that("get_stancode() returns a string", {
-  # define formula
-  ff <- bmmformula(
-    kappa ~ 1,
-    thetat ~ 1,
-    thetant ~ 1
-  )
-
-  # simulate data
-  dat <- data.frame(
-    y = rmixture3p(n = 200),
-    nt1_loc = 2,
-    nt2_loc = -1.5
-  )
-
-  # fit the model
-  stancode <- get_stancode(ff,
-    data = dat,
-    model = mixture3p(resp_err = "y", nt_features = paste0("nt", 1, "_loc"), setsize = 2)
-  )
-  expect_equal(class(stancode)[1], "character")
-})
-
-test_that("make_stancode() works with brmsformula", {
+test_that("stancode() works with brmsformula", {
   ff <- brms::bf(count ~ zAge + zBase * Trt + (1 | patient))
-  sd <- make_stancode(ff, data = brms::epilepsy, family = poisson())
+  sd <- stancode(ff, data = brms::epilepsy, family = poisson())
   expect_equal(class(sd)[1], "character")
 })
 
-test_that("make_stancode() works with formula", {
+test_that("stancode() works with formula", {
   ff <- count ~ zAge + zBase * Trt + (1 | patient)
-  sd <- make_stancode(ff, data = brms::epilepsy, family = poisson())
+  sd <- stancode(ff, data = brms::epilepsy, family = poisson())
   expect_equal(class(sd)[1], "character")
 })
 
-test_that("make_stancode() works with bmmformula if brms >= 2.20.14", {
-  # define formula
-  ff <- bmmformula(
-    kappa ~ 1,
-    thetat ~ 1,
-    thetant ~ 1
+test_that("stancode() works with bmmformula", {
+  ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
+  sc <- stancode(ff, OberauerLin_2017, model = mixture3p(resp_err = "dev_rad",
+                                                         nt_features = "col_nt",
+                                                         setsize = "set_size",
+                                                         regex = T)
   )
-
-  # simulate data
-  dat <- OberauerLin_2017
-
-  # fit the model
-  if (utils::packageVersion("brms") >= "2.20.14") {
-    sd <- make_stancode(ff,
-      data = dat,
-      model = mixture3p(
-        resp_err = "dev_rad",
-        nt_features = "col_nt",
-        setsize = "set_size", regex = T
-      )
-    )
-    expect_equal(class(sd)[1], "character")
-  }
-
-  sd <- stancode(ff,
-    data = dat,
-    model = mixture3p(
-      resp_err = "dev_rad",
-      nt_features = "col_nt",
-      setsize = "set_size", regex = T
-    )
-  )
-  expect_equal(class(sd)[1], "character")
+  expect_equal(class(sc)[1], "character")
 })
 
-test_that("no check for with make_stancode function", {
+test_that("no check for with stancode function", {
   withr::local_options('bmm.sort_data' = 'check')
-  expect_no_message(make_stancode(bmf(kappa ~ set_size, c ~ set_size),
-                                  OberauerLin_2017,
-                                  sdmSimple('dev_rad')))
+  expect_no_message(stancode(bmf(kappa ~ set_size, c ~ set_size),
+                             OberauerLin_2017,
+                             sdmSimple('dev_rad')))
 })
-
-
 
 test_that("change_constants() works", {
   model <- sdmSimple(resp_err = "y")
