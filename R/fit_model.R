@@ -22,7 +22,7 @@
 #' @param chains Numeric. Number of Markov chains (defaults to 4)
 #' @param prior One or more `brmsprior` objects created by [brms::set_prior()]
 #'   or related functions and combined using the c method or the + operator. See
-#'   also [get_model_prior()] for more help. Not necessary for the default model
+#'   also [default_prior()] for more help. Not necessary for the default model
 #'   fitting, but you can provide prior constraints to model parameters
 #' @param sort_data Logical. If TRUE, the data will be sorted by the predictor
 #'   variables for faster sampling. If FALSE, the data will not be sorted, but
