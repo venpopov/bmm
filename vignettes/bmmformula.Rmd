@@ -37,6 +37,8 @@ knitr::opts_chunk$set(
   dpi = 100
 )
 fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
+
+pacman::p_load(bmm)
 ```
 
 # The `bmmformula` syntax
@@ -44,41 +46,81 @@ fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 The `bmmformula` syntax generally follows the same principles as the formula syntax for [`brms` models](https://rdrr.io/cran/brms/man/brmsformula.html). A `bmmformula` follows the general structure:
 
 ```r
-parameter ~ fixed + (random | group)
+parameter ~ peffects + ( geffects | group)
 ```
 
-Instead of predicting a `response` - as is typically done in `brms` - we predict a `parameter` from a `bmmmodel`[^1]. The `fixed` part specifies all effects that are assumed to be the same across observations. In typical vocabulary such effects are called 'fixed', 'population-level' or 'overall' effects. The `random` part specifies effects that are assumed to vary across grouping variables specified in `group`. Typically, these effects are called 'random', 'group-level' or 'varying' effects.
+However, instead of predicting a `response` - as is typically done in `brms` - in `bmm` a `bmmformula` predicts a `parameter` from a `bmmmodel`[^1]. The `peffects` part specifies all effects that are assumed to be the same across observations. In typical vocabulary such effects are called 'population-level' or 'overall' effects. The `geffects` part specifies effects that are assumed to vary across grouping variables specified in `group`. Typically, these effects are called 'group-level' or 'varying' effects.
 
 [^1]: You can always find information on the parameters of a `bmmmodel` by calling the help for the model you want to fit: `?bmmmodel`
 
-As the response is not explicit from the `bmmformula`, we have to specify which response variables the model should be fit to when setting up the `bmmmodel` that should be fit to the data. For example, when fitting the `mixture3p` model, we have to provide the names of the variables that reflect the response error and the location of the non-target features in our data:
+As the response is not explicit from the `bmmformula`, in `bmm` the response variables, and also other variables relevant for a `bmmmodel`, are linked to the model when setting up the `bmmmodel` object. For example, when fitting the `mixture3p` model, we have to provide the names of the variables that reflect the response error (e.g., `y`), the location of the non-target features (e.g. `nt_col1`, ..., `nt_col4`), and the set-size (e.g., `ss`) in our data:
 
 ```r
-myModel <- mixture3p(resp_err = "y", nt_features = "nt_loc", regex = T)
+my_model <- mixture3p(resp_err = "y", 
+                     nt_features = paste0("nt_col",1:4), 
+                     set_size = "ss", regex = T)
 ```
 
-Internally, `bmm` will then link the response variables to the formula given for the parameters of a `bmmmodel`.
+Internally, `bmm` will then link the response variables to the `bmmformula` given for the parameters of a `bmmmodel`.
 
-As you will typically, provide a formula for each parameter of a `bmmmodel` we recommend to set up the formula in a seperate object before passing it to the `fit_model` function. There are two ways to set up formulas that work equally well:
+As you will typically, provide a `bmmformula` for each parameter of a `bmmmodel` we recommend to set up the formula in a separate object before passing it to the `fit_model` function. There are two ways to set up formulas, both work equally easy and well:
 
-1. a single call to the function `bmmformula` or its short form `bmf` and separate formulas for different parameters by comma. 
-2. add formulas to an existing object by using the `+` operator. 
+1. a single call to the function `bmmformula` or its short form `bmf` with separating formulas for different parameters by comma. 
+2. add `bmmformulas` for each parameters to an object by using the `+` operator. 
 
-Ηere are two examples that would result in the same `bmmformula` object:
+Ηere are two examples for each method that result in the same `bmmformula` object:
 
-```r
-myFormula <- bmmformula(
+``` {r}
+my_formula <- bmmformula(
   thetat ~ 1 + set_size,
   thetant ~ 1 + set_size,
   kappa ~ 1
 )
 
-myFormula <- bmf(thetat ~ 1 + set_size) +
+my_formula <- bmf(thetat ~ 1 + set_size) +
   bmf(thetant ~ 1 + set_size) +
   bmf(kappa ~ 1)
+  
+my_formula
 ```
 
-# Fixing parameters
+# Fixing parameters to constant values
+
+In some cases it can be reasonable to fix parameters to a specific value. This can either be done via the `bmmformula` or via a constant prior specified for the parameter to be fixed. 
+
+## Inside the `bmmformula`
+
+To fix a parameter via the `bmmformula` you have to set the parameter to the value it should be fixed to by using `=` instead of `~`. For example, the following formula would fix `kappa` to the value `1`.
+
+```r
+fixed_formula <- bmf(kappa = 1)
+```
+
+When fixing a parameter to a constant value, you need to keep in mind that the value you fix it to, is the value on the parameter scale. Oftentime, `bmm` will use link functions to convert parameters from a bounded native scale (e.g. only positive values for precision parameters, such as `kappa`) to an unbounded parameter scale. In the case of `kappa`, `bmm` uses a `log` link function. Thus, when fixing the parameter to `1`, this will effectively fix the parameter to $e^1$ on the native scale.
+
+## Using `constant` priors
+
+Should you want to fix a parameter to a constant value via priors, you should include the parameter in the `bmmformula` and only specify that a group-level intercept should be estimated. For the same example, as above this would be:
+
+```r
+kappa_formula <- bmf(kappa ~ 1)
+```
+
+Then, you can specify a constant prior for `kappa` and provide the value that the parameter should be fixed to. To ensure that you have set the prior correctly, we recommend that you first check the default priors generated by `bmm` using the `default_prior` function:
+
+```r
+default_prior(my_model, my_formula, my_data)
+```
+
+This will give you information, if the parameter you want to fix is considered a non-linear parmaeter `nlpar` or a regular distributional parmaeter `dpar` in the model you are estimating. You have to specify the prior then accordingly:
+
+```r
+# for dpars
+constant_prior <- prior(constant(1), coef = "Intercept", dpar = "kappa")
+
+# for nlpars
+constant_prior <- prior(constant(1), coef = "Intercept", nlpar = "kappa")
+```
 
 # Accessing the `brmsformula` generated by `bmm`
 
@@ -103,7 +145,7 @@ We can access the `brmsformula` generated for this model by calling `bmmfit$form
 bmmfit$formula
 ```
 
-Similarly, users can access the distributional family that was used to implement the specified `bmmmodel`, so `bmmfit$family` will return the family object that was generated by `bmm` and then passed to `brms` for fitting. 
+Similarly, users can access the distributional family that was used to implement the specified model, so `bmmfit$family` will return the family object that was generated by `bmm` and then passed to `brms` for fitting. 
 
 ```{r}
 bmmfit$family
@@ -115,6 +157,10 @@ Finally, users can also access the data that was used by `bmm` to fit the model 
 head(bmmfit$data)
 ```
 
-This way users who are interested to customize `bmmmodels` to fit them in `brms` without `bmm` are able to obtain the most important information that is essential for specifying the models implemented in `bmm`. Likewise users can call a `brms` summary instead of a `bmm` summary by setting the `backend` option in the summary function to `brms`. This way the summary function for `brmsfit` objects will be used instead of the function for `bmmfit` objects. The `brmsfit` summary also contains the `brmsformula` that is created by `bmm`.
+This way users who are interested to customize models to fit them in `brms` without `bmm` are able to obtain the most important information that is essential for specifying the models implemented in `bmm`. 
 
+Likewise users can call a `brms` summary instead of a `bmm` summary by setting the `backend` option in the summary function to `brms`. This way the summary function for `brmsfit` objects will be used instead of the function for `bmmfit` objects. The `brmsfit` summary also contains the `brmsformula` that is created by `bmm`.
 
+``` {r}
+summary(bmmfit, backend = "brms")
+```
