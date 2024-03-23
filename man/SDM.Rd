@@ -52,7 +52,7 @@ and how to use it.
 }
 \item \strong{Default parameter links:}
 
-mu = identity; c = log; kappa = log
+mu = tan_half; c = log; kappa = log
 }
 }
 \examples{

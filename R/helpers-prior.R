@@ -95,16 +95,21 @@ get_model_prior <- function(object, data, model, formula = object, ...) {
 #'   model
 #' @noRd
 fixed_pars_priors <- function(model, formula, additional_pars = list()) {
-  # determine type of parameters
-  bterms <- brms::brmsterms(formula)
-  dpars <- names(bterms$dpars)
-  nlpars <- names(bterms$nlpars)
+  fix_pars <- model$fixed_parameters
+  if (length(fix_pars) == 0) {
+    return(brms::empty_prior())
+  }
 
   # construct parameter names and prior values
   par_list <- c(model$fixed_parameters, additional_pars)
   pars <- names(par_list)
   values <- unlist(par_list)
   priors <- glue::glue("constant({values})")
+
+  # determine type of parameters
+  bterms <- brms::brmsterms(formula)
+  dpars <- names(bterms$dpars)
+  nlpars <- names(bterms$nlpars)
 
   # flexibly set the variables for set_prior
   classes <- ifelse(pars %in% dpars, "Intercept", "b")

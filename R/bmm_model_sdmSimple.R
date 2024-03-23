@@ -25,12 +25,13 @@
         kappa = 'Precision parameter of the SDM distribution'
       ),
       links = list(
-        mu = 'identity',
+        mu = 'tan_half',
         c = 'log',
         kappa = 'log'
       ),
       fixed_parameters = list(mu = 0),
       default_priors = list(
+        mu = list(main = "student_t(1, 0, 1)"),
         kappa = list(main = "student_t(5,1.75,0.75)", effects = "normal(0,1)"),
         c = list(main = "student_t(5,2,0.75)", effects = "normal(0,1)")
       ),
@@ -123,9 +124,9 @@ configure_model.sdmSimple <- function(model, data, formula) {
   sdm_simple <- brms::custom_family(
     "sdm_simple",
     dpars = c("mu", "c", "kappa"),
-    links = c("identity", "identity", "log"),
-    lb = c(-pi, NA, NA),
-    ub = c(pi, NA, NA),
+    links = c("tan_half", "identity", "log"),
+    lb = c(NA, NA, NA),
+    ub = c(NA, NA, NA),
     type = "real", loop = FALSE,
     log_lik = log_lik_sdm_simple,
     posterior_predict = posterior_predict_sdm_simple
