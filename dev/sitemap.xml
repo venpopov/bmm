@@ -88,28 +88,19 @@
     <loc>https://venpopov.github.io/bmm/dev/reference/configure_prior.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/default_prior.bmmformula.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/fit_info.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/fit_model.html</loc>
   </url>
   <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/get_model_prior.html</loc>
-  </url>
-  <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/get_stancode.html</loc>
-  </url>
-  <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/get_standata.html</loc>
-  </url>
-  <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/index.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/k2sd.html</loc>
-  </url>
-  <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/make_stancode_parblock.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/mixture2p.html</loc>
@@ -133,13 +124,19 @@
     <loc>https://venpopov.github.io/bmm/dev/reference/print_pretty_models_md.html</loc>
   </url>
   <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/restructure_bmm.html</loc>
+    <loc>https://venpopov.github.io/bmm/dev/reference/restructure.bmmfit.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/revert_postprocess_brm.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/softmax.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/stancode.bmmformula.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/standata.bmmformula.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/summary.bmmfit.html</loc>
