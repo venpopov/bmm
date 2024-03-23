@@ -53,16 +53,6 @@ However, instead of predicting a `response` - as is typically done in `brms` - i
 
 [^1]: You can always find information on the parameters of a `bmmmodel` by calling the help for the model you want to fit: `?bmmmodel`
 
-As the response is not explicit from the `bmmformula`, in `bmm` the response variables, and also other variables relevant for a `bmmmodel`, are linked to the model when setting up the `bmmmodel` object. For example, when fitting the `mixture3p` model, we have to provide the names of the variables that reflect the response error (e.g., `y`), the location of the non-target features (e.g. `nt_col1`, ..., `nt_col4`), and the set-size (e.g., `ss`) in our data:
-
-```r
-my_model <- mixture3p(resp_err = "y", 
-                     nt_features = paste0("nt_col",1:4), 
-                     set_size = "ss", regex = T)
-```
-
-Internally, `bmm` will then link the response variables to the `bmmformula` given for the parameters of a `bmmmodel`.
-
 As you will typically, provide a `bmmformula` for each parameter of a `bmmmodel` we recommend to set up the formula in a separate object before passing it to the `fit_model` function. There are two ways to set up formulas, both work equally easy and well:
 
 1. a single call to the function `bmmformula` or its short form `bmf` with separating formulas for different parameters by comma. 
@@ -83,6 +73,35 @@ my_formula <- bmf(thetat ~ 1 + set_size) +
   
 my_formula
 ```
+
+As `bmmformula` syntax builds upon `brmsformula` syntax, you can use any functionality you might use in `brms` for specifying a `bmmformula`. One difference is, that you _do not_ have to explicitly specify if a formula is a non-linear formula, as `bmm` recognizes a formula as non-linear as soon as one of the left-hand side arguments of a formula is also used as a right-hand side argument in the whole formula. So the argumetn `nl` does not exist for `bmmformula`. Similarly, adding grouping statements around group-level effects to estimate them seperately for different sub-groups in your design can be added. So for example, a more complicated `bmmformula` could look like this:
+
+```r
+complex_formula <- bmf(
+  thetat ~ end_theta + (start_theta - end_theta) * exp(-R*ss_num),
+  # other model parameters
+  thetant ~ 1 + (1 | gr(ID, by = age_group)),
+  kappa ~ 1 + (1 | gr(ID, by = age_group)),
+  # parameters of the non-linear function
+  start_theta ~ 1 + (1 | gr(ID, by = age_group)),
+  end_theta ~ 1 + (1 | gr(ID, by = age_group)),
+  R ~ 1 + (1 | gr(ID, by = age_group))
+)
+```
+
+This formula implements an exponential reduction in `thetat` from a `start_theta` at `ss_num = 0` towards the lower asymptote `end_theta` that will be reached with the slope `R`. In addition, the group level effects have been group by `age_group` so that the variation in the `Intercept` would be estimated seperately for different levels of the `age_group` variable. This formula just serves as an example how `bmmformula` syntax allows to use the complex formula syntax implemented in `brms` and passes the information on to `brms` without losing any of the functionality. 
+
+## Seperating response variables from model parameters
+
+As the response is not explicit from the `bmmformula`, in `bmm` the response variables, and also other variables relevant for a `bmmmodel`, are linked to the model when setting up the `bmmmodel` object. For example, when fitting the `mixture3p` model, we have to provide the names of the variables that reflect the response error (e.g., `y`), the location of the non-target features (e.g. `nt_col1`, ..., `nt_col4`), and the set-size (e.g., `ss`) in our data:
+
+```r
+my_model <- mixture3p(resp_err = "y", 
+                     nt_features = paste0("nt_col",1:4), 
+                     set_size = "ss")
+```
+
+Internally, `bmm` will then link the response variables to the `bmmformula` given for the parameters of a `bmmmodel`.
 
 # Fixing parameters to constant values
 
