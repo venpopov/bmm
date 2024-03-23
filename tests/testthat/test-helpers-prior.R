@@ -95,3 +95,18 @@ test_that("no check for sort_data with default_priors function", {
                                        sdmSimple('dev_rad')))
   expect_false(any(grepl("sort", res)))
 })
+
+
+test_that("default priors work when there are no fixed parameters", {
+  formula <- bmf(mu ~ 1,
+                 c ~ 1,
+                 kappa ~ 1)
+  if (utils::packageVersion("brms") >= "2.20.14") {
+    prior_fn <- default_prior
+  } else {
+    prior_fn <- get_model_prior
+  }
+
+  pr <- prior_fn(formula, OberauerLin_2017, sdmSimple('dev_rad'))
+  expect_s3_class(pr, 'brmsprior')
+})

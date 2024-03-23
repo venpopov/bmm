@@ -9,6 +9,6 @@ test_that("summary has reasonable outputs", {
                  "u-95% CI", "Rhat", "Bulk_ESS", "Tail_ESS"))
   expect_output(print(summary1), "Constant Parameters:")
   expect_output(print(summary1), "Model: sdmSimple")
-  expect_output(print(summary1), "Links: mu = identity; c = log; kappa = log")
+  expect_output(print(summary1), "Links: mu = tan_half; c = log; kappa = log")
   expect_output(print(summary1), "Formula: mu = 0")
 })
