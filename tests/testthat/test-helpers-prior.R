@@ -1,50 +1,22 @@
-test_that("get_prior() works with brmsformula", {
+test_that("default_prior() works with brmsformula", {
   ff <- brms::bf(count ~ zAge + zBase * Trt + (1 | patient))
-  prior <- get_prior(ff, data = brms::epilepsy, family = poisson())
+  prior <- default_prior(ff, data = brms::epilepsy, family = poisson())
   expect_equal(class(prior)[1], "brmsprior")
 })
 
-test_that("get_prior() works with formula", {
+test_that("default_prior() works with formula", {
   ff <- count ~ zAge + zBase * Trt + (1 | patient)
-  prior <- get_prior(ff, data = brms::epilepsy, family = poisson())
+  prior <- default_prior(ff, data = brms::epilepsy, family = poisson())
   expect_equal(class(prior)[1], "brmsprior")
 })
 
-test_that("get_prior() works with bmmformula if brms >= 2.20.14", {
-  # define formula
-  ff <- bmmformula(
-    kappa ~ 1,
-    thetat ~ 1,
-    thetant ~ 1
-  )
-
-  # simulate data
-  dat <- OberauerLin_2017
-
-  # fit the model
-  if (utils::packageVersion("brms") >= "2.20.14") {
-    prior <- get_prior(
-      formula = ff,
-      data = dat,
-      model = mixture3p(
-        resp_err = "dev_rad",
-        nt_features = "col_nt",
-        setsize = "set_size", regex = T
-      )
-    )
-    expect_equal(class(prior)[1], "brmsprior")
-
-    prior2 <- default_prior(
-      object = ff,
-      data = dat,
-      model = mixture3p(
-        resp_err = "dev_rad",
-        nt_features = "col_nt",
-        setsize = "set_size", regex = T
-      )
-    )
-    expect_equal(prior, prior2)
-  }
+test_that("default_prior() works with bmmformula", {
+  ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
+  prior <- default_prior(ff, OberauerLin_2017, mixture3p(resp_err = "dev_rad",
+                                                         nt_features = "col_nt",
+                                                         setsize = "set_size",
+                                                         regex = T))
+  expect_equal(class(prior)[1], "brmsprior")
 })
 
 test_that("combine prior returns a brmsprior object", {
@@ -74,25 +46,18 @@ test_that("in combine prior, prior2 overwrites only shared components with prior
 
 
 test_that("default priors are returned correctly", {
-  if (utils::packageVersion("brms") >= "2.20.14") {
-    dp <- default_prior(bmf(kappa ~ set_size, thetat ~ set_size),
-                        OberauerLin_2017,
-                        mixture2p('dev_rad'))
-  } else {
-    dp <- get_model_prior(bmf(kappa ~ set_size, thetat ~ set_size),
-                        OberauerLin_2017,
-                        mixture2p('dev_rad'))
-  }
-
+  dp <- default_prior(bmf(kappa ~ set_size, thetat ~ set_size),
+                      OberauerLin_2017,
+                      mixture2p('dev_rad'))
   expect_equal(dp[dp$coef == "" & dp$class == "b", ]$prior, c("","normal(0, 1)"))
   expect_equal(dp[dp$coef == "Intercept", ]$prior, c("normal(2, 1)", "logistic(0, 1)"))
 })
 
 test_that("no check for sort_data with default_priors function", {
   withr::local_options('bmm.sort_data' = 'check')
-  res <- capture_messages(get_model_prior(bmf(kappa ~ set_size, c ~ set_size),
-                                       OberauerLin_2017,
-                                       sdmSimple('dev_rad')))
+  res <- capture_messages(default_prior(bmf(kappa ~ set_size, c ~ set_size),
+                                        OberauerLin_2017,
+                                        sdmSimple('dev_rad')))
   expect_false(any(grepl("sort", res)))
 })
 

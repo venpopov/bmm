@@ -8,54 +8,31 @@
 #'   need to be specified and also know which priors were used if no
 #'   user-specified priors were passed to the [fit_model()] function.
 #'
+#'   The default priors in `bmm` tend to be more informative than the default
+#'   priors in `brms`, as we use domain knowledge to specify the priors.
+#'
 #' @inheritParams fit_model
 #' @param object A `bmmformula` object
-#' @param formula Deprecated. Use `object` instead.
-#' @param ... Further arguments passed to \code{\link[brms:get_prior]{brms::get_prior()}}. See the
-#'   description of \code{\link[brms:get_prior]{brms::get_prior()}} for more details
-#'
-#' @details This function is deprecated. Please use `default_prior()` or `get_prior()` (if using
-#' `brms` >= 2.20.14) instead. In `brms` >= 2.20.14, `get_prior()` became an
-#' alias for `default_prior()`, and `default_prior()` is the recommended function to use.
+#' @param ... Further arguments passed to [brms::default_prior()]
 #'
 #' @returns A data.frame with columns specifying the `prior`, the `class`, the
 #'   `coef` and `group` for each of the priors specified. Separate rows contain
 #'   the information on the parameters (or parameter classes) for which priors
 #'   can be specified.
 #'
-#' @name get_model_prior
-#'
-#' @seealso [supported_models()], \code{\link[brms:get_prior]{brms::get_prior()}}.
+#' @seealso [supported_models()], [brms::default_prior()]
 #'
 #' @keywords extract_info
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # if using brms >= 2.20.14
 #' default_prior(bmf(c ~ 1, kappa ~ 1),
 #'               data = OberauerLin_2017,
 #'               model = sdmSimple(resp_err = 'dev_rad'))
-#' # if using brms < 2.20.14
-#' get_prior(bmf(c ~ 1, kappa ~ 1),
-#'           data = OberauerLin_2017,
-#'           model = sdmSimple(resp_err = 'dev_rad'))
-#' }
+#' @importFrom brms default_prior
 #' @export
-get_model_prior <- function(object, data, model, formula = object, ...) {
-  fcall <- as.character(match.call()[1])
-  if (fcall == "get_model_prior") {
-    if (utils::packageVersion('brms') >= "2.20.14") {
-      message("get_model_prior is deprecated. Please use get_prior() or default_prior()")
-    } else {
-      message("get_model_prior is deprecated. Please use get_prior() instead.")
-    }
-  }
-  if (missing(object) && !missing(formula)) {
-    warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
-             " Please use 'object' instead.")
-  }
+default_prior.bmmformula <- function(object, data, model, formula = object, ...) {
   withr::local_options(bmm.sort_data = FALSE)
 
   formula <- object
@@ -67,13 +44,13 @@ get_model_prior <- function(object, data, model, formula = object, ...) {
 
   dots <- list(...)
   prior_args <- combine_args(nlist(config_args, dots, prior))
-  brms_priors <- brms::do_call(brms::get_prior, prior_args)
+  prior_args$object <- prior_args$formula
+  prior_args$formula <- NULL
+
+  brms_priors <- brms::do_call(brms::default_prior, prior_args)
 
   combine_prior(brms_priors, prior_args$prior)
 }
-
-
-
 
 
 #' @title construct constant priors to fix fixed model parameters

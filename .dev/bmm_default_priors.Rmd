@@ -89,7 +89,7 @@ All model parameters are `nlpar` so they get class `b` with coef `Intercept`
 ```{r}
 model <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), setsize='set_size')
 formula <- bmf(kappa ~ 1, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -102,7 +102,7 @@ For kappa, which we include and intercept and a predictor, we get class `b` with
 
 ```{r}
 formula <- bmf(kappa ~ session, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -115,7 +115,7 @@ For kappa, which we include and intercept and a predictor, we get class `b` with
 
 ```{r}
 formula <- bmf(kappa ~ 0+session, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -126,7 +126,7 @@ terms(formula$kappa)
 
 ```{r}
 formula <- bmf(kappa ~ 0+session + ( 0+session|ID), thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -138,7 +138,7 @@ terms(formula$kappa)
 ```{r}
 
 formula <- bmf(kappa ~ session + cond, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -154,7 +154,7 @@ What we can do, is for each predictor, check how many levels appear.
 ```{r}
 
 formula <- bmf(kappa ~ 0 + session + cond, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -166,7 +166,7 @@ terms(formula$kappa)
 ```{r}
 
 formula <- bmf(kappa ~ 0 + session * cond, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -178,7 +178,7 @@ terms(formula$kappa)
 ```{r}
 
 formula <- bmf(kappa ~ 0 + session:cond + cond + session, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -190,7 +190,7 @@ terms(formula$kappa)
 ```{r}
 
 formula <- bmf(kappa ~ 0 + session:cond, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -235,11 +235,11 @@ A helper function to compare the priors with and without the default priors.
 
 ```{r}
 compare_priors <- function(formula,dat,model) {
-  p1 <- withr::with_options(list('bmm.default_priors'=FALSE), get_model_prior(formula, dat, model)) %>% 
+  p1 <- withr::with_options(list('bmm.default_priors'=FALSE), default_prior(formula, dat, model)) %>% 
     brms:::prepare_print_prior() %>% 
     rename(priorBRMS=prior) %>% 
     select(priorBRMS,class,coef,group,resp,dpar,nlpar)
-  p2 <- withr::with_options(list('bmm.default_priors'=TRUE), get_model_prior(formula, dat, model)) %>% 
+  p2 <- withr::with_options(list('bmm.default_priors'=TRUE), default_prior(formula, dat, model)) %>% 
     brms:::prepare_print_prior() %>% 
     rename(priorBMM=prior) %>% 
     select(priorBMM,class,coef,group,resp,dpar,nlpar)
