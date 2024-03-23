@@ -27,7 +27,7 @@ k2sd <- function(K) {
     if (K[j] == 0) S[j] <- Inf
     if (is.infinite(K[j])) S[j] <- 0
     if (K[j] >= 0 & !is.infinite(K[j])) {
-      S[j] <- sqrt(-2 * log(besselI(K[j], 1) / besselI(K[j], 0)))
+      S[j] <- sqrt(-2 * log(besselI(K[j], 1, expon.scaled = T) / besselI(K[j], 0, expon.scaled = T)))
     }
   }
   as.numeric(S)

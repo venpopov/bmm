@@ -1,3 +1,5 @@
+  #include 'fun_tan_half.stan'
+
   // utility function trick for converting real to integer type
   int bin_search(real x, int min_val, int max_val) {
       int mid_p;
