@@ -28,8 +28,8 @@ margin-bottom: 1.5em ;
 }
 </style>
 
-```{r, include = FALSE}
-options(crayon.enabled = TRUE)
+```{r, include = FALSE, message=FALSE}
+options(crayon.enabled = TRUE, width = 800)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -37,8 +37,7 @@ knitr::opts_chunk$set(
   dpi = 100
 )
 fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
-
-pacman::p_load(bmm)
+library(bmm)
 ```
 
 # The `bmmformula` syntax
@@ -53,10 +52,10 @@ However, instead of predicting a `response` - as is typically done in `brms` - i
 
 [^1]: You can always find information on the parameters of a `bmmmodel` by calling the help for the model you want to fit: `?bmmmodel`
 
-As you will typically, provide a `bmmformula` for each parameter of a `bmmmodel` we recommend to set up the formula in a separate object before passing it to the `fit_model` function. There are two ways to set up formulas, both work equally easy and well:
+As you will typically provide a `bmmformula` for each parameter of a `bmmmodel`, we recommend to set up the formula in a separate object before passing it to the `fit_model` function. There are two ways to set up formulas, both work equally easy and well:
 
-1. a single call to the function `bmmformula` or its short form `bmf` with separating formulas for different parameters by comma. 
-2. add `bmmformulas` for each parameters to an object by using the `+` operator. 
+1. a single call to the function `bmmformula` or its short form `bmf`, separating formulas for different parameters by commas. 
+2. add a `bmmformula` for each parameter by using the `+` operator. 
 
 Ηere are two examples for each method that result in the same `bmmformula` object:
 
@@ -74,13 +73,14 @@ my_formula <- bmf(thetat ~ 1 + set_size) +
 my_formula
 ```
 
-As noted above, `bmm` generally assumes that you pass a `bmmformula` for each parameter of a model. If you do not pass a `bmmformula` for one or more parameters, `bmm` will throw a warning and only estimate a fixed intercept for the parameters for which no `bmmformula` was provided. If you are unsure about the parameters of a model, call the help via `?bmmmodel`.
+As noted above, `bmm` generally assumes that you pass a `bmmformula` for each parameter of a model. If you do not pass a `bmmformula` for one or more parameters, `bmm` will throw a warning and only estimate a fixed intercept for the parameters for which no `bmmformula` was provided. If you are unsure about the parameters of a model, call the help via `?bmmmodel`, replacing 'bmmmodel' with the name of the model (e.g. `?sdmSimple`).
 
 
 As `bmmformula` syntax builds upon `brmsformula` syntax, you can use any functionality you might use in `brms` for specifying a `bmmformula`. One difference is, that you _do not_ have to explicitly specify if a formula is a non-linear formula, as `bmm` recognizes a formula as non-linear as soon as one of the left-hand side arguments of a formula is also used as a right-hand side argument in the whole formula. So the argumetn `nl` does not exist for `bmmformula`. Similarly, adding grouping statements around group-level effects to estimate them separately for different sub-groups in your design can be added. So for example, a more complicated `bmmformula` could look like this:
 
-```r
+```{r}
 complex_formula <- bmf(
+  # a non-linear function on thetat
   thetat ~ end_theta + (start_theta - end_theta) * exp(-R*ss_num),
   # other model parameters
   thetant ~ 1 + (1 | gr(ID, by = age_group)),
@@ -90,18 +90,20 @@ complex_formula <- bmf(
   end_theta ~ 1 + (1 | gr(ID, by = age_group)),
   R ~ 1 + (1 | gr(ID, by = age_group))
 )
+
+complex_formula
 ```
 
 This formula implements an exponential reduction in `thetat` from a `start_theta` at `ss_num = 0` towards the lower asymptote `end_theta` that will be reached with the slope `R`. In addition, the group level effects have been grouped by `age_group` so that the variation in the `Intercept` would be estimated separately for different levels of the `age_group` variable. This formula just serves as an example how `bmmformula` syntax allows to use the complex formula syntax implemented in `brms` and passes the information on to `brms` without losing any of the functionality. 
 
 # Seperating response variables from model parameters
 
-As the response is not explicit from the `bmmformula`, in `bmm` the response variables, and also other variables relevant for a `bmmmodel`, are linked to the model when setting up the `bmmmodel` object. For example, when fitting the `mixture3p` model, you have to provide the names of the variables that reflect the response error (e.g., `y`), the location of the non-target features (e.g. `nt_col1`, ..., `nt_col4`), and the set-size (e.g., `ss`) in our data:
+As the response is not provided to the `bmmformula`, in `bmm` the response variables, and also other variables relevant for a `bmmmodel`, are linked to the model when setting up the `bmmmodel` object. For example, when fitting the `mixture3p` model, you have to provide the names of the variables that reflect the response error (e.g., `y`), the location of the non-target features (e.g. `nt_col1`, ..., `nt_col4`), and the set-size (e.g., `ss`) in our data:
 
 ```r
 my_model <- mixture3p(resp_err = "y", 
-                     nt_features = paste0("nt_col",1:4), 
-                     set_size = "ss")
+                      nt_features = paste0("nt_col",1:4), 
+                      set_size = "ss")
 ```
 
 Internally, `bmm` will then link the response variables to the `bmmformula` given for the parameters of a `bmmmodel`.
@@ -120,11 +122,10 @@ When fixing a parameter to a constant value, you need to keep in mind that the v
 
 # Estimating & prediciting parameters internally fixed by `bmm`
 
-`bmm` fixes some parameters internally, as they are usually not an integratl part of a measurement model, or need to be fixed to properly identify the model. For example in models for continuous reproduction visual working memory tasks, the distribution of target responses is usually assumed to be centered around the target. Consequently, the mean of this distribution `mu` is internally fixed to `0`. Such parameters are listed in the model object. So, you can see if a model has such parameters by accessing `my_model$fixed_parameters`. 
+`bmm` fixes some parameters internally, as they are usually not an integral part of a measurement model, or need to be fixed to properly identify the model. For example in models for continuous reproduction visual working memory tasks, the distribution of target responses is usually assumed to be centered around the target. Consequently, the mean of this distribution `mu` is internally fixed to `0`. Such parameters are listed in the model object. So, you can see if a model has such parameters by accessing `my_model$fixed_parameters`. 
 
 ```{r}
 my_model <- sdmSimple(resp_err = "error")
-
 my_model$fixed_parameters
 ```
 
@@ -132,7 +133,6 @@ Fixed parameters that can be freely estimated are also listed in the `parameters
 
 ```{r}
 my_model <- mixture2p(resp_err = "error")
-
 names(my_model$fixed_parameters)
 
 names(my_model$parameters)
@@ -142,13 +142,11 @@ If you want to freely estimate an internally fixed parameters, then you can free
 
 ```r
 my_model <- mixture2p(resp_err = "error")
-
-mu_formula <- bmf(mu1 ~ 1 + (1 | ID))
-
 my_formula <- bmf(
+  mu1 ~ 1 + (1 | ID),
   thetat ~ 0 + set_size + (0 + set_size | ID),
   kappa ~ 0 + set_size + (0 + set_size | ID)
-) + mu_formula
+)
 ```
 
 # Accessing the `brmsformula` generated by `bmm`
@@ -174,7 +172,7 @@ bmmfit <- fit_model(
 )
 ```
 
-If you were now interested to see how the `bmmformula` that you passed to `bmm` is converted to a `brmsformula`, you can access the `brmsformula` via the `bmmfit` object that will be returned by the `fit_model` function. Accessing the `formula` object stored in the fit object via `bmmfit$formula` will print out the `brmsformula` generated by `bmm` for the specified model. Thus, you can access the `brmsformula` generated for this model by calling `bmmfit$formula`:
+If you were now interested to see how the `bmmformula` that you passed to `bmm` is converted to a `brmsformula`, you can access the `brmsformula` via the `bmmfit` object that will be returned by the `fit_model` function:
 
 ```{r}
 bmmfit$formula
@@ -198,4 +196,10 @@ Fit objects from `bmm` use a custom summary function to format the output. Howev
 
 ``` {r}
 summary(bmmfit, backend = "brms")
+```
+
+Compare this with the default summary method for `bmmfit` objects:
+
+``` {r, comment = ""}
+summary(bmmfit)
 ```
