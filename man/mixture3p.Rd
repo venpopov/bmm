@@ -68,8 +68,29 @@ Three-parameter mixture model by Bays et al (2009).
 \item \code{kappa2} = -100
 }
 \item \strong{Default parameter links:}
-
-mu1 = identity; kappa = log; thetat = identity; thetant = identity
+\itemize{
+\item mu1 = identity; kappa = log; thetat = identity; thetant = identity
+}
+\item \strong{Default priors:}
+\itemize{
+\item \code{mu1}:
+\itemize{
+\item \code{main}: student_t(1, 0, 1)
+}
+\item \code{kappa}:
+\itemize{
+\item \code{main}: normal(2, 1)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{thetat}:
+\itemize{
+\item \code{main}: logistic(0, 1)
+}
+\item \code{thetant}:
+\itemize{
+\item \code{main}: logistic(0, 1)
+}
+}
 }
 }
 \examples{

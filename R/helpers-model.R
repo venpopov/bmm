@@ -279,6 +279,9 @@ model_info.bmmmodel <- function(model, components = 'all') {
   links <- model$links
   links_info <- summarise_links(links)
 
+  priors <- model$default_priors
+  priors_info <- summarise_default_prior(priors)
+
   info_all <-   list(
     domain = paste0("* **Domain:** ", model$domain, "\n\n"),
     task = paste0("* **Task:** ", model$task, "\n\n"),
@@ -288,7 +291,8 @@ model_info.bmmmodel <- function(model, components = 'all') {
     requirements = paste0("* **Requirements:** \n\n  ", model$requirements, "\n\n"),
     parameters = paste0("* **Parameters:** \n\n  ", par_info, "\n"),
     fixed_parameters = paste0("* **Fixed parameters:** \n\n  ", fixed_par_info, "\n"),
-    links = paste0("* **Default parameter links:** \n\n  ", links_info, "\n")
+    links = paste0("* **Default parameter links:** \n\n     - ", links_info, "\n\n"),
+    prior = paste0("* **Default priors:** \n\n", priors_info, "\n")
   )
 
   if (length(components) == 1 && components == 'all') {
