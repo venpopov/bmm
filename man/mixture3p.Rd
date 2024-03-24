@@ -69,7 +69,7 @@ Three-parameter mixture model by Bays et al (2009).
 }
 \item \strong{Default parameter links:}
 
-mu1 = identity; kappa = log; thetat = identity; thetant = identity
+mu1 = tan_half; kappa = log; thetat = identity; thetant = identity
 }
 }
 \examples{
