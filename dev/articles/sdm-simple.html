@@ -236,17 +236,17 @@ Z = \int_{-\pi}^{\pi} f(\theta) d\theta
          c ~ 0 + cond
          kappa ~ 0 + cond 
 <span style="color: #AF5FFF;">   Data:</span> dat (Number of observations: 3000)
-<span style="color: #AF5FFF;">  Draws: </span>2 chains, each with iter = 2000; warmup = 1000; thin = 1;
-         total post-warmup draws = 2000
+<span style="color: #AF5FFF;">  Draws: </span>4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
 
 <span style="color: #00BB00;">Regression Coefficients:
 </span>            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-c_condA         0.71      0.11     0.50     0.92 1.00     1068      867
-c_condB         2.30      0.16     2.01     2.64 1.00     1031     1044
-c_condC         0.65      0.06     0.54     0.77 1.00     1161     1320
-kappa_condA     0.99      0.17     0.65     1.32 1.00     1084      965
-kappa_condB    -0.06      0.16    -0.38     0.24 1.00     1049     1068
-kappa_condC     2.12      0.11     1.92     2.33 1.00     1103     1268
+c_condA         0.70      0.10     0.49     0.89 1.00     1940     2253
+c_condB         2.44      0.21     2.08     2.89 1.00     1672     1747
+c_condC         0.57      0.07     0.44     0.70 1.00     2249     2381
+kappa_condA     1.09      0.16     0.77     1.40 1.00     1898     2126
+kappa_condB    -0.29      0.19    -0.70     0.06 1.00     1664     1594
+kappa_condC     2.05      0.12     1.80     2.29 1.00     2208     2275
 
 <span style="color: #00BB00;">Constant Parameters:
 </span>                 Value
@@ -260,7 +260,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     c_condA     c_condB     c_condC kappa_condA kappa_condB kappa_condC </span></span>
-<span><span class="co">#&gt;   2.0267546   9.9572058   1.9222065   2.6855853   0.9445482   8.3574474</span></span></code></pre></div>
+<span><span class="co">#&gt;   2.0039408  11.5301826   1.7710286   2.9742544   0.7468866   7.7552172</span></span></code></pre></div>
 <p>which are close to the true values we used to simulate the data:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par_labels</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
