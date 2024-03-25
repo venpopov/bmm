@@ -237,7 +237,7 @@ rad2deg <- function(rad){
 #'
 #' @examples
 #' sdata1 <- standata(bmf(c ~ 1, kappa ~ 1),
-#'                    data = OberauerLin_2017,
+#'                    data = oberauer_lin_2017,
 #'                    model = sdmSimple(resp_error = "dev_rad"))
 #' str(sdata1)
 #' @importFrom brms standata

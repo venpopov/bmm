@@ -61,7 +61,7 @@
 to zero for scaling and as of now cannot be predicted by independent variables because the model would be unidentifiable.
 * the arguments used to fit the bmm model are now accessible in the `bmmfit` object via the `fit$bmm$fit_args` list.
 * add class('bmmfit') to the object returned from fit_model() allowing for more flexible postprocessing of the underlying `brmsfit` object. The object is now of class('bmmfit', 'brmsfit')
-* changes to column names of datasets `ZhangLuck_2008` and `OberauerLin_2017` to make them more consistent
+* changes to column names of datasets `zhang_luck_2008` and `oberauer_lin_2017` to make them more consistent
 
 ### Bug Fixes
 * an error with the treatment of distances in the `IMMfull` and the `IMMbsc` has been corrected. This versions ensures that only positive distances can be passed to any of the two models.
@@ -90,7 +90,7 @@ to zero for scaling and as of now cannot be predicted by independent variables b
 * Add ability to extract information about the default priors in `bmm` models with `get_model_prior()` (#53)
 * Add ability to generate stan code and stan data for each model with `get_model_stancode()` and `get_model_standata()` (#81)
 * BREAKING CHANGE: Add distribution functions for likelihood (e.g. `dimm()`) and random variate generation `rimm()`) for all models in the package. Remove deprecated `gen_3p_data()` and `gen_imm_data()` functions (#69)
-* Two new datasets available: `ZhangLuck_2008` and `OberauerLin_2017` (#22)
+* Two new datasets available: `zhang_luck_2008` and `oberauer_lin_2017` (#22)
 
 ### Documentation
 

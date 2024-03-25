@@ -7,7 +7,7 @@ generate_bmm_examples <- function(seed = 123) {
 
 
   ## Example 1: For use in testing
-  data <- OberauerLin_2017 %>%
+  data <- oberauer_lin_2017 %>%
     mutate(ID = as.factor(ID),
            set_size = as.factor(set_size)) %>%
     dplyr::filter(ID %in% c(1,2,3,4,5,6,7,8,9,10),

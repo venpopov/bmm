@@ -1,6 +1,6 @@
 test_that('IMMfull works when set_size is not predicted and there is set_size 1', {
   skip_on_cran()
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   formula <- bmf(
     kappa ~ 1,
     a ~ 1,
@@ -19,7 +19,7 @@ test_that('IMMfull works when set_size is not predicted and there is set_size 1'
 
 test_that('IMMabc works when set_size is not predicted and there is set_size 1', {
   skip_on_cran()
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   formula <- bmf(
     kappa ~ 1,
     a ~ 1,
@@ -37,7 +37,7 @@ test_that('IMMabc works when set_size is not predicted and there is set_size 1',
 
 test_that('IMMbsc works when set_size is not predicted and there is set_size 1', {
   skip_on_cran()
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   formula <- bmf(
     kappa ~ 1,
     c ~ 1,
@@ -56,7 +56,7 @@ test_that('IMMbsc works when set_size is not predicted and there is set_size 1',
 
 test_that('IMM models give an error if set_size is a predictor but there is an intercept', {
   skip_on_cran()
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   formula <- bmf(
     kappa ~ 1,
     c ~ 1,
@@ -133,7 +133,7 @@ test_that('IMM models give an error if set_size is a predictor but there is an i
 
 test_that('IMM models run when set_size is a predictor and intercept is supressed', {
   skip_on_cran()
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   formula <- bmf(
     kappa ~ 1,
     c ~ 1,

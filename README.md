@@ -185,7 +185,7 @@ Interference Measurement Model would look like this:
 ```
 
 A complete call to fit a model using bmm could look like this. For this
-example, we are using the `OberauerLin_2017` data that is provided with
+example, we are using the `oberauer_lin_2017` data that is provided with
 the package and we will show how to fit the Interference Measurement
 Model to this data. If you want a detailed description of this model and
 and in depth explanation of the parameters estimated in the model,

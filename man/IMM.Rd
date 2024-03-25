@@ -250,7 +250,7 @@ included in the model formula. The parameter is:
 \examples{
 \dontrun{
 # load data
-data <- OberauerLin_2017
+data <- oberauer_lin_2017
 
 # define formula
 ff <- bmmformula(

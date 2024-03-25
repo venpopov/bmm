@@ -21,7 +21,7 @@ Click to expand
 It puts a default prior on all parameters that have only an intercept
 
 ``` r
-dat <- OberauerLin_2017
+dat <- oberauer_lin_2017
 dat$cond <- factor(rep(1:4, each=nrow(dat)/4))   # fake condition for testing formulas
 get_prior(bf(dev_rad ~ 1, sigma ~ 1), dat)
 ```

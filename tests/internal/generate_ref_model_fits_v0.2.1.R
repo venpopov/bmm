@@ -15,11 +15,11 @@ install_and_load_bmm_version <- function(version) {
   library(bmm, lib.loc=path)
 }
 
-# Load data for vwm models (Participant 1-10, SetSize 1-4, from OberauerLin_2017)
+# Load data for vwm models (Participant 1-10, SetSize 1-4, from oberauer_lin_2017)
 # TODO: generalize in the future to allow for different datasets for different models
 ref_data <- function() {
   withr::local_package('dplyr')
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   dat <- dat %>%
     mutate(ID = as.factor(ID),
            SetSize = as.factor(SetSize)) %>%

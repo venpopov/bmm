@@ -1,6 +1,6 @@
 test_that('mixture3p works when set_size is not predicted and there is set_size 1', {
   skip_on_cran()
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   formula <- bmf(
     kappa ~ 1,
     thetat ~ 1,
@@ -17,7 +17,7 @@ test_that('mixture3p works when set_size is not predicted and there is set_size 
 
 test_that('mixture3p gives an error if set_size is a predictor but there is an intercept', {
   skip_on_cran()
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   formula <- bmf(
     kappa ~ 1,
     thetat ~ 1,

@@ -209,7 +209,7 @@ test_that("standata() works with formula", {
 
 test_that("standata() works with bmmformula", {
   ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   sd <- standata(ff, dat, mixture3p(resp_error = "dev_rad",
                                    nt_features = 'col_nt',
                                    set_size = "set_size", regex = T))
@@ -292,7 +292,7 @@ test_that('is_data_ordered works', {
   expect_false(is_data_ordered(data3, formula2))
 
   # test with a complex formula with shared covariance structure across parameters
-  data <- OberauerLin_2017
+  data <- oberauer_lin_2017
   formula <- bmf(c ~ 0 + set_size + (0 + set_size | p1 | ID),
                  kappa ~ 0 + set_size + (0 + set_size | p1 | ID))
   expect_false(is_data_ordered(data, formula))

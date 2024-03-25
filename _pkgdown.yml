@@ -57,8 +57,7 @@ reference:
  - title: "Datasets"
    desc: "Available datasets for fitting the models"
  - contents:
-   - "OberauerLin_2017"
-   - "ZhangLuck_2008"
+   - has_keyword("dataset")
  - title: "Developers' corner"
    desc: "Functions to assist in developing new models"
  - contents:
