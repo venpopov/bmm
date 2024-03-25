@@ -245,6 +245,7 @@ rad2deg <- function(rad){
 standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # check model, formula and data, and transform data if necessary
   formula <- object
+  configure_options(list(...))
   model <- check_model(model, data, formula)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)

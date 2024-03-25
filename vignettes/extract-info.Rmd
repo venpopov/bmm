@@ -1,5 +1,5 @@
 ---
-title: "Extracting default priors, the generated Stan code and data"
+title: "Extracting default priors, the generated Stan code and Stan data"
 output: bookdown::html_document2
 author: 
   - Ven Popov
@@ -8,7 +8,7 @@ bibliography: REFERENCES.bib
 header-includes:
   - \usepackage{amsmath}
 vignette: >
-  %\VignetteIndexEntry{Extracting default priors, the generated Stan code and data}
+  %\VignetteIndexEntry{Extracting default priors, the generated Stan code and Stan data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 pkgdown:
@@ -114,4 +114,14 @@ fit <- fit_model(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size),
 stancode(fit)
 ```
 
+# Extracting the Stan data
 
+If you want to extract the data that would be used for fitting a model, you can use the `standata()` function from `brms`. This function will return a list with the data that would be passed to Stan for fitting the model. 
+
+```{r}
+sd <- standata(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
+               data = OberauerLin_2017,
+               model = sdmSimple(resp_err = 'dev_rad'),
+               sort_data = TRUE)
+str(sd)
+```

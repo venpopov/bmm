@@ -357,7 +357,7 @@ order_data_query <- function(model, data, formula) {
         when using brms postprocessing methods that rely on the data order, such as
         generating predictions. Assuming you assigned the result of fit_model to a
         variable called `fit`, you can extract the sorted data from the fitted object
-        with:\n\n   data_sorted <- fit$fit_args$data", width = 80), collapse = "\n")
+        with:\n\n   data_sorted <- fit$data", width = 80), collapse = "\n")
     caution_msg <- crayon::red(caution_msg)
     message(caution_msg)
   }
