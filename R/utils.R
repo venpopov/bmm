@@ -257,13 +257,13 @@ is_try_warning <- function(x) {
   inherits(x, "warning")
 }
 
-is_bmmmodel <- function(x) {
-  inherits(x, "bmmmodel")
+is_bmmodel <- function(x) {
+  inherits(x, "bmmodel")
 }
 
-is_supported_bmmmodel <- function(x) {
+is_supported_bmmodel <- function(x) {
   valid_models <- supported_models(print_call = FALSE)
-  is_bmmmodel(x) && inherits(x, valid_models)
+  is_bmmodel(x) && inherits(x, valid_models)
 }
 
 is_bmmfit <- function(x) {

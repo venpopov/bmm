@@ -35,7 +35,7 @@ check_data.default <- function(model, data, formula) {
 }
 
 #' @export
-check_data.bmmmodel <- function(model, data, formula) {
+check_data.bmmodel <- function(model, data, formula) {
   stopif(missing(data), "Data must be specified using the 'data' argument.")
   data <- try(as.data.frame(data), silent = TRUE)
   stopif(is_try_error(data), "Argument 'data' must be coercible to a data.frame.")

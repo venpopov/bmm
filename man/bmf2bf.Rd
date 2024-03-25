@@ -7,13 +7,13 @@
 bmf2bf(model, formula)
 }
 \arguments{
-\item{model}{The model object defining one of the supported `bmmmodels``}
+\item{model}{The model object defining one of the supported `bmmodels``}
 
 \item{formula}{The \code{bmmformula} that should be converted to a \code{brmsformula}}
 }
 \value{
 A \code{brmsformula} defining the response variables and the additional parameter
-formulas for the specified \code{bmmmodel}
+formulas for the specified \code{bmmodel}
 }
 \description{
 Called by \code{\link[=configure_model]{configure_model()}} inside \code{\link[=bmm]{bmm()}} to convert the \code{bmmformula} into a

@@ -8,9 +8,9 @@
 #'   model to be fitted.
 #' @param data An object of class data.frame, containing data of all variables
 #'   used in the model. The names of the variables must match the variable names
-#'   passed to the `bmmmodel` object for required argurments.
+#'   passed to the `bmmodel` object for required argurments.
 #' @param model A description of the model to be fitted. This is a call to a
-#'   `bmmmodel` such as `mixture3p()` function. Every model function has a
+#'   `bmmodel` such as `mixture3p()` function. Every model function has a
 #'   number of required arguments which need to be specified within the function
 #'   call. Call [supported_models()] to see the list of supported models and
 #'   their required arguments

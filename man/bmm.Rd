@@ -33,10 +33,10 @@ model to be fitted.}
 
 \item{data}{An object of class data.frame, containing data of all variables
 used in the model. The names of the variables must match the variable names
-passed to the \code{bmmmodel} object for required argurments.}
+passed to the \code{bmmodel} object for required argurments.}
 
 \item{model}{A description of the model to be fitted. This is a call to a
-\code{bmmmodel} such as \code{mixture3p()} function. Every model function has a
+\code{bmmodel} such as \code{mixture3p()} function. Every model function has a
 number of required arguments which need to be specified within the function
 call. Call \code{\link[=supported_models]{supported_models()}} to see the list of supported models and
 their required arguments}

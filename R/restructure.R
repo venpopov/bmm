@@ -55,6 +55,12 @@ restructure.bmmfit <- function(x, ...) {
     x$bmm$model <- check_model(new_model, x$data, x$bmm$user_formula)
   }
 
+  if (restr_version < "0.4.8") {
+    cl <- class(x$bmm$model)
+    cl[1] <- "bmmodel"
+    class(x$bmm$model) <- cl
+  }
+
   x$version$bmm_restructure <- current_version
   NextMethod('restructure')
 }
@@ -78,7 +84,7 @@ add_links.bmmfit <- function(x) {
 }
 
 #' @export
-add_links.bmmmodel <- function(x) {
+add_links.bmmodel <- function(x) {
   model_name <- class(x)[length(class(x))]
   new_model <- get_model(model_name)()
   x$links <- new_model$links

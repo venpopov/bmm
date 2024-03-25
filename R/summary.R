@@ -20,11 +20,11 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
   out <- rename_mu_smry(out, get_mu_pars(object))
 
   # get the bmm specific information
-  bmmmodel <- object$bmm$model
+  bmmodel <- object$bmm$model
   bmmform <- object$bmm$user_formula
 
   out$formula <- bmmform
-  out$model <- bmmmodel
+  out$model <- bmmodel
   out$data <- object$data
 
   # assign bmmsummary class to handle the printing
@@ -179,7 +179,7 @@ summarise_model <- function(model, ...) {
 
 # TODO: build this up
 #' @export
-summarise_model.bmmmodel <- function(model, ...) {
+summarise_model.bmmodel <- function(model, ...) {
   construct_model_call(model, ...)
 }
 

@@ -15,7 +15,7 @@ use_model_template(
 }
 \arguments{
 \item{model_name}{A string with the name of the model. The file will be named
-\code{bmm_model_model_name.R} and all necessary functions will be created with
+\code{model_model_name.R} and all necessary functions will be created with
 the appropriate names and structure. The file will be saved in the \verb{R/}
 directory}
 
@@ -23,7 +23,7 @@ directory}
 If TRUE the function will add a section for the custom family, placeholders
 for the stan_vars and corresponding empty .stan files in
 \verb{inst/stan_chunks/}, that you can fill For an example, see the sdmSimple
-model in \verb{/R/bmm_model_sdmSimple.R}. If FALSE (default) the function will
+model in \verb{/R/model_sdmSimple.R}. If FALSE (default) the function will
 not add the custom family section nor stan files.}
 
 \item{stanvar_blocks}{A character vector with the names of the blocks that

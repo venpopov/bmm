@@ -1,7 +1,7 @@
-#' @title Create formula for predicting parameters of a `bmmmodel`
+#' @title Create formula for predicting parameters of a `bmmodel`
 #'
 #' @description This function is used to specify the formulas predicting the
-#' different parameters of a `bmmmodel`.
+#' different parameters of a `bmmodel`.
 #'
 #' @aliases bmf
 #'
@@ -54,7 +54,7 @@
 #' You can also use the `bmf()` function as a shorthand for `bmmformula()`.
 #'
 #'
-#' @param ... Formulas for predicting a `bmmmodel` parameter. Each formula for a
+#' @param ... Formulas for predicting a `bmmodel` parameter. Each formula for a
 #' parameter should be specified as a separate argument, separated by commas
 #' @return A list of formulas for each parameters being predicted
 #' @export
@@ -175,7 +175,7 @@ check_formula <- function(model, data, formula) {
 }
 
 #' @export
-check_formula.bmmmodel <- function(model, data, formula) {
+check_formula.bmmodel <- function(model, data, formula) {
   stopif(is_brmsformula(formula),
          "The provided formula is a brms formula. Please use the bmf() function. E.g.:
          bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
@@ -216,10 +216,10 @@ check_formula.nontargets <- function(model, data, formula) {
 #'  Called by [configure_model()] inside [bmm()] to convert the `bmmformula` into a
 #'  `brmsformula` based on information in the model object. It will call the
 #'  appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
-#' @param model The model object defining one of the supported `bmmmodels``
+#' @param model The model object defining one of the supported `bmmodels``
 #' @param formula The `bmmformula` that should be converted to a `brmsformula`
 #' @returns A `brmsformula` defining the response variables and the additional parameter
-#'   formulas for the specified `bmmmodel`
+#'   formulas for the specified `bmmodel`
 #' @keywords internal, developer
 #' @examples
 #'   model <- mixture2p(resp_error = "error")
@@ -235,9 +235,9 @@ bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
 }
 
-# default method for all bmmmodels with 1 response variable
+# default method for all bmmodels with 1 response variable
 #' @export
-bmf2bf.bmmmodel <- function(model, formula) {
+bmf2bf.bmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE
   resp <- model$resp_vars
   constants <- model$fixed_parameters

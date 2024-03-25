@@ -2,12 +2,12 @@
 % Please edit documentation in R/helpers-prior.R
 \name{configure_prior}
 \alias{configure_prior}
-\title{Generic S3 method for configuring the default prior for a bmmmodel}
+\title{Generic S3 method for configuring the default prior for a bmmodel}
 \usage{
 configure_prior(model, data, formula, user_prior, ...)
 }
 \arguments{
-\item{model}{A \code{bmmmodel} object}
+\item{model}{A \code{bmmodel} object}
 
 \item{data}{A data.frame containing the data used in the model}
 
@@ -21,7 +21,7 @@ bmm()}
 \description{
 Called by bmm() to automatically construct the priors for a given
 model, data and formula, and combine it with the prior given by the user. The
-first method executed is configure_prior.bmmmodel, which will build the prior
+first method executed is configure_prior.bmmodel, which will build the prior
 based on information from the model object such as fixed_parameters,
 default_priors, etc. Thus it is important to define these values in the model
 object. The function will also recognize if the user has specified that some

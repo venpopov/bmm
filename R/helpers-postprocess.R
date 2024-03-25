@@ -22,7 +22,7 @@ postprocess_brm <- function(model, fit, ...) {
 }
 
 #' @export
-postprocess_brm.bmmmodel <- function(model, fit, ...) {
+postprocess_brm.bmmodel <- function(model, fit, ...) {
   dots <- list(...)
   class(fit) <- c('bmmfit','brmsfit')
   fit$version$bmm <- utils::packageVersion('bmm')

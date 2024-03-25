@@ -50,7 +50,7 @@
       # attributes
       regex = regex,
       regex_vars = c("nt_features"),
-      class = c("bmmmodel", "vwm", "nontargets", "IMMabc")
+      class = c("bmmodel", "vwm", "nontargets", "IMMabc")
     )
     out$links[names(links)] <- links
     out
@@ -105,7 +105,7 @@
       # attributes
       regex = regex,
       regex_vars = c('nt_features', 'nt_distances'),
-      class = c("bmmmodel", "vwm", "nontargets", "IMMspatial", "IMMbsc")
+      class = c("bmmodel", "vwm", "nontargets", "IMMspatial", "IMMbsc")
     )
   out$links[names(links)] <- links
   out
@@ -162,7 +162,7 @@
       # attributes
       regex = regex,
       regex_vars = c('nt_features', 'nt_distances'),
-      class = c("bmmmodel", "vwm", "nontargets", "IMMspatial", "IMMfull")
+      class = c("bmmodel", "vwm", "nontargets", "IMMspatial", "IMMfull")
     )
     out$links[names(links)] <- links
     out
@@ -208,8 +208,8 @@
 #' @param links A list of links for the parameters. *Currently does not affect
 #'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
-#' @return An object of class `bmmmodel`
-#' @keywords bmmmodel
+#' @return An object of class `bmmodel`
+#' @keywords bmmodel
 #' @examples
 #' \dontrun{
 #' # load data
@@ -267,7 +267,7 @@ IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FAL
 }
 
 #' @rdname IMM
-#' @keywords bmmmodel
+#' @keywords bmmodel
 #' @export
 IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
                    links = NULL, ...) {
@@ -283,7 +283,7 @@ IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALS
 }
 
 #' @rdname IMM
-#' @keywords bmmmodel
+#' @keywords bmmodel
 #' @export
 IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, links = NULL,
                    ...) {

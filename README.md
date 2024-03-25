@@ -176,7 +176,7 @@ function takes:
 3.  the model that should be fit
 
 You can get more detailed information on the models implemented in bmm
-by invoking the documentation of each model typing `?bmmmodel` into your
+by invoking the documentation of each model typing `?bmmodel` into your
 console. For example, calling the information on the full version of the
 Interference Measurement Model would look like this:
 

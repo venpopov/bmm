@@ -82,8 +82,8 @@ test_that("use_model_template() prevents duplicate models", {
     expect_error(use_model_template(model))
   }
 
-  model_files <- list.files(path = "R/", pattern = "^bmm_model_.*\\.R$")
-  model_files_names <- gsub("^bmm_model_", "", model_files)
+  model_files <- list.files(path = "R/", pattern = "^model_.*\\.R$")
+  model_files_names <- gsub("^model_", "", model_files)
   model_files_names <- gsub("\\.R$", "", model_files_names)
   for (model in model_files_names) {
     expect_error(use_model_template(model))

@@ -48,11 +48,11 @@ The `bmmformula` syntax generally follows the same principles as the formula syn
 parameter ~ peffects + ( geffects | group)
 ```
 
-However, instead of predicting a `response` - as is typically done in `brms` - in `bmm` a `bmmformula` predicts a `parameter` from a `bmmmodel`[^1]. The `peffects` part specifies all effects that are assumed to be the same across observations. In typical vocabulary such effects are called 'population-level' or 'overall' effects. The `geffects` part specifies effects that are assumed to vary across grouping variables specified in `group`. Typically, these effects are called 'group-level' or 'varying' effects.
+However, instead of predicting a `response` - as is typically done in `brms` - in `bmm` a `bmmformula` predicts a `parameter` from a `bmmodel`[^1]. The `peffects` part specifies all effects that are assumed to be the same across observations. In typical vocabulary such effects are called 'population-level' or 'overall' effects. The `geffects` part specifies effects that are assumed to vary across grouping variables specified in `group`. Typically, these effects are called 'group-level' or 'varying' effects.
 
-[^1]: You can always find information on the parameters of a `bmmmodel` by calling the help for the model you want to fit: `?bmmmodel`
+[^1]: You can always find information on the parameters of a `bmmodel` by calling the help for the model you want to fit: `?bmmodel`
 
-As you will typically provide a `bmmformula` for each parameter of a `bmmmodel`, we recommend to set up the formula in a separate object before passing it to the `bmm()` function. There are two ways to set up formulas, both work equally easy and well:
+As you will typically provide a `bmmformula` for each parameter of a `bmmodel`, we recommend to set up the formula in a separate object before passing it to the `bmm()` function. There are two ways to set up formulas, both work equally easy and well:
 
 1. a single call to the function `bmmformula` or its short form `bmf`, separating formulas for different parameters by commas. 
 2. add a `bmmformula` for each parameter by using the `+` operator. 
@@ -73,7 +73,7 @@ my_formula <- bmf(thetat ~ 1 + set_size) +
 my_formula
 ```
 
-As noted above, `bmm` generally assumes that you pass a `bmmformula` for each parameter of a model. If you do not pass a `bmmformula` for one or more parameters, `bmm` will throw a warning and only estimate a fixed intercept for the parameters for which no `bmmformula` was provided. If you are unsure about the parameters of a model, call the help via `?bmmmodel`, replacing 'bmmmodel' with the name of the model (e.g. `?sdmSimple`).
+As noted above, `bmm` generally assumes that you pass a `bmmformula` for each parameter of a model. If you do not pass a `bmmformula` for one or more parameters, `bmm` will throw a warning and only estimate a fixed intercept for the parameters for which no `bmmformula` was provided. If you are unsure about the parameters of a model, call the help via `?bmmodel`, replacing 'bmmodel' with the name of the model (e.g. `?sdmSimple`).
 
 
 As `bmmformula` syntax builds upon `brmsformula` syntax, you can use any functionality you might use in `brms` for specifying a `bmmformula`. One difference is, that you _do not_ have to explicitly specify if a formula is a non-linear formula, as `bmm` recognizes a formula as non-linear as soon as one of the left-hand side arguments of a formula is also used as a right-hand side argument in the whole formula. So the argumetn `nl` does not exist for `bmmformula`. Similarly, adding grouping statements around group-level effects to estimate them separately for different sub-groups in your design can be added. So for example, a more complicated `bmmformula` could look like this:
@@ -98,7 +98,7 @@ This formula implements an exponential reduction in `thetat` from a `start_theta
 
 # Seperating response variables from model parameters
 
-As the response is not provided to the `bmmformula`, in `bmm` the response variables, and also other variables relevant for a `bmmmodel`, are linked to the model when setting up the `bmmmodel` object. For example, when fitting the `mixture3p` model, you have to provide the names of the variables that reflect the response error (e.g., `y`), the location of the non-target features (e.g. `nt_col1`, ..., `nt_col4`), and the set-size (e.g., `ss`) in our data:
+As the response is not provided to the `bmmformula`, in `bmm` the response variables, and also other variables relevant for a `bmmodel`, are linked to the model when setting up the `bmmodel` object. For example, when fitting the `mixture3p` model, you have to provide the names of the variables that reflect the response error (e.g., `y`), the location of the non-target features (e.g. `nt_col1`, ..., `nt_col4`), and the set-size (e.g., `ss`) in our data:
 
 ```r
 my_model <- mixture3p(resp_error = "y", 
@@ -106,7 +106,7 @@ my_model <- mixture3p(resp_error = "y",
                       set_size = "ss")
 ```
 
-Internally, `bmm` will then link the response variables to the `bmmformula` given for the parameters of a `bmmmodel`.
+Internally, `bmm` will then link the response variables to the `bmmformula` given for the parameters of a `bmmodel`.
 
 # Fixing parameters to constant values
 

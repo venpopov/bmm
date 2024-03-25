@@ -45,7 +45,7 @@ reference:
  - title: "Specifying models"
    desc: "Functions for specifying which model to fit"
  - contents:
-   - has_keyword("bmmmodel")
+   - has_keyword("bmmodel")
  - title: "Distributions"
    desc: "Functions for special distributions"
  - contents:

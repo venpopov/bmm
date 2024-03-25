@@ -51,7 +51,7 @@
     # attributes
     regex = regex,
     regex_vars = c('nt_features'),
-    class =  c("bmmmodel", "vwm", "nontargets", "mixture3p")
+    class =  c("bmmodel", "vwm", "nontargets", "mixture3p")
   )
   out$links[names(links)] <- links
   out
@@ -78,8 +78,8 @@
 #' @param links A list of links for the parameters. *Currently does not affect
 #'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
-#' @return An object of class `bmmmodel`
-#' @keywords bmmmodel
+#' @return An object of class `bmmodel`
+#' @keywords bmmodel
 #' @export
 #' @examples
 #' \dontrun{

@@ -54,7 +54,7 @@ default_prior.bmmformula <- function(object, data, model, formula = object, ...)
 
 
 #' @title construct constant priors to fix fixed model parameters
-#' @param model a `bmmmodel` object
+#' @param model a `bmmodel` object
 #' @param formula a `brmsformula` object
 #' @param additional_pars a list of name=value pairs to fix additional
 #'   parameters where the name is the parameter name and the value is the fixed
@@ -97,7 +97,7 @@ fixed_pars_priors <- function(model, formula, additional_pars = list()) {
 }
 
 
-#' Set default priors for a bmmmodel
+#' Set default priors for a bmmodel
 #'
 #' This function
 #' allows you to specify default priors flexibly regardless of the formula the
@@ -107,7 +107,7 @@ fixed_pars_priors <- function(model, formula, additional_pars = list()) {
 #' intercept, and priors on the effects of the predictors relative to the
 #' intercept.
 #'
-#' @param model A `bmmmodel` object
+#' @param model A `bmmodel` object
 #' @param formula A `brmsformula` object
 #' @param data A data.frame containing the data used in the model
 #' @noRd
@@ -204,11 +204,11 @@ set_default_prior <- function(model, data, formula) {
   prior
 }
 
-#' Generic S3 method for configuring the default prior for a bmmmodel
+#' Generic S3 method for configuring the default prior for a bmmodel
 #'
 #' Called by bmm() to automatically construct the priors for a given
 #' model, data and formula, and combine it with the prior given by the user. The
-#' first method executed is configure_prior.bmmmodel, which will build the prior
+#' first method executed is configure_prior.bmmodel, which will build the prior
 #' based on information from the model object such as fixed_parameters,
 #' default_priors, etc. Thus it is important to define these values in the model
 #' object. The function will also recognize if the user has specified that some
@@ -217,7 +217,7 @@ set_default_prior <- function(model, data, formula) {
 #' not based on information in the model object, can be defined in the
 #' configure_prior.* method for the model. See configure_prior.IMMfull for an
 #' example.
-#' @param model A `bmmmodel` object
+#' @param model A `bmmodel` object
 #' @param data A data.frame containing the data used in the model
 #' @param formula A `brmsformula` object returned from configure_model()
 #' @param user_prior A `brmsprior` object given by the user as an argument to
@@ -235,7 +235,7 @@ configure_prior.default <- function(model, data, formula, user_prior, ...) {
 }
 
 #' @export
-configure_prior.bmmmodel <- function(model, data, formula, user_prior, ...) {
+configure_prior.bmmodel <- function(model, data, formula, user_prior, ...) {
   prior <- fixed_pars_priors(model, formula)
   default_prior <- set_default_prior(model, data, formula)
   prior <- combine_prior(default_prior, prior)

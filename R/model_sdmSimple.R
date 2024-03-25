@@ -37,7 +37,7 @@
       ),
       void_mu = FALSE
     ),
-    class = c('bmmmodel', 'vwm', 'sdmSimple')
+    class = c('bmmodel', 'vwm', 'sdmSimple')
   )
   out$links[names(links)] <- links
   out
@@ -59,9 +59,9 @@
 #' @param links A list of links for the parameters. *Currently does not affect
 #'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
-#' @return An object of class `bmmmodel`
+#' @return An object of class `bmmodel`
 #' @export
-#' @keywords bmmmodel
+#' @keywords bmmodel
 #' @examples
 #' \dontrun{
 #' # simulate data from the model
