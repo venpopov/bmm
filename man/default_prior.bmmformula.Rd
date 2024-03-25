@@ -38,7 +38,7 @@ function will return the default priors that would be used to estimate the
 model. Additionally, it will return all model parameters that have no prior
 specified (flat priors). This can help to get an idea about which priors
 need to be specified and also know which priors were used if no
-user-specified priors were passed to the \code{\link[=fit_model]{fit_model()}} function.
+user-specified priors were passed to the \code{\link[=bmm]{bmm()}} function.
 
 The default priors in \code{bmm} tend to be more informative than the default
 priors in \code{brms}, as we use domain knowledge to specify the priors.

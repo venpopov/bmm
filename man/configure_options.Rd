@@ -11,7 +11,7 @@ configure_options(opts, env = parent.frame())
 
 \item{env}{The environment in which to set the options - when set to
 parent.frame() the changes would apply to the environment of the function
-that called it. In our case, this is the environment of the fit_model()
+that called it. In our case, this is the environment of the bmm()
 function. Changes will not be propagated to the user environment.}
 }
 \value{

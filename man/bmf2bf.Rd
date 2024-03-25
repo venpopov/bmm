@@ -16,7 +16,7 @@ A \code{brmsformula} defining the response variables and the additional paramete
 formulas for the specified \code{bmmmodel}
 }
 \description{
-Called by configure_model() inside fit_model() to convert the \code{bmmformula} into a
+Called by \code{\link[=configure_model]{configure_model()}} inside \code{\link[=bmm]{bmm()}} to convert the \code{bmmformula} into a
 \code{brmsformula} based on information in the model object. It will call the
 appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
 }

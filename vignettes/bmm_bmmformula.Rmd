@@ -52,7 +52,7 @@ However, instead of predicting a `response` - as is typically done in `brms` - i
 
 [^1]: You can always find information on the parameters of a `bmmmodel` by calling the help for the model you want to fit: `?bmmmodel`
 
-As you will typically provide a `bmmformula` for each parameter of a `bmmmodel`, we recommend to set up the formula in a separate object before passing it to the `fit_model` function. There are two ways to set up formulas, both work equally easy and well:
+As you will typically provide a `bmmformula` for each parameter of a `bmmmodel`, we recommend to set up the formula in a separate object before passing it to the `bmm()` function. There are two ways to set up formulas, both work equally easy and well:
 
 1. a single call to the function `bmmformula` or its short form `bmf`, separating formulas for different parameters by commas. 
 2. add a `bmmformula` for each parameter by using the `+` operator. 
@@ -165,14 +165,14 @@ user_formula <- bmf(
 
 my_model <- mixture2p(resp_err = "error")
 
-bmmfit <- fit_model(
+bmmfit <- bmm(
   formula = user_formula,
   data = my_data,
   model = my_model,
 )
 ```
 
-If you were now interested to see how the `bmmformula` that you passed to `bmm` is converted to a `brmsformula`, you can access the `brmsformula` via the `bmmfit` object that will be returned by the `fit_model` function:
+If you were now interested to see how the `bmmformula` that you passed to `bmm` is converted to a `brmsformula`, you can access the `brmsformula` via the `bmmfit` object that will be returned by the `bmm()` function:
 
 ```{r}
 bmmfit$formula

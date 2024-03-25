@@ -73,12 +73,12 @@
 #' model <- mixture2p(resp_err = "y")
 #'
 #' # fit the model
-#' fit <- fit_model(formula = ff,
-#'                  data = dat,
-#'                  model = model,
-#'                  parallel=T,
-#'                  iter=500,
-#'                  backend='cmdstanr')
+#' fit <- bmm(formula = ff,
+#'            data = dat,
+#'            model = model,
+#'            parallel=T,
+#'            iter=500,
+#'            backend='cmdstanr')
 #' }
 #' @export
 mixture2p <- function(resp_err,

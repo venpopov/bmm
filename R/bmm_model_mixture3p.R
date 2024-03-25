@@ -102,24 +102,24 @@
 #' model1 <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), setsize = 4)
 #'
 #' # fit the model
-#' fit <- fit_model(formula = ff,
-#'                  data = dat,
-#'                  model = model1,
-#'                  parallel=T,
-#'                  iter = 500,
-#'                  backend='cmdstanr')
+#' fit <- bmm(formula = ff,
+#'            data = dat,
+#'            model = model1,
+#'            parallel=T,
+#'            iter = 500,
+#'            backend='cmdstanr')
 #'
 #' # alternatively specify the 3-parameter model with a regular expression to match non-target features
 #' # this is equivalent to the previous call, but more concise
 #' model2 <- mixture3p(resp_err = "y", nt_features = "nt.*_loc", setsize = 4, regex = TRUE)
 #'
 #' # fit the model
-#' fit <- fit_model(formula = ff,
-#'                  data = dat,
-#'                  model = model2,
-#'                  parallel=T,
-#'                  iter = 500,
-#'                  backend='cmdstanr')
+#' fit <- bmm(formula = ff,
+#'            data = dat,
+#'            model = model2,
+#'            parallel=T,
+#'            iter = 500,
+#'            backend='cmdstanr')
 #' }
 mixture3p <- function(resp_err, nt_features, setsize, regex = FALSE,
                       links = NULL, ...) {

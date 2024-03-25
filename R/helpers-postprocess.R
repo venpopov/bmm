@@ -1,5 +1,5 @@
 #' @title Generic S3 method for postprocessing the fitted brm model
-#' @description Called by fit_model() to automatically perform some type of postprocessing
+#' @description Called by bmm() to automatically perform some type of postprocessing
 #'   depending on the model type. It will call the appropriate postprocess_brm.*
 #'   methods based on the list of classes defined in the .model_* functions. For
 #'   models with several classes listed, it will call the functions in the order

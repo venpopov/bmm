@@ -45,7 +45,7 @@
 #'                      bias ~ 1 + (1 | id))
 #'
 #' and the rt and response variables would be specified in the model argument of
-#' the `fit_model` function.
+#' the `bmm()` function.
 #'
 #' Aside from that, the `bmm` formula syntax is the same as the `brms` formula
 #' syntax. For more information on the `brms` formula syntax, see
@@ -213,7 +213,7 @@ check_formula.nontargets <- function(model, data, formula) {
 
 #' @title Convert `bmmformula` objects to `brmsformula` objects
 #' @description
-#'  Called by configure_model() inside fit_model() to convert the `bmmformula` into a
+#'  Called by [configure_model()] inside [bmm()] to convert the `bmmformula` into a
 #'  `brmsformula` based on information in the model object. It will call the
 #'  appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
 #' @param model The model object defining one of the supported `bmmmodels``

@@ -183,11 +183,11 @@ Then we specify the model as simply as:
 model <- mixture2p(resp_err = "error")
 ```
 
-Finally, we fit the model with the `fit_model` function. The fit model function uses
+Finally, we fit the model with the `bmm()` function. The fit model function uses
 the `brms` package to fit the model, so you can pass to it any argument that you would pass to the `brm` function. 
 
 ``` r
-fit <- fit_model(
+fit <- bmm(
   formula = ff,
   data = dat_preprocessed,
   model = model,
@@ -302,7 +302,7 @@ model <- mixture3p(resp_err = "error", nt_features = paste0('non_target_',1:5), 
 Then we run the model just like before:
 
 ``` r
-fit3p <- fit_model(
+fit3p <- bmm(
   formula = ff,
   data = dat_preprocessed,
   model = model,

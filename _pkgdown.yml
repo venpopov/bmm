@@ -34,7 +34,7 @@ reference:
  - title: "Fitting models"
    desc: "Main functions for model fitting"
  - contents:
-   - "fit_model"
+   - "bmm"
    - "bmmformula"
    - "update.bmmfit"
    - "summary.bmmfit"

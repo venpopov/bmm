@@ -25,7 +25,7 @@ See \code{\link[brms:custom_family]{brms::custom_family()}} for more details.
 }
 }
 \description{
-Called by fit_model() to automatically construct the model
+Called by bmm() to automatically construct the model
 formula, family objects and default priors for the model specified by the
 user. It will call the appropriate configure_model.* functions based on the
 list of classes defined in the .model_* functions. Currently, we have a

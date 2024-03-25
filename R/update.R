@@ -30,7 +30,7 @@ update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ..
   }
   if ("model" %in% names(dots)) {
     stop2("You cannot update with a different model.
-          If you want to use a different model, please use `fit_model()` instead.")
+          If you want to use a different model, please use `bmm()` instead.")
   }
   object <- restructure(object)
 

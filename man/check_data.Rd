@@ -22,7 +22,7 @@ stages (e.g. in configure_model()), you can store and access them using the
 attr() function.
 }
 \description{
-Called by fit_model() to automatically perform checks on the
+Called by \code{\link[=bmm]{bmm()}} to automatically perform checks on the
 data depending on the model type. It will call the appropriate check_data
 methods based on the list of classes defined in the .model_* functions. For
 models with several classes listed, it will call the functions in the order
@@ -31,7 +31,7 @@ should be defined in the appropriate check_data.* function, where \*
 corresponds to the shared class. For example, for the .model_IMMabc model,
 this corresponds to the following order of check_data.* functions:
 check_data() -> check_data.vwm(), check_data.nontargets() the output of the
-final function is returned to fit_model().
+final function is returned to bmm().
 }
 \keyword{developer}
 \keyword{internal,}

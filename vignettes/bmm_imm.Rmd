@@ -202,10 +202,10 @@ model <- IMMfull(resp_err = "resp_err",
 ```
 
 
-Finally, we can fit the model by passing all the relevant arguments to the `fit_model` function:
+Finally, we can fit the model by passing all the relevant arguments to the `bmm()` function:
 
 ``` r 
-fit <- fit_model(
+fit <- bmm(
   formula = model_formula,
   data = simData,
   model = model,
@@ -228,7 +228,7 @@ Using this `fit` object we can have a quick look at the summary of the fitted mo
 summary(fit)
 ```
 
-The first thing you might notice is that below the parts of the formula that was passed to the `fit_model` function, `bmm` has added a lot of additional specifications to implement the IMM. This is nothing that you have to check. But if you are interested in customizing and exploring different assumptions imposed by the IMM, you could start by taking this formula and adapting it accordingly.
+The first thing you might notice is that below the parts of the formula that was passed to the `bmm()` function, `bmm` has added a lot of additional specifications to implement the IMM. This is nothing that you have to check. But if you are interested in customizing and exploring different assumptions imposed by the IMM, you could start by taking this formula and adapting it accordingly.
 
 Next, we can have a look at the estimated parameters. The first thing we should check is if the sampling converged, this is indicated by all `Rhat` values being close to one. If you want to do more inspection of the sampling, you can check out the functionality implemented in `brms`to do this.
 

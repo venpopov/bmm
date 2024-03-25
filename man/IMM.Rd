@@ -102,7 +102,7 @@ Interference measurement model by Oberauer and Lin (2017).
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item kappa = log; a = identity; c = identity; s = log
+\item mu1 = tan_half; kappa = log; a = identity; c = identity; s = log
 }
 \item \strong{Default priors:}
 \itemize{
@@ -160,7 +160,7 @@ Interference measurement model by Oberauer and Lin (2017).
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item kappa = log; c = identity; s = log
+\item mu1 = tan_half; kappa = log; c = identity; s = log
 }
 \item \strong{Default priors:}
 \itemize{
@@ -213,7 +213,7 @@ Interference measurement model by Oberauer and Lin (2017).
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item kappa = log; a = identity; c = identity
+\item mu1 = tan_half; kappa = log; a = identity; c = identity
 }
 \item \strong{Default priors:}
 \itemize{
@@ -267,12 +267,12 @@ model1 <- IMMfull(resp_err = "dev_rad",
                   setsize = 'set_size')
 
 # fit the model
-fit <- fit_model(formula = ff,
-                 data = data,
-                 model = model1,
-                 parallel = T,
-                 iter = 500,
-                 backend = 'cmdstanr')
+fit <- bmm(formula = ff,
+           data = data,
+           model = model1,
+           parallel = T,
+           iter = 500,
+           backend = 'cmdstanr')
 
 # alternatively specify the IMM model with a regular expression to match non-target features
 # this is equivalent to the previous call, but more concise
@@ -283,12 +283,12 @@ model2 <- IMMfull(resp_err = "dev_rad",
                   regex = TRUE)
 
 # fit the model
-fit <- fit_model(formula = ff,
-                 data = data,
-                 model = model2,
-                 parallel=T,
-                 iter = 500,
-                 backend='cmdstanr')
+fit <- bmm(formula = ff,
+           data = data,
+           model = model2,
+           parallel=T,
+           iter = 500,
+           backend='cmdstanr')
 }
 }
 \keyword{bmmmodel}

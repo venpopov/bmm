@@ -78,13 +78,13 @@
 #'    prior(normal(1,2), class='Intercept', dpar='kappa')
 #'
 #' # specify the model
-#' fit <- fit_model(formula = ff,
-#'                  data = dat,
-#'                  model = sdmSimple(resp_err = 'y'),
-#'                  prior = prior,
-#'                  parallel=T,
-#'                  iter=2000,
-#'                  backend='cmdstanr')
+#' fit <- bmm(formula = ff,
+#'            data = dat,
+#'            model = sdmSimple(resp_err = 'y'),
+#'            prior = prior,
+#'            parallel=T,
+#'            iter=2000,
+#'            backend='cmdstanr')
 #'
 #' # extract coefficients and plot fit
 #' coef <- exp(brms::fixef(fit)[2:3,1])

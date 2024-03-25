@@ -17,7 +17,8 @@
 * fix a bug in which the sort_data check occured in cases where it shouldn't (#158)
 
 ### Other changes
-* `bmm` now requires the latest version of `brms` (>= 2.21.0). 
+* `bmm` now requires the latest version of `brms` (>= 2.21.0).
+* the function `fit_model()` is deprecated in favor of `bmm()` (#163)
 
 # bmm 0.4.0
 

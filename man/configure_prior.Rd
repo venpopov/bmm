@@ -14,12 +14,12 @@ configure_prior(model, data, formula, user_prior, ...)
 \item{formula}{A \code{brmsformula} object returned from configure_model()}
 
 \item{user_prior}{A \code{brmsprior} object given by the user as an argument to
-fit_model()}
+bmm()}
 
 \item{...}{Additional arguments passed to the method}
 }
 \description{
-Called by fit_model() to automatically construct the priors for a given
+Called by bmm() to automatically construct the priors for a given
 model, data and formula, and combine it with the prior given by the user. The
 first method executed is configure_prior.bmmmodel, which will build the prior
 based on information from the model object such as fixed_parameters,

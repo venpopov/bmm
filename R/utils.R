@@ -66,7 +66,7 @@ softmaxinv <- function(p, lambda = 1) {
 #' @param opts A list of options
 #' @param env The environment in which to set the options - when set to
 #'   parent.frame() the changes would apply to the environment of the function
-#'   that called it. In our case, this is the environment of the fit_model()
+#'   that called it. In our case, this is the environment of the bmm()
 #'   function. Changes will not be propagated to the user environment.
 #' @keywords internal
 #' @returns A list of options to pass to brm()
@@ -128,7 +128,7 @@ glue_lf <- function(..., env.frame = -1) {
 }
 
 #' wrapper function to call brms, saving fit_args if backend is mock for testing
-#' not used directly, but called by fit_model(). If fit_model() is run with
+#' not used directly, but called by bmm(). If bmm() is run with
 #' backend="mock", then we can perform tests on the fit_args to check if the
 #' model configuration is correct. Avoids compiling and running the model
 #' @noRd
@@ -153,7 +153,7 @@ combine_args <- function(args) {
     if (not_in(i, c('family'))) {
       config_args[[i]] <- dots[[i]]
     } else {
-      stop2('You cannot provide a family argument to fit_model. \\
+      stop2('You cannot provide a family argument to bmm(). \\
              Please use the model argument instead.')
     }
   }
@@ -304,7 +304,7 @@ order_data_query <- function(model, data, formula) {
     )
     caution_msg <- paste(strwrap("* caution: if you chose Option 2, you need to be careful
       when using brms postprocessing methods that rely on the data order, such as
-      generating predictions. Assuming you assigned the result of fit_model to a
+      generating predictions. Assuming you assigned the result of bmm() to a
       variable called `fit`, you can extract the sorted data from the fitted object
       with:\n\n   data_sorted <- fit$data", width = 80), collapse = "\n")
     caution_msg <- crayon::red(caution_msg)
@@ -355,7 +355,7 @@ order_data_query <- function(model, data, formula) {
             paste(predictors, collapse = ", "), "\n")
     caution_msg <- paste(strwrap("* caution: you have set `sort_data=TRUE`. You need to be careful
         when using brms postprocessing methods that rely on the data order, such as
-        generating predictions. Assuming you assigned the result of fit_model to a
+        generating predictions. Assuming you assigned the result of bmm() to a
         variable called `fit`, you can extract the sorted data from the fitted object
         with:\n\n   data_sorted <- fit$data", width = 80), collapse = "\n")
     caution_msg <- crayon::red(caution_msg)
@@ -438,11 +438,11 @@ identical.formula <- function(x, y, ...) {
 #' View or change global bmm options
 #' @param sort_data logical. If TRUE, the data will be sorted by the predictors.
 #'   If FALSE, the data will not be sorted, but sampling will be slower. If
-#'   "check" (the default), `fit_model()` will check if the data is sorted, and
+#'   "check" (the default), `bmm()` will check if the data is sorted, and
 #'   ask you via a console prompt if it should be sorted. **Default: "check"**
 #' @param parallel logical. If TRUE, chains will be run in parallel. If FALSE,
 #'   chains will be run sequentially. You can also set these value for each
-#'   model separately via the argument `parallel` in `fit_model()`. **Default:
+#'   model separately via the argument `parallel` in `bmm()`. **Default:
 #'   FALSE**
 #' @param default_priors logical. If TRUE (default), the default bmm priors will
 #'   be used. If FALSE, only the basic `brms` priors will be used. **Default:
@@ -460,7 +460,7 @@ identical.formula <- function(x, y, ...) {
 #'   options. If arguments are provided, the function will change the options
 #'   and return the old options invisibly. If you provide only some of the
 #'   arguments, the other options will not be changed. The options are stored in
-#'   the global options list and will be used by `fit_model()` and other
+#'   the global options list and will be used by `bmm()` and other
 #'   functions in the `bmm` package. Each of these options can also be set
 #'   manually using the built-in `options()` function, by setting the
 #'   `bmm.sort_data`,  `bmm.default_priors`, and `bmm.silent` options.
@@ -654,7 +654,7 @@ deprecated_args <- function(...) {
   dots <- list(...)
   stopif("model_type" %in% names(dots),
          'The "model_type" argument was deprecated on Feb 3, 2024. Either:
-         - See ?fit_model for the new usage;
+         - See ?bmm for the new usage;
          - or install the old version of the package with:
            devtools::install_github("venpopov/bmm@v0.0.1")')
 }

@@ -9,7 +9,7 @@ test_that('mixture3p works when setsize is not predicted and there is setsize 1'
   model <- mixture3p(resp_err = 'dev_rad',
                      nt_features = paste0("col_nt",1:7),
                      setsize = "set_size")
-  res <- try(fit <- fit_model(formula, dat, model,
+  res <- try(fit <- bmm(formula, dat, model,
                    backend = 'mock', mock=1, rename = F), silent = TRUE)
   expect_false(is_try_error(res))
 
@@ -26,7 +26,7 @@ test_that('mixture3p gives an error if setsize is a predictor but there is an in
   model <- mixture3p(resp_err = 'dev_rad',
                      nt_features = paste0("col_nt",1:7),
                      setsize = "set_size")
-  expect_error(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F),
+  expect_error(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F),
                'This model requires that the intercept is supressed when setsize is used as predictor.')
 
 
@@ -35,5 +35,5 @@ test_that('mixture3p gives an error if setsize is a predictor but there is an in
     thetat ~ 1,
     thetant ~ 0 + set_size
   )
-  expect_silent({fit = fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F)})
+  expect_silent({fit = bmm(formula, dat, model, backend = 'mock', mock=1, rename = F)})
 })

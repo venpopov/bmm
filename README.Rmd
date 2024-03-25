@@ -149,7 +149,7 @@ remotes::install_github("venpopov/bmm@v0.0.1")
 
 ## Fitting models using bmm
 
-The core function of the bmm package is the `fit_model()` function. This function
+The core function of the bmm package is the `bmm()` function. This function
 takes:
 
 1. a linear model formula specifying how parameters of the model should vary as
@@ -169,34 +169,24 @@ Measurement Model would look like this:
 ```
 
 A complete call to fit a model using bmm could look like this. For this example,
-we are using the `OberauerLin_2017` data that is provided with the package.
+we are using the `OberauerLin_2017` data that is provided with the package and we 
+will show how to fit the Interference Measurement Model to this data. If you want a detailed description of this model and and in depth explanation of the parameters 
+estimated in the model, please have a look at `vignette("bmm_imm")`.
 
 ``` r
 library(bmm)
-data <- OberauerLin_2017
-```
 
-For this quick example, we will show how to setup fitting the Interference
-Measurement Model to this data. If you want a detailed description of this model
-and and in depth explanation of the parameters estimated in the model, please
-have a look at `vignette("IMM")`.
-
-``` r
-model_formula <- bmmformula(c ~ 0 + set_size,
-                            a ~ 0 + set_size,
-                            s ~ 0 + set_size,
-                            kappa ~ 0 + set_size)
+formula <- bmmformula(c ~ 0 + set_size,
+                      a ~ 0 + set_size,
+                      s ~ 0 + set_size,
+                      kappa ~ 0 + set_size)
 
 model <- IMMfull(resp_err = "dev_rad",
                  nt_features = paste0("col_nt", 1:7),
                  nt_distances = paste0("dist_nt",1:7),
                  setsize = "set_size")
 
-fit <- fit_model(
-  formula = model_formula,
-  data = data,
-  model = model
-)
+fit <- bmm(formula = formula, data = data, model = model)
 ```
 
 Using this call, the `fit` object will save all the information about the fitted
@@ -217,7 +207,7 @@ package](https://venpopov.github.io/bmm/articles/index.html) or [here for the
 development version](https://venpopov.github.io/bmm/dev/articles/index.html).
 
 
-## Exploring cogntive measurement models
+## Exploring measurement models
 
 To aid users in improving their intuition about what different models predict
 for observed data given a certain parameter set, the `bmm` package also includes
@@ -272,11 +262,11 @@ end users. This way researchers that face challenges in writing their own STAN
 code to implement such models themselves can still use these models in almost
 any experimental design.
 
-Under the hood, the main `bmm` `fit_model()` function will then call the appropriate functions for the specified model
+Under the hood, the main `bmm()` function will then call the appropriate functions for the specified model
 and will perform several steps:
 
 1. Configure the Sample (e.g., set up prallelization)
-2. Check the information passed to the `fit_model()` function:
+2. Check the information passed to the `bmm()` function:
     - if the model is installed and all required arguments were provided
     - if a valid formula was passed
     - if the data contains all necessary variables

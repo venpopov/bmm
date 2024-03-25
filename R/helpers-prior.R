@@ -6,12 +6,12 @@
 #'   model. Additionally, it will return all model parameters that have no prior
 #'   specified (flat priors). This can help to get an idea about which priors
 #'   need to be specified and also know which priors were used if no
-#'   user-specified priors were passed to the [fit_model()] function.
+#'   user-specified priors were passed to the [bmm()] function.
 #'
 #'   The default priors in `bmm` tend to be more informative than the default
 #'   priors in `brms`, as we use domain knowledge to specify the priors.
 #'
-#' @inheritParams fit_model
+#' @inheritParams bmm
 #' @param object A `bmmformula` object
 #' @param ... Further arguments passed to [brms::default_prior()]
 #'
@@ -206,7 +206,7 @@ set_default_prior <- function(model, data, formula) {
 
 #' Generic S3 method for configuring the default prior for a bmmmodel
 #'
-#' Called by fit_model() to automatically construct the priors for a given
+#' Called by bmm() to automatically construct the priors for a given
 #' model, data and formula, and combine it with the prior given by the user. The
 #' first method executed is configure_prior.bmmmodel, which will build the prior
 #' based on information from the model object such as fixed_parameters,
@@ -221,7 +221,7 @@ set_default_prior <- function(model, data, formula) {
 #' @param data A data.frame containing the data used in the model
 #' @param formula A `brmsformula` object returned from configure_model()
 #' @param user_prior A `brmsprior` object given by the user as an argument to
-#'  fit_model()
+#'  bmm()
 #' @param ... Additional arguments passed to the method
 #' @export
 #' @keywords internal, developer

@@ -56,7 +56,7 @@ In \code{bmm}, the same formula would be written as:
 }\if{html}{\out{</div>}}
 
 and the rt and response variables would be specified in the model argument of
-the \code{fit_model} function.
+the \code{bmm()} function.
 
 Aside from that, the \code{bmm} formula syntax is the same as the \code{brms} formula
 syntax. For more information on the \code{brms} formula syntax, see

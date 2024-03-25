@@ -230,12 +230,12 @@
 #'                   setsize = 'set_size')
 #'
 #' # fit the model
-#' fit <- fit_model(formula = ff,
-#'                  data = data,
-#'                  model = model1,
-#'                  parallel = T,
-#'                  iter = 500,
-#'                  backend = 'cmdstanr')
+#' fit <- bmm(formula = ff,
+#'            data = data,
+#'            model = model1,
+#'            parallel = T,
+#'            iter = 500,
+#'            backend = 'cmdstanr')
 #'
 #' # alternatively specify the IMM model with a regular expression to match non-target features
 #' # this is equivalent to the previous call, but more concise
@@ -246,12 +246,12 @@
 #'                   regex = TRUE)
 #'
 #' # fit the model
-#' fit <- fit_model(formula = ff,
-#'                  data = data,
-#'                  model = model2,
-#'                  parallel=T,
-#'                  iter = 500,
-#'                  backend='cmdstanr')
+#' fit <- bmm(formula = ff,
+#'            data = data,
+#'            model = model2,
+#'            parallel=T,
+#'            iter = 500,
+#'            backend='cmdstanr')
 #'}
 #' @export
 IMMfull <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE,

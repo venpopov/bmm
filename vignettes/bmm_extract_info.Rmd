@@ -44,7 +44,7 @@ fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 Each model in `bmm` comes with default priors on all of its parameters. Unlike in the `brms` package, the default priors in `bmm` are informative, based on current expert knowledge in the domain of the model. These default priors help with model
 identifiability and improve estimation. However, because the priors are informed, it is even more important for you to understand what priors are used when you estimate a model, or when you report the results of a model fit.
 
-You can use the function `default_prior()` from the `brms` package to extract the default priors for a model. The arguments to `default_prior` are the same as for the `fit_model` function in `bmm`. For example, if you want to extract the default priors for the SDM model (`vignette("sdm-simple")`), where you have a set_size categorical predictor of `c` and `kappa`, you can use the following code:
+You can use the function `default_prior()` from the `brms` package to extract the default priors for a model. The arguments to `default_prior` are the same as for the `bmm()` function in `bmm`. For example, if you want to extract the default priors for the SDM model (`vignette("sdm-simple")`), where you have a set_size categorical predictor of `c` and `kappa`, you can use the following code:
 
 
 ```{r message=FALSE, warning=FALSE}
@@ -109,9 +109,9 @@ stancode(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size),
 Alternatively, if you already have a fitted model object, you can just call `stancode()` on that object, which will give you the same result:
 
 ```r
-fit <- fit_model(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
-                 data = OberauerLin_2017,
-                 model = sdmSimple(resp_err = 'dev_rad'))
+fit <- bmm(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
+              data = OberauerLin_2017,
+              model = sdmSimple(resp_err = 'dev_rad'))
 stancode(fit)
 ```
 

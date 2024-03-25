@@ -50,7 +50,7 @@ Two-parameter mixture model by Zhang and Luck (2008).
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item mu1 = identity; kappa = log; thetat = identity
+\item mu1 = tan_half; kappa = log; thetat = identity
 }
 \item \strong{Default priors:}
 \itemize{
@@ -68,7 +68,6 @@ Two-parameter mixture model by Zhang and Luck (2008).
 \item \code{main}: logistic(0, 1)
 }
 }
-
 }
 }
 \examples{
@@ -83,12 +82,12 @@ ff <- bmmformula(kappa ~ 1,
 model <- mixture2p(resp_err = "y")
 
 # fit the model
-fit <- fit_model(formula = ff,
-                 data = dat,
-                 model = model,
-                 parallel=T,
-                 iter=500,
-                 backend='cmdstanr')
+fit <- bmm(formula = ff,
+           data = dat,
+           model = model,
+           parallel=T,
+           iter=500,
+           backend='cmdstanr')
 }
 }
 \keyword{bmmmodel}

@@ -11,7 +11,7 @@ test_that('IMMfull works when setsize is not predicted and there is setsize 1', 
                    nt_features = paste0("col_nt", 1:7),
                    nt_distances = paste0("dist_nt", 1:7),
                    setsize = "set_size")
-  res <- try(fit <- fit_model(formula, dat, model,
+  res <- try(fit <- bmm(formula, dat, model,
                    backend = 'mock', mock=1, rename = F))
   expect_false(is_try_error(res))
 
@@ -28,7 +28,7 @@ test_that('IMMabc works when setsize is not predicted and there is setsize 1', {
   model <- IMMabc(resp_err = 'dev_rad',
                    nt_features = paste0("col_nt", 1:7),
                    setsize = "set_size")
-  res <- try(fit <- fit_model(formula, dat, model,
+  res <- try(fit <- bmm(formula, dat, model,
                               backend = 'mock', mock=1, rename = F))
   expect_false(is_try_error(res))
 
@@ -47,7 +47,7 @@ test_that('IMMbsc works when setsize is not predicted and there is setsize 1', {
                   nt_features = paste0("col_nt", 1:7),
                   nt_distances = paste0("dist_nt", 1:7),
                   setsize = "set_size")
-  res <- try(fit <- fit_model(formula, dat, model,
+  res <- try(fit <- bmm(formula, dat, model,
                               backend = 'mock', mock=1, rename = F))
   expect_false(is_try_error(res))
 
@@ -65,7 +65,7 @@ test_that('IMM models give an error if setsize is a predictor but there is an in
   model <- IMMabc(resp_err = 'dev_rad',
                   nt_features = paste0("col_nt",1:7),
                   setsize = "set_size")
-  expect_error(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F),
+  expect_error(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F),
                'This model requires that the intercept is supressed when setsize is used as predictor.')
 
   formula <- bmf(
@@ -77,7 +77,7 @@ test_that('IMM models give an error if setsize is a predictor but there is an in
                   nt_features = paste0("col_nt",1:7),
                   nt_distances = paste0("dist_nt",1:7),
                   setsize = "set_size")
-  expect_error(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F),
+  expect_error(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F),
                'This model requires that the intercept is supressed when setsize is used as predictor.')
 
   formula <- bmf(
@@ -90,7 +90,7 @@ test_that('IMM models give an error if setsize is a predictor but there is an in
                    nt_features = paste0("col_nt",1:7),
                    nt_distances = paste0("dist_nt",1:7),
                    setsize = "set_size")
-  expect_error(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F),
+  expect_error(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F),
                'This model requires that the intercept is supressed when setsize is used as predictor.')
 
   formula <- bmf(
@@ -101,7 +101,7 @@ test_that('IMM models give an error if setsize is a predictor but there is an in
   model <- IMMabc(resp_err = 'dev_rad',
                   nt_features = paste0("col_nt",1:7),
                   setsize = "set_size")
-  expect_error(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F),
+  expect_error(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F),
                'This model requires that the intercept is supressed when setsize is used as predictor.')
 
   formula <- bmf(
@@ -113,7 +113,7 @@ test_that('IMM models give an error if setsize is a predictor but there is an in
                   nt_features = paste0("col_nt",1:7),
                   nt_distances = paste0("dist_nt",1:7),
                   setsize = "set_size")
-  expect_error(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F),
+  expect_error(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F),
                'This model requires that the intercept is supressed when setsize is used as predictor.')
 
   formula <- bmf(
@@ -126,7 +126,7 @@ test_that('IMM models give an error if setsize is a predictor but there is an in
                    nt_features = paste0("col_nt",1:7),
                    nt_distances = paste0("dist_nt",1:7),
                    setsize = "set_size")
-  expect_error(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F),
+  expect_error(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F),
                'This model requires that the intercept is supressed when setsize is used as predictor.')
 })
 
@@ -142,7 +142,7 @@ test_that('IMM models run when setsize is a predictor and intercept is supressed
   model <- IMMabc(resp_err = 'dev_rad',
                   nt_features = paste0("col_nt",1:7),
                   setsize = "set_size")
-  expect_silent(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F))
+  expect_silent(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F))
 
   formula <- bmf(
     kappa ~ 1,
@@ -153,7 +153,7 @@ test_that('IMM models run when setsize is a predictor and intercept is supressed
                   nt_features = paste0("col_nt",1:7),
                   nt_distances = paste0("dist_nt",1:7),
                   setsize = "set_size")
-  expect_silent(fit_model(formula, dat, model, backend = 'mock', mock = 1, rename = F))
+  expect_silent(bmm(formula, dat, model, backend = 'mock', mock = 1, rename = F))
 
 
   formula <- bmf(
@@ -166,5 +166,5 @@ test_that('IMM models run when setsize is a predictor and intercept is supressed
                    nt_features = paste0("col_nt",1:7),
                    nt_distances = paste0("dist_nt",1:7),
                    setsize = "set_size")
-  expect_silent(fit_model(formula, dat, model, backend = 'mock', mock=1, rename = F))
+  expect_silent(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F))
 })
