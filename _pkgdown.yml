@@ -69,10 +69,12 @@ articles:
  - title: Continuous reproduction tasks
    desc: Fitting models to continuous reproduction tasks
    contents:
-    - vwm-crt
-    - mixture-models
-    - IMM
-    - sdm-simple
+    - "vwm-crt"
+    - "mixture-models"
+    - "IMM"
+    - "sdm-simple"
  - title: Using the bmm package
-   desc: Guides to using the bmm package
+   desc: >
+      Guides to using various features of the **bmm** package
+   contents:
     - bmmformula
