@@ -103,8 +103,17 @@ and how to use it.</p><ul><li><p><strong>Domain:</strong> Visual working memory<
 </ul></li>
 <li><p><strong>Fixed parameters:</strong></p><ul><li><p><code>mu</code> = 0</p></li>
 </ul></li>
-<li><p><strong>Default parameter links:</strong></p>
-<p>mu = tan_half; c = log; kappa = log</p></li>
+<li><p><strong>Default parameter links:</strong></p><ul><li><p>mu = tan_half; c = log; kappa = log</p></li>
+</ul></li>
+<li><p><strong>Default priors:</strong></p><ul><li><p><code>mu</code>:</p><ul><li><p><code>main</code>: student_t(1, 0, 1)</p></li>
+</ul></li>
+<li><p><code>kappa</code>:</p><ul><li><p><code>main</code>: student_t(5, 1.75, 0.75)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>c</code>:</p><ul><li><p><code>main</code>: student_t(5, 2, 0.75)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+</ul></li>
 </ul></div>
 
     <div class="section level2">

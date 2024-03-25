@@ -157,6 +157,23 @@ the model fits, but it will in the future.</em></p></dd>
 <li><p><code>mu2</code> = 0</p></li>
 <li><p><code>kappa2</code> = -100</p></li>
 </ul></li>
+<li><p><strong>Default parameter links:</strong></p><ul><li><p>kappa = log; a = identity; c = identity; s = log</p></li>
+</ul></li>
+<li><p><strong>Default priors:</strong></p><ul><li><p><code>mu1</code>:</p><ul><li><p><code>main</code>: student_t(1, 0, 1)</p></li>
+</ul></li>
+<li><p><code>kappa</code>:</p><ul><li><p><code>main</code>: normal(2, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>a</code>:</p><ul><li><p><code>main</code>: normal(0, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>c</code>:</p><ul><li><p><code>main</code>: normal(0, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>s</code>:</p><ul><li><p><code>main</code>: normal(0, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+</ul></li>
 </ul></div>
 
 <div class="section">
@@ -174,6 +191,20 @@ the model fits, but it will in the future.</em></p></dd>
 <li><p><code>mu2</code> = 0</p></li>
 <li><p><code>kappa2</code> = -100</p></li>
 </ul></li>
+<li><p><strong>Default parameter links:</strong></p><ul><li><p>kappa = log; c = identity; s = log</p></li>
+</ul></li>
+<li><p><strong>Default priors:</strong></p><ul><li><p><code>mu1</code>:</p><ul><li><p><code>main</code>: student_t(1, 0, 1)</p></li>
+</ul></li>
+<li><p><code>kappa</code>:</p><ul><li><p><code>main</code>: normal(2, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>c</code>:</p><ul><li><p><code>main</code>: normal(0, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>s</code>:</p><ul><li><p><code>main</code>: normal(0, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+</ul></li>
 </ul></div>
 
 <div class="section">
@@ -190,6 +221,20 @@ the model fits, but it will in the future.</em></p></dd>
 <li><p><strong>Fixed parameters:</strong></p><ul><li><p><code>mu1</code> = 0</p></li>
 <li><p><code>mu2</code> = 0</p></li>
 <li><p><code>kappa2</code> = -100</p></li>
+</ul></li>
+<li><p><strong>Default parameter links:</strong></p><ul><li><p>kappa = log; a = identity; c = identity</p></li>
+</ul></li>
+<li><p><strong>Default priors:</strong></p><ul><li><p><code>mu1</code>:</p><ul><li><p><code>main</code>: student_t(1, 0, 1)</p></li>
+</ul></li>
+<li><p><code>kappa</code>:</p><ul><li><p><code>main</code>: normal(2, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>a</code>:</p><ul><li><p><code>main</code>: normal(0, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>c</code>:</p><ul><li><p><code>main</code>: normal(0, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
 </ul></li>
 </ul><p>Additionally, all IMM models have an internal parameter that is fixed to 0 to
 allow the model to be identifiable. This parameter is not estimated and is not
@@ -214,8 +259,8 @@ included in the model formula. The parameter is:</p><ul><li><p>b = "Background a
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># specify the full IMM model with explicit column names for non-target features and distances</span></span></span>
 <span class="r-in"><span><span class="va">model1</span> <span class="op">&lt;-</span> <span class="fu">IMMfull</span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"dev_rad"</span>,</span></span>
-<span class="r-in"><span>                  nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'col_nt'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                  nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'dist_nt'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'col_nt'</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'dist_nt'</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                  setsize <span class="op">=</span> <span class="st">'set_size'</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit the model</span></span></span>

@@ -125,8 +125,18 @@ the model fits, but it will in the future.</em></p></dd>
 <li><p><code>mu2</code> = 0</p></li>
 <li><p><code>kappa2</code> = -100</p></li>
 </ul></li>
-<li><p><strong>Default parameter links:</strong></p>
-<p>mu1 = tan_half; kappa = log; thetat = identity; thetant = identity</p></li>
+<li><p><strong>Default parameter links:</strong></p><ul><li><p>mu1 = identity; kappa = log; thetat = identity; thetant = identity</p></li>
+</ul></li>
+<li><p><strong>Default priors:</strong></p><ul><li><p><code>mu1</code>:</p><ul><li><p><code>main</code>: student_t(1, 0, 1)</p></li>
+</ul></li>
+<li><p><code>kappa</code>:</p><ul><li><p><code>main</code>: normal(2, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>thetat</code>:</p><ul><li><p><code>main</code>: logistic(0, 1)</p></li>
+</ul></li>
+<li><p><code>thetant</code>:</p><ul><li><p><code>main</code>: logistic(0, 1)</p></li>
+</ul></li>
+</ul></li>
 </ul></div>
 
     <div class="section level2">

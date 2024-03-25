@@ -136,10 +136,14 @@ can be specified.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/default_prior.html" class="external-link">default_prior</a></span><span class="op">(</span><span class="fu"><a href="bmmformula.html">bmf</a></span><span class="op">(</span><span class="va">c</span> <span class="op">~</span> <span class="fl">1</span>, <span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>              data <span class="op">=</span> <span class="va">OberauerLin_2017</span>,</span></span>
 <span class="r-in"><span>              model <span class="op">=</span> <span class="fu"><a href="SDM.html">sdmSimple</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">'dev_rad'</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   prior     class coef group resp  dpar nlpar   lb   ub source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     student_t(5,2,0.75) Intercept                     c       &lt;NA&gt; &lt;NA&gt;   user</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  student_t(5,1.75,0.75) Intercept                 kappa       &lt;NA&gt; &lt;NA&gt;   user</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             constant(0) Intercept                             &lt;NA&gt; &lt;NA&gt;   user</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     prior     class coef group resp  dpar nlpar   lb   ub</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     student_t(5, 2, 0.75) Intercept                     c       &lt;NA&gt; &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  student_t(5, 1.75, 0.75) Intercept                 kappa       &lt;NA&gt; &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               constant(0) Intercept                             &lt;NA&gt; &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    user</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    user</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    user</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
