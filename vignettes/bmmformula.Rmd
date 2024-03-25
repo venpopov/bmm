@@ -1,5 +1,5 @@
 ---
-title: "Introduction to `bmmformula` syntax"
+title: "Introduction to the bmmformula syntax"
 output: bookdown::html_document2
 author: 
   - Ven Popov
@@ -8,7 +8,7 @@ bibliography: REFERENCES.bib
 header-includes:
   - \usepackage{amsmath}
 vignette: >
-  %\VignetteIndexEntry{Intorduction: bmmformula}
+  %\VignetteIndexEntry{Introduction to the bmmformula syntax}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 pkgdown:
