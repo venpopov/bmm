@@ -105,9 +105,9 @@
 #' fit <- bmm(formula = ff,
 #'            data = dat,
 #'            model = model1,
-#'            parallel=T,
+#'            cores = 4,
 #'            iter = 500,
-#'            backend='cmdstanr')
+#'            backend = 'cmdstanr')
 #'
 #' # alternatively specify the 3-parameter model with a regular expression to match non-target features
 #' # this is equivalent to the previous call, but more concise
@@ -117,9 +117,9 @@
 #' fit <- bmm(formula = ff,
 #'            data = dat,
 #'            model = model2,
-#'            parallel=T,
+#'            cores = 4,
 #'            iter = 500,
-#'            backend='cmdstanr')
+#'            backend = 'cmdstanr')
 #' }
 mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE,
                       links = NULL, ...) {

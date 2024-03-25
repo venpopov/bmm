@@ -270,7 +270,7 @@ model1 <- IMMfull(resp_error = "dev_rad",
 fit <- bmm(formula = ff,
            data = data,
            model = model1,
-           parallel = T,
+           cores = 4,
            backend = 'cmdstanr')
 
 # alternatively specify the IMM model with a regular expression to match non-target features
@@ -285,7 +285,7 @@ model2 <- IMMfull(resp_error = "dev_rad",
 fit <- bmm(formula = ff,
            data = data,
            model = model2,
-           parallel = T,
+           cores = 4,
            backend = 'cmdstanr')
 }
 }

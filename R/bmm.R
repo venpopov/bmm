@@ -14,10 +14,6 @@
 #'   number of required arguments which need to be specified within the function
 #'   call. Call [supported_models()] to see the list of supported models and
 #'   their required arguments
-#' @param parallel Logical; If TRUE, the number of cores on your machine will be
-#'   detected and brms will fit max(chains, cores) number of chains (specified
-#'   by the `chain` argument) in parallel using the parallel package
-#' @param chains Numeric. Number of Markov chains (defaults to 4)
 #' @param prior One or more `brmsprior` objects created by [brms::set_prior()]
 #'   or related functions and combined using the c method or the + operator. See
 #'   also [default_prior()] for more help. Not necessary for the default model
@@ -76,7 +72,7 @@
 #' @examples
 #' \dontrun{
 #' # generate artificial data from the Signal Discrimination Model
-#' dat <- data.frame(y=rsdm(n=2000))
+#' dat <- data.frame(y = rsdm(2000))
 #'
 #' # define formula
 #' ff <- bmmformula(c ~ 1, kappa ~ 1)
@@ -85,25 +81,23 @@
 #' fit <- bmm(formula = ff,
 #'            data = dat,
 #'            model = sdmSimple(resp_error = "y"),
-#'            parallel=T,
-#'            iter = 500,
+#'            cores = 4,
 #'            backend = 'cmdstanr')
 #' }
 #'
 bmm <- function(formula, data, model,
-                      prior = NULL,
-                      chains = 4,
-                      parallel = getOption('bmm.parallel', FALSE),
-                      sort_data = getOption('bmm.sort_data', "check"),
-                      silent = getOption('bmm.silent', 1),
-                      backend = getOption('brms.backend', NULL),
-                      ...) {
+                prior = NULL,
+                sort_data = getOption('bmm.sort_data', "check"),
+                silent = getOption('bmm.silent', 1),
+                backend = getOption('brms.backend', NULL), ...) {
   deprecated_args(...)
   dots <- list(...)
 
   # set temporary global options and return modified arguments for brms
-  configure_opts <- nlist(parallel, chains, sort_data, silent, backend)
+  configure_opts <- nlist(sort_data, silent, backend, parallel = dots$parallel,
+                          cores = dots$cores)
   opts <- configure_options(configure_opts)
+  dots$parallel <- NULL
 
   # check model, formula and data, and transform data if necessary
   user_formula <- formula
@@ -131,14 +125,11 @@ bmm <- function(formula, data, model,
 #' @export
 fit_model <- function(formula, data, model,
                       prior = NULL,
-                      chains = 4,
-                      parallel = getOption('bmm.parallel', FALSE),
                       sort_data = getOption('bmm.sort_data', "check"),
                       silent = getOption('bmm.silent', 1),
                       backend = getOption('brms.backend', NULL),
                       ...) {
   message("You are using the deprecated `fit_model()` function. Please use `bmm()` instead.")
   bmm(formula = formula, data = data, model = model, prior = prior,
-      chains = chains, parallel = parallel, sort_data = sort_data,
-      silent = silent, backend = backend, ...)
+      sort_data = sort_data, silent = silent, backend = backend, ...)
 }

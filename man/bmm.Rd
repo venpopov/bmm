@@ -10,8 +10,6 @@ bmm(
   data,
   model,
   prior = NULL,
-  chains = 4,
-  parallel = getOption("bmm.parallel", FALSE),
   sort_data = getOption("bmm.sort_data", "check"),
   silent = getOption("bmm.silent", 1),
   backend = getOption("brms.backend", NULL),
@@ -23,8 +21,6 @@ fit_model(
   data,
   model,
   prior = NULL,
-  chains = 4,
-  parallel = getOption("bmm.parallel", FALSE),
   sort_data = getOption("bmm.sort_data", "check"),
   silent = getOption("bmm.silent", 1),
   backend = getOption("brms.backend", NULL),
@@ -49,12 +45,6 @@ their required arguments}
 or related functions and combined using the c method or the + operator. See
 also \code{\link[=default_prior]{default_prior()}} for more help. Not necessary for the default model
 fitting, but you can provide prior constraints to model parameters}
-
-\item{chains}{Numeric. Number of Markov chains (defaults to 4)}
-
-\item{parallel}{Logical; If TRUE, the number of cores on your machine will be
-detected and brms will fit max(chains, cores) number of chains (specified
-by the \code{chain} argument) in parallel using the parallel package}
 
 \item{sort_data}{Logical. If TRUE, the data will be sorted by the predictor
 variables for faster sampling. If FALSE, the data will not be sorted, but
@@ -119,7 +109,7 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 \examples{
 \dontrun{
 # generate artificial data from the Signal Discrimination Model
-dat <- data.frame(y=rsdm(n=2000))
+dat <- data.frame(y = rsdm(2000))
 
 # define formula
 ff <- bmmformula(c ~ 1, kappa ~ 1)
@@ -128,8 +118,7 @@ ff <- bmmformula(c ~ 1, kappa ~ 1)
 fit <- bmm(formula = ff,
            data = dat,
            model = sdmSimple(resp_error = "y"),
-           parallel=T,
-           iter = 500,
+           cores = 4,
            backend = 'cmdstanr')
 }
 

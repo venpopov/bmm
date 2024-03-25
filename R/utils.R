@@ -72,12 +72,13 @@ softmaxinv <- function(p, lambda = 1) {
 #' @returns A list of options to pass to brm()
 configure_options <- function(opts, env = parent.frame()) {
   if (isTRUE(opts$parallel)) {
-    cores = parallel::detectCores()
-    if (opts$chains >  parallel::detectCores()) {
-      opts$chains <- parallel::detectCores()
+    cores <- parallel::detectCores()
+    chains <- opts$chains
+    if (is.null(opts$chains)) {
+      chains <- 4
     }
   } else {
-    cores = NULL
+    cores = opts$cores
   }
   if (not_in_list('silent', opts)) {
     opts$silent <- getOption('bmm.silent', 1)
@@ -96,7 +97,7 @@ configure_options <- function(opts, env = parent.frame()) {
     .local_envir = env)
 
   # return only options that can be passed to brms/rstan/cmdstanr
-  exclude_args <- c('parallel', 'sort_data')
+  exclude_args <- c('parallel', 'sort_data', "cores")
   opts[not_in(names(opts), exclude_args)]
 }
 
@@ -657,4 +658,7 @@ deprecated_args <- function(...) {
          - See ?bmm for the new usage;
          - or install the old version of the package with:
            devtools::install_github("venpopov/bmm@v0.0.1")')
+  warnif("parallel" %in% names(dots),
+         'The "parallel" argument is deprecated. Please use cores instead.
+         See `help("brm")` for more information.')
 }

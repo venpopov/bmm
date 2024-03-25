@@ -1,6 +1,6 @@
 generate_bmm_examples <- function(seed = 123) {
   withr::local_options(brms.backend = 'rstan',
-                       bmm.parallel = TRUE,
+                       mc.cores = parallel::detectCores(),
                        bmm.sort_data = TRUE)
   withr::local_package('dplyr')
   set.seed(seed)
@@ -16,7 +16,6 @@ generate_bmm_examples <- function(seed = 123) {
   formula <- bmf(c ~ 0 + set_size, kappa ~ 1)
   model <- sdmSimple('dev_rad')
   bmmfit_example1 <- bmm(formula, data, model,
-                               parallel = TRUE,
                                iter = 100,
                                refresh = 0,
                                init = 1,
@@ -59,9 +58,6 @@ generate_bmm_examples <- function(seed = 123) {
     formula = formula,
     data = dat_preprocessed,
     model = model,
-    parallel = T,
-    iter = 2000,
-    chains = 4,
     refresh = 100,
     save_pars = save_pars(group = FALSE),
     save_warmup = FALSE
@@ -117,7 +113,6 @@ generate_bmm_examples <- function(seed = 123) {
     formula = model_formula,
     data = simData,
     model = model,
-    chains = 4,
     save_pars = save_pars(group = FALSE),
     save_warmup = FALSE
   )

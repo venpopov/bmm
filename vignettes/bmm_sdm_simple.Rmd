@@ -191,11 +191,9 @@ fit <- bmm(
   formula = ff,
   data = dat,
   model = model,
-  parallel = T,
-  chains = 4,
+  cores = 4,
   init = 0.5,
-  iter = 2000,
-  backend='cmdstanr'
+  backend = 'cmdstanr'
 )
 ```
 

@@ -82,9 +82,8 @@
 #'            data = dat,
 #'            model = sdmSimple(resp_error = 'y'),
 #'            prior = prior,
-#'            parallel=T,
-#'            iter=2000,
-#'            backend='cmdstanr')
+#'            cores = 4,
+#'            backend = 'cmdstanr')
 #'
 #' # extract coefficients and plot fit
 #' coef <- exp(brms::fixef(fit)[2:3,1])

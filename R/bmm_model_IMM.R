@@ -233,7 +233,7 @@
 #' fit <- bmm(formula = ff,
 #'            data = data,
 #'            model = model1,
-#'            parallel = T,
+#'            cores = 4,
 #'            backend = 'cmdstanr')
 #'
 #' # alternatively specify the IMM model with a regular expression to match non-target features
@@ -248,7 +248,7 @@
 #' fit <- bmm(formula = ff,
 #'            data = data,
 #'            model = model2,
-#'            parallel = T,
+#'            cores = 4,
 #'            backend = 'cmdstanr')
 #'}
 #' @export

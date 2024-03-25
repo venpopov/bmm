@@ -85,9 +85,9 @@ model <- mixture2p(resp_error = "y")
 fit <- bmm(formula = ff,
            data = dat,
            model = model,
-           parallel=T,
-           iter=500,
-           backend='cmdstanr')
+           cores = 4,
+           iter = 500,
+           backend = 'cmdstanr')
 }
 }
 \keyword{bmmmodel}

@@ -47,9 +47,7 @@ run_sdmSimple <- function(...) {
                       kappa ~ 1)
   model <- sdmSimple()
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
-                   iter = 2000,
+                   cores = parallel::detectCores(),
                    refresh = 500,
                    init = 1,
                    silent = 1,
@@ -78,8 +76,7 @@ run_mixture3p <- function(...) {
   model <- mixture3p(non_targets = paste0("Item", 2:4,"_Col_rad"),
                      set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
+                   cores = parallel::detectCores(),
                    iter = 1000,
                    refresh = 500,
                    init = 1,
@@ -107,8 +104,7 @@ run_mixture2p <- function(...) {
                       kappa ~ 0 + SetSize)
   model <- mixture2p()
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
+                   cores = parallel::detectCores(),
                    iter = 1000,
                    refresh = 500,
                    init = 1,
@@ -138,8 +134,7 @@ run_IMMabc <- function(...) {
   model <- IMMabc(non_targets = paste0("Item", 2:4,"_Col_rad"),
                   set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
+                   cores = parallel::detectCores(),
                    iter = 1000,
                    refresh = 500,
                    init = 1,
@@ -171,8 +166,7 @@ run_IMMbsc <- function(...) {
                   spaPos = paste0("Item", 2:4,"_Pos_rad"),
                   set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
+                   cores = parallel::detectCores(),
                    iter = 1000,
                    refresh = 500,
                    init = 1,
@@ -204,7 +198,7 @@ run_IMMfull <- function(...) {
                    spaPos = paste0("Item", 2:4,"_Pos_rad"),
                    set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
+                   cores = parallel::detectCores(),
                    chains = 4,
                    iter = 1000,
                    refresh = 500,

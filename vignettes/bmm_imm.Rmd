@@ -209,9 +209,7 @@ fit <- bmm(
   formula = model_formula,
   data = simData,
   model = model,
-  parallel = TRUE,
-  chains = 4,
-  iter = 2000,
+  cores = 4,
   backend = "cmdstanr"
 )
 ```

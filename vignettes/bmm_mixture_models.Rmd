@@ -191,10 +191,9 @@ fit <- bmm(
   formula = ff,
   data = dat_preprocessed,
   model = model,
-  parallel=T,
-  iter=2000,
-  refresh=100,
-  backend='cmdstanr'
+  cores = 4,
+  refresh = 100,
+  backend = 'cmdstanr'
 )
 ```
 
@@ -306,10 +305,9 @@ fit3p <- bmm(
   formula = ff,
   data = dat_preprocessed,
   model = model,
-  parallel=T,
-  iter=2000,
-  refresh=100,
-  backend='cmdstanr'
+  cores = 4,
+  refresh = 100,
+  backend = 'cmdstanr'
 )
 ```                 
 
