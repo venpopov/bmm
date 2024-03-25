@@ -30,7 +30,7 @@
         thetat = "Mixture weight for target responses"
       ),
       links = list(
-        mu1 = "identity",
+        mu1 = "tan_half",
         kappa = "log",
         thetat = "identity"
       ),

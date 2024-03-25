@@ -34,7 +34,7 @@
         thetant = "Mixture weight for non-target responses"
       ),
       links = list(
-        mu1 = "identity",
+        mu1 = "tan_half",
         kappa = "log",
         thetat = "identity",
         thetant = "identity"
@@ -162,9 +162,10 @@ configure_model.mixture3p <- function(model, data, formula) {
   }
 
   # define mixture family
-  vm_list <- lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
-  vm_list$order <- "none"
-  formula$family <- brms::do_call(brms::mixture, vm_list)
+  formula$family <- brms::mixture(brms::von_mises("tan_half"),
+                                  brms::von_mises("identity"),
+                                  nmix = c(1, max_setsize),
+                                  order = "none")
 
   nlist(formula, data)
 }

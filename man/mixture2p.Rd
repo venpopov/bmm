@@ -50,7 +50,7 @@ Two-parameter mixture model by Zhang and Luck (2008).
 }
 \item \strong{Default parameter links:}
 
-mu1 = identity; kappa = log; thetat = identity
+mu1 = tan_half; kappa = log; thetat = identity
 }
 }
 \examples{
