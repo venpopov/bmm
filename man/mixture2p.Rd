@@ -68,6 +68,7 @@ Two-parameter mixture model by Zhang and Luck (2008).
 \item \code{main}: logistic(0, 1)
 }
 }
+
 }
 }
 \examples{

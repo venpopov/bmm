@@ -33,6 +33,7 @@
           c = "Context activation"
         ),
         links = list(
+          mu1 = "tan_half",
           kappa = "log",
           a = "identity",
           c = "identity"
@@ -86,9 +87,12 @@
           c = "Context activation",
           s = "Spatial similarity gradient"
         ),
-        links = list(kappa = "log",
-                     c = "identity",
-                     s = "log"),
+        links = list(
+          mu1 = "tan_half",
+          kappa = "log",
+          c = "identity",
+          s = "log"
+        ),
         fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
         default_priors = list(
           mu1 = list(main = "student_t(1, 0, 1)"),
@@ -139,6 +143,7 @@
           s = "Spatial similarity gradient"
         ),
         links = list(
+          mu1 = "tan_half",
           kappa = "log",
           a = "identity",
           c = "identity",
@@ -339,9 +344,10 @@ configure_model.IMMabc <- function(model, data, formula) {
   }
 
   # define mixture family
-  vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
-  vm_list$order = "none"
-  formula$family <- brms::do_call(brms::mixture, vm_list)
+  formula$family <- brms::mixture(brms::von_mises("tan_half"),
+                                  brms::von_mises("identity"),
+                                  nmix = c(1, max_setsize),
+                                  order = "none")
 
   nlist(formula, data)
 }
@@ -393,9 +399,10 @@ configure_model.IMMbsc <- function(model, data, formula) {
   }
 
   # define mixture family
-  vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
-  vm_list$order = "none"
-  formula$family <- brms::do_call(brms::mixture, vm_list)
+  formula$family <- brms::mixture(brms::von_mises("tan_half"),
+                                  brms::von_mises("identity"),
+                                  nmix = c(1, max_setsize),
+                                  order = "none")
 
   nlist(formula, data)
 }
@@ -446,9 +453,10 @@ configure_model.IMMfull <- function(model, data, formula) {
 
 
   # define mixture family
-  vm_list = lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
-  vm_list$order = "none"
-  formula$family <- brms::do_call(brms::mixture, vm_list)
+  formula$family <- brms::mixture(brms::von_mises("tan_half"),
+                                  brms::von_mises("identity"),
+                                  nmix = c(1, max_setsize),
+                                  order = "none")
 
   nlist(formula, data)
 }

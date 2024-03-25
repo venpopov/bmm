@@ -153,6 +153,7 @@ summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp=0, model =
   if (!is.null(model)) {
     formula <- suppressMessages(add_missing_parameters(model, formula, replace_fixed = FALSE))
     fixpars <- model$fixed_parameters
+    fixpars <- fixpars[names(fixpars) %in% names(model$parameters)]
     formula[names(fixpars)] <- fixpars
   }
   print(formula, newline = newline, wsp = wsp)

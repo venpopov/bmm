@@ -21,12 +21,13 @@ generate_bmm_examples <- function(seed = 123) {
                                refresh = 0,
                                init = 1,
                                chains = 1,
-                               backend = 'rstan')
+                               backend = 'rstan',
+                               save_warmup = FALSE)
   bmmfit_example1$bmm$fit_args$data <- NULL
 
 
   ## Example 2: bmmfit_sdm_vignette
-  set.seed(123)
+  set.seed(seed)
   cs <- c(2, 9, 2)
   kappas <- c(3, 1, 8)
   y <- c(rsdm(n = 1000, mu=0, c = cs[1], kappa = kappas[1], parametrization = "sqrtexp"),
@@ -36,12 +37,12 @@ generate_bmm_examples <- function(seed = 123) {
   formula <- bmf(c ~ 0 + cond, kappa ~ 0 + cond)
   model <- sdmSimple('y')
   bmmfit_sdm_vignette <- fit_model(formula, dat, model, init = 0.5, iter = 2000,
-                                   chains = 2, save_pars = save_pars(group = FALSE))
+                                   chains = 4, save_pars = save_pars(group = FALSE))
   bmmfit_sdm_vignette$bmm$fit_args$data <- NULL
 
 
   ## Example 3: bmmfit_mixture2p_vignette
-  set.seed(123)
+  set.seed(seed)
   dat <- mixtur::bays2009_full
   dat_preprocessed <- dat %>%
     mutate(error = wrap(response - target),
@@ -60,14 +61,15 @@ generate_bmm_examples <- function(seed = 123) {
     model = model,
     parallel = T,
     iter = 2000,
-    chains = 2,
+    chains = 4,
     refresh = 100,
-    save_pars = save_pars(group = FALSE)
+    save_pars = save_pars(group = FALSE),
+    save_warmup = FALSE
   )
   bmmfit_mixture2p_vignette$bmm$fit_args$data <- NULL
 
   ## Example 4: bmmfit_imm_vignette
-  set.seed(123)
+  set.seed(seed)
   Cs <- c(4,4,2,2)
   As <- c(0.5,1,0.5,0.5)
   Ss <- c(10,10,5,5)
@@ -115,8 +117,9 @@ generate_bmm_examples <- function(seed = 123) {
     formula = model_formula,
     data = simData,
     model = model,
-    chains = 2,
-    save_pars = save_pars(group = FALSE)
+    chains = 4,
+    save_pars = save_pars(group = FALSE),
+    save_warmup = FALSE
   )
   bmmfit_imm_vignette$bmm$fit_args$data <- NULL
 
@@ -124,4 +127,4 @@ generate_bmm_examples <- function(seed = 123) {
 
 }
 
-generate_bmm_examples()
+generate_bmm_examples(15234)
