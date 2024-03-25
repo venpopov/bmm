@@ -73,8 +73,8 @@ test_that("dmixture3p integrates to 1", {
   )$value, 1)
 })
 
-test_that("dIMM integrates to 1", {
-  expect_equal(integrate(dIMM, -pi, pi,
+test_that("dimm integrates to 1", {
+  expect_equal(integrate(dimm, -pi, pi,
     mu = runif(3, min = -pi, pi),
     dist = c(0, runif(2, min = 0.1, max = pi)),
     kappa = runif(1, min = 1, max = 20),
@@ -104,8 +104,8 @@ test_that("rmixture3p returns values between -pi and pi", {
   expect_true(all(res >= -pi) && all(res <= pi))
 })
 
-test_that("rIMM returns values between -pi and pi", {
-  res <- rIMM(500,
+test_that("rimm returns values between -pi and pi", {
+  res <- rimm(500,
     mu = runif(3, min = -pi, pi),
     dist = c(0, runif(2, min = 0.1, max = pi)),
     kappa = runif(1, min = 1, max = 20),

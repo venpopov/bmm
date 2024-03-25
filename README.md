@@ -236,10 +236,10 @@ implemented models.
 These function provide an easy way to see what a model predicts for data
 given a certain set of parameters. For example you can easily plot the
 probability density function of the data for the Interference
-Measurement model using the `dIMM` function. In similar fashion the
+Measurement model using the `dimm` function. In similar fashion the
 random generation function included for each model, generates random
 data based on a set of data generating parameters. For the IMM, you can
-use `rIMM` to generate data given a set of parameters. Plotting the
+use `rimm` to generate data given a set of parameters. Plotting the
 random data against the density illustrates that the data follows the
 theoretically implied density.
 
@@ -247,7 +247,7 @@ theoretically implied density.
 library(ggplot2)
 
 simData <- data.frame(
-  x = bmm::rIMM(n = 500,
+  x = bmm::rimm(n = 500,
                 mu = c(0,-1.5,2.5,1),
                 dist = c(0, 2, 0.3, 1),
                 c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)
@@ -255,7 +255,7 @@ simData <- data.frame(
 
 ggplot(data = simData, aes(x = x)) +
   geom_histogram(aes(y = after_stat(density))) +
-  geom_function(fun = bmm::dIMM,
+  geom_function(fun = bmm::dimm,
                 args = list(mu = c(0,-1.5,2.5,1),
                             dist = c(0, 2, 0.3, 1),
                             c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)) +

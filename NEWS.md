@@ -3,7 +3,6 @@
 ### New features
 * add a custom **summary()** method for bmm models (#144) 
 * add a global options **bmm.summary_backend** to control the backend used for the summary() method (choices are "bmm" and "brms")
-* BREAKING CHANGE: remove **get_model_prior(), get_stancode() and get_standata()**. Due to [recent changes](https://github.com/paul-buerkner/brms/pull/1604) in *brms* version 2.21.0, you can now use the *brms* functions `default_prior`, `stancode` and `standata` directly with *bmm* models.
 * function **restructure()** now allows to apply methods introduced in newer bmm versions to bmmfit objects created by older bmm versions
 * you can now specify any model parameter to be a constant by using an equal sign in the `bmmformula` (#142)
 * you can now choose to estimate parameters that are fixed to a constant by default for all models (#145)
@@ -16,10 +15,14 @@
 * fix bugs with the summary() function not displaying implicit parameters (#152) and not working properly with some hierarhical designs (#173)
 * fix a bug in which the sort_data check occured in cases where it shouldn't (#158)
 
+### Deprecated functions and arguments
+* BREAKING CHANGE: remove **get_model_prior(), get_stancode() and get_standata()**. Due to [recent changes](https://github.com/paul-buerkner/brms/pull/1604) in *brms* version 2.21.0, you can now use the *brms* functions `default_prior`, `stancode` and `standata` directly with *bmm* models.
+* the function `fit_model()` is deprecated in favor of `bmm()` (#163) and will be removed in a future version
+* the argument **setsize** for the `mixture3p` and `IMM` models is now called **set_size** for consistency (#163). The old argument name is deprecated and will be removed in a future version
+* the distributions functions for the imm model are renamed from dIMM, pIMM, rIMM and qIMM to dimm, pimm, rimm and qimm (#163)
+
 ### Other changes
 * `bmm` now requires the latest version of `brms` (>= 2.21.0).
-* the function `fit_model()` is deprecated in favor of `bmm()` (#163)
-* the argument **setsize** for the `mixture3p` and `IMM` models is now called **set_size** for consistency (#163). The old argument name is deprecated and will be removed in a future version.
 
 # bmm 0.4.0
 

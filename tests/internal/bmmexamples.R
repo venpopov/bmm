@@ -80,7 +80,7 @@ generate_bmm_examples <- function(seed = 123) {
   for (i in 1:length(Cs)) {
     item_location <- c(0, runif(set_size - 1, -pi,pi))
     item_distance <- c(0, runif(set_size - 1, min = 0.1, max = pi))
-    genData <- rIMM(n = nTrials,
+    genData <- rimm(n = nTrials,
                     mu = item_location,
                     dist = item_distance,
                     c = Cs[i], a = As[i],
