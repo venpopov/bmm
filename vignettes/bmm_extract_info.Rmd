@@ -119,10 +119,9 @@ stancode(fit)
 
 If you want to extract the data that would be used for fitting a model, you can use the `standata()` function from `brms`. This function will return a list with the data that would be passed to Stan for fitting the model. 
 
-```{r}
+```{r, message=F, warning=F}
 sd <- standata(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
                data = OberauerLin_2017,
-               model = sdmSimple(resp_err = 'dev_rad'),
-               sort_data = TRUE)
+               model = sdmSimple(resp_err = 'dev_rad'))
 str(sd)
 ```
