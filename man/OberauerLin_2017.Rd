@@ -12,7 +12,7 @@ A data frame with 15,200 rows and 39 columns:
 \item{ID}{Integer uniquely identifying different subjects}
 \item{session}{Session number}
 \item{trial}{Trial number within each session}
-\item{set_size}{The setsize of the data in this row}
+\item{set_size}{The set_size of the data in this row}
 \item{dev_rad}{The response error, that is the difference between the response
 given and the target color in radians.}
 \item{col_nt1,col_nt2,col_nt3,col_nt4,col_nt5,col_nt6_Col,col_nt7}{The non-target items' color value relative to the target.}

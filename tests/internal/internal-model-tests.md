@@ -235,7 +235,7 @@ formula <- bmf(thetat ~ 0 + SetSize,
 
 model <- mixture3p(resp_err = 'dev_rad',
                    nt_features = paste0("Item", 2:4,"_Col_rad"),
-                   setsize = "SetSize")
+                   set_size = "SetSize")
 
 fit$mixture3p <- fit_model(formula, data, model,
                            parallel = TRUE,
@@ -554,7 +554,7 @@ formula <- bmf(a ~ 0 + SetSize,
 model <- IMMfull(resp_err = 'dev_rad',
                  nt_features = paste0("Item", 2:4,"_Col_rad"),
                  nt_distances = paste0("Item", 2:4,"_Pos_rad"),
-                 setsize = "SetSize")
+                 set_size = "SetSize")
 
 fit$IMMfull <- fit_model(formula, data, model,
                            parallel = TRUE,
@@ -747,7 +747,7 @@ formula <- bmf(c ~ 0 + SetSize,
 model <- IMMbsc(resp_err = 'dev_rad',
                 nt_features = paste0("Item", 2:4,"_Col_rad"),
                 nt_distances = paste0("Item", 2:4,"_Pos_rad"),
-                setsize = "SetSize")
+                set_size = "SetSize")
 
 fit$IMMbsc <- fit_model(formula, data, model,
                         parallel = TRUE,
@@ -925,7 +925,7 @@ formula <- bmf(a ~ 0 + SetSize,
 
 model <- IMMabc(resp_err = 'dev_rad',
                 nt_features = paste0("Item", 2:4,"_Col_rad"),
-                setsize = "SetSize")
+                set_size = "SetSize")
 
 fit$IMMabc <- fit_model(formula, data, model,
                         parallel = TRUE,

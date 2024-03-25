@@ -18,7 +18,7 @@ test_that("Available mock models run without errors", {
 
   # three-parameter model mock fit
   f <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
-  model <- mixture3p(resp_err = "resp_err", setsize = 3,
+  model <- mixture3p(resp_err = "resp_err", set_size = 3,
                      nt_features = paste0("Item", 2:3, "_rel"))
   mock_fit <- bmm(f, dat, model, backend = "mock", mock_fit = 1, rename = FALSE)
   expect_equal(mock_fit$fit, 1)
@@ -26,7 +26,7 @@ test_that("Available mock models run without errors", {
 
   # IMMabc model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, a ~ 1)
-  model <- IMMabc(resp_err = "resp_err", setsize = 3,
+  model <- IMMabc(resp_err = "resp_err", set_size = 3,
                   nt_features = paste0("Item", 2:3, "_rel"))
   mock_fit <- bmm(f, dat, model, backend = "mock", mock_fit = 1, rename = FALSE)
   expect_equal(mock_fit$fit, 1)
@@ -34,7 +34,7 @@ test_that("Available mock models run without errors", {
 
   # IMMbsc model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, s ~ 1)
-  model <- IMMbsc(resp_err = "resp_err", setsize = 3,
+  model <- IMMbsc(resp_err = "resp_err", set_size = 3,
                   nt_features = paste0("Item", 2:3, "_rel"),
                   nt_distances = paste0("spaD", 2:3))
   mock_fit <- bmm(f, dat, model, backend = "mock", mock_fit = 1, rename = FALSE)
@@ -43,7 +43,7 @@ test_that("Available mock models run without errors", {
 
   # IMMfull model mock fit
   f <- bmmformula(kappa ~ 1, c ~ 1, a ~ 1, s ~ 1)
-  model <- IMMfull(resp_err = "resp_err", setsize = 3,
+  model <- IMMfull(resp_err = "resp_err", set_size = 3,
                    nt_features = paste0("Item", 2:3, "_rel"),
                    nt_distances = paste0("spaD", 2:3))
   mock_fit <- bmm(f, dat, model, backend = "mock", mock_fit = 1, rename = FALSE)
@@ -78,17 +78,17 @@ test_that("Available models produce expected errors", {
   for (model in okmodels) {
     model1 <- get_model(model)(resp_err = "resp_err",
                                nt_features = "Item2_rel",
-                               setsize = 5,
+                               set_size = 5,
                                nt_distances = "spaD2")
     expect_error(
       bmm(bmmformula(kappa ~ 1), dat, model1,
                 backend = "mock", mock_fit = 1, rename = FALSE),
-      "'nt_features' should equal max\\(setsize\\)-1"
+      "'nt_features' should equal max\\(set_size\\)-1"
     )
 
     model2 <- get_model(model)(resp_err = "resp_err",
                                nt_features = "Item2_rel",
-                               setsize = TRUE,
+                               set_size = TRUE,
                                nt_distances = "spaD2")
     expect_error(
       bmm(bmmformula(kappa ~ 1), dat, model2,
@@ -101,7 +101,7 @@ test_that("Available models produce expected errors", {
   for (model in spamodels) {
     model1 <- get_model(model)(resp_err = "resp_err",
                                nt_features = paste0("Item", 2:3, "_rel"),
-                               setsize = 3,
+                               set_size = 3,
                                nt_distances = paste0("spaD", 2:3))
     expect_error(
       bmm(bmmformula(kappa ~ 1), dat, model1,

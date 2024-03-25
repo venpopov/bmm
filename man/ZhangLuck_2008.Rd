@@ -11,7 +11,7 @@ A data frame with 4,000 rows and 9 columns:
 \describe{
 \item{subID}{Integer uniquely identifying different subjects}
 \item{trial}{Trial identifyier}
-\item{setsize}{The setsize of the data in this row}
+\item{set_size}{The set_size of the data in this row}
 \item{response_error}{The response error, that is the difference between the response
 given and the target color in radians.}
 \item{col_lure1, col_Lure2, col_Lure3, col_Lure4, col_Lure5}{Color value of the lure items coded relative to the target color.}

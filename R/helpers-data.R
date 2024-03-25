@@ -69,17 +69,17 @@ check_data.nontargets <- function(model, data, formula) {
           The model requires these variable to be in radians.
           The model will continue to run, but the results may be compromised.')
 
-  ss <- check_var_setsize(model$other_vars$setsize, data)
-  max_setsize <- ss$max_setsize
+  ss <- check_var_set_size(model$other_vars$set_size, data)
+  max_set_size <- ss$max_set_size
   ss_numeric <- ss$ss_numeric
 
-  stopif(!isTRUE(all.equal(length(nt_features), max_setsize - 1)),
+  stopif(!isTRUE(all.equal(length(nt_features), max_set_size - 1)),
          "The number of columns for non-target values in the argument \\
-         'nt_features' should equal max(setsize)-1")
+         'nt_features' should equal max(set_size)-1")
 
-  # create index variables for nt_features and correction variable for theta due to setsize
-  lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
-  for (i in 1:(max_setsize - 1)) {
+  # create index variables for nt_features and correction variable for theta due to set_size
+  lure_idx_vars <- paste0('LureIdx',1:(max_set_size - 1))
+  for (i in 1:(max_set_size - 1)) {
     data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
   }
   data$ss_numeric <- ss_numeric
@@ -88,47 +88,47 @@ check_data.nontargets <- function(model, data, formula) {
   data[,nt_features][is.na(data[,nt_features])] <- 0
 
   # save some variables for later use
-  attr(data, 'max_setsize') <- max_setsize
+  attr(data, 'max_set_size') <- max_set_size
   attr(data, 'lure_idx_vars') <- lure_idx_vars
 
   NextMethod("check_data")
 }
 
 
-check_var_setsize <- function(setsize, data) {
-  stopif(length(setsize) > 1,
-         "The setsize variable '{setsize}' must be a single numeric value or \\
+check_var_set_size <- function(set_size, data) {
+  stopif(length(set_size) > 1,
+         "The set_size variable '{set_size}' must be a single numeric value or \\
           a single variable in your data. You provided a vector of length \\
-          {length(setsize)}")
+          {length(set_size)}")
 
-  # class check - is setsize a single numeric value or a variable in the data
+  # class check - is set_size a single numeric value or a variable in the data
   # coericble to a numeric vector?
-  if (is_data_var(setsize, data)) {
-    ss_numeric <- try(as_numeric_vector(data[[setsize]]), silent = T)
+  if (is_data_var(set_size, data)) {
+    ss_numeric <- try(as_numeric_vector(data[[set_size]]), silent = T)
 
     stopif(is_try_error(ss_numeric),
-           "The setsize variable '{setsize}' must be coercible to a numeric \\
+           "The set_size variable '{set_size}' must be coercible to a numeric \\
            vector. Did you code your set size as a character vector?")
 
-    max_setsize <- max(ss_numeric, na.rm = T)
+    max_set_size <- max(ss_numeric, na.rm = T)
   } else {
-    max_setsize <- try(as_one_integer(setsize), silent = T)
+    max_set_size <- try(as_one_integer(set_size), silent = T)
 
-    stopif(is_try_error(max_setsize) | is.logical(setsize),
-      "The setsize variable '{setsize}' must be either a variable in your \\
+    stopif(is_try_error(max_set_size) | is.logical(set_size),
+      "The set_size variable '{set_size}' must be either a variable in your \\
        data or a single numeric value")
 
-    ss_numeric <- rep(max_setsize, nrow(data))
+    ss_numeric <- rep(max_set_size, nrow(data))
   }
 
   # value check
   stopif(any(ss_numeric < 1, na.rm = T),
-         "Values of the setsize variable '{setsize}' must be greater than 0")
+         "Values of the set_size variable '{set_size}' must be greater than 0")
 
   stopif(any(ss_numeric %% 1 != 0, na.rm = T),
-         "Values of the setsize variable '{setsize}' must be whole numbers")
+         "Values of the set_size variable '{set_size}' must be whole numbers")
 
-  list(max_setsize = max_setsize, ss_numeric = ss_numeric)
+  list(max_set_size = max_set_size, ss_numeric = ss_numeric)
 }
 
 

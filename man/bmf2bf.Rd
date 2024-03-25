@@ -24,7 +24,7 @@ appropriate bmf2bf.\* methods based on the classes defined in the model_\* funct
   model <- mixture2p(resp_err = "error")
 
   formula <- bmmformula(
-    thetat ~ 0 + setsize + (0 + setsize | id),
+    thetat ~ 0 + set_size + (0 + set_size | id),
     kappa ~ 1 + (1 | id)
   )
 

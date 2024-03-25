@@ -43,10 +43,10 @@
 #' \dontrun{
 #' configure_model.mixture3p <- function(model, data, formula) {
 #'   # retrieve arguments from the data check
-#'   max_setsize <- attr(data, "max_setsize")
+#'   max_set_size <- attr(data, "max_set_size")
 #'   lure_idx <- attr(data, "lure_idx_vars")
 #'   nt_features <- model$other_vars$nt_features
-#'   setsize_var <- model$other_vars$setsize
+#'   set_size_var <- model$other_vars$set_size
 #'
 #'   # construct initial brms formula
 #'   formula <- bmf2bf(model, formula) +
@@ -56,11 +56,11 @@
 #'     brms::nlf(kappa1 ~ kappa)
 #'
 #'   # additional internal terms for the mixture model formula
-#'   kappa_nts <- paste0("kappa", 3:(max_setsize + 1))
-#'   theta_nts <- paste0("theta", 3:(max_setsize + 1))
-#'   mu_nts <- paste0("mu", 3:(max_setsize + 1))
+#'   kappa_nts <- paste0("kappa", 3:(max_set_size + 1))
+#'   theta_nts <- paste0("theta", 3:(max_set_size + 1))
+#'   mu_nts <- paste0("mu", 3:(max_set_size + 1))
 #'
-#'   for (i in 1:(max_setsize - 1)) {
+#'   for (i in 1:(max_set_size - 1)) {
 #'     formula <- formula +
 #'       glue_nlf("{kappa_nts[i]} ~ kappa") +
 #'       glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (thetant + log(inv_ss)) + ",
@@ -69,7 +69,7 @@
 #'   }
 #'
 #'   # define mixture family
-#'   vm_list <- lapply(1:(max_setsize + 1), function(x) brms::von_mises(link = "identity"))
+#'   vm_list <- lapply(1:(max_set_size + 1), function(x) brms::von_mises(link = "identity"))
 #'   vm_list$order <- "none"
 #'   formula$family <- brms::do_call(brms::mixture, vm_list)
 #'

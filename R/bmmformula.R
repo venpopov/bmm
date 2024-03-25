@@ -60,16 +60,16 @@
 #' @export
 #' @examples
 #' imm_formula <- bmmformula(
-#'   c ~ 0 + setsize + (0 + setsize | id),
+#'   c ~ 0 + set_size + (0 + set_size | id),
 #'   a ~ 1,
-#'   kappa ~ 0 + setsize + (0 + setsize | id)
+#'   kappa ~ 0 + set_size + (0 + set_size | id)
 #' )
 #'
 #' # or use the shorter alias 'bmf'
 #' imm_formula2 <- bmf(
-#'   c ~ 0 + setsize + (0 + setsize | id),
+#'   c ~ 0 + set_size + (0 + set_size | id),
 #'   a ~ 1,
-#'   kappa ~ 0 + setsize + (0 + setsize | id)
+#'   kappa ~ 0 + set_size + (0 + set_size | id)
 #' )
 #' identical(imm_formula, imm_formula2)
 #'
@@ -198,16 +198,16 @@ check_formula.default <- function(model, data, formula) {
 
 #' @export
 check_formula.nontargets <- function(model, data, formula) {
-  setsize_var <- model$other_vars$setsize
+  set_size_var <- model$other_vars$set_size
   pred_list <- rhs_vars(formula, collapse = FALSE)
-  has_setsize <- sapply(pred_list, function(x) setsize_var %in% x)
-  ss_forms <- formula[has_setsize]
+  has_set_size <- sapply(pred_list, function(x) set_size_var %in% x)
+  ss_forms <- formula[has_set_size]
   intercepts <- sapply(ss_forms, has_intercept)
   stopif(any(intercepts),
          "The formula for parameter(s) {names(ss_forms)[intercepts]} contains \\
-         an intercept and also uses setsize as a predictor. This model requires \\
-         that the intercept is supressed when setsize is used as predictor. \\
-         Try using 0 + {setsize_var} instead.")
+         an intercept and also uses set_size as a predictor. This model requires \\
+         that the intercept is supressed when set_size is used as predictor. \\
+         Try using 0 + {set_size_var} instead.")
   NextMethod("check_formula")
 }
 
@@ -225,7 +225,7 @@ check_formula.nontargets <- function(model, data, formula) {
 #'   model <- mixture2p(resp_err = "error")
 #'
 #'   formula <- bmmformula(
-#'     thetat ~ 0 + setsize + (0 + setsize | id),
+#'     thetat ~ 0 + set_size + (0 + set_size | id),
 #'     kappa ~ 1 + (1 | id)
 #'   )
 #'

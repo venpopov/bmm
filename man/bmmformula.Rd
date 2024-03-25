@@ -67,16 +67,16 @@ You can also use the \code{bmf()} function as a shorthand for \code{bmmformula()
 
 \examples{
 imm_formula <- bmmformula(
-  c ~ 0 + setsize + (0 + setsize | id),
+  c ~ 0 + set_size + (0 + set_size | id),
   a ~ 1,
-  kappa ~ 0 + setsize + (0 + setsize | id)
+  kappa ~ 0 + set_size + (0 + set_size | id)
 )
 
 # or use the shorter alias 'bmf'
 imm_formula2 <- bmf(
-  c ~ 0 + setsize + (0 + setsize | id),
+  c ~ 0 + set_size + (0 + set_size | id),
   a ~ 1,
-  kappa ~ 0 + setsize + (0 + setsize | id)
+  kappa ~ 0 + set_size + (0 + set_size | id)
 )
 identical(imm_formula, imm_formula2)
 

@@ -4,7 +4,7 @@ test_that('+.bmmformula method works', {
   f2 <- bmf(kappa~1)
   f3 <- bmf(kappa~1, m ~ 1)
   f4 <- bmf(kappa~1, m ~ A+B+(A|ID))
-  f5 <- bmf(c~setsize)
+  f5 <- bmf(c~set_size)
   f6 <- formula(c~1)
   f7 <- formula(m ~ A+B+(A|ID))
 
@@ -18,7 +18,7 @@ test_that('+.bmmformula method works', {
   expect_equal(f1 + f4, bmf(y~1,kappa~1, m ~ A+B+(A|ID)))
 
   # adding three bmmformulas work
-  expect_equal(f1+f2+f5, bmf(y~1, kappa~1, c~setsize))
+  expect_equal(f1+f2+f5, bmf(y~1, kappa~1, c~set_size))
 
   # adding a formula to a bmmformula works
   expect_equal(f1 + f6, bmf(y~1, c~1))

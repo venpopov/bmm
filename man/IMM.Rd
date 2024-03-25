@@ -11,7 +11,7 @@ IMMfull(
   resp_err,
   nt_features,
   nt_distances,
-  setsize,
+  set_size,
   regex = FALSE,
   links = NULL,
   ...
@@ -21,13 +21,13 @@ IMMbsc(
   resp_err,
   nt_features,
   nt_distances,
-  setsize,
+  set_size,
   regex = FALSE,
   links = NULL,
   ...
 )
 
-IMMabc(resp_err, nt_features, setsize, regex = FALSE, links = NULL, ...)
+IMMabc(resp_err, nt_features, set_size, regex = FALSE, links = NULL, ...)
 }
 \arguments{
 \item{resp_err}{The name of the variable in the provided dataset containing
@@ -46,8 +46,8 @@ of non-target items to the target item. Alternatively, if regex=TRUE, a regular
 expression can be used to match the non-target distances columns in the
 dataset. Only necessary for the \code{IMMbsc} and \code{IMMfull} models.}
 
-\item{setsize}{Name of the column containing the set size variable (if
-setsize varies) or a numeric value for the setsize, if the setsize is
+\item{set_size}{Name of the column containing the set size variable (if
+set_size varies) or a numeric value for the set_size, if the set_size is
 fixed.}
 
 \item{regex}{Logical. If TRUE, the \code{nt_features} and \code{nt_distances} arguments
@@ -264,7 +264,7 @@ ff <- bmmformula(
 model1 <- IMMfull(resp_err = "dev_rad",
                   nt_features = paste0('col_nt', 1:7),
                   nt_distances = paste0('dist_nt', 1:7),
-                  setsize = 'set_size')
+                  set_size = 'set_size')
 
 # fit the model
 fit <- bmm(formula = ff,
@@ -279,7 +279,7 @@ fit <- bmm(formula = ff,
 model2 <- IMMfull(resp_err = "dev_rad",
                   nt_features = 'col_nt',
                   nt_distances = 'dist_nt',
-                  setsize = 'set_size',
+                  set_size = 'set_size',
                   regex = TRUE)
 
 # fit the model

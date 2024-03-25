@@ -24,44 +24,44 @@ test_that("check_model() works with regular expressions", {
   models1 <- list(
     mixture3p("dev_rad",
       nt_features = paste0("col_nt", 1:7),
-      setsize = "set_size"
+      set_size = "set_size"
     ),
     IMMfull("dev_rad",
       nt_features = paste0("col_nt", 1:7),
       nt_distances = paste0("dist_nt", 1:7),
-      setsize = "set_size"
+      set_size = "set_size"
     ),
     IMMbsc("dev_rad",
       nt_features = paste0("col_nt", 1:7),
       nt_distances = paste0("dist_nt", 1:7),
-      setsize = "set_size"
+      set_size = "set_size"
     ),
     IMMabc("dev_rad",
       nt_features = paste0("col_nt", 1:7),
-      setsize = "set_size"
+      set_size = "set_size"
     )
   )
   models2 <- list(
     mixture3p("dev_rad",
       nt_features = "col_nt",
-      setsize = "set_size",
+      set_size = "set_size",
       regex = TRUE
     ),
     IMMfull("dev_rad",
       nt_features = "col_nt",
       nt_distances = "dist_nt",
-      setsize = "set_size",
+      set_size = "set_size",
       regex = TRUE
     ),
     IMMbsc("dev_rad",
       nt_features = "col_nt",
       nt_distances = "dist_nt",
-      setsize = "set_size",
+      set_size = "set_size",
       regex = TRUE
     ),
     IMMabc("dev_rad",
       nt_features = "col_nt",
-      setsize = "set_size",
+      set_size = "set_size",
       regex = TRUE
     )
   )
@@ -106,7 +106,7 @@ test_that("stancode() works with bmmformula", {
   ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
   sc <- stancode(ff, OberauerLin_2017, model = mixture3p(resp_err = "dev_rad",
                                                          nt_features = "col_nt",
-                                                         setsize = "set_size",
+                                                         set_size = "set_size",
                                                          regex = T)
   )
   expect_equal(class(sc)[1], "character")

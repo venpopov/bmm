@@ -76,7 +76,7 @@ run_mixture3p <- function(...) {
                       thetant ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
   model <- mixture3p(non_targets = paste0("Item", 2:4,"_Col_rad"),
-                     setsize = "SetSize")
+                     set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,
                    chains = 4,
@@ -136,7 +136,7 @@ run_IMMabc <- function(...) {
                       c ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
   model <- IMMabc(non_targets = paste0("Item", 2:4,"_Col_rad"),
-                  setsize = "SetSize")
+                  set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,
                    chains = 4,
@@ -169,7 +169,7 @@ run_IMMbsc <- function(...) {
                       kappa ~ 0 + SetSize)
   model <- IMMbsc(non_targets = paste0("Item", 2:4,"_Col_rad"),
                   spaPos = paste0("Item", 2:4,"_Pos_rad"),
-                  setsize = "SetSize")
+                  set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,
                    chains = 4,
@@ -202,7 +202,7 @@ run_IMMfull <- function(...) {
                       kappa ~ 0 + SetSize)
   model <- IMMfull(non_targets = paste0("Item", 2:4,"_Col_rad"),
                    spaPos = paste0("Item", 2:4,"_Pos_rad"),
-                   setsize = "SetSize")
+                   set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
                    parallel = TRUE,
                    chains = 4,

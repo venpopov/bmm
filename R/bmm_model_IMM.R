@@ -3,12 +3,12 @@
 #############################################################################!
 
 .model_IMMabc <-
-  function(resp_err = NULL, nt_features = NULL, setsize = NULL, regex = FALSE,
+  function(resp_err = NULL, nt_features = NULL, set_size = NULL, regex = FALSE,
            links = NULL, ...) {
     out <- structure(
       list(
         resp_vars = nlist(resp_err),
-        other_vars = nlist(nt_features, setsize),
+        other_vars = nlist(nt_features, set_size),
         domain = "Visual working memory",
         task = "Continuous reproduction",
         name = "Interference measurement model by Oberauer and Lin (2017).",
@@ -59,11 +59,11 @@
 
 .model_IMMbsc <-
   function(resp_err = NULL, nt_features = NULL, nt_distances = NULL,
-           setsize = NULL, regex = FALSE, links = NULL, ...) {
+           set_size = NULL, regex = FALSE, links = NULL, ...) {
     out <- structure(
       list(
         resp_vars = nlist(resp_err),
-        other_vars = nlist(nt_features, nt_distances, setsize),
+        other_vars = nlist(nt_features, nt_distances, set_size),
         domain = "Visual working memory",
         task = "Continuous reproduction",
         name = "Interference measurement model by Oberauer and Lin (2017).",
@@ -113,11 +113,11 @@
 
 .model_IMMfull <-
   function(resp_err = NULL, nt_features = NULL, nt_distances = NULL,
-           setsize = NULL, regex = FALSE, links = NULL, ...) {
+           set_size = NULL, regex = FALSE, links = NULL, ...) {
     out <- structure(
       list(
         resp_vars = nlist(resp_err),
-        other_vars = nlist(nt_features, nt_distances, setsize),
+        other_vars = nlist(nt_features, nt_distances, set_size),
         domain = "Visual working memory",
         task = "Continuous reproduction",
         name = "Interference measurement model by Oberauer and Lin (2017).",
@@ -199,8 +199,8 @@
 #'   of non-target items to the target item. Alternatively, if regex=TRUE, a regular
 #'   expression can be used to match the non-target distances columns in the
 #'   dataset. Only necessary for the `IMMbsc` and `IMMfull` models.
-#' @param setsize Name of the column containing the set size variable (if
-#'   setsize varies) or a numeric value for the setsize, if the setsize is
+#' @param set_size Name of the column containing the set size variable (if
+#'   set_size varies) or a numeric value for the set_size, if the set_size is
 #'   fixed.
 #' @param regex Logical. If TRUE, the `nt_features` and `nt_distances` arguments
 #'   are interpreted as a regular expression to match the non-target feature
@@ -227,14 +227,13 @@
 #' model1 <- IMMfull(resp_err = "dev_rad",
 #'                   nt_features = paste0('col_nt', 1:7),
 #'                   nt_distances = paste0('dist_nt', 1:7),
-#'                   setsize = 'set_size')
+#'                   set_size = 'set_size')
 #'
 #' # fit the model
 #' fit <- bmm(formula = ff,
 #'            data = data,
 #'            model = model1,
 #'            parallel = T,
-#'            iter = 500,
 #'            backend = 'cmdstanr')
 #'
 #' # alternatively specify the IMM model with a regular expression to match non-target features
@@ -242,46 +241,60 @@
 #' model2 <- IMMfull(resp_err = "dev_rad",
 #'                   nt_features = 'col_nt',
 #'                   nt_distances = 'dist_nt',
-#'                   setsize = 'set_size',
+#'                   set_size = 'set_size',
 #'                   regex = TRUE)
 #'
 #' # fit the model
 #' fit <- bmm(formula = ff,
 #'            data = data,
 #'            model = model2,
-#'            parallel=T,
-#'            iter = 500,
-#'            backend='cmdstanr')
+#'            parallel = T,
+#'            backend = 'cmdstanr')
 #'}
 #' @export
-IMMfull <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE,
+IMMfull <- function(resp_err, nt_features, nt_distances, set_size, regex = FALSE,
                     links = NULL,
                     ...) {
+  dots <- list(...)
+  if ("setsize" %in% names(dots)) {
+    set_size <- dots$setsize
+    warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
+  }
   stop_missing_args()
   .model_IMMfull(resp_err = resp_err, nt_features = nt_features,
-                 nt_distances = nt_distances, setsize = setsize, regex = regex,
+                 nt_distances = nt_distances, set_size = set_size, regex = regex,
                  links = links, ...)
 }
 
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMbsc <- function(resp_err, nt_features, nt_distances, setsize, regex = FALSE,
+IMMbsc <- function(resp_err, nt_features, nt_distances, set_size, regex = FALSE,
                    links = NULL, ...) {
+  dots <- list(...)
+  if ("setsize" %in% names(dots)) {
+    set_size <- dots$setsize
+    warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
+  }
   stop_missing_args()
   .model_IMMbsc(resp_err = resp_err, nt_features = nt_features,
-                nt_distances = nt_distances, setsize = setsize, regex = regex,
+                nt_distances = nt_distances, set_size = set_size, regex = regex,
                 links = links, ...)
 }
 
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMabc <- function(resp_err, nt_features, setsize, regex = FALSE, links = NULL,
+IMMabc <- function(resp_err, nt_features, set_size, regex = FALSE, links = NULL,
                    ...) {
+  dots <- list(...)
+  if ("setsize" %in% names(dots)) {
+    set_size <- dots$setsize
+    warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
+  }
   stop_missing_args()
   .model_IMMabc(resp_err = resp_err, nt_features = nt_features,
-                setsize = setsize, regex = regex, links = links, ...)
+                set_size = set_size, regex = regex, links = links, ...)
 }
 
 #############################################################################!
@@ -295,11 +308,11 @@ IMMabc <- function(resp_err, nt_features, setsize, regex = FALSE, links = NULL,
 #' @export
 check_data.IMMspatial <- function(model, data, formula) {
   nt_distances <- model$other_vars$nt_distances
-  max_setsize <- attr(data, 'max_setsize')
+  max_set_size <- attr(data, 'max_set_size')
 
-  stopif(!isTRUE(all.equal(length(nt_distances), max_setsize - 1)),
+  stopif(!isTRUE(all.equal(length(nt_distances), max_set_size - 1)),
          "The number of columns for non-target distances in the argument \\
-         'nt_distances' should equal max(setsize)-1})")
+         'nt_distances' should equal max(set_size)-1})")
 
   # replace nt_distances
   data[,nt_distances][is.na(data[,nt_distances])] <- 999
@@ -319,10 +332,10 @@ check_data.IMMspatial <- function(model, data, formula) {
 #' @export
 configure_model.IMMabc <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, 'max_setsize')
+  max_set_size <- attr(data, 'max_set_size')
   lure_idx <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
-  setsize_var <- model$other_vars$setsize
+  set_size_var <- model$other_vars$set_size
 
   # construct main brms formula from the bmm formula
   formula <- bmf2bf(model, formula) +
@@ -332,11 +345,11 @@ configure_model.IMMabc <- function(model, data, formula) {
     brms::nlf(kappa1 ~ kappa)
 
   # additional internal terms for the mixture model formula
-  kappa_nts <- paste0("kappa", 3:(max_setsize + 1))
-  theta_nts <- paste0("theta", 3:(max_setsize + 1))
-  mu_nts <- paste0("mu", 3:(max_setsize + 1))
+  kappa_nts <- paste0("kappa", 3:(max_set_size + 1))
+  theta_nts <- paste0("theta", 3:(max_set_size + 1))
+  mu_nts <- paste0("mu", 3:(max_set_size + 1))
 
-  for (i in 1:(max_setsize - 1)) {
+  for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
       glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * a + (1 - {lure_idx[i]}) * (-100)") +
@@ -346,7 +359,7 @@ configure_model.IMMabc <- function(model, data, formula) {
   # define mixture family
   formula$family <- brms::mixture(brms::von_mises("tan_half"),
                                   brms::von_mises("identity"),
-                                  nmix = c(1, max_setsize),
+                                  nmix = c(1, max_set_size),
                                   order = "none")
 
   nlist(formula, data)
@@ -356,13 +369,13 @@ configure_model.IMMabc <- function(model, data, formula) {
 #' @export
 configure_prior.IMMabc <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
-  setsize_var <- model$other_vars$setsize
+  set_size_var <- model$other_vars$set_size
   a_preds <- rhs_vars(formula$pforms$a)
   prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% a_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% a_preds) {
     prior <- brms::prior_("constant(0)",
                           class = "b",
-                          coef = paste0(setsize_var, 1),
+                          coef = paste0(set_size_var, 1),
                           nlpar = "a")
   }
   prior
@@ -372,10 +385,10 @@ configure_prior.IMMabc <- function(model, data, formula, user_prior, ...) {
 #' @export
 configure_model.IMMbsc <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, 'max_setsize')
+  max_set_size <- attr(data, 'max_set_size')
   lure_idx <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
-  setsize_var <- model$other_vars$setsize
+  set_size_var <- model$other_vars$set_size
   nt_distances <- model$other_vars$nt_distances
 
   # construct main brms formula from the bmm formula
@@ -387,11 +400,11 @@ configure_model.IMMbsc <- function(model, data, formula) {
     brms::nlf(expS ~ exp(s))
 
   # additional internal terms for the mixture model formula
-  kappa_nts <- paste0("kappa", 3:(max_setsize + 1))
-  theta_nts <- paste0("theta", 3:(max_setsize + 1))
-  mu_nts <- paste0("mu", 3:(max_setsize + 1))
+  kappa_nts <- paste0("kappa", 3:(max_set_size + 1))
+  theta_nts <- paste0("theta", 3:(max_set_size + 1))
+  mu_nts <- paste0("mu", 3:(max_set_size + 1))
 
-  for (i in 1:(max_setsize - 1)) {
+  for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
       glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * exp(-expS*{nt_distances[i]}) * c + (1 - {lure_idx[i]}) * (-100)") +
@@ -401,7 +414,7 @@ configure_model.IMMbsc <- function(model, data, formula) {
   # define mixture family
   formula$family <- brms::mixture(brms::von_mises("tan_half"),
                                   brms::von_mises("identity"),
-                                  nmix = c(1, max_setsize),
+                                  nmix = c(1, max_set_size),
                                   order = "none")
 
   nlist(formula, data)
@@ -410,13 +423,13 @@ configure_model.IMMbsc <- function(model, data, formula) {
 #' @export
 configure_prior.IMMbsc <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
-  setsize_var <- model$other_vars$setsize
+  set_size_var <- model$other_vars$set_size
   s_preds <- rhs_vars(formula$pforms$s)
   prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% s_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% s_preds) {
     prior <- brms::prior_("constant(0)",
                           class = "b",
-                          coef = paste0(setsize_var, 1),
+                          coef = paste0(set_size_var, 1),
                           nlpar = "s")
   }
   prior
@@ -425,10 +438,10 @@ configure_prior.IMMbsc <- function(model, data, formula, user_prior, ...) {
 #' @export
 configure_model.IMMfull <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, 'max_setsize')
+  max_set_size <- attr(data, 'max_set_size')
   lure_idx <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
-  setsize_var <- model$other_vars$setsize
+  set_size_var <- model$other_vars$set_size
   nt_distances <- model$other_vars$nt_distances
 
   # construct main brms formula from the bmm formula
@@ -440,11 +453,11 @@ configure_model.IMMfull <- function(model, data, formula) {
     brms::nlf(expS ~ exp(s))
 
   # additional internal terms for the mixture model formula
-  kappa_nts <- paste0("kappa", 3:(max_setsize + 1))
-  theta_nts <- paste0("theta", 3:(max_setsize + 1))
-  mu_nts <- paste0("mu", 3:(max_setsize + 1))
+  kappa_nts <- paste0("kappa", 3:(max_set_size + 1))
+  theta_nts <- paste0("theta", 3:(max_set_size + 1))
+  mu_nts <- paste0("mu", 3:(max_set_size + 1))
 
-  for (i in 1:(max_setsize - 1)) {
+  for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
       glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (exp(-expS*{nt_distances[i]}) * c + a) + (1 - {lure_idx[i]}) * (-100)") +
@@ -455,7 +468,7 @@ configure_model.IMMfull <- function(model, data, formula) {
   # define mixture family
   formula$family <- brms::mixture(brms::von_mises("tan_half"),
                                   brms::von_mises("identity"),
-                                  nmix = c(1, max_setsize),
+                                  nmix = c(1, max_set_size),
                                   order = "none")
 
   nlist(formula, data)
@@ -464,20 +477,20 @@ configure_model.IMMfull <- function(model, data, formula) {
 #' @export
 configure_prior.IMMfull <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
-  setsize_var <- model$other_vars$setsize
+  set_size_var <- model$other_vars$set_size
   s_preds <- rhs_vars(formula$pforms$s)
   a_preds <- rhs_vars(formula$pforms$a)
   prior <- brms::empty_prior()
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% a_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% a_preds) {
     prior <- brms::prior_("constant(0)",
                           class = "b",
-                          coef = paste0(setsize_var, 1),
+                          coef = paste0(set_size_var, 1),
                           nlpar = "a")
   }
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% s_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% s_preds) {
     prior <- prior + brms::prior_("constant(0)",
                                   class = "b",
-                                  coef = paste0(setsize_var, 1),
+                                  coef = paste0(set_size_var, 1),
                                   nlpar = "s")
   }
   prior

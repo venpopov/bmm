@@ -21,8 +21,8 @@ test_that("empty dots don't crash the function", {
 test_that("missing arguments in models are handled correctly", {
   expect_error(mixture2p(), "arguments are missing in mixture2p\\(\\)\\: resp_err")
   expect_error(sdmSimple(), "arguments are missing in sdmSimple\\(\\)\\: resp_err")
-  expect_error(mixture3p('y'), "arguments are missing in mixture3p\\(\\)\\: nt_features, setsize")
-  expect_error(mixture3p(setsize = 'y'), "arguments are missing in mixture3p\\(\\)\\: resp_err, nt_features")
+  expect_error(mixture3p('y'), "arguments are missing in mixture3p\\(\\)\\: nt_features, set_size")
+  expect_error(mixture3p(set_size = 'y'), "arguments are missing in mixture3p\\(\\)\\: resp_err, nt_features")
 })
 
 test_that("get_variables works", {

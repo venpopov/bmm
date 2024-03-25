@@ -75,11 +75,11 @@ generate_bmm_examples <- function(seed = 123) {
   Ss <- c(10,10,5,5)
   kappas <- c(15,10,15,10)
   nTrials = 1000
-  setsize = 5
+  set_size = 5
   simData <- data.frame()
   for (i in 1:length(Cs)) {
-    item_location <- c(0, runif(setsize - 1, -pi,pi))
-    item_distance <- c(0, runif(setsize - 1, min = 0.1, max = pi))
+    item_location <- c(0, runif(set_size - 1, -pi,pi))
+    item_distance <- c(0, runif(set_size - 1, min = 0.1, max = pi))
     genData <- rIMM(n = nTrials,
                     mu = item_location,
                     dist = item_distance,
@@ -93,13 +93,13 @@ generate_bmm_examples <- function(seed = 123) {
       dist_item1 = 0
     )
     init_colnames <- colnames(condData)
-    for (j in 1:(setsize - 1)) {
+    for (j in 1:(set_size - 1)) {
       condData <- cbind(condData,item_location[j + 1])
       condData <- cbind(condData,item_distance[j + 1])
     }
     colnames(condData) <- c(init_colnames,
-                            paste0(rep(c("color_item","dist_item"),times = setsize - 1),
-                                   rep(2:(setsize),each = 2)))
+                            paste0(rep(c("color_item","dist_item"),times = set_size - 1),
+                                   rep(2:(set_size),each = 2)))
     simData <- rbind(simData,condData)
   }
   simData$cond <- as.factor(simData$cond)
@@ -111,7 +111,7 @@ generate_bmm_examples <- function(seed = 123) {
   )
   model <- IMMfull(resp_err = "resp_err",
                    nt_features = paste0("color_item",2:5),
-                   setsize = setsize,
+                   set_size = set_size,
                    nt_distances = paste0("dist_item",2:5))
   bmmfit_imm_vignette <- bmm(
     formula = model_formula,

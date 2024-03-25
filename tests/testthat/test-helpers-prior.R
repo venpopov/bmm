@@ -14,7 +14,7 @@ test_that("default_prior() works with bmmformula", {
   ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
   prior <- default_prior(ff, OberauerLin_2017, mixture3p(resp_err = "dev_rad",
                                                          nt_features = "col_nt",
-                                                         setsize = "set_size",
+                                                         set_size = "set_size",
                                                          regex = T))
   expect_equal(class(prior)[1], "brmsprior")
 })

@@ -19,6 +19,7 @@
 ### Other changes
 * `bmm` now requires the latest version of `brms` (>= 2.21.0).
 * the function `fit_model()` is deprecated in favor of `bmm()` (#163)
+* the argument **setsize** for the `mixture3p` and `IMM` models is now called **set_size** for consistency (#163). The old argument name is deprecated and will be removed in a future version.
 
 # bmm 0.4.0
 
@@ -70,7 +71,7 @@ to zero for scaling and as of now cannot be predicted by independent variables b
 # bmm 0.2.2
 
 ### Bug Fixes
-* fixed a bug where passing a character vector or negative values to setsize argument of visual working memory models caused an error or incorrect behavior (#97)
+* fixed a bug where passing a character vector or negative values to set_size argument of visual working memory models caused an error or incorrect behavior (#97)
 
 # bmm 0.2.1
 
@@ -104,7 +105,7 @@ to zero for scaling and as of now cannot be predicted by independent variables b
 
 ### New features
 
-* BREAKING CHANGE: Improve user interface to fit_model() ensures package stability and future development. Model specific arguments are now passed to the model functions as named arguments (e.g. `mixture3p(non_targets, setsize)`). This allows for a more flexible and intuitive way to specify model arguments. Passing model specific arguments directly to the `fit_model()` function is now deprecated (#43).
+* BREAKING CHANGE: Improve user interface to fit_model() ensures package stability and future development. Model specific arguments are now passed to the model functions as named arguments (e.g. `mixture3p(non_targets, set_size)`). This allows for a more flexible and intuitive way to specify model arguments. Passing model specific arguments directly to the `fit_model()` function is now deprecated (#43).
 * Add information about each model such as domain, task, name, version, citation, requirements and parameters (#42)
 * Add ability to generate a template file for adding new models to the package with `use_model_template()` (for developers) (#39)
 

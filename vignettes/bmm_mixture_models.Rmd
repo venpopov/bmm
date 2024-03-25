@@ -116,7 +116,7 @@ knitr::kable(dat[dat$set_size==4,][1:6,])
 where:
 
 - `id` is a unique identifier for each participant
-- `setsize` is the number of items presented in the memory array
+- `set_size` is the number of items presented in the memory array
 - `response` the participant's recollection of the target orientation in radians
 - `target` the feature value of the target in radians 
 - `non_target_1` to `non_target5` are the feature values of the non-targets in radians
@@ -231,7 +231,7 @@ pmem <- exp(thetat)/(exp(thetat)+1)
 pg <- exp(0)/(exp(thetat)+1)
 ```
 
-Our estimates for kappa over setsize are:
+Our estimates for kappa over set_size are:
 
 ```{r}
 kappa
@@ -287,7 +287,7 @@ where the black dot represents the median of the posterior distribution, the thi
 
 # Fitting the 3-parameter mixture model with `bmm`
 
-Fitting the 3-parameter mixture model is very similar. We have an extra parameter `thetant` that represents the mixture weight for non-target responses^[because now we have three mixture weights, you will need later to calculate the probability of target responses as $p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}$, the probability of non-target responses as $p_{nt} =\frac{exp(\theta_{nontarget})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}$, and the probability of guessing as $p_{guess} = 1-p_{mem}-p_{nt}$]. We also need to specify the names of the non-target variables and the setsize^[When the setsize varies in an experiment, provide the name of the variable containing the setsize information. If the set size is the same for all trials, provide a number, e.g. `setsize=4`] variable in the `mixture3p` function. 
+Fitting the 3-parameter mixture model is very similar. We have an extra parameter `thetant` that represents the mixture weight for non-target responses^[because now we have three mixture weights, you will need later to calculate the probability of target responses as $p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}$, the probability of non-target responses as $p_{nt} =\frac{exp(\theta_{nontarget})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}$, and the probability of guessing as $p_{guess} = 1-p_{mem}-p_{nt}$]. We also need to specify the names of the non-target variables and the set_size^[When the set_size varies in an experiment, provide the name of the variable containing the set_size information. If the set size is the same for all trials, provide a number, e.g. `set_size=4`] variable in the `mixture3p` function. 
 
 ```{r}
 ff <- bmf(
@@ -296,7 +296,7 @@ ff <- bmf(
   kappa ~ 0 + set_size + (0 + set_size | id)
 )
 
-model <- mixture3p(resp_err = "error", nt_features = paste0('non_target_',1:5), setsize = 'set_size')
+model <- mixture3p(resp_err = "error", nt_features = paste0('non_target_',1:5), set_size = 'set_size')
 ```
 
 Then we run the model just like before:
@@ -320,11 +320,11 @@ In the above example we specified all column names for the non_targets explicite
 ```{r}
 model <- mixture3p(resp_err = "error", 
                    nt_features = "non_target_[1-5]", 
-                   setsize = 'set_size', 
+                   set_size = 'set_size', 
                    regex = TRUE)
 model <- mixture3p(resp_err = "error", 
                    nt_features = "non_target_", 
-                   setsize = 'set_size', 
+                   set_size = 'set_size', 
                    regex = TRUE)
 ```
 

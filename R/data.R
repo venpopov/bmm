@@ -8,7 +8,7 @@
 #' \describe{
 #'   \item{subID}{Integer uniquely identifying different subjects}
 #'   \item{trial}{Trial identifyier}
-#'   \item{setsize}{The setsize of the data in this row}
+#'   \item{setsize}{The set_size of the data in this row}
 #'   \item{response_error}{The response error, that is the difference between the response
 #'   given and the target color in radians.}
 #'   \item{col_lure1, col_Lure2, col_Lure3, col_Lure4, col_Lure5}{Color value of the lure items coded relative to the target color.}
@@ -30,7 +30,7 @@
 #'   \item{ID}{Integer uniquely identifying different subjects}
 #'   \item{session}{Session number}
 #'   \item{trial}{Trial number within each session}
-#'   \item{set_size}{The setsize of the data in this row}
+#'   \item{set_size}{The set_size of the data in this row}
 #'   \item{dev_rad}{The response error, that is the difference between the response
 #'   given and the target color in radians.}
 #'   \item{col_nt1,col_nt2,col_nt3,col_nt4,col_nt5,col_nt6_Col,col_nt7}{The non-target items' color value relative to the target.}

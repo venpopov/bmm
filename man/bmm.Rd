@@ -90,11 +90,11 @@ backend interface to Stan.
 \section{Supported Models}{
 The following models are supported:
 \itemize{
-\item IMMabc(resp_err, nt_features, setsize, regex, links)
-\item IMMbsc(resp_err, nt_features, nt_distances, setsize, regex, links)
-\item IMMfull(resp_err, nt_features, nt_distances, setsize, regex, links)
+\item IMMabc(resp_err, nt_features, set_size, regex, links)
+\item IMMbsc(resp_err, nt_features, nt_distances, set_size, regex, links)
+\item IMMfull(resp_err, nt_features, nt_distances, set_size, regex, links)
 \item mixture2p(resp_err, links)
-\item mixture3p(resp_err, nt_features, setsize, regex, links)
+\item mixture3p(resp_err, nt_features, set_size, regex, links)
 \item sdmSimple(resp_err, links)
 }
 

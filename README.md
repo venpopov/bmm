@@ -67,11 +67,11 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  IMMabc(resp_err, nt_features, setsize, regex, links) 
-#> -  IMMbsc(resp_err, nt_features, nt_distances, setsize, regex, links) 
-#> -  IMMfull(resp_err, nt_features, nt_distances, setsize, regex, links) 
+#> -  IMMabc(resp_err, nt_features, set_size, regex, links) 
+#> -  IMMbsc(resp_err, nt_features, nt_distances, set_size, regex, links) 
+#> -  IMMfull(resp_err, nt_features, nt_distances, set_size, regex, links) 
 #> -  mixture2p(resp_err, links) 
-#> -  mixture3p(resp_err, nt_features, setsize, regex, links) 
+#> -  mixture3p(resp_err, nt_features, set_size, regex, links) 
 #> -  sdmSimple(resp_err, links) 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
@@ -202,7 +202,7 @@ formula <- bmmformula(c ~ 0 + set_size,
 model <- IMMfull(resp_err = "dev_rad",
                  nt_features = paste0("col_nt", 1:7),
                  nt_distances = paste0("dist_nt",1:7),
-                 setsize = "set_size")
+                 set_size = "set_size")
 
 fit <- bmm(formula = formula, data = data, model = model)
 ```

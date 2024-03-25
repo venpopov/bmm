@@ -4,7 +4,7 @@
 \alias{mixture3p}
 \title{Three-parameter mixture model by Bays et al (2009).}
 \usage{
-mixture3p(resp_err, nt_features, setsize, regex = FALSE, links = NULL, ...)
+mixture3p(resp_err, nt_features, set_size, regex = FALSE, links = NULL, ...)
 }
 \arguments{
 \item{resp_err}{The name of the variable in the dataset containing
@@ -18,8 +18,8 @@ centered relative to the target. Alternatively, if regex=TRUE, a regular
 expression can be used to match the non-target feature columns in the
 dataset.}
 
-\item{setsize}{Name of the column containing the set size variable (if
-setsize varies) or a numeric value for the setsize, if the setsize is
+\item{set_size}{Name of the column containing the set size variable (if
+set_size varies) or a numeric value for the set_size, if the set_size is
 fixed.}
 
 \item{regex}{Logical. If TRUE, the \code{nt_features} argument is interpreted as
@@ -111,7 +111,7 @@ ff <- bmmformula(
 )
 
 # specify the 3-parameter model with explicit column names for non-target features
-model1 <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), setsize = 4)
+model1 <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), set_size = 4)
 
 # fit the model
 fit <- bmm(formula = ff,
@@ -123,7 +123,7 @@ fit <- bmm(formula = ff,
 
 # alternatively specify the 3-parameter model with a regular expression to match non-target features
 # this is equivalent to the previous call, but more concise
-model2 <- mixture3p(resp_err = "y", nt_features = "nt.*_loc", setsize = 4, regex = TRUE)
+model2 <- mixture3p(resp_err = "y", nt_features = "nt.*_loc", set_size = 4, regex = TRUE)
 
 # fit the model
 fit <- bmm(formula = ff,
