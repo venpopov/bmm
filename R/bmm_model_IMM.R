@@ -41,9 +41,9 @@
         fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
         default_priors = list(
           mu1 = list(main = "student_t(1, 0, 1)"),
-          kappa = list(main = "normal(2,1)", effects = "normal(0,1)"),
-          a = list(main = "normal(0,1)", effects = "normal(0,1)"),
-          c = list(main = "normal(0,1)", effects = "normal(0,1)")
+          kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
+          a = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
+          c = list(main = "normal(0, 1)", effects = "normal(0, 1)")
         ),
         void_mu = FALSE
       ),
@@ -96,9 +96,9 @@
         fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
         default_priors = list(
           mu1 = list(main = "student_t(1, 0, 1)"),
-          kappa = list(main = "normal(2,1)", effects = "normal(0,1)"),
-          c = list(main = "normal(0,1)", effects = "normal(0,1)"),
-          s = list(main = "normal(0,1)", effects = "normal(0,1)")
+          kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
+          c = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
+          s = list(main = "normal(0, 1)", effects = "normal(0, 1)")
         ),
         void_mu = FALSE
       ),
@@ -152,10 +152,10 @@
         fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
         default_priors = list(
           mu1 = list(main = "student_t(1, 0, 1)"),
-          kappa = list(main = "normal(2,1)", effects = "normal(0,1)"),
-          a = list(main = "normal(0,1)", effects = "normal(0,1)"),
-          c = list(main = "normal(0,1)", effects = "normal(0,1)"),
-          s = list(main = "normal(0,1)", effects = "normal(0,1)")
+          kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
+          a = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
+          c = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
+          s = list(main = "normal(0, 1)", effects = "normal(0, 1)")
         ),
         void_mu = FALSE
       ),
@@ -174,11 +174,11 @@
 #' @name IMM
 #' @details `r model_info(.model_IMMfull(), components =c('domain', 'task', 'name', 'citation'))`
 #' #### Version: `IMMfull`
-#' `r model_info(.model_IMMfull(), components =c('requirements', 'parameters', 'fixed_parameters'))`
+#' `r model_info(.model_IMMfull(), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
 #' #### Version: `IMMbsc`
-#' `r model_info(.model_IMMbsc(), components =c('requirements', 'parameters', 'fixed_parameters'))`
+#' `r model_info(.model_IMMbsc(), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
 #' #### Version: `IMMabc`
-#' `r model_info(.model_IMMabc(), components =c('requirements', 'parameters', 'fixed_parameters'))`
+#' `r model_info(.model_IMMabc(), components =c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
 #'
 #' Additionally, all IMM models have an internal parameter that is fixed to 0 to
 #' allow the model to be identifiable. This parameter is not estimated and is not
@@ -225,8 +225,8 @@
 #'
 #' # specify the full IMM model with explicit column names for non-target features and distances
 #' model1 <- IMMfull(resp_err = "dev_rad",
-#'                   nt_features = paste0('col_nt',1:7),
-#'                   nt_distances = paste0('dist_nt',1:7),
+#'                   nt_features = paste0('col_nt', 1:7),
+#'                   nt_distances = paste0('dist_nt', 1:7),
 #'                   setsize = 'set_size')
 #'
 #' # fit the model

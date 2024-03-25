@@ -100,6 +100,37 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \code{mu2} = 0
 \item \code{kappa2} = -100
 }
+\item \strong{Default parameter links:}
+\itemize{
+\item kappa = log; a = identity; c = identity; s = log
+}
+\item \strong{Default priors:}
+\itemize{
+\item \code{mu1}:
+\itemize{
+\item \code{main}: student_t(1, 0, 1)
+}
+\item \code{kappa}:
+\itemize{
+\item \code{main}: normal(2, 1)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{a}:
+\itemize{
+\item \code{main}: normal(0, 1)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{c}:
+\itemize{
+\item \code{main}: normal(0, 1)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{s}:
+\itemize{
+\item \code{main}: normal(0, 1)
+\item \code{effects}: normal(0, 1)
+}
+}
 }
 }
 
@@ -126,6 +157,32 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \code{mu1} = 0
 \item \code{mu2} = 0
 \item \code{kappa2} = -100
+}
+\item \strong{Default parameter links:}
+\itemize{
+\item kappa = log; c = identity; s = log
+}
+\item \strong{Default priors:}
+\itemize{
+\item \code{mu1}:
+\itemize{
+\item \code{main}: student_t(1, 0, 1)
+}
+\item \code{kappa}:
+\itemize{
+\item \code{main}: normal(2, 1)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{c}:
+\itemize{
+\item \code{main}: normal(0, 1)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{s}:
+\itemize{
+\item \code{main}: normal(0, 1)
+\item \code{effects}: normal(0, 1)
+}
 }
 }
 }
@@ -154,6 +211,32 @@ Interference measurement model by Oberauer and Lin (2017).
 \item \code{mu2} = 0
 \item \code{kappa2} = -100
 }
+\item \strong{Default parameter links:}
+\itemize{
+\item kappa = log; a = identity; c = identity
+}
+\item \strong{Default priors:}
+\itemize{
+\item \code{mu1}:
+\itemize{
+\item \code{main}: student_t(1, 0, 1)
+}
+\item \code{kappa}:
+\itemize{
+\item \code{main}: normal(2, 1)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{a}:
+\itemize{
+\item \code{main}: normal(0, 1)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{c}:
+\itemize{
+\item \code{main}: normal(0, 1)
+\item \code{effects}: normal(0, 1)
+}
+}
 }
 
 Additionally, all IMM models have an internal parameter that is fixed to 0 to
@@ -179,8 +262,8 @@ ff <- bmmformula(
 
 # specify the full IMM model with explicit column names for non-target features and distances
 model1 <- IMMfull(resp_err = "dev_rad",
-                  nt_features = paste0('col_nt',1:7),
-                  nt_distances = paste0('dist_nt',1:7),
+                  nt_features = paste0('col_nt', 1:7),
+                  nt_distances = paste0('dist_nt', 1:7),
                   setsize = 'set_size')
 
 # fit the model

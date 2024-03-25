@@ -51,8 +51,26 @@ and how to use it.
 \item \code{mu} = 0
 }
 \item \strong{Default parameter links:}
-
-mu = tan_half; c = log; kappa = log
+\itemize{
+\item mu = tan_half; c = log; kappa = log
+}
+\item \strong{Default priors:}
+\itemize{
+\item \code{mu}:
+\itemize{
+\item \code{main}: student_t(1, 0, 1)
+}
+\item \code{kappa}:
+\itemize{
+\item \code{main}: student_t(5, 1.75, 0.75)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{c}:
+\itemize{
+\item \code{main}: student_t(5, 2, 0.75)
+\item \code{effects}: normal(0, 1)
+}
+}
 }
 }
 \examples{

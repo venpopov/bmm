@@ -258,3 +258,18 @@ combine_prior <- function(prior1, prior2) {
   }
   return(prior)
 }
+
+
+summarise_default_prior <- function(prior_list) {
+  pars <- names(prior_list)
+  prior_info <- ""
+  for (par in pars) {
+    prior_info  <- paste0(prior_info, "   - `", par, "`:\n")
+    types <- names(prior_list[[par]])
+    for (type in types) {
+      prior <- prior_list[[par]][[type]]
+      prior_info  <- paste0(prior_info, "      - `", type, "`: ", prior, "\n")
+    }
+  }
+  prior_info
+}

@@ -49,8 +49,26 @@ Two-parameter mixture model by Zhang and Luck (2008).
 \item \code{kappa2} = -100
 }
 \item \strong{Default parameter links:}
+\itemize{
+\item mu1 = identity; kappa = log; thetat = identity
+}
+\item \strong{Default priors:}
+\itemize{
+\item \code{mu1}:
+\itemize{
+\item \code{main}: student_t(1, 0, 1)
+}
+\item \code{kappa}:
+\itemize{
+\item \code{main}: normal(2, 1)
+\item \code{effects}: normal(0, 1)
+}
+\item \code{thetat}:
+\itemize{
+\item \code{main}: logistic(0, 1)
+}
+}
 
-mu1 = tan_half; kappa = log; thetat = identity
 }
 }
 \examples{

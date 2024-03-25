@@ -79,3 +79,4 @@ articles:
       Guides to using various features of the **bmm** package
    contents:
     - bmm_bmmformula
+    - bmm_extract_info
