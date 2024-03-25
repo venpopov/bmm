@@ -98,8 +98,20 @@ All of the above examples make an important point - priors are always specified 
 
 The Stan code used for fitting a model is generated together by `bmm` and `brms`. `bmm` takes care of the code specific to the model, while `brms` generates the code for the regression syntax, priors and everything else. If you want to get the Stan code that would be used for fitting a model, so that you can inspect it or modify it, you can use the `stancode()` function from `brms`:
 
-```{r message=FALSE, warning=FALSE}
+```{r comment = "", collapse=FALSE}
 stancode(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
          data = OberauerLin_2017,
          model = sdmSimple(resp_err = 'dev_rad'))
 ```
+
+
+Alternatively, if you already have a fitted model object, you can just call `stancode()` on that object, which will give you the same result:
+
+```r
+fit <- fit_model(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
+                 data = OberauerLin_2017,
+                 model = sdmSimple(resp_err = 'dev_rad'))
+stancode(fit)
+```
+
+

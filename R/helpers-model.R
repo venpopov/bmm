@@ -653,5 +653,19 @@ stancode.bmmformula <- function(object, data, model, prior = NULL, ...) {
   fit_args <- combine_args(nlist(config_args, dots, prior))
   fit_args$object <- fit_args$formula
   fit_args$formula <- NULL
-  brms::do_call(brms::stancode, fit_args)
+  code <- brms::do_call(brms::stancode, fit_args)
+  add_bmm_version_to_stancode(code)
+}
+
+
+add_bmm_version_to_stancode <- function(stancode) {
+  version <- packageVersion("bmm")
+  text <- paste0("and bmm ", version)
+  brms_comp <- regexpr("brms.*(?=\\n)", stancode, perl = T)
+  insert_loc <- brms_comp + attr(brms_comp, "match.length") - 1
+  new_stancode <- paste0(substr(stancode, 1, insert_loc),
+                         " ", text,
+                         substr(stancode, insert_loc + 1, nchar(stancode)))
+  class(new_stancode) <- class(stancode)
+  new_stancode
 }
