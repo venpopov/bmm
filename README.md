@@ -196,7 +196,7 @@ data <- OberauerLin_2017
 For this quick example, we will show how to setup fitting the
 Interference Measurement Model to this data. If you want a detailed
 description of this model and and in depth explanation of the parameters
-estimated in the model, please have a look at `vignette("IMM")`.
+estimated in the model, please have a look at `vignette("bmm_imm")`.
 
 ``` r
 model_formula <- bmmformula(c ~ 0 + set_size,

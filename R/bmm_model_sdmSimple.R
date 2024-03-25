@@ -49,7 +49,7 @@
 
 #' @title `r .model_sdmSimple()$name`
 #' @name SDM
-#' @details see `vignette("sdm-simple")` for a detailed description of the model
+#' @details see `vignette("bmm_sdm_simple")` for a detailed description of the model
 #'   and how to use it.
 #'   `r model_info(.model_sdmSimple())`
 #' @param resp_err The name of the variable in the dataset containing the

@@ -155,7 +155,7 @@ my_formula <- bmf(
 bmmfit <- bmm:::bmmfit_mixture2p_vignette
 ```
 
-Let's assume you have fit a `mixture2p` model to a data set `my_data` as in the `vignette("mixture_models")`. For this, you had to specify a `bmmformula` and model object:
+Let's assume you have fit a `mixture2p` model to a data set `my_data` as in the `vignette("bmm_mixture_models")`. For this, you had to specify a `bmmformula` and model object:
 
 ```r
 user_formula <- bmf(

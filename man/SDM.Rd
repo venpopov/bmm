@@ -25,7 +25,7 @@ An object of class \code{bmmmodel}
 Signal Discrimination Model (SDM) by Oberauer (2023)
 }
 \details{
-see \code{vignette("sdm-simple")} for a detailed description of the model
+see \code{vignette("bmm_sdm_simple")} for a detailed description of the model
 and how to use it.
 \itemize{
 \item \strong{Domain:} Visual working memory
