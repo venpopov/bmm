@@ -104,7 +104,7 @@ test_that("stancode() works with formula", {
 
 test_that("stancode() works with bmmformula", {
   ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
-  sc <- stancode(ff, OberauerLin_2017, model = mixture3p(resp_err = "dev_rad",
+  sc <- stancode(ff, OberauerLin_2017, model = mixture3p(resp_error = "dev_rad",
                                                          nt_features = "col_nt",
                                                          set_size = "set_size",
                                                          regex = T)
@@ -120,7 +120,7 @@ test_that("no check for with stancode function", {
 })
 
 test_that("change_constants() works", {
-  model <- sdmSimple(resp_err = "y")
+  model <- sdmSimple(resp_error = "y")
   formula <- bmf(mu ~ set_size, kappa = 3, c ~ 1)
   model <- change_constants(model, formula)
 })

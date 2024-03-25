@@ -181,7 +181,7 @@ formula <- bmmformula(c ~ 0 + set_size,
                       s ~ 0 + set_size,
                       kappa ~ 0 + set_size)
 
-model <- IMMfull(resp_err = "dev_rad",
+model <- IMMfull(resp_error = "dev_rad",
                  nt_features = paste0("col_nt", 1:7),
                  nt_distances = paste0("dist_nt",1:7),
                  set_size = "set_size")

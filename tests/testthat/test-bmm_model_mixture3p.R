@@ -6,7 +6,7 @@ test_that('mixture3p works when set_size is not predicted and there is set_size 
     thetat ~ 1,
     thetant ~ 1
   )
-  model <- mixture3p(resp_err = 'dev_rad',
+  model <- mixture3p(resp_error = 'dev_rad',
                      nt_features = paste0("col_nt",1:7),
                      set_size = "set_size")
   res <- try(fit <- bmm(formula, dat, model,
@@ -23,7 +23,7 @@ test_that('mixture3p gives an error if set_size is a predictor but there is an i
     thetat ~ 1,
     thetant ~ set_size
   )
-  model <- mixture3p(resp_err = 'dev_rad',
+  model <- mixture3p(resp_error = 'dev_rad',
                      nt_features = paste0("col_nt",1:7),
                      set_size = "set_size")
   expect_error(bmm(formula, dat, model, backend = 'mock', mock=1, rename = F),

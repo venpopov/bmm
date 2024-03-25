@@ -90,12 +90,12 @@ backend interface to Stan.
 \section{Supported Models}{
 The following models are supported:
 \itemize{
-\item IMMabc(resp_err, nt_features, set_size, regex, links)
-\item IMMbsc(resp_err, nt_features, nt_distances, set_size, regex, links)
-\item IMMfull(resp_err, nt_features, nt_distances, set_size, regex, links)
-\item mixture2p(resp_err, links)
-\item mixture3p(resp_err, nt_features, set_size, regex, links)
-\item sdmSimple(resp_err, links)
+\item IMMabc(resp_error, nt_features, set_size, regex, links)
+\item IMMbsc(resp_error, nt_features, nt_distances, set_size, regex, links)
+\item IMMfull(resp_error, nt_features, nt_distances, set_size, regex, links)
+\item mixture2p(resp_error, links)
+\item mixture3p(resp_error, nt_features, set_size, regex, links)
+\item sdmSimple(resp_error, links)
 }
 
 Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
@@ -127,7 +127,7 @@ ff <- bmmformula(c ~ 1, kappa ~ 1)
 # fit the model
 fit <- bmm(formula = ff,
            data = dat,
-           model = sdmSimple(resp_err = "y"),
+           model = sdmSimple(resp_error = "y"),
            parallel=T,
            iter = 500,
            backend = 'cmdstanr')

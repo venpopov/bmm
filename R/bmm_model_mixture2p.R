@@ -2,12 +2,12 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture2p <- function(resp_err = NULL,
+.model_mixture2p <- function(resp_error = NULL,
                              links = NULL,
                              ...) {
   out <- structure(
     list(
-      resp_vars = nlist(resp_err),
+      resp_vars = nlist(resp_error),
       other_vars = nlist(),
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -52,7 +52,7 @@
 
 #' @title `r .model_mixture2p()$name`
 #' @details `r model_info(.model_mixture2p())`
-#' @param resp_err The name of the variable in the provided dataset containing
+#' @param resp_error The name of the variable in the provided dataset containing
 #'   the response error. The response Error should code the response relative to
 #'   the to-be-recalled target in radians. You can transform the response error
 #'   in degrees to radian using the `deg2rad` function.
@@ -70,7 +70,7 @@
 #' ff <- bmmformula(kappa ~ 1,
 #'                  thetat ~ 1)
 #'
-#' model <- mixture2p(resp_err = "y")
+#' model <- mixture2p(resp_error = "y")
 #'
 #' # fit the model
 #' fit <- bmm(formula = ff,
@@ -81,11 +81,11 @@
 #'            backend='cmdstanr')
 #' }
 #' @export
-mixture2p <- function(resp_err,
+mixture2p <- function(resp_error,
                       links = NULL,
                       ...) {
   stop_missing_args()
-  .model_mixture2p(resp_err = resp_err, links = links, ...)
+  .model_mixture2p(resp_error = resp_error, links = links, ...)
 }
 
 #############################################################################!

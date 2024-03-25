@@ -54,7 +54,7 @@ generate_bmm_examples <- function(seed = 123) {
            set_size = as.factor(set_size))
   formula <- bmf(thetat ~ 0 + set_size + (0 + set_size || id),
                  kappa ~ 0 + set_size + (0 + set_size || id))
-  model <- mixture2p(resp_err = "error")
+  model <- mixture2p(resp_error = "error")
   bmmfit_mixture2p_vignette <- bmm(
     formula = formula,
     data = dat_preprocessed,
@@ -86,7 +86,7 @@ generate_bmm_examples <- function(seed = 123) {
                     c = Cs[i], a = As[i],
                     b = 0, s = Ss[i], kappa = kappas[i])
     condData <- data.frame(
-      resp_err = genData,
+      resp_error = genData,
       trialID = 1:nTrials,
       cond = i,
       color_item1 = 0,
@@ -109,7 +109,7 @@ generate_bmm_examples <- function(seed = 123) {
     s ~ 0 + cond,
     kappa ~ 0 + cond
   )
-  model <- IMMfull(resp_err = "resp_err",
+  model <- IMMfull(resp_error = "resp_error",
                    nt_features = paste0("color_item",2:5),
                    set_size = set_size,
                    nt_distances = paste0("dist_item",2:5))

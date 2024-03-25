@@ -95,7 +95,7 @@ add_bmm_info <- function(x) {
   names(pforms) <- NULL
   user_formula <- brms::do_call("bmf", pforms)
   model = env$model
-  model$resp_vars <- list(resp_err = env$formula$resp)
+  model$resp_vars <- list(resp_error = env$formula$resp)
   model$other_vars <- list()
   if (inherits(model, 'sdmSimple')) {
     model$info$parameters$mu <- glue('Location parameter of the SDM distribution \\

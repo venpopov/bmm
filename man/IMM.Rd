@@ -8,7 +8,7 @@
 \title{Interference measurement model by Oberauer and Lin (2017).}
 \usage{
 IMMfull(
-  resp_err,
+  resp_error,
   nt_features,
   nt_distances,
   set_size,
@@ -18,7 +18,7 @@ IMMfull(
 )
 
 IMMbsc(
-  resp_err,
+  resp_error,
   nt_features,
   nt_distances,
   set_size,
@@ -27,10 +27,10 @@ IMMbsc(
   ...
 )
 
-IMMabc(resp_err, nt_features, set_size, regex = FALSE, links = NULL, ...)
+IMMabc(resp_error, nt_features, set_size, regex = FALSE, links = NULL, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the provided dataset containing
+\item{resp_error}{The name of the variable in the provided dataset containing
 the response error. The response Error should code the response relative to
 the to-be-recalled target in radians. You can transform the response error
 in degrees to radian using the \code{deg2rad} function.}
@@ -261,7 +261,7 @@ ff <- bmmformula(
 )
 
 # specify the full IMM model with explicit column names for non-target features and distances
-model1 <- IMMfull(resp_err = "dev_rad",
+model1 <- IMMfull(resp_error = "dev_rad",
                   nt_features = paste0('col_nt', 1:7),
                   nt_distances = paste0('dist_nt', 1:7),
                   set_size = 'set_size')
@@ -275,7 +275,7 @@ fit <- bmm(formula = ff,
 
 # alternatively specify the IMM model with a regular expression to match non-target features
 # this is equivalent to the previous call, but more concise
-model2 <- IMMfull(resp_err = "dev_rad",
+model2 <- IMMfull(resp_error = "dev_rad",
                   nt_features = 'col_nt',
                   nt_distances = 'dist_nt',
                   set_size = 'set_size',

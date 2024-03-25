@@ -222,7 +222,7 @@ check_formula.nontargets <- function(model, data, formula) {
 #'   formulas for the specified `bmmmodel`
 #' @keywords internal, developer
 #' @examples
-#'   model <- mixture2p(resp_err = "error")
+#'   model <- mixture2p(resp_error = "error")
 #'
 #'   formula <- bmmformula(
 #'     thetat ~ 0 + set_size + (0 + set_size | id),

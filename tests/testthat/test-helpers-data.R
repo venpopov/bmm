@@ -1,35 +1,35 @@
 test_that("check_data() produces expected errors and warnings", {
-  expect_error(check_data(.model_mixture2p(resp_err = "y")),
+  expect_error(check_data(.model_mixture2p(resp_error = "y")),
                "Data must be specified using the 'data' argument.")
-  expect_error(check_data(.model_mixture2p(resp_err = "y"),
+  expect_error(check_data(.model_mixture2p(resp_error = "y"),
                           data.frame(),
                           bmmformula(kappa ~ 1)),
                "Argument 'data' does not contain observations.")
-  expect_error(check_data(.model_mixture2p(resp_err = "y"),
+  expect_error(check_data(.model_mixture2p(resp_error = "y"),
                           data.frame(x = 1),
                           bmmformula(kappa ~ 1)),
                "The response variable 'y' is not present in the data.")
-  expect_error(check_data(.model_mixture2p(resp_err = "y"),
+  expect_error(check_data(.model_mixture2p(resp_error = "y"),
                           y~1),
                "Argument 'data' must be coercible to a data.frame.")
 
   mls <- lapply(c('mixture2p','mixture3p','IMMabc','IMMbsc','IMMfull'), get_model)
   for (ml in mls) {
-    expect_warning(check_data(ml(resp_err = "y", nt_features = 'x', set_size=2, nt_distances = 'z'),
+    expect_warning(check_data(ml(resp_error = "y", nt_features = 'x', set_size=2, nt_distances = 'z'),
                               data.frame(y = 12, x = 1, z = 2),
                               bmmformula(kappa ~ 1)),
                    "It appears your response variable is in degrees.\n")
-    expect_silent(check_data(ml(resp_err = "y", nt_features = 'x', set_size=2, nt_distances = 'z'),
+    expect_silent(check_data(ml(resp_error = "y", nt_features = 'x', set_size=2, nt_distances = 'z'),
                              data.frame(y = 1, x = 1, z = 2), bmmformula(y ~ 1)))
   }
 
   mls <- lapply(c('mixture3p','IMMabc','IMMbsc','IMMfull'), get_model)
   for (ml in mls) {
-    expect_error(check_data(ml(resp_err = "y",nt_features='x', set_size = 5, nt_distances = 'z'),
+    expect_error(check_data(ml(resp_error = "y",nt_features='x', set_size = 5, nt_distances = 'z'),
                             data.frame(y = 1, x = 1, z = 2),
                             bmmformula(kappa ~ 1)),
                  "'nt_features' should equal max\\(set_size\\)-1")
-    expect_warning(check_data(ml(resp_err = "y", nt_features = 'x', set_size=2, nt_distances = 'z'),
+    expect_warning(check_data(ml(resp_error = "y", nt_features = 'x', set_size=2, nt_distances = 'z'),
                               data.frame(y = 1, x = 2*pi+1, z = 2),
                               bmmformula(kappa ~ 1)),
                    "at least one of your non_target variables are in degrees")
@@ -37,7 +37,7 @@ test_that("check_data() produces expected errors and warnings", {
 
   mls <- lapply(c('IMMbsc','IMMfull'), get_model)
   for (ml in mls) {
-    expect_error(check_data(ml(resp_err = "y",nt_features=paste0('x',1:4), set_size = 5, nt_distances = 'z'),
+    expect_error(check_data(ml(resp_error = "y",nt_features=paste0('x',1:4), set_size = 5, nt_distances = 'z'),
                             data.frame(y = 1, x1 = 1, x2=2,x3=3,x4=4, z = 2),
                             bmmformula(kappa ~ 1)),
                  "'nt_distances' should equal max\\(set_size\\)-1")
@@ -143,7 +143,7 @@ test_that("check_var_set_size rejects invalid input", {
 test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call=FALSE), get_model)
   for (ml in mls) {
-    expect_s3_class(check_data(ml(resp_err = "y",nt_features = 'x', set_size=2, nt_distances = 'z'),
+    expect_s3_class(check_data(ml(resp_error = "y",nt_features = 'x', set_size=2, nt_distances = 'z'),
                                data.frame(y = 1, x = 1, z = 2),
                                bmmformula(kappa ~ 1)), "data.frame")
   }
@@ -210,7 +210,7 @@ test_that("standata() works with formula", {
 test_that("standata() works with bmmformula", {
   ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
   dat <- OberauerLin_2017
-  sd <- standata(ff, dat, mixture3p(resp_err = "dev_rad",
+  sd <- standata(ff, dat, mixture3p(resp_error = "dev_rad",
                                    nt_features = 'col_nt',
                                    set_size = "set_size", regex = T))
   expect_equal(class(sd)[1], "standata")
@@ -225,7 +225,7 @@ test_that("standata() returns a standata class", {
                     nt1_loc = 2,
                     nt2_loc = -1.5)
 
-  standata <- standata(ff, dat, mixture3p(resp_err = "y" ,
+  standata <- standata(ff, dat, mixture3p(resp_error = "y" ,
                                           nt_features = paste0('nt',1,'_loc'),
                                           set_size = 2))
   expect_equal(class(standata)[1], "standata")

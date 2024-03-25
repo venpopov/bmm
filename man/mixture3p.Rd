@@ -4,10 +4,10 @@
 \alias{mixture3p}
 \title{Three-parameter mixture model by Bays et al (2009).}
 \usage{
-mixture3p(resp_err, nt_features, set_size, regex = FALSE, links = NULL, ...)
+mixture3p(resp_error, nt_features, set_size, regex = FALSE, links = NULL, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the dataset containing
+\item{resp_error}{The name of the variable in the dataset containing
 the response error. The response error should code the response relative to
 the to-be-recalled target in radians. You can transform the response error
 in degrees to radians using the \code{deg2rad} function.}
@@ -111,7 +111,7 @@ ff <- bmmformula(
 )
 
 # specify the 3-parameter model with explicit column names for non-target features
-model1 <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), set_size = 4)
+model1 <- mixture3p(resp_error = "y", nt_features = paste0('nt',1:3,'_loc'), set_size = 4)
 
 # fit the model
 fit <- bmm(formula = ff,
@@ -123,7 +123,7 @@ fit <- bmm(formula = ff,
 
 # alternatively specify the 3-parameter model with a regular expression to match non-target features
 # this is equivalent to the previous call, but more concise
-model2 <- mixture3p(resp_err = "y", nt_features = "nt.*_loc", set_size = 4, regex = TRUE)
+model2 <- mixture3p(resp_error = "y", nt_features = "nt.*_loc", set_size = 4, regex = TRUE)
 
 # fit the model
 fit <- bmm(formula = ff,

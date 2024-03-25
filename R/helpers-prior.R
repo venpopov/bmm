@@ -29,7 +29,7 @@
 #' @examples
 #' default_prior(bmf(c ~ 1, kappa ~ 1),
 #'               data = OberauerLin_2017,
-#'               model = sdmSimple(resp_err = 'dev_rad'))
+#'               model = sdmSimple(resp_error = 'dev_rad'))
 #' @importFrom brms default_prior
 #' @export
 default_prior.bmmformula <- function(object, data, model, formula = object, ...) {

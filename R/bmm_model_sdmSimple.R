@@ -2,10 +2,10 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_sdmSimple <- function(resp_err = NULL, links = NULL, ...) {
+.model_sdmSimple <- function(resp_error = NULL, links = NULL, ...) {
   out <- structure(
     list(
-      resp_vars = nlist(resp_err),
+      resp_vars = nlist(resp_error),
       other_vars = nlist(),
       domain = 'Visual working memory',
       task = 'Continuous reproduction',
@@ -52,7 +52,7 @@
 #' @details see `vignette("sdm-simple")` for a detailed description of the model
 #'   and how to use it.
 #'   `r model_info(.model_sdmSimple())`
-#' @param resp_err The name of the variable in the dataset containing the
+#' @param resp_error The name of the variable in the dataset containing the
 #'   response error. The response error should code the response relative to the
 #'   to-be-recalled target in radians. You can transform the response error in
 #'   degrees to radians using the `deg2rad` function.
@@ -80,7 +80,7 @@
 #' # specify the model
 #' fit <- bmm(formula = ff,
 #'            data = dat,
-#'            model = sdmSimple(resp_err = 'y'),
+#'            model = sdmSimple(resp_error = 'y'),
 #'            prior = prior,
 #'            parallel=T,
 #'            iter=2000,
@@ -93,9 +93,9 @@
 #' lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
 #'               kappa=coef['kappa_Intercept']), col='red')
 #' }
-sdmSimple <- function(resp_err, links = NULL, ...) {
+sdmSimple <- function(resp_error, links = NULL, ...) {
   stop_missing_args()
-  .model_sdmSimple(resp_err = resp_err, links = links, ...)
+  .model_sdmSimple(resp_error = resp_error, links = links, ...)
 }
 
 #############################################################################!

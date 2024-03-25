@@ -52,7 +52,7 @@ library(bmm)
 
 default_prior(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
               data = OberauerLin_2017,
-              model = sdmSimple(resp_err = 'dev_rad'))
+              model = sdmSimple(resp_error = 'dev_rad'))
 ```
 
 In this case we used a formula of the type `~ 0 + factor`, which means that the intercept is suppressed, and a separate parameter is estimated for each level of the set_size factor variable. For the SDM model, both `kappa` and `c` have to be positive, so they are defined in the model on the log scale, and exponentiated afterwards. Thus, the parameters are sampled on the log scale, and the priors are defined on the log scale as well. The default prior for `c` is a student-t distribution with 5 degrees of freedom, a mean of 2, and a standard deviation of 0.75. This corresponds to the following prior distribution over the log scale, with 80% of the prior mass between 0.9 and 3.10:
@@ -78,7 +78,7 @@ If we had retained the intercept in the formula, the default prior above would b
 ```{r message=FALSE, warning=FALSE}
 default_prior(bmf(c ~ 1 + set_size, kappa ~ 1 + set_size), 
               data = OberauerLin_2017,
-              model = sdmSimple(resp_err = 'dev_rad'))
+              model = sdmSimple(resp_error = 'dev_rad'))
 ```
 
 You can also see that in both cases, the last line is "constant(0)" on the Intercept of the `mu` parameter, which is fixed to 0 by default in the model, and is not estimated. You might wonder why it doesn't say `mu` in the `dpar` column of that prior - this is because `brms` assumes `mu` is the default parameter in all models, so it hides it in the output. If you wanted to estimate `mu`, instead of leaving it fixed, the prior for it would change as well:
@@ -86,7 +86,7 @@ You can also see that in both cases, the last line is "constant(0)" on the Inter
 ```{r message=FALSE, warning=FALSE}
 default_prior(bmf(mu ~ 1 + set_size, c ~ 1, kappa ~ 1),
               data = OberauerLin_2017,
-              model = sdmSimple(resp_err = 'dev_rad'))
+              model = sdmSimple(resp_error = 'dev_rad'))
 ```
 
 The `mu` parameter uses a `tan_half` link function, which means that the `student_t(1, 0, 1)` prior results in a uniform prior over the native scale of `mu` from -pi to pi. You will also notice above that for the regression coefficients on `mu`, the default prior is an improper flat prior - this is the only parameter in `bmm` models which has a flat prior by default, and we strongly recommend you set a prior on it, if you want to calculate Bayes Factors or use other Bayesian inference methods.
@@ -102,7 +102,7 @@ The Stan code used for fitting a model is generated together by `bmm` and `brms`
 ```{r comment = "", collapse=FALSE}
 stancode(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
          data = OberauerLin_2017,
-         model = sdmSimple(resp_err = 'dev_rad'))
+         model = sdmSimple(resp_error = 'dev_rad'))
 ```
 
 
@@ -111,7 +111,7 @@ Alternatively, if you already have a fitted model object, you can just call `sta
 ```r
 fit <- bmm(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
               data = OberauerLin_2017,
-              model = sdmSimple(resp_err = 'dev_rad'))
+              model = sdmSimple(resp_error = 'dev_rad'))
 stancode(fit)
 ```
 
@@ -122,7 +122,7 @@ If you want to extract the data that would be used for fitting a model, you can 
 ```{r}
 sd <- standata(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
                data = OberauerLin_2017,
-               model = sdmSimple(resp_err = 'dev_rad'),
+               model = sdmSimple(resp_error = 'dev_rad'),
                sort_data = TRUE)
 str(sd)
 ```

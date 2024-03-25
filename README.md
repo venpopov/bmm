@@ -67,12 +67,12 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  IMMabc(resp_err, nt_features, set_size, regex, links) 
-#> -  IMMbsc(resp_err, nt_features, nt_distances, set_size, regex, links) 
-#> -  IMMfull(resp_err, nt_features, nt_distances, set_size, regex, links) 
-#> -  mixture2p(resp_err, links) 
-#> -  mixture3p(resp_err, nt_features, set_size, regex, links) 
-#> -  sdmSimple(resp_err, links) 
+#> -  IMMabc(resp_error, nt_features, set_size, regex, links) 
+#> -  IMMbsc(resp_error, nt_features, nt_distances, set_size, regex, links) 
+#> -  IMMfull(resp_error, nt_features, nt_distances, set_size, regex, links) 
+#> -  mixture2p(resp_error, links) 
+#> -  mixture3p(resp_error, nt_features, set_size, regex, links) 
+#> -  sdmSimple(resp_error, links) 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
 ```
@@ -199,7 +199,7 @@ formula <- bmmformula(c ~ 0 + set_size,
                       s ~ 0 + set_size,
                       kappa ~ 0 + set_size)
 
-model <- IMMfull(resp_err = "dev_rad",
+model <- IMMfull(resp_error = "dev_rad",
                  nt_features = paste0("col_nt", 1:7),
                  nt_distances = paste0("dist_nt",1:7),
                  set_size = "set_size")

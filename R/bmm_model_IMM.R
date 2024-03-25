@@ -3,11 +3,11 @@
 #############################################################################!
 
 .model_IMMabc <-
-  function(resp_err = NULL, nt_features = NULL, set_size = NULL, regex = FALSE,
+  function(resp_error = NULL, nt_features = NULL, set_size = NULL, regex = FALSE,
            links = NULL, ...) {
     out <- structure(
       list(
-        resp_vars = nlist(resp_err),
+        resp_vars = nlist(resp_error),
         other_vars = nlist(nt_features, set_size),
         domain = "Visual working memory",
         task = "Continuous reproduction",
@@ -58,11 +58,11 @@
 
 
 .model_IMMbsc <-
-  function(resp_err = NULL, nt_features = NULL, nt_distances = NULL,
+  function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
            set_size = NULL, regex = FALSE, links = NULL, ...) {
     out <- structure(
       list(
-        resp_vars = nlist(resp_err),
+        resp_vars = nlist(resp_error),
         other_vars = nlist(nt_features, nt_distances, set_size),
         domain = "Visual working memory",
         task = "Continuous reproduction",
@@ -112,11 +112,11 @@
 }
 
 .model_IMMfull <-
-  function(resp_err = NULL, nt_features = NULL, nt_distances = NULL,
+  function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
            set_size = NULL, regex = FALSE, links = NULL, ...) {
     out <- structure(
       list(
-        resp_vars = nlist(resp_err),
+        resp_vars = nlist(resp_error),
         other_vars = nlist(nt_features, nt_distances, set_size),
         domain = "Visual working memory",
         task = "Continuous reproduction",
@@ -186,7 +186,7 @@
 #'
 #'   - b = "Background activation (internally fixed to 0)"
 #'
-#' @param resp_err The name of the variable in the provided dataset containing
+#' @param resp_error The name of the variable in the provided dataset containing
 #'   the response error. The response Error should code the response relative to
 #'   the to-be-recalled target in radians. You can transform the response error
 #'   in degrees to radian using the `deg2rad` function.
@@ -224,7 +224,7 @@
 #' )
 #'
 #' # specify the full IMM model with explicit column names for non-target features and distances
-#' model1 <- IMMfull(resp_err = "dev_rad",
+#' model1 <- IMMfull(resp_error = "dev_rad",
 #'                   nt_features = paste0('col_nt', 1:7),
 #'                   nt_distances = paste0('dist_nt', 1:7),
 #'                   set_size = 'set_size')
@@ -238,7 +238,7 @@
 #'
 #' # alternatively specify the IMM model with a regular expression to match non-target features
 #' # this is equivalent to the previous call, but more concise
-#' model2 <- IMMfull(resp_err = "dev_rad",
+#' model2 <- IMMfull(resp_error = "dev_rad",
 #'                   nt_features = 'col_nt',
 #'                   nt_distances = 'dist_nt',
 #'                   set_size = 'set_size',
@@ -252,7 +252,7 @@
 #'            backend = 'cmdstanr')
 #'}
 #' @export
-IMMfull <- function(resp_err, nt_features, nt_distances, set_size, regex = FALSE,
+IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
                     links = NULL,
                     ...) {
   dots <- list(...)
@@ -261,7 +261,7 @@ IMMfull <- function(resp_err, nt_features, nt_distances, set_size, regex = FALSE
     warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
   }
   stop_missing_args()
-  .model_IMMfull(resp_err = resp_err, nt_features = nt_features,
+  .model_IMMfull(resp_error = resp_error, nt_features = nt_features,
                  nt_distances = nt_distances, set_size = set_size, regex = regex,
                  links = links, ...)
 }
@@ -269,7 +269,7 @@ IMMfull <- function(resp_err, nt_features, nt_distances, set_size, regex = FALSE
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMbsc <- function(resp_err, nt_features, nt_distances, set_size, regex = FALSE,
+IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
                    links = NULL, ...) {
   dots <- list(...)
   if ("setsize" %in% names(dots)) {
@@ -277,7 +277,7 @@ IMMbsc <- function(resp_err, nt_features, nt_distances, set_size, regex = FALSE,
     warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
   }
   stop_missing_args()
-  .model_IMMbsc(resp_err = resp_err, nt_features = nt_features,
+  .model_IMMbsc(resp_error = resp_error, nt_features = nt_features,
                 nt_distances = nt_distances, set_size = set_size, regex = regex,
                 links = links, ...)
 }
@@ -285,7 +285,7 @@ IMMbsc <- function(resp_err, nt_features, nt_distances, set_size, regex = FALSE,
 #' @rdname IMM
 #' @keywords bmmmodel
 #' @export
-IMMabc <- function(resp_err, nt_features, set_size, regex = FALSE, links = NULL,
+IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, links = NULL,
                    ...) {
   dots <- list(...)
   if ("setsize" %in% names(dots)) {
@@ -293,7 +293,7 @@ IMMabc <- function(resp_err, nt_features, set_size, regex = FALSE, links = NULL,
     warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
   }
   stop_missing_args()
-  .model_IMMabc(resp_err = resp_err, nt_features = nt_features,
+  .model_IMMabc(resp_error = resp_error, nt_features = nt_features,
                 set_size = set_size, regex = regex, links = links, ...)
 }
 

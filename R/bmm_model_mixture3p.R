@@ -2,12 +2,12 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture3p <- function(resp_err = NULL, nt_features = NULL, set_size = NULL,
+.model_mixture3p <- function(resp_error = NULL, nt_features = NULL, set_size = NULL,
                              regex = FALSE, links = NULL, ...) {
 
   out <- structure(
     list(
-      resp_vars = nlist(resp_err),
+      resp_vars = nlist(resp_error),
       other_vars = nlist(nt_features, set_size),
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -61,7 +61,7 @@
 # user facing alias
 #' @title `r .model_mixture3p()$name`
 #' @details `r model_info(.model_mixture3p())`
-#' @param resp_err The name of the variable in the dataset containing
+#' @param resp_error The name of the variable in the dataset containing
 #'   the response error. The response error should code the response relative to
 #'   the to-be-recalled target in radians. You can transform the response error
 #'   in degrees to radians using the `deg2rad` function.
@@ -99,7 +99,7 @@
 #' )
 #'
 #' # specify the 3-parameter model with explicit column names for non-target features
-#' model1 <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), set_size = 4)
+#' model1 <- mixture3p(resp_error = "y", nt_features = paste0('nt',1:3,'_loc'), set_size = 4)
 #'
 #' # fit the model
 #' fit <- bmm(formula = ff,
@@ -111,7 +111,7 @@
 #'
 #' # alternatively specify the 3-parameter model with a regular expression to match non-target features
 #' # this is equivalent to the previous call, but more concise
-#' model2 <- mixture3p(resp_err = "y", nt_features = "nt.*_loc", set_size = 4, regex = TRUE)
+#' model2 <- mixture3p(resp_error = "y", nt_features = "nt.*_loc", set_size = 4, regex = TRUE)
 #'
 #' # fit the model
 #' fit <- bmm(formula = ff,
@@ -121,7 +121,7 @@
 #'            iter = 500,
 #'            backend='cmdstanr')
 #' }
-mixture3p <- function(resp_err, nt_features, set_size, regex = FALSE,
+mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE,
                       links = NULL, ...) {
   dots <- list(...)
   if ("setsize" %in% names(dots)) {
@@ -129,7 +129,7 @@ mixture3p <- function(resp_err, nt_features, set_size, regex = FALSE,
     warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
   }
   stop_missing_args()
-  .model_mixture3p(resp_err = resp_err, nt_features = nt_features,
+  .model_mixture3p(resp_error = resp_error, nt_features = nt_features,
                    set_size = set_size, regex = regex, links = links, ...)
 }
 

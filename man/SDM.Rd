@@ -5,10 +5,10 @@
 \alias{sdmSimple}
 \title{Signal Discrimination Model (SDM) by Oberauer (2023)}
 \usage{
-sdmSimple(resp_err, links = NULL, ...)
+sdmSimple(resp_error, links = NULL, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the dataset containing the
+\item{resp_error}{The name of the variable in the dataset containing the
 response error. The response error should code the response relative to the
 to-be-recalled target in radians. You can transform the response error in
 degrees to radians using the \code{deg2rad} function.}
@@ -91,7 +91,7 @@ prior <- prior(normal(1,2), class='Intercept', dpar='c')+
 # specify the model
 fit <- bmm(formula = ff,
            data = dat,
-           model = sdmSimple(resp_err = 'y'),
+           model = sdmSimple(resp_error = 'y'),
            prior = prior,
            parallel=T,
            iter=2000,

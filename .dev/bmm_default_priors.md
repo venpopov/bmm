@@ -175,7 +175,7 @@ All model parameters are `nlpar` so they get class `b` with coef
 `Intercept`
 
 ``` r
-model <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), setsize='set_size')
+model <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), set_size='set_size')
 formula <- bmf(kappa ~ 1, thetat ~ 1, thetant ~ 1)
 get_model_prior(formula, dat, model)
 ```
@@ -661,7 +661,7 @@ compare_priors <- function(formula,dat,model) {
 ```
 
 ``` r
-model3p <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), setsize='set_size')
+model3p <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), set_size='set_size')
 ```
 
 <details>

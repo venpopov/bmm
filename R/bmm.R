@@ -84,7 +84,7 @@
 #' # fit the model
 #' fit <- bmm(formula = ff,
 #'            data = dat,
-#'            model = sdmSimple(resp_err = "y"),
+#'            model = sdmSimple(resp_error = "y"),
 #'            parallel=T,
 #'            iter = 500,
 #'            backend = 'cmdstanr')

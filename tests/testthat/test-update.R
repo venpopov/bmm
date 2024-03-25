@@ -28,7 +28,7 @@ test_that("update.bmmfit works", {
 
   # refuse to change model
   expect_error(
-    update(fit1, model = mixture2p(resp_err = "dev_rad")),
+    update(fit1, model = mixture2p(resp_error = "dev_rad")),
     "You cannot update with a different model"
   )
 

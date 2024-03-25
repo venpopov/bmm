@@ -629,7 +629,7 @@ use_model_template <- function(model_name,
 #' @examples
 #' scode1 <- stancode(bmf(c ~ 1, kappa ~ 1),
 #'                    data = OberauerLin_2017,
-#'                    model = sdmSimple(resp_err = "dev_rad"))
+#'                    model = sdmSimple(resp_error = "dev_rad"))
 #' cat(scode1)
 #' @importFrom brms stancode
 #' @export

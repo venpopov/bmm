@@ -4,10 +4,10 @@
 \alias{mixture2p}
 \title{Two-parameter mixture model by Zhang and Luck (2008).}
 \usage{
-mixture2p(resp_err, links = NULL, ...)
+mixture2p(resp_error, links = NULL, ...)
 }
 \arguments{
-\item{resp_err}{The name of the variable in the provided dataset containing
+\item{resp_error}{The name of the variable in the provided dataset containing
 the response error. The response Error should code the response relative to
 the to-be-recalled target in radians. You can transform the response error
 in degrees to radian using the \code{deg2rad} function.}
@@ -79,7 +79,7 @@ dat <- data.frame(y = rmixture2p(n=2000))
 ff <- bmmformula(kappa ~ 1,
                  thetat ~ 1)
 
-model <- mixture2p(resp_err = "y")
+model <- mixture2p(resp_error = "y")
 
 # fit the model
 fit <- bmm(formula = ff,
