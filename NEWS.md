@@ -21,6 +21,8 @@
 * the argument **setsize** for the `mixture3p` and `IMM` models is now called **set_size** for consistency (#163). The old argument name is deprecated and will be removed in a future version
 * the distributions functions for the imm model are renamed from dIMM, pIMM, rIMM and qIMM to dimm, pimm, rimm and qimm (#163)
 * the argument parallel for the bmm() function is deprecated and will be removed in a future version. Use `cores` instead, as for brms::brm() (#163)
+* the models IMMfull(), IMMabc() and IMMbsc() are now called via imm(), imm(version = "abc") or imm(version = "bsc"). The old names are deprecated and will be removed in a future version (#163)
+* the sdmSimple() model is now called sdm(). The old name is deprecated and will be removed in a future version (#163)
 
 ### Other changes
 * `bmm` now requires the latest version of `brms` (>= 2.21.0).
