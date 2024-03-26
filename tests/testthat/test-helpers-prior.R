@@ -57,7 +57,7 @@ test_that("no check for sort_data with default_priors function", {
   withr::local_options('bmm.sort_data' = 'check')
   res <- capture_messages(default_prior(bmf(kappa ~ set_size, c ~ set_size),
                                         oberauer_lin_2017,
-                                        sdmSimple('dev_rad')))
+                                        sdm('dev_rad')))
   expect_false(any(grepl("sort", res)))
 })
 
@@ -72,6 +72,6 @@ test_that("default priors work when there are no fixed parameters", {
     prior_fn <- get_model_prior
   }
 
-  pr <- prior_fn(formula, oberauer_lin_2017, sdmSimple('dev_rad'))
+  pr <- prior_fn(formula, oberauer_lin_2017, sdm('dev_rad'))
   expect_s3_class(pr, 'brmsprior')
 })

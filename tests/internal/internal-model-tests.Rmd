@@ -79,7 +79,7 @@ prepare a list to hold data the fits
 fit <- list()
 ```
 
-## Test: sdmSimple
+## Test: sdm
 
 *Note: In the future if the API doesn't change, we can just use arguments from the reference fit. For now it doesn't work since the formula and model definition have changed since version 0.2.1.*
 
@@ -87,15 +87,15 @@ fit <- list()
 
 <summary>Run the model</summary>
 
-```{r sdmSimple_fit}
-data <- ref_fits$sdmSimple$data
+```{r sdm_fit}
+data <- ref_fits$sdm$data
 
 formula <- bmf(c ~ 0 + SetSize,
                kappa ~ 1)
 
-model <- sdmSimple('dev_rad')
+model <- sdm('dev_rad')
 
-fit$sdmSimple <- fit_model(formula, data, model,
+fit$sdm <- fit_model(formula, data, model,
                            parallel = TRUE,
                            chains = 4,
                            iter = 500,
@@ -114,8 +114,8 @@ fit$sdmSimple <- fit_model(formula, data, model,
 
 <summary>The results:</summary>
 
-```{r sdmSimple_results}
-summary(fit$sdmSimple)
+```{r sdm_results}
+summary(fit$sdm)
 ```
 
 </details>
@@ -126,8 +126,8 @@ summary(fit$sdmSimple)
 
 <summary>Compare with the reference fit:</summary>
 
-```{r sdmSimple_ref_results}
-summary(ref_fits$sdmSimple)
+```{r sdm_ref_results}
+summary(ref_fits$sdm)
 ```
 
 </details>
@@ -136,8 +136,8 @@ summary(ref_fits$sdmSimple)
 
 Difference in estimates:
 
-```{r sdmSimple_diff}
-fixef(fit$sdmSimple) - fixef(ref_fits$sdmSimple)
+```{r sdm_diff}
+fixef(fit$sdm) - fixef(ref_fits$sdm)
 ```
 
 ## Test: mixture3p
@@ -265,26 +265,26 @@ fit_rows <- rownames(fixef(fit$mixture2p))
 round(fixef(fit$mixture2p) - fixef(ref_fits$mixture2p)[fit_rows,],3)
 ```
 
-## Test: IMMfull
+## Test: imm
 
 <details>
 
 <summary>Run the model</summary>
 
-```{r IMMfull_fit}
-data <- ref_fits$IMMfull$data
+```{r imm_fit}
+data <- ref_fits$imm$data
 
 formula <- bmf(a ~ 0 + SetSize,
                c ~ 0 + SetSize,
                s ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
-model <- IMMfull(resp_error = 'dev_rad',
+model <- imm(resp_error = 'dev_rad',
                  nt_features = paste0("Item", 2:4,"_Col_rad"),
                  nt_distances = paste0("Item", 2:4,"_Pos_rad"),
                  set_size = "SetSize")
 
-fit$IMMfull <- fit_model(formula, data, model,
+fit$imm <- fit_model(formula, data, model,
                            parallel = TRUE,
                            chains = 4,
                            iter = 500,
@@ -303,8 +303,8 @@ fit$IMMfull <- fit_model(formula, data, model,
 
 <summary>Results</summary>
 
-```{r IMMfull_results}
-summary(fit$IMMfull)
+```{r imm_results}
+summary(fit$imm)
 ```
 
 </details>
@@ -315,8 +315,8 @@ summary(fit$IMMfull)
 
 <summary>Compare with reference fit:</summary>
 
-```{r ref_fits_IMMfull}
-ref_fits$IMMfull
+```{r ref_fits_imm}
+ref_fits$imm
 ```
 
 </details>
@@ -325,31 +325,31 @@ ref_fits$IMMfull
 
 Difference in estimates
 
-```{r IMMfull_diff}
+```{r imm_diff}
 withr::local_options(list(digits=3))
-fit_rows <- rownames(fixef(fit$IMMfull))
-round(fixef(fit$IMMfull) - fixef(ref_fits$IMMfull)[fit_rows,],3)
+fit_rows <- rownames(fixef(fit$imm))
+round(fixef(fit$imm) - fixef(ref_fits$imm)[fit_rows,],3)
 ```
 
-## Test: IMMbsc
+## Test: imm_bsc
 
 <details>
 
 <summary>Run the model</summary>
 
-```{r IMMbsc_fit}
-data <- ref_fits$IMMbsc$data
+```{r imm_bsc_fit}
+data <- ref_fits$imm_bsc$data
 
 formula <- bmf(c ~ 0 + SetSize,
                s ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
-model <- IMMbsc(resp_error = 'dev_rad',
+model <- imm_bsc(resp_error = 'dev_rad',
                 nt_features = paste0("Item", 2:4,"_Col_rad"),
                 nt_distances = paste0("Item", 2:4,"_Pos_rad"),
                 set_size = "SetSize")
 
-fit$IMMbsc <- fit_model(formula, data, model,
+fit$imm_bsc <- fit_model(formula, data, model,
                         parallel = TRUE,
                         chains = 4,
                         iter = 500,
@@ -368,8 +368,8 @@ fit$IMMbsc <- fit_model(formula, data, model,
 
 <summary>Results</summary>
 
-```{r IMMbsc_results}
-summary(fit$IMMbsc)
+```{r imm_bsc_results}
+summary(fit$imm_bsc)
 ```
 
 </details>
@@ -380,8 +380,8 @@ summary(fit$IMMbsc)
 
 <summary>Compare with reference fit:</summary>
 
-```{r ref_fits_IMMbsc}
-ref_fits$IMMbsc
+```{r ref_fits_imm_bsc}
+ref_fits$imm_bsc
 ```
 
 </details>
@@ -390,30 +390,31 @@ ref_fits$IMMbsc
 
 Difference in estimates
 
-```{r IMMbsc_diff}
+```{r imm_bsc_diff}
 withr::local_options(list(digits=3))
-fit_rows <- rownames(fixef(fit$IMMbsc))
-round(fixef(fit$IMMbsc) - fixef(ref_fits$IMMbsc)[fit_rows,],3)
+fit_rows <- rownames(fixef(fit$imm_bsc))
+round(fixef(fit$imm_bsc) - fixef(ref_fits$imm_bsc)[fit_rows,],3)
 ```
 
-## Test: IMMabc
+## Test: imm_abc
 
 <details>
 
 <summary>Run the model</summary>
 
-```{r IMMabc_fit}
-data <- ref_fits$IMMabc$data
+```{r imm_abc_fit}
+data <- ref_fits$imm_abc$data
 
 formula <- bmf(a ~ 0 + SetSize,
                c ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
-model <- IMMabc(resp_error = 'dev_rad',
-                nt_features = paste0("Item", 2:4,"_Col_rad"),
-                set_size = "SetSize")
+model <- imm(resp_error = 'dev_rad',
+             nt_features = paste0("Item", 2:4,"_Col_rad"),
+             set_size = "SetSize",
+             version = "abc")
 
-fit$IMMabc <- fit_model(formula, data, model,
+fit$imm_abc <- fit_model(formula, data, model,
                         parallel = TRUE,
                         chains = 4,
                         iter = 500,
@@ -432,8 +433,8 @@ fit$IMMabc <- fit_model(formula, data, model,
 
 <summary>Results</summary>
 
-```{r IMMabc_results}
-summary(fit$IMMabc)
+```{r imm_abc_results}
+summary(fit$imm_abc)
 ```
 
 </details>
@@ -444,8 +445,8 @@ summary(fit$IMMabc)
 
 <summary>Compare with reference fit:</summary>
 
-```{r ref_fits_IMMabc}
-ref_fits$IMMabc
+```{r ref_fits_imm_abc}
+ref_fits$imm_abc
 ```
 
 </details>
@@ -454,10 +455,10 @@ ref_fits$IMMabc
 
 Difference in estimates
 
-```{r IMMabc_diff}
+```{r imm_abc_diff}
 withr::local_options(list(digits=3))
-fit_rows <- rownames(fixef(fit$IMMabc))
-round(fixef(fit$IMMabc) - fixef(ref_fits$IMMabc)[fit_rows,],3)
+fit_rows <- rownames(fixef(fit$imm_abc))
+round(fixef(fit$imm_abc) - fixef(ref_fits$imm_abc)[fit_rows,],3)
 ```
 
 

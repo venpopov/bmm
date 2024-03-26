@@ -209,7 +209,7 @@ supported_models <- function(print_call = TRUE) {
     args <- gsub("'", "", args)
     out <- paste0(out, "- `", model, "(", args, ")`", "\n", sep = "")
   }
-  out <- paste0(out, "\nType `?modelname` to get information about a specific model, e.g. `?IMMfull`\n")
+  out <- paste0(out, "\nType `?modelname` to get information about a specific model, e.g. `?imm`\n")
   out <- gsub("`", " ", out)
   class(out) <- "message"
   out
@@ -230,12 +230,7 @@ print_pretty_models_md <- function() {
   domains <- c()
   models <- c()
   for (model in ok_models) {
-    m <- get_model(model)
-    args_list <- formals(m)
-    test_args <- lapply(args_list, function(x) {
-      NULL
-    })
-    m <- brms::do_call(m, test_args)
+    m <- get_model(model)()
     domains <- c(domains, m$domain)
     models <- c(models, m$name)
   }
@@ -338,8 +333,8 @@ get_model2 <- function(model) {
 #'@param custom_family Logical; Do you plan to define a brms::custom_family()?
 #'  If TRUE the function will add a section for the custom family, placeholders
 #'  for the stan_vars and corresponding empty .stan files in
-#'  `inst/stan_chunks/`, that you can fill For an example, see the sdmSimple
-#'  model in `/R/model_sdmSimple.R`. If FALSE (default) the function will
+#'  `inst/stan_chunks/`, that you can fill For an example, see the sdm
+#'  model in `/R/model_sdm.R`. If FALSE (default) the function will
 #'  not add the custom family section nor stan files.
 #'@param stanvar_blocks A character vector with the names of the blocks that
 #'  will be added to the custom family section. See [brms::stanvar()] for more
@@ -629,7 +624,7 @@ use_model_template <- function(model_name,
 #' @examples
 #' scode1 <- stancode(bmf(c ~ 1, kappa ~ 1),
 #'                    data = oberauer_lin_2017,
-#'                    model = sdmSimple(resp_error = "dev_rad"))
+#'                    model = sdm(resp_error = "dev_rad"))
 #' cat(scode1)
 #' @importFrom brms stancode
 #' @export

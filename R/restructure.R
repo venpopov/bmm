@@ -58,7 +58,26 @@ restructure.bmmfit <- function(x, ...) {
   if (restr_version < "0.4.8") {
     cl <- class(x$bmm$model)
     cl[1] <- "bmmodel"
+    if ('sdmSimple' %in% cl) {
+      cl[cl == 'sdmSimple'] <- 'sdm'
+      cl <- c(cl, 'sdm_simple')
+    } else if ('IMMfull' %in% cl) {
+      cl[cl == 'IMMfull'] <- 'imm'
+      cl <- c(cl, 'imm_full')
+    } else if ('IMMabc' %in% cl) {
+      cl[cl == 'IMMabc'] <- 'imm'
+      cl <- c(cl, 'imm_abc')
+    } else if ('IMMbsc' %in% cl) {
+      cl[cl == 'IMMbsc'] <- 'imm'
+      cl <- c(cl, 'imm_bsc')
+    }
+    if ('nontargets' %in% cl) {
+      cl[cl == 'nontargets'] <- 'non_targets'
+      cl <- c(cl, 'non_targets')
+    }
     class(x$bmm$model) <- cl
+
+
   }
 
   x$version$bmm_restructure <- current_version
@@ -103,7 +122,7 @@ add_bmm_info <- function(x) {
   model = env$model
   model$resp_vars <- list(resp_error = env$formula$resp)
   model$other_vars <- list()
-  if (inherits(model, 'sdmSimple')) {
+  if (inherits(model, 'sdm')) {
     model$info$parameters$mu <- glue('Location parameter of the SDM distribution \\
                                      (in radians; by default fixed internally to 0)')
   } else {

@@ -28,9 +28,9 @@ methods based on the list of classes defined in the .model_* functions. For
 models with several classes listed, it will call the functions in the order
 they are listed. Thus, any operations that are common to a group of models
 should be defined in the appropriate check_data.* function, where \*
-corresponds to the shared class. For example, for the .model_IMMabc model,
+corresponds to the shared class. For example, for the .model_imm_abc model,
 this corresponds to the following order of check_data.* functions:
-check_data() -> check_data.vwm(), check_data.nontargets() the output of the
+check_data() -> check_data.vwm(), check_data.non_targets() the output of the
 final function is returned to bmm().
 }
 \keyword{developer}

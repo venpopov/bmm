@@ -29,13 +29,13 @@ ref_data <- function() {
   dat
 }
 
-run_sdmSimple <- function(...) {
+run_sdm <- function(...) {
   cat(paste0("\n##########################################################################\n",
-             "# Running sdmSimple\n",
+             "# Running sdm\n",
              "##########################################################################\n\n"))
   date <- format(Sys.time(), "%Y%m%d")
   hash <- paste0(sample(c(letters[1:6],0:9), 10, replace = TRUE), collapse="")
-  file <- paste0(date,"_", bmm_version, "_sdmSimple_seed-", seed, "_",hash,".rds")
+  file <- paste0(date,"_", bmm_version, "_sdm_seed-", seed, "_",hash,".rds")
   dir  <- here::here("tests/internal/ref_fits")
   if (!dir.exists(dir)) {
     dir.create(dir, recursive = TRUE)
@@ -45,7 +45,7 @@ run_sdmSimple <- function(...) {
   formula <- brms::bf(dev_rad ~ 1,
                       c ~ 0 + SetSize,
                       kappa ~ 1)
-  model <- sdmSimple()
+  model <- sdm()
   fit <- fit_model(formula, dat, model,
                    cores = parallel::detectCores(),
                    refresh = 500,
@@ -114,13 +114,13 @@ run_mixture2p <- function(...) {
   saveRDS(fit, path)
 }
 
-run_IMMabc <- function(...) {
+run_imm_abc <- function(...) {
   cat(paste0("\n##########################################################################\n",
-             "# Running IMMabc \n",
+             "# Running imm_abc \n",
              "##########################################################################\n\n"))
   date <- format(Sys.time(), "%Y%m%d")
   hash <- paste0(sample(c(letters[1:6],0:9), 10, replace = TRUE), collapse="")
-  file <- paste0(date,"_", bmm_version, "_IMMabc_seed-", seed, "_",hash,".rds")
+  file <- paste0(date,"_", bmm_version, "_imm_abc_seed-", seed, "_",hash,".rds")
   dir  <- here::here("tests/internal/ref_fits")
   if (!dir.exists(dir)) {
     dir.create(dir, recursive = TRUE)
@@ -131,8 +131,9 @@ run_IMMabc <- function(...) {
                       a ~ 0 + SetSize,
                       c ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
-  model <- IMMabc(non_targets = paste0("Item", 2:4,"_Col_rad"),
-                  set_size = "SetSize")
+  model <- immc(non_targets = paste0("Item", 2:4,"_Col_rad"),
+                set_size = "SetSize",
+                version = "abc")
   fit <- fit_model(formula, dat, model,
                    cores = parallel::detectCores(),
                    iter = 1000,
@@ -145,13 +146,13 @@ run_IMMabc <- function(...) {
 }
 
 
-run_IMMbsc <- function(...) {
+run_imm_bsc <- function(...) {
   cat(paste0("\n##########################################################################\n",
-             "# Running IMMbsc \n",
+             "# Running imm_bsc \n",
              "##########################################################################\n\n"))
   date <- format(Sys.time(), "%Y%m%d")
   hash <- paste0(sample(c(letters[1:6],0:9), 10, replace = TRUE), collapse="")
-  file <- paste0(date,"_", bmm_version, "_IMMbsc_seed-", seed, "_",hash,".rds")
+  file <- paste0(date,"_", bmm_version, "_imm_bsc_seed-", seed, "_",hash,".rds")
   dir  <- here::here("tests/internal/ref_fits")
   if (!dir.exists(dir)) {
     dir.create(dir, recursive = TRUE)
@@ -162,9 +163,10 @@ run_IMMbsc <- function(...) {
                       c ~ 0 + SetSize,
                       s ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
-  model <- IMMbsc(non_targets = paste0("Item", 2:4,"_Col_rad"),
-                  spaPos = paste0("Item", 2:4,"_Pos_rad"),
-                  set_size = "SetSize")
+  model <- imm(non_targets = paste0("Item", 2:4,"_Col_rad"),
+               spaPos = paste0("Item", 2:4,"_Pos_rad"),
+               set_size = "SetSize",
+               version = "bsc")
   fit <- fit_model(formula, dat, model,
                    cores = parallel::detectCores(),
                    iter = 1000,
@@ -176,13 +178,13 @@ run_IMMbsc <- function(...) {
   saveRDS(fit, path)
 }
 
-run_IMMfull <- function(...) {
+run_imm_full <- function(...) {
   cat(paste0("\n##########################################################################\n",
-             "# Running IMMfull \n",
+             "# Running imm_full \n",
              "##########################################################################\n\n"))
   date <- format(Sys.time(), "%Y%m%d")
   hash <- paste0(sample(c(letters[1:6],0:9), 10, replace = TRUE), collapse="")
-  file <- paste0(date,"_", bmm_version, "_IMMfull_seed-", seed, "_",hash,".rds")
+  file <- paste0(date,"_", bmm_version, "_imm_full_seed-", seed, "_",hash,".rds")
   dir  <- here::here("tests/internal/ref_fits")
   if (!dir.exists(dir)) {
     dir.create(dir, recursive = TRUE)
@@ -194,7 +196,7 @@ run_IMMfull <- function(...) {
                       c ~ 0 + SetSize,
                       s ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
-  model <- IMMfull(non_targets = paste0("Item", 2:4,"_Col_rad"),
+  model <- imm(non_targets = paste0("Item", 2:4,"_Col_rad"),
                    spaPos = paste0("Item", 2:4,"_Pos_rad"),
                    set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
@@ -224,9 +226,9 @@ seed <- 365
 ###############################################################################!
 
 
-run_sdmSimple(seed=seed, bmm_version=bmm_version)
+run_sdm(seed=seed, bmm_version=bmm_version)
 run_mixture2p(seed=seed, bmm_version=bmm_version)
 run_mixture3p(seed=seed, bmm_version=bmm_version)
-run_IMMabc(seed=seed, bmm_version=bmm_version)
-run_IMMbsc(seed=seed, bmm_version=bmm_version)
-run_IMMfull(seed=seed, bmm_version=bmm_version)
+run_imm_abc(seed=seed, bmm_version=bmm_version)
+run_imm_bsc(seed=seed, bmm_version=bmm_version)
+run_imm_full(seed=seed, bmm_version=bmm_version)

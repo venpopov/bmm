@@ -180,6 +180,9 @@ summarise_model <- function(model, ...) {
 # TODO: build this up
 #' @export
 summarise_model.bmmodel <- function(model, ...) {
+  if (!is.null(attr(model, 'call'))) {
+    return(deparse(attr(model, 'call')))
+  }
   construct_model_call(model, ...)
 }
 

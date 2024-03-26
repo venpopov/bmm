@@ -73,7 +73,7 @@ my_formula <- bmf(thetat ~ 1 + set_size) +
 my_formula
 ```
 
-As noted above, `bmm` generally assumes that you pass a `bmmformula` for each parameter of a model. If you do not pass a `bmmformula` for one or more parameters, `bmm` will throw a warning and only estimate a fixed intercept for the parameters for which no `bmmformula` was provided. If you are unsure about the parameters of a model, call the help via `?bmmodel`, replacing 'bmmodel' with the name of the model (e.g. `?sdmSimple`).
+As noted above, `bmm` generally assumes that you pass a `bmmformula` for each parameter of a model. If you do not pass a `bmmformula` for one or more parameters, `bmm` will throw a warning and only estimate a fixed intercept for the parameters for which no `bmmformula` was provided. If you are unsure about the parameters of a model, call the help via `?bmmodel`, replacing 'bmmodel' with the name of the model (e.g. `?sdm`).
 
 
 As `bmmformula` syntax builds upon `brmsformula` syntax, you can use any functionality you might use in `brms` for specifying a `bmmformula`. One difference is, that you _do not_ have to explicitly specify if a formula is a non-linear formula, as `bmm` recognizes a formula as non-linear as soon as one of the left-hand side arguments of a formula is also used as a right-hand side argument in the whole formula. So the argumetn `nl` does not exist for `bmmformula`. Similarly, adding grouping statements around group-level effects to estimate them separately for different sub-groups in your design can be added. So for example, a more complicated `bmmformula` could look like this:
@@ -125,7 +125,7 @@ When fixing a parameter to a constant value, you need to keep in mind that the v
 `bmm` fixes some parameters internally, as they are usually not an integral part of a measurement model, or need to be fixed to properly identify the model. For example in models for continuous reproduction visual working memory tasks, the distribution of target responses is usually assumed to be centered around the target. Consequently, the mean of this distribution `mu` is internally fixed to `0`. Such parameters are listed in the model object. So, you can see if a model has such parameters by accessing `my_model$fixed_parameters`. 
 
 ```{r}
-my_model <- sdmSimple(resp_error = "error")
+my_model <- sdm(resp_error = "error")
 my_model$fixed_parameters
 ```
 

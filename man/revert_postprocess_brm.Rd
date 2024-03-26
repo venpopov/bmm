@@ -21,7 +21,7 @@ Called by update.bmmfit() to automatically revert some of the postprocessing
 depending on the model type. It will call the appropriate revert_postprocess_brm.*
 methods based on the list of classes defined in the .model_* functions. For
 models with several classes listed, it will call the functions in the order
-they are listed. For example, for the sdmSimple model, the
+they are listed. For example, for the sdm model, the
 postprocessing involves setting the link function for the c parameter to "log",
 because it was coded manually in the stan code, but it was specified as "identity"
 in the brms custom family. However, during the update process, the link function

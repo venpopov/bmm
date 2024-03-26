@@ -177,10 +177,10 @@ ff <- bmf(
 )
 ```
 
-Then we specify the model, which in this case is just `sdmSimple()`, and we provide the name of the response error variable in the dataset:
+Then we specify the model, which in this case is just `sdm()`, and we provide the name of the response error variable in the dataset:
 
 ```{r}
-model <- sdmSimple(resp_error = "y")
+model <- sdm(resp_error = "y")
 ```
 
 Finally, we can fit the model. We strongly recommend using `cmdstanr` as a backend for fitting the SDM model, as it is much faster and more stable than the default `rstan` backend for this particular model. Here's how to fit the model with `cmdstanr`:

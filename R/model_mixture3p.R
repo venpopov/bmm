@@ -51,7 +51,7 @@
     # attributes
     regex = regex,
     regex_vars = c('nt_features'),
-    class =  c("bmmodel", "vwm", "nontargets", "mixture3p")
+    class =  c("bmmodel", "vwm", "non_targets", "mixture3p")
   )
   out$links[names(links)] <- links
   out

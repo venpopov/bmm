@@ -287,7 +287,7 @@ stop_quietly <- function() {
 
 # for some models it is faster to sample if the normalizing constant is calculated
 # only once for all trials that have the same value for the predictors. Currently
-# this is only used in the sdmSimple model, and to work it requires that the
+# this is only used in the sdm model, and to work it requires that the
 # data is ordered by the predictor variables. This function checks if the data is
 # ordered by the predictors, and if not, it suggests to the user to sort the data
 order_data_query <- function(model, data, formula) {

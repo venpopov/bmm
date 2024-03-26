@@ -2,7 +2,7 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_sdmSimple <- function(resp_error = NULL, links = NULL, ...) {
+.model_sdm <- function(resp_error = NULL, links = NULL, version = "simple", call = NULL, ...) {
   out <- structure(
     list(
       resp_vars = nlist(resp_error),
@@ -20,7 +20,8 @@
         error relative to the target'
       ),
       parameters = list(
-        mu = 'Location parameter of the SDM distribution (in radians; by default fixed internally to 0)',
+        mu = glue('Location parameter of the SDM distribution (in radians; \\
+                  by default fixed internally to 0)'),
         c = 'Memory strength parameter of the SDM distribution',
         kappa = 'Precision parameter of the SDM distribution'
       ),
@@ -37,7 +38,8 @@
       ),
       void_mu = FALSE
     ),
-    class = c('bmmodel', 'vwm', 'sdmSimple')
+    class = c('bmmodel', 'vwm', 'sdm', paste0("sdm_", version)),
+    call = call
   )
   out$links[names(links)] <- links
   out
@@ -45,19 +47,20 @@
 
 # user facing alias
 # information in the title and details sections will be filled in
-# automatically based on the information in the .model_sdmSimple(NA)$info
+# automatically based on the information in the .model_sdm_simple(NA)$info
 
-#' @title `r .model_sdmSimple()$name`
+#' @title `r .model_sdm()$name`
 #' @name SDM
 #' @details see `vignette("sdm-simple")` for a detailed description of the model
-#'   and how to use it.
-#'   `r model_info(.model_sdmSimple())`
+#'   and how to use it. `r model_info(.model_sdm())`
 #' @param resp_error The name of the variable in the dataset containing the
 #'   response error. The response error should code the response relative to the
 #'   to-be-recalled target in radians. You can transform the response error in
 #'   degrees to radians using the `deg2rad` function.
 #' @param links A list of links for the parameters. *Currently does not affect
 #'   the model fits, but it will in the future.*
+#' @param version Character. The version of the model to use. Currently only
+#'   "simple" is supported.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
 #' @export
@@ -80,7 +83,7 @@
 #' # specify the model
 #' fit <- bmm(formula = ff,
 #'            data = dat,
-#'            model = sdmSimple(resp_error = 'y'),
+#'            model = sdm(resp_error = 'y'),
 #'            prior = prior,
 #'            cores = 4,
 #'            backend = 'cmdstanr')
@@ -92,9 +95,19 @@
 #' lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
 #'               kappa=coef['kappa_Intercept']), col='red')
 #' }
-sdmSimple <- function(resp_error, links = NULL, ...) {
+sdm <- function(resp_error, links = NULL, version = "simple", ...) {
+  call <- match.call()
   stop_missing_args()
-  .model_sdmSimple(resp_error = resp_error, links = links, ...)
+  .model_sdm(resp_error = resp_error, links = links, version = version, call = call, ...)
+}
+
+#' @rdname SDM
+#' @export
+sdmSimple <- function(resp_error, links = NULL, version = "simple", ...) {
+  warning("The function `sdmSimple()` is deprecated. Please use `sdm()` instead.")
+  call <- match.call()
+  stop_missing_args()
+  .model_sdm(resp_error = resp_error, links = links, version = version, call = call, ...)
 }
 
 #############################################################################!
@@ -102,7 +115,7 @@ sdmSimple <- function(resp_error, links = NULL, ...) {
 #############################################################################!
 
 #' @export
-check_data.sdmSimple <- function(model, data, formula) {
+check_data.sdm <- function(model, data, formula) {
   # data sorted by predictors is necessary for speedy computation of normalizing constant
   data <- order_data_query(model, data, formula)
   NextMethod("check_data")
@@ -117,7 +130,7 @@ check_data.sdmSimple <- function(model, data, formula) {
 
 
 #' @export
-configure_model.sdmSimple <- function(model, data, formula) {
+configure_model.sdm <- function(model, data, formula) {
   # construct the family
   # note - c has a log link, but I've coded it manually for computational efficiency
   sdm_simple <- brms::custom_family(
@@ -133,9 +146,9 @@ configure_model.sdmSimple <- function(model, data, formula) {
 
   # prepare initial stanvars to pass to brms, model formula and priors
   sc_path <- system.file("stan_chunks", package = "bmm")
-  stan_funs <- read_lines2(paste0(sc_path, "/sdmSimple_funs.stan"))
-  stan_tdata <- read_lines2(paste0(sc_path, "/sdmSimple_tdata.stan"))
-  stan_likelihood <- read_lines2(paste0(sc_path, "/sdmSimple_likelihood.stan"))
+  stan_funs <- read_lines2(paste0(sc_path, "/sdm_simple_funs.stan"))
+  stan_tdata <- read_lines2(paste0(sc_path, "/sdm_simple_tdata.stan"))
+  stan_likelihood <- read_lines2(paste0(sc_path, "/sdm_simple_likelihood.stan"))
   stanvars <- brms::stanvar(scode = stan_funs, block = "functions") +
     brms::stanvar(scode = stan_tdata, block = "tdata") +
     brms::stanvar(scode = stan_likelihood, block = "likelihood", position = "end")
@@ -158,7 +171,7 @@ configure_model.sdmSimple <- function(model, data, formula) {
 #############################################################################!
 
 #' @export
-postprocess_brm.sdmSimple <- function(model, fit, ...) {
+postprocess_brm.sdm <- function(model, fit, ...) {
   # manually set link_c to "log" since I coded it manually
   fit$family$link_c <- "log"
   fit$formula$family$link_c <- "log"
@@ -166,7 +179,7 @@ postprocess_brm.sdmSimple <- function(model, fit, ...) {
 }
 
 #' @export
-revert_postprocess_brm.sdmSimple <- function(model, fit, ...) {
+revert_postprocess_brm.sdm <- function(model, fit, ...) {
   fit$family$link_c <- "identity"
   fit$formula$family$link_c <- "identity"
   fit

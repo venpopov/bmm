@@ -63,7 +63,7 @@ The `bmm` package implements several measurement models for analyzing continuous
  
 #### The Signal Discrimination Model (SDM) by [@Oberauer_2023]  {.unnumbered}
 
-  - see `?sdmSimple` and `vignette("sdm-simple")`
+  - see `?sdm` and `vignette("sdm-simple")`
     
     
 # References

@@ -2,64 +2,11 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_IMMabc <-
-  function(resp_error = NULL, nt_features = NULL, set_size = NULL, regex = FALSE,
-           links = NULL, ...) {
-    out <- structure(
-      list(
-        resp_vars = nlist(resp_error),
-        other_vars = nlist(nt_features, set_size),
-        domain = "Visual working memory",
-        task = "Continuous reproduction",
-        name = "Interference measurement model by Oberauer and Lin (2017).",
-        version = "abc",
-        citation = glue(
-          "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
-          of visual working memory. Psychological Review, 124(1), 21-59"
-        ),
-        requirements = glue(
-          "- The response vairable should be in radians and \\
-          represent the angular error relative to the target
-          - The non-target features should be in radians and be \\
-          centered relative to the target"
-        ),
-        parameters = list(
-          mu1 = glue(
-            "Location parameter of the von Mises distribution for memory \\
-            responses (in radians). Fixed internally to 0 by default."
-          ),
-          kappa = "Concentration parameter of the von Mises distribution",
-          a = "General activation of memory items",
-          c = "Context activation"
-        ),
-        links = list(
-          mu1 = "tan_half",
-          kappa = "log",
-          a = "identity",
-          c = "identity"
-        ),
-        fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
-        default_priors = list(
-          mu1 = list(main = "student_t(1, 0, 1)"),
-          kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
-          a = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
-          c = list(main = "normal(0, 1)", effects = "normal(0, 1)")
-        ),
-        void_mu = FALSE
-      ),
-      # attributes
-      regex = regex,
-      regex_vars = c("nt_features"),
-      class = c("bmmodel", "vwm", "nontargets", "IMMabc")
-    )
-    out$links[names(links)] <- links
-    out
-  }
 
-
-.model_IMMbsc <-
+.model_imm <-
   function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
-           set_size = NULL, regex = FALSE, links = NULL, ...) {
+           set_size = NULL, regex = FALSE, links = NULL, version = "full",
+           call = NULL, ...) {
     out <- structure(
       list(
         resp_vars = nlist(resp_error),
@@ -67,61 +14,7 @@
         domain = "Visual working memory",
         task = "Continuous reproduction",
         name = "Interference measurement model by Oberauer and Lin (2017).",
-        version = "bsc",
-        citation = glue(
-          "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
-          of visual working memory. Psychological Review, 124(1), 21-59"
-        ),
-        requirements = glue(
-          '- The response vairable should be in radians and \\
-          represent the angular error relative to the target
-          - The non-target features should be in radians and be \\
-          centered relative to the target'
-        ),
-        parameters = list(
-          mu1 = glue(
-            "Location parameter of the von Mises distribution for memory \\
-            responses (in radians). Fixed internally to 0 by default."
-          ),
-          kappa = "Concentration parameter of the von Mises distribution",
-          c = "Context activation",
-          s = "Spatial similarity gradient"
-        ),
-        links = list(
-          mu1 = "tan_half",
-          kappa = "log",
-          c = "identity",
-          s = "log"
-        ),
-        fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
-        default_priors = list(
-          mu1 = list(main = "student_t(1, 0, 1)"),
-          kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
-          c = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
-          s = list(main = "normal(0, 1)", effects = "normal(0, 1)")
-        ),
-        void_mu = FALSE
-      ),
-      # attributes
-      regex = regex,
-      regex_vars = c('nt_features', 'nt_distances'),
-      class = c("bmmodel", "vwm", "nontargets", "IMMspatial", "IMMbsc")
-    )
-  out$links[names(links)] <- links
-  out
-}
-
-.model_IMMfull <-
-  function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
-           set_size = NULL, regex = FALSE, links = NULL, ...) {
-    out <- structure(
-      list(
-        resp_vars = nlist(resp_error),
-        other_vars = nlist(nt_features, nt_distances, set_size),
-        domain = "Visual working memory",
-        task = "Continuous reproduction",
-        name = "Interference measurement model by Oberauer and Lin (2017).",
-        version = "full",
+        version = version,
         citation = glue(
           "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
           of visual working memory. Psychological Review, 124(1), 21-59"
@@ -162,25 +55,43 @@
       # attributes
       regex = regex,
       regex_vars = c('nt_features', 'nt_distances'),
-      class = c("bmmodel", "vwm", "nontargets", "IMMspatial", "IMMfull")
+      class = c("bmmodel", "vwm", "non_targets", "imm", paste0('imm_',version)),
+      call = call
     )
+
+    # add version specific information
+    if (version == "abc") {
+      out$parameters$s <- NULL
+      out$links$s <- NULL
+      out$default_priors$s <- NULL
+      attributes(out)$regex_vars <- c('nt_features')
+    } else if (version == "bsc") {
+      out$parameters$a <- NULL
+      out$links$a <- NULL
+      out$default_priors$a <- NULL
+    }
+
     out$links[names(links)] <- links
     out
   }
 
 # user facing alias
 
-#' @title `r .model_IMMfull()$name`
-#' @name IMM
-#' @details `r model_info(.model_IMMfull(), components =c('domain', 'task', 'name', 'citation'))`
-#' #### Version: `IMMfull`
-#' `r model_info(.model_IMMfull(), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
-#' #### Version: `IMMbsc`
-#' `r model_info(.model_IMMbsc(), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
-#' #### Version: `IMMabc`
-#' `r model_info(.model_IMMabc(), components =c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
+#' @title `r .model_imm()$name`
+#' @description Three versions of the `r .model_imm()$name` - the full, bsc, and abc.
+#' `IMMfull()`, `IMMbsc()`, and `IMMabc()` are deprecated and will be removed in the future.
+#' Please use `imm(version = 'full')`, `imm(version = 'bsc')`, or `imm(version = 'abc')` instead.
 #'
-#' Additionally, all IMM models have an internal parameter that is fixed to 0 to
+#' @name imm
+#' @details `r model_info(.model_imm(), components =c('domain', 'task', 'name', 'citation'))`
+#' #### Version: `full`
+#' `r model_info(.model_imm(version = "full"), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
+#' #### Version: `bsc`
+#' `r model_info(.model_imm(version = "bsc"), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
+#' #### Version: `abc`
+#' `r model_info(.model_imm(version = "abc"), components =c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
+#'
+#' Additionally, all imm models have an internal parameter that is fixed to 0 to
 #' allow the model to be identifiable. This parameter is not estimated and is not
 #' included in the model formula. The parameter is:
 #'
@@ -198,7 +109,7 @@
 #' @param nt_distances A vector of names of the columns containing the distances
 #'   of non-target items to the target item. Alternatively, if regex=TRUE, a regular
 #'   expression can be used to match the non-target distances columns in the
-#'   dataset. Only necessary for the `IMMbsc` and `IMMfull` models.
+#'   dataset. Only necessary for the `bsc` and `full` versions.
 #' @param set_size Name of the column containing the set size variable (if
 #'   set_size varies) or a numeric value for the set_size, if the set_size is
 #'   fixed.
@@ -207,6 +118,8 @@
 #'   columns in the dataset.
 #' @param links A list of links for the parameters. *Currently does not affect
 #'   the model fits, but it will in the future.*
+#' @param version Character. The version of the IMM model to use. Can be one of
+#'  `full`, `bsc`, or `abc`. The default is `full`.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
 #' @keywords bmmodel
@@ -224,10 +137,11 @@
 #' )
 #'
 #' # specify the full IMM model with explicit column names for non-target features and distances
-#' model1 <- IMMfull(resp_error = "dev_rad",
-#'                   nt_features = paste0('col_nt', 1:7),
-#'                   nt_distances = paste0('dist_nt', 1:7),
-#'                   set_size = 'set_size')
+#' # by default this fits the full version of the model
+#' model1 <- imm(resp_error = "dev_rad",
+#'               nt_features = paste0('col_nt', 1:7),
+#'               nt_distances = paste0('dist_nt', 1:7),
+#'               set_size = 'set_size')
 #'
 #' # fit the model
 #' fit <- bmm(formula = ff,
@@ -238,11 +152,11 @@
 #'
 #' # alternatively specify the IMM model with a regular expression to match non-target features
 #' # this is equivalent to the previous call, but more concise
-#' model2 <- IMMfull(resp_error = "dev_rad",
-#'                   nt_features = 'col_nt',
-#'                   nt_distances = 'dist_nt',
-#'                   set_size = 'set_size',
-#'                   regex = TRUE)
+#' model2 <- imm(resp_error = "dev_rad",
+#'               nt_features = 'col_nt',
+#'               nt_distances = 'dist_nt',
+#'               set_size = 'set_size',
+#'               regex = TRUE)
 #'
 #' # fit the model
 #' fit <- bmm(formula = ff,
@@ -250,51 +164,93 @@
 #'            model = model2,
 #'            cores = 4,
 #'            backend = 'cmdstanr')
+#'
+#' # you can also specify the `bsc` or `abc` versions of the model to fit a reduced version
+#' model3 <- imm(resp_error = "dev_rad",
+#'               nt_features = 'col_nt',
+#'               set_size = 'set_size',
+#'               regex = TRUE,
+#'               version = 'abc')
+#' fit <- bmm(formula = ff,
+#'            data = data,
+#'            model = model3,
+#'            cores = 4,
+#'            backend = 'cmdstanr')
 #'}
 #' @export
-IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
-                    links = NULL,
-                    ...) {
+imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
+                links = NULL, version = "full", ...) {
+  call <- match.call()
   dots <- list(...)
   if ("setsize" %in% names(dots)) {
     set_size <- dots$setsize
     warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
   }
+  if (version == "abc") {
+    nt_distances <- NULL
+  }
   stop_missing_args()
-  .model_IMMfull(resp_error = resp_error, nt_features = nt_features,
-                 nt_distances = nt_distances, set_size = set_size, regex = regex,
-                 links = links, ...)
+  .model_imm(resp_error = resp_error, nt_features = nt_features,
+             nt_distances = nt_distances, set_size = set_size, regex = regex,
+             links = links, version = version, call = call, ...)
 }
 
-#' @rdname IMM
+
+# deprecated calls for specific versions
+
+#' @rdname imm
+#' @keywords bmmodel
+#' @export
+IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
+                    links = NULL, ...) {
+  call <- match.call()
+  dots <- list(...)
+  warning("The function `IMMfull()` is deprecated. Please use `imm(version = 'full')` instead.")
+  if ("setsize" %in% names(dots)) {
+    set_size <- dots$setsize
+    warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
+  }
+  stop_missing_args()
+  .model_imm(resp_error = resp_error, nt_features = nt_features,
+             nt_distances = nt_distances, set_size = set_size, regex = regex,
+             links = links, version = "full", call = call, ...)
+}
+
+
+#' @rdname imm
 #' @keywords bmmodel
 #' @export
 IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
                    links = NULL, ...) {
+  call <- match.call()
   dots <- list(...)
+  warning("The function `IMMbsc()` is deprecated. Please use `imm(version = 'bsc')` instead.")
   if ("setsize" %in% names(dots)) {
     set_size <- dots$setsize
     warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
   }
   stop_missing_args()
-  .model_IMMbsc(resp_error = resp_error, nt_features = nt_features,
-                nt_distances = nt_distances, set_size = set_size, regex = regex,
-                links = links, ...)
+  .model_imm(resp_error = resp_error, nt_features = nt_features,
+             nt_distances = nt_distances, set_size = set_size, regex = regex,
+             links = links, version = "bsc", call = call, ...)
 }
 
-#' @rdname IMM
+#' @rdname imm
 #' @keywords bmmodel
 #' @export
 IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, links = NULL,
                    ...) {
+  call <- match.call()
   dots <- list(...)
+  warning("The function `IMMabc()` is deprecated. Please use `imm(version = 'abc')` instead.")
   if ("setsize" %in% names(dots)) {
     set_size <- dots$setsize
     warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
   }
   stop_missing_args()
-  .model_IMMabc(resp_error = resp_error, nt_features = nt_features,
-                set_size = set_size, regex = regex, links = links, ...)
+  .model_imm(resp_error = resp_error, nt_features = nt_features,
+             set_size = set_size, regex = regex, links = links,
+             version = "abc", call = call, ...)
 }
 
 #############################################################################!
@@ -306,7 +262,18 @@ IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, links = NUL
 # the model. See ?check_data for details
 
 #' @export
-check_data.IMMspatial <- function(model, data, formula) {
+check_data.imm_bsc <- function(model, data, formula) {
+  data <- .check_data_imm_dist(model, data, formula)
+  NextMethod("check_data")
+}
+
+#' @export
+check_data.imm_full <- function(model, data, formula) {
+  data <- .check_data_imm_dist(model, data, formula)
+  NextMethod("check_data")
+}
+
+.check_data_imm_dist <- function(model, data, formula) {
   nt_distances <- model$other_vars$nt_distances
   max_set_size <- attr(data, 'max_set_size')
 
@@ -319,8 +286,7 @@ check_data.IMMspatial <- function(model, data, formula) {
 
   stopif(any(data[,nt_distances] < 0),
          "All non-target distances to the target need to be postive.")
-
-  NextMethod("check_data")
+  data
 }
 
 #############################################################################!
@@ -330,7 +296,7 @@ check_data.IMMspatial <- function(model, data, formula) {
 # ?configure_model for more information.
 
 #' @export
-configure_model.IMMabc <- function(model, data, formula) {
+configure_model.imm_abc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_set_size <- attr(data, 'max_set_size')
   lure_idx <- attr(data, "lure_idx_vars")
@@ -367,12 +333,13 @@ configure_model.IMMabc <- function(model, data, formula) {
 
 
 #' @export
-configure_prior.IMMabc <- function(model, data, formula, user_prior, ...) {
+configure_prior.imm_abc <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
   set_size_var <- model$other_vars$set_size
   a_preds <- rhs_vars(formula$pforms$a)
   prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% a_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
+      set_size_var %in% a_preds) {
     prior <- brms::prior_("constant(0)",
                           class = "b",
                           coef = paste0(set_size_var, 1),
@@ -383,7 +350,7 @@ configure_prior.IMMabc <- function(model, data, formula, user_prior, ...) {
 
 
 #' @export
-configure_model.IMMbsc <- function(model, data, formula) {
+configure_model.imm_bsc <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_set_size <- attr(data, 'max_set_size')
   lure_idx <- attr(data, "lure_idx_vars")
@@ -407,7 +374,8 @@ configure_model.IMMbsc <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * exp(-expS*{nt_distances[i]}) * c + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * exp(-expS*{nt_distances[i]})",
+               " * c + (1 - {lure_idx[i]}) * (-100)") +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
@@ -421,12 +389,13 @@ configure_model.IMMbsc <- function(model, data, formula) {
 }
 
 #' @export
-configure_prior.IMMbsc <- function(model, data, formula, user_prior, ...) {
+configure_prior.imm_bsc <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
   set_size_var <- model$other_vars$set_size
   s_preds <- rhs_vars(formula$pforms$s)
   prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% s_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
+      set_size_var %in% s_preds) {
     prior <- brms::prior_("constant(0)",
                           class = "b",
                           coef = paste0(set_size_var, 1),
@@ -436,7 +405,7 @@ configure_prior.IMMbsc <- function(model, data, formula, user_prior, ...) {
 }
 
 #' @export
-configure_model.IMMfull <- function(model, data, formula) {
+configure_model.imm_full <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_set_size <- attr(data, 'max_set_size')
   lure_idx <- attr(data, "lure_idx_vars")
@@ -460,7 +429,8 @@ configure_model.IMMfull <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (exp(-expS*{nt_distances[i]}) * c + a) + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (exp(-expS*{nt_distances[i]})",
+               " * c + a) + (1 - {lure_idx[i]}) * (-100)") +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
@@ -475,19 +445,21 @@ configure_model.IMMfull <- function(model, data, formula) {
 }
 
 #' @export
-configure_prior.IMMfull <- function(model, data, formula, user_prior, ...) {
+configure_prior.imm_full <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
   set_size_var <- model$other_vars$set_size
   s_preds <- rhs_vars(formula$pforms$s)
   a_preds <- rhs_vars(formula$pforms$a)
   prior <- brms::empty_prior()
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% a_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
+      set_size_var %in% a_preds) {
     prior <- brms::prior_("constant(0)",
                           class = "b",
                           coef = paste0(set_size_var, 1),
                           nlpar = "a")
   }
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% s_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
+      set_size_var %in% s_preds) {
     prior <- prior + brms::prior_("constant(0)",
                                   class = "b",
                                   coef = paste0(set_size_var, 1),

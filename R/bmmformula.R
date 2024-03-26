@@ -197,7 +197,7 @@ check_formula.default <- function(model, data, formula) {
 }
 
 #' @export
-check_formula.nontargets <- function(model, data, formula) {
+check_formula.non_targets <- function(model, data, formula) {
   set_size_var <- model$other_vars$set_size
   pred_list <- rhs_vars(formula, collapse = FALSE)
   has_set_size <- sapply(pred_list, function(x) set_size_var %in% x)

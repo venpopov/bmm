@@ -22,8 +22,8 @@ directory}
 \item{custom_family}{Logical; Do you plan to define a brms::custom_family()?
 If TRUE the function will add a section for the custom family, placeholders
 for the stan_vars and corresponding empty .stan files in
-\verb{inst/stan_chunks/}, that you can fill For an example, see the sdmSimple
-model in \verb{/R/model_sdmSimple.R}. If FALSE (default) the function will
+\verb{inst/stan_chunks/}, that you can fill For an example, see the sdm
+model in \verb{/R/model_sdm.R}. If FALSE (default) the function will
 not add the custom family section nor stan files.}
 
 \item{stanvar_blocks}{A character vector with the names of the blocks that
