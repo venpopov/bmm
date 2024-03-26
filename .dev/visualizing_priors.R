@@ -1,7 +1,7 @@
 data <- oberauer_lin_2017
 data$session <- as.factor(data$session)
 formula <- bmf(c ~ 0 + set_size, kappa ~ session)
-model <- sdmSimple('dev_rad')
+model <- sdm('dev_rad')
 default_prior(formula, data, model)
 
 

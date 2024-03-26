@@ -10,9 +10,9 @@
 #'   models with several classes listed, it will call the functions in the order
 #'   they are listed. Thus, any operations that are common to a group of models
 #'   should be defined in the appropriate check_data.* function, where \*
-#'   corresponds to the shared class. For example, for the .model_IMMabc model,
+#'   corresponds to the shared class. For example, for the .model_imm_abc model,
 #'   this corresponds to the following order of check_data.* functions:
-#'   check_data() -> check_data.vwm(), check_data.nontargets() the output of the
+#'   check_data() -> check_data.vwm(), check_data.non_targets() the output of the
 #'   final function is returned to bmm().
 #' @param model A model list object returned from check_model()
 #' @param data The user supplied data.frame containing the data to be checked
@@ -62,7 +62,7 @@ check_data.vwm <- function(model, data, formula) {
 
 
 #' @export
-check_data.nontargets <- function(model, data, formula) {
+check_data.non_targets <- function(model, data, formula) {
   nt_features <- model$other_vars$nt_features
   warnif(max(abs(data[,nt_features]), na.rm = T) > 2*pi,
          'It appears at least one of your non_target variables are in degrees.
@@ -238,7 +238,7 @@ rad2deg <- function(rad){
 #' @examples
 #' sdata1 <- standata(bmf(c ~ 1, kappa ~ 1),
 #'                    data = oberauer_lin_2017,
-#'                    model = sdmSimple(resp_error = "dev_rad"))
+#'                    model = sdm(resp_error = "dev_rad"))
 #' str(sdata1)
 #' @importFrom brms standata
 #' @export

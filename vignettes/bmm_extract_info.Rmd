@@ -61,7 +61,7 @@ library(bmm)
 
 default_prior(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
               data = oberauer_lin_2017,
-              model = sdmSimple(resp_error = 'dev_rad'))
+              model = sdm(resp_error = 'dev_rad'))
 ```
 
 In this case we used a formula of the type `~ 0 + factor`, which means that the
@@ -102,7 +102,7 @@ the intercept would have a default prior of normal(0, 1):
 ```{r message=FALSE, warning=FALSE}
 default_prior(bmf(c ~ 1 + set_size, kappa ~ 1 + set_size), 
               data = oberauer_lin_2017,
-              model = sdmSimple(resp_error = 'dev_rad'))
+              model = sdm(resp_error = 'dev_rad'))
 ```
 
 You can also see that in both cases, the last line is "constant(0)" on the
@@ -115,7 +115,7 @@ parameter in all models, so it hides it in the output. If you wanted to estimate
 ```{r message=FALSE, warning=FALSE}
 default_prior(bmf(mu ~ 1 + set_size, c ~ 1, kappa ~ 1),
               data = oberauer_lin_2017,
-              model = sdmSimple(resp_error = 'dev_rad'))
+              model = sdm(resp_error = 'dev_rad'))
 ```
 
 The `mu` parameter uses a `tan_half` link function, which means that the
@@ -129,7 +129,7 @@ or use other Bayesian inference methods.
 All of the above examples make an important point - priors are always specified
 on the scale at which the parameters are sampled. You can always check the
 documentation for a given model to see the links for the parameters (e.g.
-`?sdmSimple`).
+`?sdm`).
 
 To overwrite the default priors and set your own, you can use the `set_prior`
 function from `brms`. For more information, see `?brms::set_prior`.
@@ -145,7 +145,7 @@ can inspect it or modify it, you can use the `stancode()` function from `brms`:
 ```{r comment = "", collapse=FALSE}
 stancode(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
          data = oberauer_lin_2017,
-         model = sdmSimple(resp_error = 'dev_rad'))
+         model = sdm(resp_error = 'dev_rad'))
 ```
 
 
@@ -155,7 +155,7 @@ Alternatively, if you already have a fitted model object, you can just call
 ```r
 fit <- bmm(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
               data = oberauer_lin_2017,
-              model = sdmSimple(resp_error = 'dev_rad'))
+              model = sdm(resp_error = 'dev_rad'))
 stancode(fit)
 ```
 
@@ -168,6 +168,6 @@ the data that would be passed to Stan for fitting the model.
 ```{r, message=F, warning=F}
 sd <- standata(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
                data = oberauer_lin_2017,
-               model = sdmSimple(resp_error = 'dev_rad'))
+               model = sdm(resp_error = 'dev_rad'))
 str(sd)
 ```

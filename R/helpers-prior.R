@@ -29,7 +29,7 @@
 #' @examples
 #' default_prior(bmf(c ~ 1, kappa ~ 1),
 #'               data = oberauer_lin_2017,
-#'               model = sdmSimple(resp_error = 'dev_rad'))
+#'               model = sdm(resp_error = 'dev_rad'))
 #' @importFrom brms default_prior
 #' @export
 default_prior.bmmformula <- function(object, data, model, formula = object, ...) {
@@ -215,7 +215,7 @@ set_default_prior <- function(model, data, formula) {
 #' parameters should be fixed to a constant and put the appropriate constant
 #' priors. Any additional priors that a developer wants to specify, which are
 #' not based on information in the model object, can be defined in the
-#' configure_prior.* method for the model. See configure_prior.IMMfull for an
+#' configure_prior.* method for the model. See configure_prior.imm_full for an
 #' example.
 #' @param model A `bmmodel` object
 #' @param data A data.frame containing the data used in the model

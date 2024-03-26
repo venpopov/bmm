@@ -76,8 +76,7 @@ Two-parameter mixture model by Zhang and Luck (2008).
 dat <- data.frame(y = rmixture2p(n=2000))
 
 # define formula
-ff <- bmmformula(kappa ~ 1,
-                 thetat ~ 1)
+ff <- bmmformula(kappa ~ 1, thetat ~ 1)
 
 model <- mixture2p(resp_error = "y")
 

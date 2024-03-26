@@ -136,7 +136,7 @@ get_prior(bf(dev_rad ~ 1, sigma ~ set_size + (set_size|ID)), dat)
 
 Currently we put a default prior on all parameters, assuming naively
 that they are specified with a suppressed intercept (except for the
-sdmSimple, for which we have no default priors yet). We don’t want to
+sdm, for which we have no default priors yet). We don’t want to
 follow `brms` approach, because these measurement models need meaningful
 default priors to help with sampling.
 
@@ -912,7 +912,7 @@ compare_priors(formula, dat, model3p)
 
 ``` r
 options(bmm.sort_data = F)
-modelSDM <- sdmSimple('dev_rad')
+modelSDM <- sdm('dev_rad')
 ```
 
 <details>

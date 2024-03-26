@@ -23,7 +23,7 @@ methods based on the list of classes defined in the .model_* functions. For
 models with several classes listed, it will call the functions in the order
 they are listed. Thus, any operations that are common to a group of models
 should be defined in the appropriate postprocess_brm.* function, where \*
-corresponds to the shared class. For example, for the sdmSimple model, the
+corresponds to the shared class. For example, for the sdm model, the
 postprocessing involves setting the link function for the c parameter to "log",
 because it was coded manually in the stan code, but it was specified as "identity"
 in the brms custom family. If your model requires no postprocessing, you can

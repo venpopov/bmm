@@ -14,7 +14,7 @@ generate_bmm_examples <- function(seed = 123) {
            set_size %in% c(1,2,3,4)) %>%
     arrange(set_size, ID)
   formula <- bmf(c ~ 0 + set_size, kappa ~ 1)
-  model <- sdmSimple('dev_rad')
+  model <- sdm('dev_rad')
   bmmfit_example1 <- bmm(formula, data, model,
                                iter = 100,
                                refresh = 0,
@@ -34,7 +34,7 @@ generate_bmm_examples <- function(seed = 123) {
          rsdm(n = 1000, mu=0, c = cs[3], kappa = kappas[3], parametrization = "sqrtexp"))
   dat <- data.frame(y = y, cond = factor(rep(c('A','B','C'), each=1000)))
   formula <- bmf(c ~ 0 + cond, kappa ~ 0 + cond)
-  model <- sdmSimple('y')
+  model <- sdm('y')
   bmmfit_sdm_vignette <- bmm(formula, dat, model, init = 0.5, iter = 2000,
                                    chains = 4, save_pars = save_pars(group = FALSE))
   bmmfit_sdm_vignette$bmm$fit_args$data <- NULL
@@ -105,10 +105,10 @@ generate_bmm_examples <- function(seed = 123) {
     s ~ 0 + cond,
     kappa ~ 0 + cond
   )
-  model <- IMMfull(resp_error = "resp_error",
-                   nt_features = paste0("color_item",2:5),
-                   set_size = set_size,
-                   nt_distances = paste0("dist_item",2:5))
+  model <- imm(resp_error = "resp_error",
+               nt_features = paste0("color_item",2:5),
+               set_size = set_size,
+               nt_distances = paste0("dist_item",2:5))
   bmmfit_imm_vignette <- bmm(
     formula = model_formula,
     data = simData,

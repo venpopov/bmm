@@ -1,46 +1,78 @@
 test_that("check_data() produces expected errors and warnings", {
-  expect_error(check_data(.model_mixture2p(resp_error = "y")),
-               "Data must be specified using the 'data' argument.")
-  expect_error(check_data(.model_mixture2p(resp_error = "y"),
-                          data.frame(),
-                          bmmformula(kappa ~ 1)),
-               "Argument 'data' does not contain observations.")
-  expect_error(check_data(.model_mixture2p(resp_error = "y"),
-                          data.frame(x = 1),
-                          bmmformula(kappa ~ 1)),
-               "The response variable 'y' is not present in the data.")
-  expect_error(check_data(.model_mixture2p(resp_error = "y"),
-                          y~1),
-               "Argument 'data' must be coercible to a data.frame.")
+  expect_error(
+    check_data(.model_mixture2p(resp_error = "y")),
+    "Data must be specified using the 'data' argument."
+  )
+  expect_error(
+    check_data(
+      .model_mixture2p(resp_error = "y"),
+      data.frame(),
+      bmmformula(kappa ~ 1)
+    ),
+    "Argument 'data' does not contain observations."
+  )
+  expect_error(
+    check_data(
+      .model_mixture2p(resp_error = "y"),
+      data.frame(x = 1),
+      bmmformula(kappa ~ 1)
+    ),
+    "The response variable 'y' is not present in the data."
+  )
+  expect_error(
+    check_data(
+      .model_mixture2p(resp_error = "y"),
+      y ~ 1
+    ),
+    "Argument 'data' must be coercible to a data.frame."
+  )
 
-  mls <- lapply(c('mixture2p','mixture3p','IMMabc','IMMbsc','IMMfull'), get_model)
+  mls <- lapply(c("mixture2p", "mixture3p", "imm"), get_model)
   for (ml in mls) {
-    expect_warning(check_data(ml(resp_error = "y", nt_features = 'x', set_size=2, nt_distances = 'z'),
-                              data.frame(y = 12, x = 1, z = 2),
-                              bmmformula(kappa ~ 1)),
-                   "It appears your response variable is in degrees.\n")
-    expect_silent(check_data(ml(resp_error = "y", nt_features = 'x', set_size=2, nt_distances = 'z'),
-                             data.frame(y = 1, x = 1, z = 2), bmmformula(y ~ 1)))
+    expect_warning(
+      check_data(
+        ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z"),
+        data.frame(y = 12, x = 1, z = 2),
+        bmmformula(kappa ~ 1)
+      ),
+      "It appears your response variable is in degrees.\n"
+    )
+    expect_silent(check_data(
+      ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z"),
+      data.frame(y = 1, x = 1, z = 2), bmmformula(y ~ 1)
+    ))
   }
 
-  mls <- lapply(c('mixture3p','IMMabc','IMMbsc','IMMfull'), get_model)
+  mls <- lapply(c("mixture3p", "imm"), get_model)
   for (ml in mls) {
-    expect_error(check_data(ml(resp_error = "y",nt_features='x', set_size = 5, nt_distances = 'z'),
-                            data.frame(y = 1, x = 1, z = 2),
-                            bmmformula(kappa ~ 1)),
-                 "'nt_features' should equal max\\(set_size\\)-1")
-    expect_warning(check_data(ml(resp_error = "y", nt_features = 'x', set_size=2, nt_distances = 'z'),
-                              data.frame(y = 1, x = 2*pi+1, z = 2),
-                              bmmformula(kappa ~ 1)),
-                   "at least one of your non_target variables are in degrees")
+    expect_error(
+      check_data(
+        ml(resp_error = "y", nt_features = "x", set_size = 5, nt_distances = "z"),
+        data.frame(y = 1, x = 1, z = 2),
+        bmmformula(kappa ~ 1)
+      ),
+      "'nt_features' should equal max\\(set_size\\)-1"
+    )
+    expect_warning(
+      check_data(
+        ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z"),
+        data.frame(y = 1, x = 2 * pi + 1, z = 2),
+        bmmformula(kappa ~ 1)
+      ),
+      "at least one of your non_target variables are in degrees"
+    )
   }
 
-  mls <- lapply(c('IMMbsc','IMMfull'), get_model)
-  for (ml in mls) {
-    expect_error(check_data(ml(resp_error = "y",nt_features=paste0('x',1:4), set_size = 5, nt_distances = 'z'),
-                            data.frame(y = 1, x1 = 1, x2=2,x3=3,x4=4, z = 2),
-                            bmmformula(kappa ~ 1)),
-                 "'nt_distances' should equal max\\(set_size\\)-1")
+  for (version in c("bsc", "full")) {
+    expect_error(
+      check_data(
+        imm(resp_error = "y", nt_features = paste0("x", 1:4), set_size = 5,
+            nt_distances = "z", version = version),
+        data.frame(y = 1, x1 = 1, x2 = 2, x3 = 3, x4 = 4, z = 2),
+        bmmformula(kappa ~ 1)
+      ),
+      "'nt_distances' should equal max\\(set_size\\)-1"
+    )
   }
 })
 
@@ -132,7 +164,8 @@ test_that("check_var_set_size rejects invalid input", {
   dat <- data.frame(y = c(1,2,3), z = c(1,2,3))
   expect_error(check_var_set_size(c('z','y'), dat), "You provided a vector")
   expect_error(check_var_set_size(list('z','y'), dat), "You provided a vector")
-  expect_error(check_var_set_size(set_size=TRUE, dat), "must be either a variable in your data or a single numeric value")
+  expect_error(check_var_set_size(set_size=TRUE, dat),
+               "must be either a variable in your data or a single numeric value")
 })
 
 
@@ -141,11 +174,13 @@ test_that("check_var_set_size rejects invalid input", {
 
 
 test_that("check_data() returns a data.frame()", {
-  mls <- lapply(supported_models(print_call=FALSE), get_model)
+  mls <- lapply(supported_models(print_call = FALSE), get_model)
   for (ml in mls) {
-    expect_s3_class(check_data(ml(resp_error = "y",nt_features = 'x', set_size=2, nt_distances = 'z'),
-                               data.frame(y = 1, x = 1, z = 2),
-                               bmmformula(kappa ~ 1)), "data.frame")
+    expect_s3_class(check_data(
+      ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z"),
+      data.frame(y = 1, x = 1, z = 2),
+      bmmformula(kappa ~ 1)
+    ), "data.frame")
   }
 })
 

@@ -2,9 +2,7 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture2p <- function(resp_error = NULL,
-                             links = NULL,
-                             ...) {
+.model_mixture2p <- function(resp_error = NULL, links = NULL, ...) {
   out <- structure(
     list(
       resp_vars = nlist(resp_error),
@@ -67,8 +65,7 @@
 #' dat <- data.frame(y = rmixture2p(n=2000))
 #'
 #' # define formula
-#' ff <- bmmformula(kappa ~ 1,
-#'                  thetat ~ 1)
+#' ff <- bmmformula(kappa ~ 1, thetat ~ 1)
 #'
 #' model <- mixture2p(resp_error = "y")
 #'
@@ -81,9 +78,7 @@
 #'            backend = 'cmdstanr')
 #' }
 #' @export
-mixture2p <- function(resp_error,
-                      links = NULL,
-                      ...) {
+mixture2p <- function(resp_error, links = NULL, ...) {
   stop_missing_args()
   .model_mixture2p(resp_error = resp_error, links = links, ...)
 }

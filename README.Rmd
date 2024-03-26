@@ -165,7 +165,7 @@ For example, calling the information on the full version of the Interference
 Measurement Model would look like this:
 
 ``` r
-?IMMfull
+?imm
 ```
 
 A complete call to fit a model using bmm could look like this. For this example,
@@ -181,10 +181,10 @@ formula <- bmmformula(c ~ 0 + set_size,
                       s ~ 0 + set_size,
                       kappa ~ 0 + set_size)
 
-model <- IMMfull(resp_error = "dev_rad",
-                 nt_features = paste0("col_nt", 1:7),
-                 nt_distances = paste0("dist_nt",1:7),
-                 set_size = "set_size")
+model <- imm(resp_error = "dev_rad",
+             nt_features = paste0("col_nt", 1:7),
+             nt_distances = paste0("dist_nt",1:7),
+             set_size = "set_size")
 
 fit <- bmm(formula = formula, data = data, model = model)
 ```

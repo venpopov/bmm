@@ -209,7 +209,7 @@ supported_models <- function(print_call = TRUE) {
     args <- gsub("'", "", args)
     out <- paste0(out, "- `", model, "(", args, ")`", "\n", sep = "")
   }
-  out <- paste0(out, "\nType `?modelname` to get information about a specific model, e.g. `?IMMfull`\n")
+  out <- paste0(out, "\nType `?modelname` to get information about a specific model, e.g. `?imm`\n")
   out <- gsub("`", " ", out)
   class(out) <- "message"
   out
@@ -230,12 +230,7 @@ print_pretty_models_md <- function() {
   domains <- c()
   models <- c()
   for (model in ok_models) {
-    m <- get_model(model)
-    args_list <- formals(m)
-    test_args <- lapply(args_list, function(x) {
-      NULL
-    })
-    m <- brms::do_call(m, test_args)
+    m <- get_model(model)()
     domains <- c(domains, m$domain)
     models <- c(models, m$name)
   }
@@ -338,8 +333,8 @@ get_model2 <- function(model) {
 #'@param custom_family Logical; Do you plan to define a brms::custom_family()?
 #'  If TRUE the function will add a section for the custom family, placeholders
 #'  for the stan_vars and corresponding empty .stan files in
-#'  `inst/stan_chunks/`, that you can fill For an example, see the sdmSimple
-#'  model in `/R/model_sdmSimple.R`. If FALSE (default) the function will
+#'  `inst/stan_chunks/`, that you can fill For an example, see the sdm
+#'  model in `/R/model_sdm.R`. If FALSE (default) the function will
 #'  not add the custom family section nor stan files.
 #'@param stanvar_blocks A character vector with the names of the blocks that
 #'  will be added to the custom family section. See [brms::stanvar()] for more
@@ -404,7 +399,7 @@ use_model_template <- function(model_name,
     "#############################################################################!\n",
     "# A check_data.* function should be defined for each class of the model.\n",
     "# If a model shares methods with other models, the shared methods should be\n",
-    "# defined in data-helpers.R. Put here only the methods that are specific to\n",
+    "# defined in helpers-data.R. Put here only the methods that are specific to\n",
     "# the model. See ?check_data for details.\n",
     "# (YOU CAN DELETE THIS SECTION IF YOU DO NOT REQUIRE ADDITIONAL DATA CHECKS)\n\n")
 
@@ -413,8 +408,8 @@ use_model_template <- function(model_name,
     "# Convert bmmformula to brmsformla methods                               ####\n",
     "#############################################################################!\n",
     "# A bmf2bf.* function should be defined if the default method for consructing\n",
-    "# the brmsformula from the bmmformula does not apply\n",
-    "# The shared method for all `bmmodels` is defined in helpers-formula.R.\n",
+    "# the brmsformula from the bmmformula does not apply (e.g if aterms are required).\n",
+    "# The shared method for all `bmmodels` is defined in bmmformula.R.\n",
     "# See ?bmf2bf for details.\n",
     "# (YOU CAN DELETE THIS SECTION IF YOUR MODEL USES A STANDARD FORMULA WITH 1 RESPONSE VARIABLE)\n\n")
 
@@ -433,8 +428,8 @@ use_model_template <- function(model_name,
     "# ?postprocess_brm for details\n\n")
 
 
-  model_object <- glue(".model_<<model_name>> <- function(resp_var1 = NULL, required_arg1 = NULL, required_arg2 = NULL, links = NULL, ...) {\n",
-                       "   out <- structure(",
+  model_object <- glue(".model_<<model_name>> <- function(resp_var1 = NULL, required_arg1 = NULL, required_arg2 = NULL, links = NULL, version = NULL, ...) {\n",
+                       "   out <- structure(\n",
                        "     list(\n",
                        "       resp_vars = nlist(resp_var1),\n",
                        "       other_vars = nlist(required_arg1, required_arg2),\n",
@@ -442,16 +437,17 @@ use_model_template <- function(model_name,
                        "       task = '',\n",
                        "       name = '',\n",
                        "       citation = '',\n",
-                       "       version = '',\n",
+                       "       version = version,\n",
                        "       requirements = '',\n",
                        "       parameters = list(),\n",
                        "       links = list(),\n",
-                       "       fixed_parameters = list()\n",
+                       "       fixed_parameters = list(),\n",
                        "       default_priors = list(par1 = list(), par2 = list()),\n",
                        "       void_mu = FALSE\n",
                        "     ),\n",
                        "     class = c('bmmodel', '<<model_name>>')\n",
                        "   )\n",
+                       "   if(!is.null(version)) class(out) <- c(class(out), paste0(\"<<model_name>>_\",version))\n",
                        "   out$links[names(links)] <- links\n",
                        "   out\n",
                        "}\n\n",
@@ -466,7 +462,8 @@ use_model_template <- function(model_name,
                                   "#' @param resp_var1 A description of the response variable\n",
                                   "#' @param required_arg1 A description of the required argument\n",
                                   "#' @param required_arg2 A description of the required argument\n",
-                                  "#' @param links A list of links for the parameters.",
+                                  "#' @param links A list of links for the parameters.\n",
+                                  "#' @param version A character label for the version of the model. Can be empty or NULL if there is only one version. \n",
                                   "#' @param ... used internally for testing, ignore it\n",
                                   "#' @return An object of class `bmmodel`\n",
                                   "#' @export\n",
@@ -474,10 +471,10 @@ use_model_template <- function(model_name,
                                   "#' \\dontrun{\n",
                                   "#' # put a full example here (see 'R/model_mixture3p.R' for an example)\n",
                                   "#' }\n",
-                                  "<<model_name>> <- function(resp_var1, required_arg1, required_arg2, links = NULL, ...) {\n",
+                                  "<<model_name>> <- function(resp_var1, required_arg1, required_arg2, links = NULL, version = NULL, ...) {\n",
                                   "   stop_missing_args()\n",
                                   "   .model_<<model_name>>(resp_var1 = resp_var1, required_arg1 = required_arg1,",
-                                  " required_arg2 = required_arg2, links = links, ...)\n",
+                                  " required_arg2 = required_arg2, links = links, version = version, ...)\n",
                                   "}\n\n",
                                   .open = "<<", .close = ">>")
 
@@ -501,17 +498,7 @@ use_model_template <- function(model_name,
                               "   resp_var2 <- model$resp_vars$resp_arg2\n\n",
                               "   # set the base brmsformula based \n",
                               "   brms_formula <- brms::bf(paste0(resp_var1,\" | \", vreal(resp_var2), \" ~ 1\" ),)\n\n",
-                              "   # add bmmformula to the brms_formula\n",
-                              "   # check if parameters are used as non-linear predictors in other formulas\n",
-                              "   # and use the brms::lf() or brms::nlf() accordingly.\n",
-                              "   dpars <- names(formula)\n",
-                              "   for (pform in formula) {\n",
-                              "     if (is_nl(pform)) {\n",
-                              "       brms_formula <- brms_formula + brms::nlf(pform)\n",
-                              "     } else {\n",
-                              "       brms_formula <- brms_formula + brms::lf(pform)\n",
-                              "     }\n",
-                              "   }\n\n",
+                              "   # return the brms_formula to add the remaining bmmformulas to it.\n",
                               "   brms_formula\n",
                               "}\n\n",
                               .open = "<<", .close = ">>")
@@ -563,6 +550,9 @@ use_model_template <- function(model_name,
     out_template <- "   nlist(formula, data)\n"
   }
 
+  family_comment <- ifelse(custom_family,
+                           "   # construct the family & add to formula object \n",
+                           "   # add family to formula object")
 
   configure_model_method <- glue::glue("#' @export\n",
                                        "configure_model.<<model_name>> <- function(model, data, formula) {\n",
@@ -573,7 +563,7 @@ use_model_template <- function(model_name,
                                        "   my_precomputed_var <- attr(data, 'my_precomputed_var')\n\n",
                                        "   # construct brms formula from the bmm formula\n",
                                        "   formula <- bmf2bf(model, formula)\n\n",
-                                       "   # construct the family\n",
+                                       family_comment,
                                        family_template,
                                        stan_vars_template,
                                        "   # return the list\n",
@@ -629,7 +619,7 @@ use_model_template <- function(model_name,
 #' @examples
 #' scode1 <- stancode(bmf(c ~ 1, kappa ~ 1),
 #'                    data = oberauer_lin_2017,
-#'                    model = sdmSimple(resp_error = "dev_rad"))
+#'                    model = sdm(resp_error = "dev_rad"))
 #' cat(scode1)
 #' @importFrom brms stancode
 #' @export

@@ -80,7 +80,7 @@
 #' # fit the model
 #' fit <- bmm(formula = ff,
 #'            data = dat,
-#'            model = sdmSimple(resp_error = "y"),
+#'            model = sdm(resp_error = "y"),
 #'            cores = 4,
 #'            backend = 'cmdstanr')
 #' }

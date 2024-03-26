@@ -10,7 +10,7 @@ test_that("get_model() returns the correct function", {
 test_that("check_model() refuses invalid models and accepts valid models", {
   expect_error(check_model("invalid_model"))
   expect_error(check_model(structure(list(), class = "invalid")))
-  expect_error(check_model(sdmSimple), "Did you forget")
+  expect_error(check_model(sdm), "Did you forget")
   okmodels <- supported_models(print_call = FALSE)
   for (model in okmodels) {
     model <- get_model(model)()
@@ -26,19 +26,21 @@ test_that("check_model() works with regular expressions", {
       nt_features = paste0("col_nt", 1:7),
       set_size = "set_size"
     ),
-    IMMfull("dev_rad",
+    imm("dev_rad",
       nt_features = paste0("col_nt", 1:7),
       nt_distances = paste0("dist_nt", 1:7),
       set_size = "set_size"
     ),
-    IMMbsc("dev_rad",
+    imm("dev_rad",
       nt_features = paste0("col_nt", 1:7),
       nt_distances = paste0("dist_nt", 1:7),
-      set_size = "set_size"
+      set_size = "set_size",
+      version = "bsc"
     ),
-    IMMabc("dev_rad",
+    imm("dev_rad",
       nt_features = paste0("col_nt", 1:7),
-      set_size = "set_size"
+      set_size = "set_size",
+      version = "abc"
     )
   )
   models2 <- list(
@@ -47,22 +49,24 @@ test_that("check_model() works with regular expressions", {
       set_size = "set_size",
       regex = TRUE
     ),
-    IMMfull("dev_rad",
+    imm("dev_rad",
       nt_features = "col_nt",
       nt_distances = "dist_nt",
       set_size = "set_size",
       regex = TRUE
     ),
-    IMMbsc("dev_rad",
+    imm("dev_rad",
       nt_features = "col_nt",
       nt_distances = "dist_nt",
       set_size = "set_size",
-      regex = TRUE
+      regex = TRUE,
+      version = "bsc"
     ),
-    IMMabc("dev_rad",
+    imm("dev_rad",
       nt_features = "col_nt",
       set_size = "set_size",
-      regex = TRUE
+      regex = TRUE,
+      version = "abc"
     )
   )
 
@@ -116,11 +120,11 @@ test_that("no check for with stancode function", {
   withr::local_options('bmm.sort_data' = 'check')
   expect_no_message(stancode(bmf(kappa ~ set_size, c ~ set_size),
                              oberauer_lin_2017,
-                             sdmSimple('dev_rad')))
+                             sdm('dev_rad')))
 })
 
 test_that("change_constants() works", {
-  model <- sdmSimple(resp_error = "y")
+  model <- sdm(resp_error = "y")
   formula <- bmf(mu ~ set_size, kappa = 3, c ~ 1)
   model <- change_constants(model, formula)
 })

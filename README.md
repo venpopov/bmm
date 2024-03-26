@@ -67,14 +67,12 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  IMMabc(resp_error, nt_features, set_size, regex, links) 
-#> -  IMMbsc(resp_error, nt_features, nt_distances, set_size, regex, links) 
-#> -  IMMfull(resp_error, nt_features, nt_distances, set_size, regex, links) 
+#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, links, version) 
 #> -  mixture2p(resp_error, links) 
 #> -  mixture3p(resp_error, nt_features, set_size, regex, links) 
-#> -  sdmSimple(resp_error, links) 
+#> -  sdm(resp_error, links, version) 
 #> 
-#> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
+#> Type  ?modelname  to get information about a specific model, e.g.  ?imm
 ```
 
 ## How to install bmm
@@ -181,7 +179,7 @@ console. For example, calling the information on the full version of the
 Interference Measurement Model would look like this:
 
 ``` r
-?IMMfull
+?imm
 ```
 
 A complete call to fit a model using bmm could look like this. For this
@@ -199,10 +197,10 @@ formula <- bmmformula(c ~ 0 + set_size,
                       s ~ 0 + set_size,
                       kappa ~ 0 + set_size)
 
-model <- IMMfull(resp_error = "dev_rad",
-                 nt_features = paste0("col_nt", 1:7),
-                 nt_distances = paste0("dist_nt",1:7),
-                 set_size = "set_size")
+model <- imm(resp_error = "dev_rad",
+             nt_features = paste0("col_nt", 1:7),
+             nt_distances = paste0("dist_nt",1:7),
+             set_size = "set_size")
 
 fit <- bmm(formula = formula, data = data, model = model)
 ```

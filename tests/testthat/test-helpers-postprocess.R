@@ -1,7 +1,7 @@
 test_that("bmm version is added to mock model", {
   fit <- bmm(formula = bmmformula(c ~ 1, kappa ~ 1),
              data = data.frame(y = rsdm(n=10)),
-             model = sdmSimple(resp_error = "y"),
+             model = sdm(resp_error = "y"),
              backend = 'mock',
              rename = F,
              mock = 1)
