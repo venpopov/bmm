@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.9.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.5.1.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,16 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.1" id="bmm-051">bmm 0.5.1+<a class="anchor" aria-label="anchor" href="#bmm-051"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.1" id="bmm-051-1">bmm 0.5.1<a class="anchor" aria-label="anchor" href="#bmm-051-1"></a></h2>
+<div class="section level4">
+<h4 id="bug-fixes-0-5-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-1"></a></h4>
+<ul><li>fix the display of the model call in the summary method for bmm models</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="bmm-050">bmm 0.5.0<a class="anchor" aria-label="anchor" href="#bmm-050"></a></h2>
 <div class="section level4">
 <h4 id="new-features-0-5-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0"></a></h4>
@@ -89,8 +99,11 @@
 <ul><li>
 <strong>bmm</strong> now requires the latest version of <strong>brms</strong> (&gt;= 2.21.0).</li>
 </ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.0" id="bmm-040">bmm 0.4.0<a class="anchor" aria-label="anchor" href="#bmm-040"></a></h2>
 <div class="section level4">
-<h4 id="new-features-0-5-0-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0-1"></a></h4>
+<h4 id="new-features-0-4-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h4>
 <ul><li>add a check for the <strong>sdmSimple</strong> model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the <strong>sort_data</strong> argument (<a href="https://github.com/venpopov/bmm/issues/72" class="external-link">#72</a>)</li>
 <li>the <strong>mixture3p</strong> and <strong>IMM</strong> models now require that when set size is used as a predictor, the intercept must be suppressed (<a href="https://github.com/venpopov/bmm/issues/96" class="external-link">#96</a>).</li>
 <li>add postprocessing methods for <strong>sdmSimple</strong> to allow for <strong>pp_check()</strong>, <strong>conditional_effects</strong> and <strong>bridgesampling</strong> usage with the model (<a href="https://github.com/venpopov/bmm/issues/30" class="external-link">#30</a>)</li>
@@ -101,14 +114,14 @@
 <li>add a startup message upon loading the package</li>
 </ul></div>
 <div class="section level4">
-<h4 id="bug-fixes-0-5-0-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-0-1"></a></h4>
+<h4 id="bug-fixes-0-4-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-0"></a></h4>
 <ul><li>fix a bug in the <strong>mixture3p</strong> and <strong>IMM</strong> models which caused an error when intercept was not supressed and set size was used as predictor</li>
 <li>
 <strong>update()</strong> now works properly with <strong>bmmfit</strong> objects (<a href="https://github.com/venpopov/bmm/issues/95" class="external-link">#95</a>)</li>
 <li>fix a bug in the <strong>sort_data</strong> check which caused an error when using grouped covariance structure in random effects across different parameters</li>
 </ul></div>
 <div class="section level4">
-<h4 id="other-changes-0-5-0-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-5-0-1"></a></h4>
+<h4 id="other-changes-0-4-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-4-0"></a></h4>
 <ul><li>
 <strong>brms</strong> is now loaded automatically when loading <strong>bmm</strong> with <strong>library(bmm)</strong>
 </li>
