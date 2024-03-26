@@ -12,7 +12,7 @@ backend interface to Stan."><meta name="robots" content="noindex"><!-- mathjax -
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.8.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.9.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -151,13 +151,11 @@ with many other useful information about the model. Use methods(class =
     </div>
     <div class="section level2">
     <h2 id="supported-models">Supported Models<a class="anchor" aria-label="anchor" href="#supported-models"></a></h2>
-    <p>The following models are supported:</p><ul><li><p>IMMabc(resp_error, nt_features, set_size, regex, links)</p></li>
-<li><p>IMMbsc(resp_error, nt_features, nt_distances, set_size, regex, links)</p></li>
-<li><p>IMMfull(resp_error, nt_features, nt_distances, set_size, regex, links)</p></li>
+    <p>The following models are supported:</p><ul><li><p>imm(resp_error, nt_features, nt_distances, set_size, regex, links, version)</p></li>
 <li><p>mixture2p(resp_error, links)</p></li>
 <li><p>mixture3p(resp_error, nt_features, set_size, regex, links)</p></li>
-<li><p>sdmSimple(resp_error, links)</p></li>
-</ul><p>Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull</p>
+<li><p>sdm(resp_error, links, version)</p></li>
+</ul><p>Type  ?modelname  to get information about a specific model, e.g.  ?imm</p>
     </div>
     <div class="section level2">
     <h2 id="bmmformula-syntax">bmmformula syntax<a class="anchor" aria-label="anchor" href="#bmmformula-syntax"></a></h2>
@@ -197,7 +195,7 @@ https://doi.org/10.31234/osf.io/umt57</p>
 <span class="r-in"><span><span class="co"># fit the model</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">bmm</span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span></span>
 <span class="r-in"><span>           data <span class="op">=</span> <span class="va">dat</span>,</span></span>
-<span class="r-in"><span>           model <span class="op">=</span> <span class="fu"><a href="SDM.html">sdmSimple</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>           model <span class="op">=</span> <span class="fu"><a href="SDM.html">sdm</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>           cores <span class="op">=</span> <span class="fl">4</span>,</span></span>
 <span class="r-in"><span>           backend <span class="op">=</span> <span class="st">'cmdstanr'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>

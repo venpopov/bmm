@@ -55,11 +55,11 @@ The `bmm` package implements several measurement models for analyzing continuous
  
 #### The Interference Measurement Model [@Oberauer_Lin_2017]  {.unnumbered}
 
-  - see `?IMM` and `vignette("bmm_imm")`
+  - see `?imm` and `vignette("bmm_imm")`
  
 #### The Signal Discrimination Model (SDM) by [@Oberauer_2023]  {.unnumbered}
 
-  - see `?sdmSimple` and `vignette("bmm_sdm_simple")`
+  - see `?sdm` and `vignette("bmm_sdm_simple")`
     
     
 # References

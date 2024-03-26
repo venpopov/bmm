@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.8.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.9.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,7 +47,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Signal Discrimination Model (SDM) by Oberauer (2023)</h1>
-      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/R/model_sdmSimple.R" class="external-link"><code>R/model_sdmSimple.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/R/model_sdm.R" class="external-link"><code>R/model_sdm.R</code></a></small>
       <div class="d-none name"><code>SDM.Rd</code></div>
     </div>
 
@@ -57,7 +57,9 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sdmSimple</span><span class="op">(</span><span class="va">resp_error</span>, links <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sdm</span><span class="op">(</span><span class="va">resp_error</span>, links <span class="op">=</span> <span class="cn">NULL</span>, version <span class="op">=</span> <span class="st">"simple"</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">sdmSimple</span><span class="op">(</span><span class="va">resp_error</span>, links <span class="op">=</span> <span class="cn">NULL</span>, version <span class="op">=</span> <span class="st">"simple"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,6 +76,11 @@ degrees to radians using the <code>deg2rad</code> function.</p></dd>
 the model fits, but it will in the future.</em></p></dd>
 
 
+<dt>version</dt>
+<dd><p>Character. The version of the model to use. Currently only
+"simple" is supported.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>used internally for testing, ignore it</p></dd>
 
@@ -88,9 +95,8 @@ the model fits, but it will in the future.</em></p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>see <code><a href="../articles/bmm_sdm_simple.html">vignette("bmm_sdm_simple")</a></code> for a detailed description of the model
-and how to use it.</p><ul><li><p><strong>Domain:</strong> Visual working memory</p></li>
-<li><p><strong>Task:</strong> Continuous reproduction</p></li>
+    <p>see <code>vignette("sdm-simple")</code> for a detailed description of the model
+and how to use it. * <strong>Domain:</strong> Visual working memory</p><ul><li><p><strong>Task:</strong> Continuous reproduction</p></li>
 <li><p><strong>Name:</strong> Signal Discrimination Model (SDM) by Oberauer (2023)</p></li>
 <li><p><strong>Citation:</strong></p><ul><li><p>Oberauer, K. (2023). Measurement models for visual working memory - A factorial model comparison. Psychological Review, 130(3), 841-852</p></li>
 </ul></li>
@@ -135,7 +141,7 @@ and how to use it.</p><ul><li><p><strong>Domain:</strong> Visual working memory<
 <span class="r-in"><span><span class="co"># specify the model</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="bmm.html">bmm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span></span>
 <span class="r-in"><span>           data <span class="op">=</span> <span class="va">dat</span>,</span></span>
-<span class="r-in"><span>           model <span class="op">=</span> <span class="fu">sdmSimple</span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">'y'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>           model <span class="op">=</span> <span class="fu">sdm</span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">'y'</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>           prior <span class="op">=</span> <span class="va">prior</span>,</span></span>
 <span class="r-in"><span>           cores <span class="op">=</span> <span class="fl">4</span>,</span></span>
 <span class="r-in"><span>           backend <span class="op">=</span> <span class="st">'cmdstanr'</span><span class="op">)</span></span></span>

@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.8.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.9.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -220,17 +220,19 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <span><span class="op">)</span></span></code></pre></div>
 <p>Then, we can specify the model that we want to estimate. This includes specifying the name of the variable containing the dependent variable <code>resp_error</code> in our simulated data set. Additionally, we also need to provide the information of the <code>non_target</code> locations, the name of the variable coding the spatial distances of the nt_features to the target <code>spaDist</code>, and the <code>set_size</code> used in our data. The <code>set_size</code> can either be a fixed integer, if there is only one set_size in your data, or the name of the variable coding the <code>set_size</code> in your data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IMM.html">IMMfull</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"resp_error"</span>,</span>
-<span>                 nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"color_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,</span>
-<span>                 set_size <span class="op">=</span> <span class="va">set_size</span>,</span>
-<span>                 nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dist_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>In the above example we specified all column names for the non_targets explicitely via <code>paste0('color_item',2:5)</code>. Alternatively, you can use a regular expression to match the non-target feature columns in the dataset. For example, you can specify the model a few different ways via regular expressions:</p>
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/imm.html">imm</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"resp_error"</span>,</span>
+<span>             nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"color_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,</span>
+<span>             set_size <span class="op">=</span> <span class="va">set_size</span>,</span>
+<span>             nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dist_item"</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,</span>
+<span>             version <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span></code></pre></div>
+<p>In the above example we specified all column names for the non_targets explicitly via <code>paste0('color_item',2:5)</code>. Alternatively, you can use a regular expression to match the non-target feature columns in the dataset. For example, you can specify the model a few different ways via regular expressions:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IMM.html">IMMfull</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"resp_error"</span>,</span>
-<span>                 nt_features <span class="op">=</span> <span class="st">"color_item[2-5]"</span>,</span>
-<span>                 set_size <span class="op">=</span> <span class="va">set_size</span>,</span>
-<span>                 nt_distances <span class="op">=</span> <span class="st">"dist_item[2-5]"</span>,</span>
-<span>                 regex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/imm.html">imm</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"resp_error"</span>,</span>
+<span>             nt_features <span class="op">=</span> <span class="st">"color_item[2-5]"</span>,</span>
+<span>             set_size <span class="op">=</span> <span class="va">set_size</span>,</span>
+<span>             nt_distances <span class="op">=</span> <span class="st">"dist_item[2-5]"</span>,</span>
+<span>             regex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>By default the imm() function implements the full imm model. You can specify a reduced model by setting the version argument to “abc” or “bsc” (see <code><a href="../reference/imm.html">?imm</a></code>).</p>
 <p>Finally, we can fit the model by passing all the relevant arguments to the <code><a href="../reference/bmm.html">bmm()</a></code> function:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmm.html">bmm</a></span><span class="op">(</span></span>
@@ -246,10 +248,10 @@ P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta
 <p>Using this <code>fit</code> object we can have a quick look at the summary of the fitted model:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
-<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">IMMfull</span>(resp_err = "resp_err",
-                 nt_features = c("color_item2", "color_item3", "color_item4", "color_item5"),
-                 nt_distances = c("dist_item2", "dist_item3", "dist_item4", "dist_item5"),
-                 setsize = 5) 
+<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">non_targets</span>(resp_err = "resp_err",
+                     nt_features = c("color_item2", "color_item3", "color_item4", "color_item5"),
+                     nt_distances = c("dist_item2", "dist_item3", "dist_item4", "dist_item5"),
+                     setsize = 5) 
 <span style="color: #AF5FFF;">  Links: </span>mu1 = tan_half; kappa = log; a = identity; c = identity; s = log 
 <span style="color: #AF5FFF;">Formula: </span>mu1 = 0
          kappa ~ 0 + cond
@@ -324,7 +326,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <span><span class="co">#&gt; kappa_cond2 10.21227  1.049288  9.281720 11.21525</span></span>
 <span><span class="co">#&gt; kappa_cond3 14.68647  1.058859 13.110356 16.39623</span></span>
 <span><span class="co">#&gt; kappa_cond4 10.74340  1.061760  9.548517 12.07860</span></span></code></pre></div>
-<p>These results indicate that all parameters, except for <code>s</code> were well recovered. As already noted by <span class="citation">Oberauer et al. (2017)</span>, a good recovery of the generalization gradient <code>s</code> requires a lot of data. Thus you might consider opting for the simplified version of the IMM without the <code>s</code> parameter, the <code>IMMabc</code>.</p>
+<p>These results indicate that all parameters, except for <code>s</code> were well recovered. As already noted by <span class="citation">Oberauer et al. (2017)</span>, a good recovery of the generalization gradient <code>s</code> requires a lot of data. Thus you might consider opting for the simplified version of the IMM without the <code>s</code> parameter, the <code>imm_abc</code>.</p>
 <p>We can illustrate the recovery of the data generating parameters by plotting the full posterior distributions alongside the data generating parameters. For this we need to extract the posterior draws using the <code>tidybayes</code> package and include the data generating parameters into the plots of the posteriors.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mjskay.github.io/tidybayes/" class="external-link">tidybayes</a></span><span class="op">)</span></span>

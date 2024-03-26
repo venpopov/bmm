@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.8.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.9.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -255,7 +255,7 @@ parameters vary over conditions. In this case, we want them to vary over the
 <p>Then we specify the model, which in this case is just <code><a href="../reference/SDM.html">sdmSimple()</a></code>, and we
 provide the name of the response error variable in the dataset:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SDM.html">sdmSimple</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SDM.html">sdm</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, we can fit the model. We strongly recommend using <code>cmdstanr</code> as a
 backend for fitting the SDM model, as it is much faster and more stable than the
 default <code>rstan</code> backend for this particular model. Here’s how to fit the model
@@ -273,7 +273,7 @@ with <code>cmdstanr</code>:</p>
 <p>We can now inspect the results of the model fit:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
-<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">sdmSimple</span>(resp_err = "y") 
+<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">sdm_simple</span>(resp_err = "y") 
 <span style="color: #AF5FFF;">  Links: </span>mu = tan_half; c = log; kappa = log 
 <span style="color: #AF5FFF;">Formula: </span>mu = 0
          c ~ 0 + cond

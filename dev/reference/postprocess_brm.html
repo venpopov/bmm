@@ -5,7 +5,7 @@ methods based on the list of classes defined in the .model_* functions. For
 models with several classes listed, it will call the functions in the order
 they are listed. Thus, any operations that are common to a group of models
 should be defined in the appropriate postprocess_brm.* function, where \*
-corresponds to the shared class. For example, for the sdmSimple model, the
+corresponds to the shared class. For example, for the sdm model, the
 postprocessing involves setting the link function for the c parameter to "log",
 because it was coded manually in the stan code, but it was specified as "identity"
 in the brms custom family. If your model requires no postprocessing, you can
@@ -16,7 +16,7 @@ methods based on the list of classes defined in the .model_* functions. For
 models with several classes listed, it will call the functions in the order
 they are listed. Thus, any operations that are common to a group of models
 should be defined in the appropriate postprocess_brm.* function, where \*
-corresponds to the shared class. For example, for the sdmSimple model, the
+corresponds to the shared class. For example, for the sdm model, the
 postprocessing involves setting the link function for the c parameter to "log",
 because it was coded manually in the stan code, but it was specified as "identity"
 in the brms custom family. If your model requires no postprocessing, you can
@@ -32,7 +32,7 @@ brmsfit object that was passed to it).'><meta name="robots" content="noindex"><!
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.8.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.9.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,7 +80,7 @@ methods based on the list of classes defined in the .model_* functions. For
 models with several classes listed, it will call the functions in the order
 they are listed. Thus, any operations that are common to a group of models
 should be defined in the appropriate postprocess_brm.* function, where \*
-corresponds to the shared class. For example, for the sdmSimple model, the
+corresponds to the shared class. For example, for the sdm model, the
 postprocessing involves setting the link function for the c parameter to "log",
 because it was coded manually in the stan code, but it was specified as "identity"
 in the brms custom family. If your model requires no postprocessing, you can

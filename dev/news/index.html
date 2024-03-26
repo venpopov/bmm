@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.8.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.9.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,62 +51,66 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4.0" id="bmm-040">bmm 0.4.0+<a class="anchor" aria-label="anchor" href="#bmm-040"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.5.0" id="bmm-050">bmm 0.5.0<a class="anchor" aria-label="anchor" href="#bmm-050"></a></h2>
 <div class="section level4">
-<h4 id="new-features-0-4-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h4>
+<h4 id="new-features-0-5-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0"></a></h4>
 <ul><li>add a custom <strong>summary()</strong> method for bmm models (<a href="https://github.com/venpopov/bmm/issues/144" class="external-link">#144</a>)</li>
-<li>add a global options <strong>bmm.summary_backend</strong> to control the backend used for the summary() method (choices are “bmm” and “brms”)</li>
+<li>add a global options <strong>bmm.summary_backend</strong> to control the backend used for the <strong>summary()</strong> method (choices are <em>“bmm”</em> and <em>“brms”</em>)</li>
 <li>function <strong>restructure()</strong> now allows to apply methods introduced in newer bmm versions to bmmfit objects created by older bmm versions</li>
-<li>you can now specify any model parameter to be a constant by using an equal sign in the <code>bmmformula</code> (<a href="https://github.com/venpopov/bmm/issues/142" class="external-link">#142</a>)</li>
+<li>you can now specify any model parameter to be a constant by using an equal sign in the <strong>bmmformula</strong> (<a href="https://github.com/venpopov/bmm/issues/142" class="external-link">#142</a>)</li>
 <li>you can now choose to estimate parameters that are fixed to a constant by default for all models (<a href="https://github.com/venpopov/bmm/issues/145" class="external-link">#145</a>)</li>
-<li>default priors for all models are now specified via the configure_prior() S3 method (<a href="https://github.com/venpopov/bmm/issues/145" class="external-link">#145</a>)</li>
+<li>default priors for all models are now specified via the <strong>configure_prior()</strong> S3 method (<a href="https://github.com/venpopov/bmm/issues/145" class="external-link">#145</a>)</li>
 <li>
-<code>cmdstanr</code> will be used as the default backend for <code>brms</code> if the user has it installed (<a href="https://github.com/venpopov/bmm/issues/145" class="external-link">#145</a>)</li>
+<strong>cmdstanr</strong> will be used as the default backend for <strong>brms</strong> if the user has it installed (<a href="https://github.com/venpopov/bmm/issues/145" class="external-link">#145</a>)</li>
 <li>various updates to the documentation and data sets</li>
 </ul></div>
 <div class="section level4">
-<h4 id="bug-fixes-0-4-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-0"></a></h4>
-<ul><li>fix a bug preventing the sort_data check from being executed (<a href="https://github.com/venpopov/bmm/issues/72" class="external-link">#72</a>)</li>
-<li>fix bugs with the summary() function not displaying implicit parameters (<a href="https://github.com/venpopov/bmm/issues/152" class="external-link">#152</a>) and not working properly with some hierarhical designs (<a href="https://github.com/venpopov/bmm/issues/173" class="external-link">#173</a>)</li>
-<li>fix a bug in which the sort_data check occured in cases where it shouldn’t (<a href="https://github.com/venpopov/bmm/issues/158" class="external-link">#158</a>)</li>
+<h4 id="documentation-0-5-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-5-0"></a></h4>
+<ul><li>two new vignettes: <code><a href="../articles/bmm_bmmformula.html">vignette('bmm_bmmformula')</a></code> and <code><a href="../articles/bmm_extract_info.html">vignette('bmm_extract_info')</a></code> showing how the bmmformula syntax differs from brms, and how to extract information about the default priors, the generated Stan code and Stan data for each model</li>
 </ul></div>
 <div class="section level4">
-<h4 id="deprecated-functions-and-arguments-0-4-0">Deprecated functions and arguments<a class="anchor" aria-label="anchor" href="#deprecated-functions-and-arguments-0-4-0"></a></h4>
-<ul><li>BREAKING CHANGE: remove <strong>get_model_prior(), get_stancode() and get_standata()</strong>. Due to <a href="https://github.com/paul-buerkner/brms/pull/1604" class="external-link">recent changes</a> in <em>brms</em> version 2.21.0, you can now use the <em>brms</em> functions <code>default_prior</code>, <code>stancode</code> and <code>standata</code> directly with <em>bmm</em> models.</li>
-<li>the function <code><a href="../reference/bmm.html">fit_model()</a></code> is deprecated in favor of <code><a href="../reference/bmm.html">bmm()</a></code> (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>) and will be removed in a future version</li>
-<li>the argument <strong>setsize</strong> for the <code>mixture3p</code> and <code>IMM</code> models is now called <strong>set_size</strong> for consistency (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>). The old argument name is deprecated and will be removed in a future version</li>
-<li>the distributions functions for the imm model are renamed from dIMM, pIMM, rIMM and qIMM to dimm, pimm, rimm and qimm (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>)</li>
-<li>the argument parallel for the bmm() function is deprecated and will be removed in a future version. Use <code>cores</code> instead, as for brms::brm() (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>)</li>
+<h4 id="bug-fixes-0-5-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-0"></a></h4>
+<ul><li>fix a bug preventing the <strong>sort_data</strong> check from being executed (<a href="https://github.com/venpopov/bmm/issues/72" class="external-link">#72</a>)</li>
+<li>fix bugs with the <strong>summary()</strong> function not displaying implicit parameters (<a href="https://github.com/venpopov/bmm/issues/152" class="external-link">#152</a>) and not working properly with some hierarchical designs (<a href="https://github.com/venpopov/bmm/issues/173" class="external-link">#173</a>)</li>
+<li>fix a bug in which the <strong>sort_data</strong> check occurred in cases where it shouldn’t (<a href="https://github.com/venpopov/bmm/issues/158" class="external-link">#158</a>)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="other-changes-0-4-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-4-0"></a></h4>
+<h4 id="deprecated-functions-and-arguments-0-5-0">Deprecated functions and arguments<a class="anchor" aria-label="anchor" href="#deprecated-functions-and-arguments-0-5-0"></a></h4>
+<ul><li>BREAKING CHANGE: remove <strong>get_model_prior(), get_stancode() and get_standata()</strong>. Due to <a href="https://github.com/paul-buerkner/brms/pull/1604" class="external-link">recent changes</a> in <em>brms</em> version 2.21.0, you can now use the <em>brms</em> functions <strong>default_prior</strong>, <strong>stancode</strong> and <strong>standata</strong> directly with <em>bmm</em> models.</li>
+<li>the function <strong>fit_model()</strong> is deprecated in favor of <strong>bmm()</strong> and will be removed in a future version (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>)</li>
+<li>the argument <strong>setsize</strong> for the <strong>mixture3p</strong> and <strong>IMM</strong> models is now called <strong>set_size</strong> for consistency. The old argument name is deprecated and will be removed in a future version (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>)</li>
+<li>the distributions functions for the imm model are renamed from <strong>dIMM</strong>, <strong>pIMM</strong>, <strong>rIMM</strong> and <strong>qIMM</strong> to <strong>dimm</strong>, <strong>pimm</strong>, <strong>rimm</strong> and <strong>qimm</strong> (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>)</li>
+<li>the argument parallel for the <strong>bmm()</strong> function is deprecated and will be removed in a future version. Use <strong>cores</strong> instead, as for <strong>brms::brm()</strong> (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>)</li>
+<li>the models <strong>IMMfull()</strong>, <strong>IMMabc()</strong> and <strong>IMMbsc()</strong> are now called via <strong>imm()</strong>, <strong>imm(version = “abc”)</strong> or <strong>imm(version = “bsc”)</strong>. The old names are deprecated and will be removed in a future version (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>)</li>
+<li>the <strong>sdmSimple()</strong> model is now called <strong>sdm()</strong>. The old name is deprecated and will be removed in a future version (<a href="https://github.com/venpopov/bmm/issues/163" class="external-link">#163</a>)</li>
+</ul></div>
+<div class="section level4">
+<h4 id="other-changes-0-5-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-5-0"></a></h4>
 <ul><li>
-<code>bmm</code> now requires the latest version of <code>brms</code> (&gt;= 2.21.0).</li>
+<strong>bmm</strong> now requires the latest version of <strong>brms</strong> (&gt;= 2.21.0).</li>
 </ul></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4.0" id="bmm-040-1">bmm 0.4.0<a class="anchor" aria-label="anchor" href="#bmm-040-1"></a></h2>
 <div class="section level4">
-<h4 id="new-features-0-4-0-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0-1"></a></h4>
-<ul><li>add a check for the sdmSimple model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the <code>sort_data</code> argument (<a href="https://github.com/venpopov/bmm/issues/72" class="external-link">#72</a>)</li>
-<li>the mixture3p and imm models now require that when set size is used as a predictor, the intercept must be suppressed. This is because set size 1 otherwise causes problems - there can be no contribution of non_target responses when there is set size 1, and it is not meaningful to estimate an intercept for parameters that involve non_target responses (<a href="https://github.com/venpopov/bmm/issues/96" class="external-link">#96</a>).</li>
-<li>add postprocessing methods for sdmSimple to allow for pp_check(), conditional_effects and bridgesampling usage with the model (<a href="https://github.com/venpopov/bmm/issues/30" class="external-link">#30</a>)</li>
-<li>add informed default priors for all models. You can always use the <code>get_model_prior()</code> function to see the default priors for a model</li>
-<li>add a new function <code>set_default_prior</code> for developers, which allows them to more easily set default priors on new models regardless of the user-specified formula</li>
+<h4 id="new-features-0-5-0-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0-1"></a></h4>
+<ul><li>add a check for the <strong>sdmSimple</strong> model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the <strong>sort_data</strong> argument (<a href="https://github.com/venpopov/bmm/issues/72" class="external-link">#72</a>)</li>
+<li>the <strong>mixture3p</strong> and <strong>IMM</strong> models now require that when set size is used as a predictor, the intercept must be suppressed (<a href="https://github.com/venpopov/bmm/issues/96" class="external-link">#96</a>).</li>
+<li>add postprocessing methods for <strong>sdmSimple</strong> to allow for <strong>pp_check()</strong>, <strong>conditional_effects</strong> and <strong>bridgesampling</strong> usage with the model (<a href="https://github.com/venpopov/bmm/issues/30" class="external-link">#30</a>)</li>
+<li>add informed default priors for all models. You can always use the <strong>get_model_prior()</strong> function to see the default priors for a model</li>
+<li>add a new function <strong>set_default_prior</strong> for developers, which allows them to more easily set default priors on new models regardless of the user-specified formula</li>
 <li>you can now specify variables for models via regular expressions rather than character vectors (<a href="https://github.com/venpopov/bmm/issues/102" class="external-link">#102</a>)</li>
-<li>you can now view and set all bmm global options via <code><a href="../reference/bmm_options.html">bmm_options()</a></code>. See <code><a href="../reference/bmm_options.html">?bmm_options</a></code> for more information</li>
+<li>you can now view and set all bmm global options via <strong>bmm_options()</strong>. See <strong>?bmm_options</strong> for more information</li>
 <li>add a startup message upon loading the package</li>
 </ul></div>
 <div class="section level4">
-<h4 id="bug-fixes-0-4-0-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-0-1"></a></h4>
-<ul><li>fix a bug in the mixture3p and IMM models which caused an error when intercept was not supressed and set size was used as predictor</li>
-<li>update() now works properly with bmmfit objects (<a href="https://github.com/venpopov/bmm/issues/95" class="external-link">#95</a>)</li>
-<li>fix a bug in the sort_data check which caused an error when using grouped covariance structure in random effects across different parameters</li>
+<h4 id="bug-fixes-0-5-0-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-0-1"></a></h4>
+<ul><li>fix a bug in the <strong>mixture3p</strong> and <strong>IMM</strong> models which caused an error when intercept was not supressed and set size was used as predictor</li>
+<li>
+<strong>update()</strong> now works properly with <strong>bmmfit</strong> objects (<a href="https://github.com/venpopov/bmm/issues/95" class="external-link">#95</a>)</li>
+<li>fix a bug in the <strong>sort_data</strong> check which caused an error when using grouped covariance structure in random effects across different parameters</li>
 </ul></div>
 <div class="section level4">
-<h4 id="other-changes-0-4-0-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-4-0-1"></a></h4>
+<h4 id="other-changes-0-5-0-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-5-0-1"></a></h4>
 <ul><li>
-<code>brms</code> is now loaded automatically when loading <code>bmm</code> with <code><a href="https://github.com/venpopov/bmm" class="external-link">library(bmm)</a></code>
+<strong>brms</strong> is now loaded automatically when loading <strong>bmm</strong> with <strong>library(bmm)</strong>
 </li>
 </ul></div>
 </div>
@@ -114,25 +118,25 @@
 <h2 class="pkg-version" data-toc-text="0.3.0" id="bmm-030">bmm 0.3.0<a class="anchor" aria-label="anchor" href="#bmm-030"></a></h2>
 <div class="section level4">
 <h4 id="new-features-0-3-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h4>
-<ul><li>BREAKING CHANGE: The <code>fit_model</code> function now requires a <code>bmmformula</code> to be passed. The syntax of the <code>bmmformula</code> or its short form <code>bmf</code> is equal to specifying a <code>brmsformula</code>. However, as of this version the <code>bmmformula</code> only specifies how parameters of a <code>bmmodel</code> change across experimental conditions or continuous predictors. The response variables that the model is fit to now have to be specified when the model is defined using <code>model = bmmodel()</code>. (<a href="https://github.com/venpopov/bmm/issues/79" class="external-link">#79</a>)</li>
-<li>BREAKING CHANGE: The <code>non_target</code> and <code>spaPos</code> variables for the <code>mixture3p</code> and <code>IMM</code> models were relabled to <code>nt_features</code> and <code>nt_distances</code> for consistency. This is also to communicate that distance is not limited to spatial distance but distances on any feature dimensions of the retrieval cues. Currently, still only a single generalization gradient for the cue features is possible.</li>
+<ul><li>BREAKING CHANGE: The <strong>fit_model</strong> function now requires a <strong>bmmformula</strong> to be passed. The syntax of the <strong>bmmformula</strong> or its short form <strong>bmf</strong> is equal to specifying a <strong>brmsformula</strong>. However, as of this version the <strong>bmmformula</strong> only specifies how parameters of a <strong>bmmodel</strong> change across experimental conditions or continuous predictors. The response variables that the model is fit to now have to be specified when the model is defined using <strong>model = bmmodel()</strong>. (<a href="https://github.com/venpopov/bmm/issues/79" class="external-link">#79</a>)</li>
+<li>BREAKING CHANGE: The <strong>non_target</strong> and <strong>spaPos</strong> variables for the <strong>mixture3p</strong> and <strong>IMM</strong> models were relabled to <strong>nt_features</strong> and <strong>nt_distances</strong> for consistency. This is also to communicate that distance is not limited to spatial distance but distances on any feature dimensions of the retrieval cues. Currently, still only a single generalization gradient for the cue features is possible.</li>
 <li>This release includes reference fits for all implemented models to ensure that future changes to the package do not compromise the included models and change the results that their implementations produce.</li>
-<li>The <code>check_formula</code> methods have been adapted to match the new <code>bmmformula</code> syntax. It now evaluates if formulas have been specified using the <code>bmmformula</code> function, if formulas for all parameters of a <code>bmmodel</code> have been specified and warns the user that only a fixed intercept will be estimated if no formula for one of the parameters was provided. Additionally, <code>check_formula</code> throws an error should formulas be provided that do not match a parameter of the called <code>bmmodel</code> unless they are part of a non-linear transformation.</li>
-<li>You can now specify formulas for internally fixed parameters such as <code>mu</code> in all visual working memory models. This allows you to predict if there is response bias in the data. If a formula is not provided for <code>mu</code>, the model will assume that the mean of the response distribution is fixed to zero.</li>
-<li>there is now an option <code>bmm.silent</code> that allows to suppress messages</li>
-<li>the baseline activation <code>b</code> was removed from the <code>IMM</code> models, as this is internally fixed to zero for scaling and as of now cannot be predicted by independent variables because the model would be unidentifiable.</li>
-<li>the arguments used to fit the bmm model are now accessible in the <code>bmmfit</code> object via the <code>fit$bmm$fit_args</code> list.</li>
-<li>add class(‘bmmfit’) to the object returned from fit_model() allowing for more flexible postprocessing of the underlying <code>brmsfit</code> object. The object is now of class(‘bmmfit’, ‘brmsfit’)</li>
-<li>changes to column names of datasets <code>zhang_luck_2008</code> and <code>oberauer_lin_2017</code> to make them more consistent</li>
+<li>The <strong>check_formula</strong> methods have been adapted to match the new <strong>bmmformula</strong> syntax. It now evaluates if formulas have been specified using the <strong>bmmformula</strong> function, if formulas for all parameters of a <strong>bmmodel</strong> have been specified and warns the user that only a fixed intercept will be estimated if no formula for one of the parameters was provided. Additionally, <strong>check_formula</strong> throws an error should formulas be provided that do not match a parameter of the called <strong>bmmodel</strong> unless they are part of a non-linear transformation.</li>
+<li>You can now specify formulas for internally fixed parameters such as <strong>mu</strong> in all visual working memory models. This allows you to predict if there is response bias in the data. If a formula is not provided for <strong>mu</strong>, the model will assume that the mean of the response distribution is fixed to zero.</li>
+<li>there is now an option <strong>bmm.silent</strong> that allows to suppress messages</li>
+<li>the baseline activation <strong>b</strong> was removed from the <strong>IMM</strong> models, as this is internally fixed to zero for scaling and as of now cannot be predicted by independent variables because the model would be unidentifiable.</li>
+<li>the arguments used to fit the bmm model are now accessible in the <strong>bmmfit</strong> object via the <code>fit$bmm$fit_args</code> list.</li>
+<li>add class(‘bmmfit’) to the object returned from fit_model() allowing for more flexible postprocessing of the underlying <strong>brmsfit</strong> object. The object is now of class(‘bmmfit’, ‘brmsfit’)</li>
+<li>changes to column names of datasets <strong>zhang_luck_2008</strong> and <strong>oberauer_lin_2017</strong> to make them more consistent</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fixes-0-3-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-3-0"></a></h4>
-<ul><li>an error with the treatment of distances in the <code>IMMfull</code> and the <code>IMMbsc</code> has been corrected. This versions ensures that only positive distances can be passed to any of the two models.</li>
-<li>removed a warning regarding the scaling of the distances in the <code>IMMfull</code> and the <code>IMMbsc</code> that was specific only for circular distances.</li>
+<ul><li>an error with the treatment of distances in the <strong>IMMfull</strong> and the <strong>IMMbsc</strong> has been corrected. This versions ensures that only positive distances can be passed to any of the two models.</li>
+<li>removed a warning regarding the scaling of the distances in the <strong>IMMfull</strong> and the <strong>IMMbsc</strong> that was specific only for circular distances.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="documentation-0-3-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-3-0"></a></h4>
-<ul><li>All vignettes have been update to the new <code>bmmformula</code> syntax.</li>
+<ul><li>All vignettes have been update to the new <strong>bmmformula</strong> syntax.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -154,10 +158,10 @@
 <div class="section level4">
 <h4 id="new-features-0-2-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h4>
 <ul><li>New model available - The Signal Discrimination Model by Oberauer (2023) for visual working memory continuous reproduction tasks. See ?sdmSimple. The current version does not take into account non-target activation</li>
-<li>Add ability to extract information about the default priors in <code>bmm</code> models with <code>get_model_prior()</code> (<a href="https://github.com/venpopov/bmm/issues/53" class="external-link">#53</a>)</li>
-<li>Add ability to generate stan code and stan data for each model with <code>get_model_stancode()</code> and <code>get_model_standata()</code> (<a href="https://github.com/venpopov/bmm/issues/81" class="external-link">#81</a>)</li>
-<li>BREAKING CHANGE: Add distribution functions for likelihood (e.g. <code><a href="../reference/IMMdist.html">dimm()</a></code>) and random variate generation <code><a href="../reference/IMMdist.html">rimm()</a></code>) for all models in the package. Remove deprecated <code>gen_3p_data()</code> and <code>gen_imm_data()</code> functions (<a href="https://github.com/venpopov/bmm/issues/69" class="external-link">#69</a>)</li>
-<li>Two new datasets available: <code>zhang_luck_2008</code> and <code>oberauer_lin_2017</code> (<a href="https://github.com/venpopov/bmm/issues/22" class="external-link">#22</a>)</li>
+<li>Add ability to extract information about the default priors in <strong>bmm</strong> models with <strong>get_model_prior()</strong> (<a href="https://github.com/venpopov/bmm/issues/53" class="external-link">#53</a>)</li>
+<li>Add ability to generate stan code and stan data for each model with <strong>get_model_stancode()</strong> and <strong>get_model_standata()</strong> (<a href="https://github.com/venpopov/bmm/issues/81" class="external-link">#81</a>)</li>
+<li>BREAKING CHANGE: Add distribution functions for likelihood (e.g. <strong>dIMM()</strong>) and random variate generation <strong>rIMM()</strong>) for all models in the package. Remove deprecated <strong>gen_3p_data()</strong> and <strong>gen_imm_data()</strong> functions (<a href="https://github.com/venpopov/bmm/issues/69" class="external-link">#69</a>)</li>
+<li>Two new datasets available: <strong>zhang_luck_2008</strong> and <strong>oberauer_lin_2017</strong> (<a href="https://github.com/venpopov/bmm/issues/22" class="external-link">#22</a>)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="documentation-0-2-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0"></a></h4>
@@ -169,20 +173,20 @@
 </ul></div>
 <div class="section level4">
 <h4 id="other-changes-0-2-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-2-0"></a></h4>
-<ul><li>Save <code>bmm</code> package version in the <code>brmsfit</code> object for reproducibility - e.g. <code>fit$version$bmm</code> (<a href="https://github.com/venpopov/bmm/issues/88" class="external-link">#88</a>)</li>
+<ul><li>Save <strong>bmm</strong> package version in the <strong>brmsfit</strong> object for reproducibility - e.g. <code>fit$version$bmm</code> (<a href="https://github.com/venpopov/bmm/issues/88" class="external-link">#88</a>)</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="bmm-011">bmm 0.1.1<a class="anchor" aria-label="anchor" href="#bmm-011"></a></h2>
 <div class="section level4">
 <h4 id="new-features-0-1-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1"></a></h4>
-<ul><li>BREAKING CHANGE: Improve user interface to fit_model() ensures package stability and future development. Model specific arguments are now passed to the model functions as named arguments (e.g. <code>mixture3p(non_targets, set_size)</code>). This allows for a more flexible and intuitive way to specify model arguments. Passing model specific arguments directly to the <code><a href="../reference/bmm.html">fit_model()</a></code> function is now deprecated (<a href="https://github.com/venpopov/bmm/issues/43" class="external-link">#43</a>).</li>
+<ul><li>BREAKING CHANGE: Improve user interface to fit_model() ensures package stability and future development. Model specific arguments are now passed to the model functions as named arguments (e.g. <strong>mixture3p(non_targets, setsize)</strong>). This allows for a more flexible and intuitive way to specify model arguments. Passing model specific arguments directly to the <strong>fit_model()</strong> function is now deprecated (<a href="https://github.com/venpopov/bmm/issues/43" class="external-link">#43</a>).</li>
 <li>Add information about each model such as domain, task, name, version, citation, requirements and parameters (<a href="https://github.com/venpopov/bmm/issues/42" class="external-link">#42</a>)</li>
-<li>Add ability to generate a template file for adding new models to the package with <code><a href="../reference/use_model_template.html">use_model_template()</a></code> (for developers) (<a href="https://github.com/venpopov/bmm/issues/39" class="external-link">#39</a>)</li>
+<li>Add ability to generate a template file for adding new models to the package with <strong>use_model_template()</strong> (for developers) (<a href="https://github.com/venpopov/bmm/issues/39" class="external-link">#39</a>)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="other-changes-0-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1"></a></h4>
-<ul><li>Improve documentation of model functions. You can now get help on each model by typing <code>?model_name</code> into your console. For example, calling the information on the full version of the Interference Measurement Model would look like this: <code><a href="../reference/IMM.html">?IMMfull</a></code>
+<ul><li>Improve documentation of model functions. You can now get help on each model by typing <strong>?model_name</strong> into your console. For example, calling the information on the full version of the Interference Measurement Model would look like this: <strong>?IMMfull</strong>
 </li>
 </ul></div>
 </div>
@@ -191,21 +195,21 @@
 <p>A major restructuring of the package to support stable and generalizable development of future models (<a href="https://github.com/venpopov/bmm/issues/41" class="external-link">#41</a>).</p>
 <div class="section level4">
 <h4 id="new-features-0-1-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-1-0"></a></h4>
-<ul><li>Refactor the <code><a href="../reference/bmm.html">fit_model()</a></code> function to be generic and independent of the model being fit (<a href="https://github.com/venpopov/bmm/issues/20" class="external-link">#20</a>)</li>
+<ul><li>Refactor the <strong>fit_model()</strong> function to be generic and independent of the model being fit (<a href="https://github.com/venpopov/bmm/issues/20" class="external-link">#20</a>)</li>
 <li>Transform models to be S3 objects. (<a href="https://github.com/venpopov/bmm/issues/41" class="external-link">#41</a>).</li>
-<li>View currently supported models with new function <code><a href="../reference/supported_models.html">supported_models()</a></code>. Currently supported models are: <code><a href="../reference/mixture2p.html">mixture2p()</a></code>, <code><a href="../reference/mixture3p.html">mixture3p()</a></code>, <code><a href="../reference/IMM.html">IMMabc()</a></code>, <code><a href="../reference/IMM.html">IMMbsc()</a></code>, <code><a href="../reference/IMM.html">IMMfull()</a></code>
+<li>View currently supported models with new function <strong>supported_models()</strong>. Currently supported models are: <strong>mixture2p()</strong>, <strong>mixture3p()</strong>, <strong>IMMabc()</strong>, <strong>IMMbsc()</strong>, <strong>IMMfull()</strong>
 </li>
 <li>Add S3 methods for checking the data, formula, model and priors (<a href="https://github.com/venpopov/bmm/issues/41" class="external-link">#41</a>)</li>
-<li>Add distribution functions for the Signal Discrimination Model. See <code><a href="../reference/SDM.html">?SDM</a></code> for usage (<a href="https://github.com/venpopov/bmm/issues/27" class="external-link">#27</a>)</li>
+<li>Add distribution functions for the Signal Discrimination Model. See <strong>?SDM</strong> for usage (<a href="https://github.com/venpopov/bmm/issues/27" class="external-link">#27</a>)</li>
 <li>Add softmax and invsoftmax functions</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fixes-0-1-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-0"></a></h4>
-<ul><li>Change default prior on log(kappa) to Normal(2,1) for the <code><a href="../reference/mixture3p.html">mixture3p()</a></code> model (<a href="https://github.com/venpopov/bmm/issues/15" class="external-link">#15</a>)</li>
+<ul><li>Change default prior on log(kappa) to Normal(2,1) for the <strong>mixture3p()</strong> model (<a href="https://github.com/venpopov/bmm/issues/15" class="external-link">#15</a>)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="other-changes-0-1-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-0"></a></h4>
-<ul><li>BREAKING CHANGE: deprecate <code>model_type</code> argument in <code><a href="../reference/bmm.html">fit_model()</a></code>. Models must now be specified with S3 functions passed to argument <code>model</code> rather than model names as strings passed to argument <code>model_type</code> (<a href="https://github.com/venpopov/bmm/issues/41" class="external-link">#41</a>)</li>
+<ul><li>BREAKING CHANGE: deprecate <strong>model_type</strong> argument in <strong>fit_model()</strong>. Models must now be specified with S3 functions passed to argument <strong>model</strong> rather than model names as strings passed to argument <strong>model_type</strong> (<a href="https://github.com/venpopov/bmm/issues/41" class="external-link">#41</a>)</li>
 <li>Add extensive unit testing</li>
 </ul></div>
 </div>
