@@ -249,8 +249,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li><p>Make sure you have the devtools package and a few others installed and loaded</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"devtools"</span>, <span class="st">"roxygen2"</span>, <span class="st">"testthat"</span>, <span class="st">"knitr"</span>))</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(devtools)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>To avoid having to load the package every time, you can add the following code to your <code>.Rprofile</code> file</p>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(devtools)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">install_dev_deps</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To avoid having to load the <strong>devtools</strong> package every time, you can add the following code to your <code>.Rprofile</code> file</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">if</span> (<span class="fu">interactive</span>()) {</span>
 <span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">suppressMessages</span>(<span class="fu">require</span>(devtools))</span>
 <span id="cb2-3"><a href="#cb2-3"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
