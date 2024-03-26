@@ -2,7 +2,6 @@
 % Please edit documentation in R/bmm-package.R
 \docType{package}
 \name{bmm-package}
-\alias{bmm}
 \alias{bmm-package}
 \title{bmm: Easy and Accesible Bayesian Measurement Models using 'brms'}
 \description{

@@ -2,10 +2,10 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_sdmSimple <- function(resp_err = NULL, links = NULL, ...) {
+.model_sdmSimple <- function(resp_error = NULL, links = NULL, ...) {
   out <- structure(
     list(
-      resp_vars = nlist(resp_err),
+      resp_vars = nlist(resp_error),
       other_vars = nlist(),
       domain = 'Visual working memory',
       task = 'Continuous reproduction',
@@ -37,7 +37,7 @@
       ),
       void_mu = FALSE
     ),
-    class = c('bmmmodel', 'vwm', 'sdmSimple')
+    class = c('bmmodel', 'vwm', 'sdmSimple')
   )
   out$links[names(links)] <- links
   out
@@ -52,16 +52,16 @@
 #' @details see `vignette("bmm_sdm_simple")` for a detailed description of the model
 #'   and how to use it.
 #'   `r model_info(.model_sdmSimple())`
-#' @param resp_err The name of the variable in the dataset containing the
+#' @param resp_error The name of the variable in the dataset containing the
 #'   response error. The response error should code the response relative to the
 #'   to-be-recalled target in radians. You can transform the response error in
 #'   degrees to radians using the `deg2rad` function.
 #' @param links A list of links for the parameters. *Currently does not affect
 #'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
-#' @return An object of class `bmmmodel`
+#' @return An object of class `bmmodel`
 #' @export
-#' @keywords bmmmodel
+#' @keywords bmmodel
 #' @examples
 #' \dontrun{
 #' # simulate data from the model
@@ -78,13 +78,12 @@
 #'    prior(normal(1,2), class='Intercept', dpar='kappa')
 #'
 #' # specify the model
-#' fit <- fit_model(formula = ff,
-#'                  data = dat,
-#'                  model = sdmSimple(resp_err = 'y'),
-#'                  prior = prior,
-#'                  parallel=T,
-#'                  iter=2000,
-#'                  backend='cmdstanr')
+#' fit <- bmm(formula = ff,
+#'            data = dat,
+#'            model = sdmSimple(resp_error = 'y'),
+#'            prior = prior,
+#'            cores = 4,
+#'            backend = 'cmdstanr')
 #'
 #' # extract coefficients and plot fit
 #' coef <- exp(brms::fixef(fit)[2:3,1])
@@ -93,9 +92,9 @@
 #' lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
 #'               kappa=coef['kappa_Intercept']), col='red')
 #' }
-sdmSimple <- function(resp_err, links = NULL, ...) {
+sdmSimple <- function(resp_error, links = NULL, ...) {
   stop_missing_args()
-  .model_sdmSimple(resp_err = resp_err, links = links, ...)
+  .model_sdmSimple(resp_error = resp_error, links = links, ...)
 }
 
 #############################################################################!

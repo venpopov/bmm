@@ -2,13 +2,13 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture3p <- function(resp_err = NULL, nt_features = NULL, setsize = NULL,
+.model_mixture3p <- function(resp_error = NULL, nt_features = NULL, set_size = NULL,
                              regex = FALSE, links = NULL, ...) {
 
   out <- structure(
     list(
-      resp_vars = nlist(resp_err),
-      other_vars = nlist(nt_features, setsize),
+      resp_vars = nlist(resp_error),
+      other_vars = nlist(nt_features, set_size),
       domain = "Visual working memory",
       task = "Continuous reproduction",
       name = "Three-parameter mixture model by Bays et al (2009).",
@@ -51,7 +51,7 @@
     # attributes
     regex = regex,
     regex_vars = c('nt_features'),
-    class =  c("bmmmodel", "vwm", "nontargets", "mixture3p")
+    class =  c("bmmodel", "vwm", "nontargets", "mixture3p")
   )
   out$links[names(links)] <- links
   out
@@ -61,7 +61,7 @@
 # user facing alias
 #' @title `r .model_mixture3p()$name`
 #' @details `r model_info(.model_mixture3p())`
-#' @param resp_err The name of the variable in the dataset containing
+#' @param resp_error The name of the variable in the dataset containing
 #'   the response error. The response error should code the response relative to
 #'   the to-be-recalled target in radians. You can transform the response error
 #'   in degrees to radians using the `deg2rad` function.
@@ -70,16 +70,16 @@
 #'   centered relative to the target. Alternatively, if regex=TRUE, a regular
 #'   expression can be used to match the non-target feature columns in the
 #'   dataset.
-#' @param setsize Name of the column containing the set size variable (if
-#'   setsize varies) or a numeric value for the setsize, if the setsize is
+#' @param set_size Name of the column containing the set size variable (if
+#'   set_size varies) or a numeric value for the set_size, if the set_size is
 #'   fixed.
 #' @param regex Logical. If TRUE, the `nt_features` argument is interpreted as
 #'  a regular expression to match the non-target feature columns in the dataset.
 #' @param links A list of links for the parameters. *Currently does not affect
 #'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
-#' @return An object of class `bmmmodel`
-#' @keywords bmmmodel
+#' @return An object of class `bmmodel`
+#' @keywords bmmodel
 #' @export
 #' @examples
 #' \dontrun{
@@ -99,33 +99,38 @@
 #' )
 #'
 #' # specify the 3-parameter model with explicit column names for non-target features
-#' model1 <- mixture3p(resp_err = "y", nt_features = paste0('nt',1:3,'_loc'), setsize = 4)
+#' model1 <- mixture3p(resp_error = "y", nt_features = paste0('nt',1:3,'_loc'), set_size = 4)
 #'
 #' # fit the model
-#' fit <- fit_model(formula = ff,
-#'                  data = dat,
-#'                  model = model1,
-#'                  parallel=T,
-#'                  iter = 500,
-#'                  backend='cmdstanr')
+#' fit <- bmm(formula = ff,
+#'            data = dat,
+#'            model = model1,
+#'            cores = 4,
+#'            iter = 500,
+#'            backend = 'cmdstanr')
 #'
 #' # alternatively specify the 3-parameter model with a regular expression to match non-target features
 #' # this is equivalent to the previous call, but more concise
-#' model2 <- mixture3p(resp_err = "y", nt_features = "nt.*_loc", setsize = 4, regex = TRUE)
+#' model2 <- mixture3p(resp_error = "y", nt_features = "nt.*_loc", set_size = 4, regex = TRUE)
 #'
 #' # fit the model
-#' fit <- fit_model(formula = ff,
-#'                  data = dat,
-#'                  model = model2,
-#'                  parallel=T,
-#'                  iter = 500,
-#'                  backend='cmdstanr')
+#' fit <- bmm(formula = ff,
+#'            data = dat,
+#'            model = model2,
+#'            cores = 4,
+#'            iter = 500,
+#'            backend = 'cmdstanr')
 #' }
-mixture3p <- function(resp_err, nt_features, setsize, regex = FALSE,
+mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE,
                       links = NULL, ...) {
+  dots <- list(...)
+  if ("setsize" %in% names(dots)) {
+    set_size <- dots$setsize
+    warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
+  }
   stop_missing_args()
-  .model_mixture3p(resp_err = resp_err, nt_features = nt_features,
-                   setsize = setsize, regex = regex, links = links, ...)
+  .model_mixture3p(resp_error = resp_error, nt_features = nt_features,
+                   set_size = set_size, regex = regex, links = links, ...)
 }
 
 #############################################################################!
@@ -137,10 +142,10 @@ mixture3p <- function(resp_err, nt_features, setsize, regex = FALSE,
 #' @export
 configure_model.mixture3p <- function(model, data, formula) {
   # retrieve arguments from the data check
-  max_setsize <- attr(data, "max_setsize")
+  max_set_size <- attr(data, "max_set_size")
   lure_idx <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
-  setsize_var <- model$other_vars$setsize
+  set_size_var <- model$other_vars$set_size
 
   # construct initial brms formula
   formula <- bmf2bf(model, formula) +
@@ -150,11 +155,11 @@ configure_model.mixture3p <- function(model, data, formula) {
     brms::nlf(kappa1 ~ kappa)
 
   # additional internal terms for the mixture model formula
-  kappa_nts <- paste0("kappa", 3:(max_setsize + 1))
-  theta_nts <- paste0("theta", 3:(max_setsize + 1))
-  mu_nts <- paste0("mu", 3:(max_setsize + 1))
+  kappa_nts <- paste0("kappa", 3:(max_set_size + 1))
+  theta_nts <- paste0("theta", 3:(max_set_size + 1))
+  mu_nts <- paste0("mu", 3:(max_set_size + 1))
 
-  for (i in 1:(max_setsize - 1)) {
+  for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
       glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (thetant + log(inv_ss)) + (1 - {lure_idx[i]}) * (-100)") +
@@ -164,7 +169,7 @@ configure_model.mixture3p <- function(model, data, formula) {
   # define mixture family
   formula$family <- brms::mixture(brms::von_mises("tan_half"),
                                   brms::von_mises("identity"),
-                                  nmix = c(1, max_setsize),
+                                  nmix = c(1, max_set_size),
                                   order = "none")
 
   nlist(formula, data)
@@ -174,14 +179,14 @@ configure_model.mixture3p <- function(model, data, formula) {
 
 #' @export
 configure_prior.mixture3p <- function(model, data, formula, user_prior, ...) {
-  # if there is setsize 1 in the data, set constant prior over thetant for setsize1
-  setsize_var <- model$other_vars$setsize
+  # if there is set_size 1 in the data, set constant prior over thetant for set_size1
+  set_size_var <- model$other_vars$set_size
   thetant_preds <- rhs_vars(formula$pforms$thetant)
   prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[setsize_var]]) && setsize_var %in% thetant_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% thetant_preds) {
     prior <- brms::prior_("constant(-100)",
                           class = "b",
-                          coef = paste0(setsize_var, 1),
+                          coef = paste0(set_size_var, 1),
                           nlpar = "thetant")
   }
   prior

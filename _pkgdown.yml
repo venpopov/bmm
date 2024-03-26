@@ -34,7 +34,7 @@ reference:
  - title: "Fitting models"
    desc: "Main functions for model fitting"
  - contents:
-   - "fit_model"
+   - "bmm"
    - "bmmformula"
    - "update.bmmfit"
    - "summary.bmmfit"
@@ -45,7 +45,7 @@ reference:
  - title: "Specifying models"
    desc: "Functions for specifying which model to fit"
  - contents:
-   - has_keyword("bmmmodel")
+   - has_keyword("bmmodel")
  - title: "Distributions"
    desc: "Functions for special distributions"
  - contents:
@@ -57,8 +57,7 @@ reference:
  - title: "Datasets"
    desc: "Available datasets for fitting the models"
  - contents:
-   - "OberauerLin_2017"
-   - "ZhangLuck_2008"
+   - has_keyword("dataset")
  - title: "Developers' corner"
    desc: "Functions to assist in developing new models"
  - contents:

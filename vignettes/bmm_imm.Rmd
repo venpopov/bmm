@@ -124,25 +124,25 @@ As <- c(0.5,1,0.5,0.5)
 Ss <- c(10,10,5,5)
 kappas <- c(15,10,15,10)
 nTrials = 1000
-setsize = 5
+set_size = 5
 
 simData <- data.frame()
 for (i in 1:length(Cs)) {
   # generate different non-target locations for each condition
-  item_location <- c(0, runif(setsize - 1, -pi,pi))
+  item_location <- c(0, runif(set_size - 1, -pi,pi))
   
   # generate different distances for each condition
-  item_distance <- c(0, runif(setsize - 1, min = 0.1, max = pi))
+  item_distance <- c(0, runif(set_size - 1, min = 0.1, max = pi))
   
   # simulate data for each condition
-  genData <- rIMM(n = nTrials,
+  genData <- rimm(n = nTrials,
                   mu = item_location,
                   dist = item_distance,
                   c = Cs[i], a = As[i],
                   b = 0, s = Ss[i], kappa = kappas[i])
   
   condData <- data.frame(
-    resp_err = genData,
+    resp_error = genData,
     trialID = 1:nTrials,
     cond = i,
     color_item1 = 0,
@@ -151,14 +151,14 @@ for (i in 1:length(Cs)) {
   
   init_colnames <- colnames(condData)
   
-  for (j in 1:(setsize - 1)) {
+  for (j in 1:(set_size - 1)) {
     condData <- cbind(condData,item_location[j + 1])
     condData <- cbind(condData,item_distance[j + 1])
   }
   
   colnames(condData) <- c(init_colnames,
-                          paste0(rep(c("color_item","dist_item"),times = setsize - 1), 
-                                 rep(2:(setsize),each = 2)))
+                          paste0(rep(c("color_item","dist_item"),times = set_size - 1), 
+                                 rep(2:(set_size),each = 2)))
   
   simData <- rbind(simData,condData)
 }
@@ -182,36 +182,34 @@ model_formula <- bmf(
 )
 ```
 
-Then, we can specify the model that we want to estimate. This includes specifying the name of the variable containing the dependent variable `resp_err` in our simulated data set. Additionally, we also need to provide the information of the `non_target` locations, the name of the variable coding the spatial distances of the nt_features to the target `spaDist`, and the `setsize` used in our data. The `setsize` can either be a fixed integer, if there is only one setsize in your data, or the name of the variable coding the `setsize` in your data:
+Then, we can specify the model that we want to estimate. This includes specifying the name of the variable containing the dependent variable `resp_error` in our simulated data set. Additionally, we also need to provide the information of the `non_target` locations, the name of the variable coding the spatial distances of the nt_features to the target `spaDist`, and the `set_size` used in our data. The `set_size` can either be a fixed integer, if there is only one set_size in your data, or the name of the variable coding the `set_size` in your data:
 
 ```{r}
-model <- IMMfull(resp_err = "resp_err",
+model <- IMMfull(resp_error = "resp_error",
                  nt_features = paste0("color_item",2:5),
-                 setsize = setsize,
+                 set_size = set_size,
                  nt_distances = paste0("dist_item",2:5))
 ```
 
 In the above example we specified all column names for the non_targets explicitely via `paste0('color_item',2:5)`. Alternatively, you can use a regular expression to match the non-target feature columns in the dataset. For example, you can specify the model a few different ways via regular expressions:
 
 ```{r}
-model <- IMMfull(resp_err = "resp_err",
+model <- IMMfull(resp_error = "resp_error",
                  nt_features = "color_item[2-5]",
-                 setsize = setsize,
+                 set_size = set_size,
                  nt_distances = "dist_item[2-5]",
                  regex = TRUE)
 ```
 
 
-Finally, we can fit the model by passing all the relevant arguments to the `fit_model` function:
+Finally, we can fit the model by passing all the relevant arguments to the `bmm()` function:
 
 ``` r 
-fit <- fit_model(
+fit <- bmm(
   formula = model_formula,
   data = simData,
   model = model,
-  parallel = TRUE,
-  chains = 4,
-  iter = 2000,
+  cores = 4,
   backend = "cmdstanr"
 )
 ```
@@ -228,7 +226,7 @@ Using this `fit` object we can have a quick look at the summary of the fitted mo
 summary(fit)
 ```
 
-The first thing you might notice is that below the parts of the formula that was passed to the `fit_model` function, `bmm` has added a lot of additional specifications to implement the IMM. This is nothing that you have to check. But if you are interested in customizing and exploring different assumptions imposed by the IMM, you could start by taking this formula and adapting it accordingly.
+The first thing you might notice is that below the parts of the formula that was passed to the `bmm()` function, `bmm` has added a lot of additional specifications to implement the IMM. This is nothing that you have to check. But if you are interested in customizing and exploring different assumptions imposed by the IMM, you could start by taking this formula and adapting it accordingly.
 
 Next, we can have a look at the estimated parameters. The first thing we should check is if the sampling converged, this is indicated by all `Rhat` values being close to one. If you want to do more inspection of the sampling, you can check out the functionality implemented in `brms`to do this.
 

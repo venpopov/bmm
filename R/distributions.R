@@ -437,10 +437,10 @@ rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
 #'   Hierarchical Bayesian measurement models for continuous reproduction of
 #'   visual features from working memory. Journal of Vision, 17(5), 11.
 #'
-#' @return `dIMM` gives the density of the interference measurement model,
-#'   `pIMM` gives the cumulative distribution function of the interference
-#'   measurement model, `qIMM` gives the quantile function of the interference
-#'   measurement model, and `rIMM` gives the random generation function for the
+#' @return `dimm` gives the density of the interference measurement model,
+#'   `pimm` gives the cumulative distribution function of the interference
+#'   measurement model, `qimm` gives the quantile function of the interference
+#'   measurement model, and `rimm` gives the random generation function for the
 #'   interference measurement model.
 #'
 #' @export
@@ -448,7 +448,7 @@ rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
 #' @examples
 #' # example code
 #'
-dIMM <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+dimm <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
                  c=1, a = 0.2, b = 0, s = 2, kappa=5, log = FALSE) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(length(mu) != length(dist),
@@ -486,21 +486,21 @@ dIMM <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
 
 #' @rdname IMMdist
 #' @export
-pIMM <- function(q, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+pimm <- function(q, mu=c(0,2,-1.5), dist = c(0,0.5,2),
                  c=1, a = 0.2, b = 0, s = 2, kappa=5) {
   .NotYetImplemented()
 }
 
 #' @rdname IMMdist
 #' @export
-qIMM <- function(p, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+qimm <- function(p, mu=c(0,2,-1.5), dist = c(0,0.5,2),
                  c=1, a = 0.2, b = 0, s = 2, kappa=5) {
   .NotYetImplemented()
 }
 
 #' @rdname IMMdist
 #' @export
-rIMM <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+rimm <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
                  c=1, a = 0.2, b = 0, s = 2, kappa=5) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(length(mu) != length(dist),
@@ -508,21 +508,21 @@ rIMM <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
   stopif(isTRUE(any(s < 0)), "s must be non-negative")
   stopif(isTRUE(any(dist < 0)), "all distances have to be positive.")
 
-  maxy <- dIMM(mu[1], mu, dist, c, a, b, s, kappa)
+  maxy <- dimm(mu[1], mu, dist, c, a, b, s, kappa)
   xa <- c()
 
-  .rIMM_inner <- function(n, mu, dist, c, a, b, s, kappa, xa) {
+  .rimm_inner <- function(n, mu, dist, c, a, b, s, kappa, xa) {
     x <- stats::runif(n, -pi, pi)
     y <- stats::runif(n, 0, 1) * maxy
-    accept <- y < dIMM(x, mu, dist, c, a, b, s, kappa)
+    accept <- y < dimm(x, mu, dist, c, a, b, s, kappa)
     xa <- c(xa, x[accept])
 
     if (length(xa) < n) {
-      return(.rIMM_inner(n, mu, dist, c, a, b, s, kappa, xa))
+      return(.rimm_inner(n, mu, dist, c, a, b, s, kappa, xa))
     }
 
     xa[1:n]
   }
 
-  .rIMM_inner(n, mu, dist, c ,a ,b ,s ,kappa , xa)
+  .rimm_inner(n, mu, dist, c ,a ,b ,s ,kappa , xa)
 }

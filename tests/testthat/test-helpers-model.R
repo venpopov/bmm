@@ -20,48 +20,48 @@ test_that("check_model() refuses invalid models and accepts valid models", {
 })
 
 test_that("check_model() works with regular expressions", {
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   models1 <- list(
     mixture3p("dev_rad",
       nt_features = paste0("col_nt", 1:7),
-      setsize = "set_size"
+      set_size = "set_size"
     ),
     IMMfull("dev_rad",
       nt_features = paste0("col_nt", 1:7),
       nt_distances = paste0("dist_nt", 1:7),
-      setsize = "set_size"
+      set_size = "set_size"
     ),
     IMMbsc("dev_rad",
       nt_features = paste0("col_nt", 1:7),
       nt_distances = paste0("dist_nt", 1:7),
-      setsize = "set_size"
+      set_size = "set_size"
     ),
     IMMabc("dev_rad",
       nt_features = paste0("col_nt", 1:7),
-      setsize = "set_size"
+      set_size = "set_size"
     )
   )
   models2 <- list(
     mixture3p("dev_rad",
       nt_features = "col_nt",
-      setsize = "set_size",
+      set_size = "set_size",
       regex = TRUE
     ),
     IMMfull("dev_rad",
       nt_features = "col_nt",
       nt_distances = "dist_nt",
-      setsize = "set_size",
+      set_size = "set_size",
       regex = TRUE
     ),
     IMMbsc("dev_rad",
       nt_features = "col_nt",
       nt_distances = "dist_nt",
-      setsize = "set_size",
+      set_size = "set_size",
       regex = TRUE
     ),
     IMMabc("dev_rad",
       nt_features = "col_nt",
-      setsize = "set_size",
+      set_size = "set_size",
       regex = TRUE
     )
   )
@@ -82,8 +82,8 @@ test_that("use_model_template() prevents duplicate models", {
     expect_error(use_model_template(model))
   }
 
-  model_files <- list.files(path = "R/", pattern = "^bmm_model_.*\\.R$")
-  model_files_names <- gsub("^bmm_model_", "", model_files)
+  model_files <- list.files(path = "R/", pattern = "^model_.*\\.R$")
+  model_files_names <- gsub("^model_", "", model_files)
   model_files_names <- gsub("\\.R$", "", model_files_names)
   for (model in model_files_names) {
     expect_error(use_model_template(model))
@@ -104,9 +104,9 @@ test_that("stancode() works with formula", {
 
 test_that("stancode() works with bmmformula", {
   ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
-  sc <- stancode(ff, OberauerLin_2017, model = mixture3p(resp_err = "dev_rad",
+  sc <- stancode(ff, oberauer_lin_2017, model = mixture3p(resp_error = "dev_rad",
                                                          nt_features = "col_nt",
-                                                         setsize = "set_size",
+                                                         set_size = "set_size",
                                                          regex = T)
   )
   expect_equal(class(sc)[1], "character")
@@ -115,12 +115,12 @@ test_that("stancode() works with bmmformula", {
 test_that("no check for with stancode function", {
   withr::local_options('bmm.sort_data' = 'check')
   expect_no_message(stancode(bmf(kappa ~ set_size, c ~ set_size),
-                             OberauerLin_2017,
+                             oberauer_lin_2017,
                              sdmSimple('dev_rad')))
 })
 
 test_that("change_constants() works", {
-  model <- sdmSimple(resp_err = "y")
+  model <- sdmSimple(resp_error = "y")
   formula <- bmf(mu ~ set_size, kappa = 3, c ~ 1)
   model <- change_constants(model, formula)
 })

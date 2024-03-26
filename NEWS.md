@@ -3,7 +3,6 @@
 ### New features
 * add a custom **summary()** method for bmm models (#144) 
 * add a global options **bmm.summary_backend** to control the backend used for the summary() method (choices are "bmm" and "brms")
-* BREAKING CHANGE: remove **get_model_prior(), get_stancode() and get_standata()**. Due to [recent changes](https://github.com/paul-buerkner/brms/pull/1604) in *brms* version 2.21.0, you can now use the *brms* functions `default_prior`, `stancode` and `standata` directly with *bmm* models.
 * function **restructure()** now allows to apply methods introduced in newer bmm versions to bmmfit objects created by older bmm versions
 * you can now specify any model parameter to be a constant by using an equal sign in the `bmmformula` (#142)
 * you can now choose to estimate parameters that are fixed to a constant by default for all models (#145)
@@ -16,8 +15,15 @@
 * fix bugs with the summary() function not displaying implicit parameters (#152) and not working properly with some hierarhical designs (#173)
 * fix a bug in which the sort_data check occured in cases where it shouldn't (#158)
 
+### Deprecated functions and arguments
+* BREAKING CHANGE: remove **get_model_prior(), get_stancode() and get_standata()**. Due to [recent changes](https://github.com/paul-buerkner/brms/pull/1604) in *brms* version 2.21.0, you can now use the *brms* functions `default_prior`, `stancode` and `standata` directly with *bmm* models.
+* the function `fit_model()` is deprecated in favor of `bmm()` (#163) and will be removed in a future version
+* the argument **setsize** for the `mixture3p` and `IMM` models is now called **set_size** for consistency (#163). The old argument name is deprecated and will be removed in a future version
+* the distributions functions for the imm model are renamed from dIMM, pIMM, rIMM and qIMM to dimm, pimm, rimm and qimm (#163)
+* the argument parallel for the bmm() function is deprecated and will be removed in a future version. Use `cores` instead, as for brms::brm() (#163)
+
 ### Other changes
-* `bmm` now requires the latest version of `brms` (>= 2.21.0). 
+* `bmm` now requires the latest version of `brms` (>= 2.21.0).
 
 # bmm 0.4.0
 
@@ -46,17 +52,17 @@
 
 ### New features
 
-* BREAKING CHANGE: The `fit_model` function now requires a `bmmformula` to be passed. The  syntax of the `bmmformula` or its short form `bmf` is equal to specifying a `brmsformula`. However, as of this version the `bmmformula` only specifies how parameters of a `bmmmodel` change across experimental conditions or continuous predictors. The response variables that the model is fit to now have to be specified when the model is defined using `model = bmmmodel()`. (#79)
+* BREAKING CHANGE: The `fit_model` function now requires a `bmmformula` to be passed. The  syntax of the `bmmformula` or its short form `bmf` is equal to specifying a `brmsformula`. However, as of this version the `bmmformula` only specifies how parameters of a `bmmodel` change across experimental conditions or continuous predictors. The response variables that the model is fit to now have to be specified when the model is defined using `model = bmmodel()`. (#79)
 * BREAKING CHANGE: The `non_target` and `spaPos` variables for the `mixture3p` and `IMM` models were relabled to `nt_features` and `nt_distances` for consistency. This is also to communicate that distance is not limited to spatial distance but distances on any feature dimensions of the retrieval cues. Currently, still only a single generalization gradient for the cue features is possible. 
 * This release includes reference fits for all implemented models to ensure that future changes to the package do not compromise the included models and change the results that their implementations produce.
-* The `check_formula` methods have been adapted to match the new `bmmformula` syntax. It now evaluates if formulas have been specified using the `bmmformula` function, if formulas for all parameters of a `bmmmodel` have been specified and warns the user that only a fixed intercept will be estimated if no formula for one of the parameters was provided. Additionally, `check_formula` throws an error should formulas be provided that do not match a parameter of the called `bmmmodel` unless they are part of a non-linear transformation.
+* The `check_formula` methods have been adapted to match the new `bmmformula` syntax. It now evaluates if formulas have been specified using the `bmmformula` function, if formulas for all parameters of a `bmmodel` have been specified and warns the user that only a fixed intercept will be estimated if no formula for one of the parameters was provided. Additionally, `check_formula` throws an error should formulas be provided that do not match a parameter of the called `bmmodel` unless they are part of a non-linear transformation.
 * You can now specify formulas for internally fixed parameters such as `mu` in all visual working memory models. This allows you to predict if there is response bias in the data. If a formula is not provided for `mu`, the model will assume that the mean of the response distribution is fixed to zero.
 * there is now an option `bmm.silent` that allows to suppress messages
 * the baseline activation `b` was removed from the `IMM` models, as this is internally fixed 
 to zero for scaling and as of now cannot be predicted by independent variables because the model would be unidentifiable.
 * the arguments used to fit the bmm model are now accessible in the `bmmfit` object via the `fit$bmm$fit_args` list.
 * add class('bmmfit') to the object returned from fit_model() allowing for more flexible postprocessing of the underlying `brmsfit` object. The object is now of class('bmmfit', 'brmsfit')
-* changes to column names of datasets `ZhangLuck_2008` and `OberauerLin_2017` to make them more consistent
+* changes to column names of datasets `zhang_luck_2008` and `oberauer_lin_2017` to make them more consistent
 
 ### Bug Fixes
 * an error with the treatment of distances in the `IMMfull` and the `IMMbsc` has been corrected. This versions ensures that only positive distances can be passed to any of the two models.
@@ -69,7 +75,7 @@ to zero for scaling and as of now cannot be predicted by independent variables b
 # bmm 0.2.2
 
 ### Bug Fixes
-* fixed a bug where passing a character vector or negative values to setsize argument of visual working memory models caused an error or incorrect behavior (#97)
+* fixed a bug where passing a character vector or negative values to set_size argument of visual working memory models caused an error or incorrect behavior (#97)
 
 # bmm 0.2.1
 
@@ -85,7 +91,7 @@ to zero for scaling and as of now cannot be predicted by independent variables b
 * Add ability to extract information about the default priors in `bmm` models with `get_model_prior()` (#53)
 * Add ability to generate stan code and stan data for each model with `get_model_stancode()` and `get_model_standata()` (#81)
 * BREAKING CHANGE: Add distribution functions for likelihood (e.g. `dimm()`) and random variate generation `rimm()`) for all models in the package. Remove deprecated `gen_3p_data()` and `gen_imm_data()` functions (#69)
-* Two new datasets available: `ZhangLuck_2008` and `OberauerLin_2017` (#22)
+* Two new datasets available: `zhang_luck_2008` and `oberauer_lin_2017` (#22)
 
 ### Documentation
 
@@ -103,7 +109,7 @@ to zero for scaling and as of now cannot be predicted by independent variables b
 
 ### New features
 
-* BREAKING CHANGE: Improve user interface to fit_model() ensures package stability and future development. Model specific arguments are now passed to the model functions as named arguments (e.g. `mixture3p(non_targets, setsize)`). This allows for a more flexible and intuitive way to specify model arguments. Passing model specific arguments directly to the `fit_model()` function is now deprecated (#43).
+* BREAKING CHANGE: Improve user interface to fit_model() ensures package stability and future development. Model specific arguments are now passed to the model functions as named arguments (e.g. `mixture3p(non_targets, set_size)`). This allows for a more flexible and intuitive way to specify model arguments. Passing model specific arguments directly to the `fit_model()` function is now deprecated (#43).
 * Add information about each model such as domain, task, name, version, citation, requirements and parameters (#42)
 * Add ability to generate a template file for adding new models to the package with `use_model_template()` (for developers) (#39)
 

@@ -1,7 +1,7 @@
-#' @title Create formula for predicting parameters of a `bmmmodel`
+#' @title Create formula for predicting parameters of a `bmmodel`
 #'
 #' @description This function is used to specify the formulas predicting the
-#' different parameters of a `bmmmodel`.
+#' different parameters of a `bmmodel`.
 #'
 #' @aliases bmf
 #'
@@ -45,7 +45,7 @@
 #'                      bias ~ 1 + (1 | id))
 #'
 #' and the rt and response variables would be specified in the model argument of
-#' the `fit_model` function.
+#' the `bmm()` function.
 #'
 #' Aside from that, the `bmm` formula syntax is the same as the `brms` formula
 #' syntax. For more information on the `brms` formula syntax, see
@@ -54,22 +54,22 @@
 #' You can also use the `bmf()` function as a shorthand for `bmmformula()`.
 #'
 #'
-#' @param ... Formulas for predicting a `bmmmodel` parameter. Each formula for a
+#' @param ... Formulas for predicting a `bmmodel` parameter. Each formula for a
 #' parameter should be specified as a separate argument, separated by commas
 #' @return A list of formulas for each parameters being predicted
 #' @export
 #' @examples
 #' imm_formula <- bmmformula(
-#'   c ~ 0 + setsize + (0 + setsize | id),
+#'   c ~ 0 + set_size + (0 + set_size | id),
 #'   a ~ 1,
-#'   kappa ~ 0 + setsize + (0 + setsize | id)
+#'   kappa ~ 0 + set_size + (0 + set_size | id)
 #' )
 #'
 #' # or use the shorter alias 'bmf'
 #' imm_formula2 <- bmf(
-#'   c ~ 0 + setsize + (0 + setsize | id),
+#'   c ~ 0 + set_size + (0 + set_size | id),
 #'   a ~ 1,
-#'   kappa ~ 0 + setsize + (0 + setsize | id)
+#'   kappa ~ 0 + set_size + (0 + set_size | id)
 #' )
 #' identical(imm_formula, imm_formula2)
 #'
@@ -175,7 +175,7 @@ check_formula <- function(model, data, formula) {
 }
 
 #' @export
-check_formula.bmmmodel <- function(model, data, formula) {
+check_formula.bmmodel <- function(model, data, formula) {
   stopif(is_brmsformula(formula),
          "The provided formula is a brms formula. Please use the bmf() function. E.g.:
          bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
@@ -198,34 +198,34 @@ check_formula.default <- function(model, data, formula) {
 
 #' @export
 check_formula.nontargets <- function(model, data, formula) {
-  setsize_var <- model$other_vars$setsize
+  set_size_var <- model$other_vars$set_size
   pred_list <- rhs_vars(formula, collapse = FALSE)
-  has_setsize <- sapply(pred_list, function(x) setsize_var %in% x)
-  ss_forms <- formula[has_setsize]
+  has_set_size <- sapply(pred_list, function(x) set_size_var %in% x)
+  ss_forms <- formula[has_set_size]
   intercepts <- sapply(ss_forms, has_intercept)
   stopif(any(intercepts),
          "The formula for parameter(s) {names(ss_forms)[intercepts]} contains \\
-         an intercept and also uses setsize as a predictor. This model requires \\
-         that the intercept is supressed when setsize is used as predictor. \\
-         Try using 0 + {setsize_var} instead.")
+         an intercept and also uses set_size as a predictor. This model requires \\
+         that the intercept is supressed when set_size is used as predictor. \\
+         Try using 0 + {set_size_var} instead.")
   NextMethod("check_formula")
 }
 
 #' @title Convert `bmmformula` objects to `brmsformula` objects
 #' @description
-#'  Called by configure_model() inside fit_model() to convert the `bmmformula` into a
+#'  Called by [configure_model()] inside [bmm()] to convert the `bmmformula` into a
 #'  `brmsformula` based on information in the model object. It will call the
 #'  appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
-#' @param model The model object defining one of the supported `bmmmodels``
+#' @param model The model object defining one of the supported `bmmodels``
 #' @param formula The `bmmformula` that should be converted to a `brmsformula`
 #' @returns A `brmsformula` defining the response variables and the additional parameter
-#'   formulas for the specified `bmmmodel`
+#'   formulas for the specified `bmmodel`
 #' @keywords internal, developer
 #' @examples
-#'   model <- mixture2p(resp_err = "error")
+#'   model <- mixture2p(resp_error = "error")
 #'
 #'   formula <- bmmformula(
-#'     thetat ~ 0 + setsize + (0 + setsize | id),
+#'     thetat ~ 0 + set_size + (0 + set_size | id),
 #'     kappa ~ 1 + (1 | id)
 #'   )
 #'
@@ -235,9 +235,9 @@ bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
 }
 
-# default method for all bmmmodels with 1 response variable
+# default method for all bmmodels with 1 response variable
 #' @export
-bmf2bf.bmmmodel <- function(model, formula) {
+bmf2bf.bmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE
   resp <- model$resp_vars
   constants <- model$fixed_parameters

@@ -11,10 +11,10 @@
 
 \item{data}{An object of class data.frame, containing data of all variables
 used in the model. The names of the variables must match the variable names
-passed to the \code{bmmmodel} object for required argurments.}
+passed to the \code{bmmodel} object for required argurments.}
 
 \item{model}{A description of the model to be fitted. This is a call to a
-\code{bmmmodel} such as \code{mixture3p()} function. Every model function has a
+\code{bmmodel} such as \code{mixture3p()} function. Every model function has a
 number of required arguments which need to be specified within the function
 call. Call \code{\link[=supported_models]{supported_models()}} to see the list of supported models and
 their required arguments}
@@ -38,15 +38,15 @@ function will return the default priors that would be used to estimate the
 model. Additionally, it will return all model parameters that have no prior
 specified (flat priors). This can help to get an idea about which priors
 need to be specified and also know which priors were used if no
-user-specified priors were passed to the \code{\link[=fit_model]{fit_model()}} function.
+user-specified priors were passed to the \code{\link[=bmm]{bmm()}} function.
 
 The default priors in \code{bmm} tend to be more informative than the default
 priors in \code{brms}, as we use domain knowledge to specify the priors.
 }
 \examples{
 default_prior(bmf(c ~ 1, kappa ~ 1),
-              data = OberauerLin_2017,
-              model = sdmSimple(resp_err = 'dev_rad'))
+              data = oberauer_lin_2017,
+              model = sdmSimple(resp_error = 'dev_rad'))
 }
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[brms:default_prior]{brms::default_prior()}}
