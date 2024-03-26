@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,7 +47,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Two-parameter mixture model by Zhang and Luck (2008).</h1>
-      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/R/bmm_model_mixture2p.R" class="external-link"><code>R/bmm_model_mixture2p.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/R/model_mixture2p.R" class="external-link"><code>R/model_mixture2p.R</code></a></small>
       <div class="d-none name"><code>mixture2p.Rd</code></div>
     </div>
 
@@ -57,16 +57,21 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mixture2p</span><span class="op">(</span><span class="va">resp_err</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mixture2p</span><span class="op">(</span><span class="va">resp_error</span>, links <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>resp_err</dt>
+    <dl><dt>resp_error</dt>
 <dd><p>The name of the variable in the provided dataset containing
 the response error. The response Error should code the response relative to
 the to-be-recalled target in radians. You can transform the response error
 in degrees to radian using the <code>deg2rad</code> function.</p></dd>
+
+
+<dt>links</dt>
+<dd><p>A list of links for the parameters. <em>Currently does not affect
+the model fits, but it will in the future.</em></p></dd>
 
 
 <dt>...</dt>
@@ -77,7 +82,7 @@ in degrees to radian using the <code>deg2rad</code> function.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>An object of class <code>bmmmodel</code></p>
+<p>An object of class <code>bmmodel</code></p>
 
 
     </div>
@@ -91,11 +96,23 @@ in degrees to radian using the <code>deg2rad</code> function.</p></dd>
 </ul></li>
 <li><p><strong>Requirements:</strong></p><ul><li><p>The response vairable should be in radians and represent the angular error relative to the target</p></li>
 </ul></li>
-<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses(in radians). Fixed internally to 0 by default.</p></li>
-<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution (log scale)</p></li>
+<li><p><strong>Parameters:</strong></p><ul><li><p><code>mu1</code>: Location parameter of the von Mises distribution for memory responses (in radians). Fixed internally to 0 by default.</p></li>
+<li><p><code>kappa</code>: Concentration parameter of the von Mises distribution</p></li>
 <li><p><code>thetat</code>: Mixture weight for target responses</p></li>
 </ul></li>
 <li><p><strong>Fixed parameters:</strong></p><ul><li><p><code>mu1</code> = 0</p></li>
+<li><p><code>mu2</code> = 0</p></li>
+<li><p><code>kappa2</code> = -100</p></li>
+</ul></li>
+<li><p><strong>Default parameter links:</strong></p><ul><li><p>mu1 = tan_half; kappa = log; thetat = identity</p></li>
+</ul></li>
+<li><p><strong>Default priors:</strong></p><ul><li><p><code>mu1</code>:</p><ul><li><p><code>main</code>: student_t(1, 0, 1)</p></li>
+</ul></li>
+<li><p><code>kappa</code>:</p><ul><li><p><code>main</code>: normal(2, 1)</p></li>
+<li><p><code>effects</code>: normal(0, 1)</p></li>
+</ul></li>
+<li><p><code>thetat</code>:</p><ul><li><p><code>main</code>: logistic(0, 1)</p></li>
+</ul></li>
 </ul></li>
 </ul></div>
 
@@ -106,18 +123,17 @@ in degrees to radian using the <code>deg2rad</code> function.</p></dd>
 <span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="mixture2p_dist.html">rmixture2p</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">2000</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># define formula</span></span></span>
-<span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="bmmformula.html">bmmformula</a></span><span class="op">(</span><span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                 <span class="va">thetat</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="bmmformula.html">bmmformula</a></span><span class="op">(</span><span class="va">kappa</span> <span class="op">~</span> <span class="fl">1</span>, <span class="va">thetat</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mixture2p</span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mixture2p</span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit the model</span></span></span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="fit_model.html">fit_model</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span></span>
-<span class="r-in"><span>                 data <span class="op">=</span> <span class="va">dat</span>,</span></span>
-<span class="r-in"><span>                 model <span class="op">=</span> <span class="va">model</span>,</span></span>
-<span class="r-in"><span>                 parallel<span class="op">=</span><span class="cn">T</span>,</span></span>
-<span class="r-in"><span>                 iter<span class="op">=</span><span class="fl">500</span>,</span></span>
-<span class="r-in"><span>                 backend<span class="op">=</span><span class="st">'cmdstanr'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="bmm.html">bmm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">ff</span>,</span></span>
+<span class="r-in"><span>           data <span class="op">=</span> <span class="va">dat</span>,</span></span>
+<span class="r-in"><span>           model <span class="op">=</span> <span class="va">model</span>,</span></span>
+<span class="r-in"><span>           cores <span class="op">=</span> <span class="fl">4</span>,</span></span>
+<span class="r-in"><span>           iter <span class="op">=</span> <span class="fl">500</span>,</span></span>
+<span class="r-in"><span>           backend <span class="op">=</span> <span class="st">'cmdstanr'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

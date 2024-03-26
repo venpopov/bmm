@@ -38,7 +38,7 @@
     
     <a class="navbar-brand me-2" href="index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -124,14 +124,12 @@
 <code class="sourceCode R"><span><span class="fu">bmm</span><span class="fu">::</span><span class="fu"><a href="reference/supported_models.html">supported_models</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; The following models are supported:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; -  IMMabc(resp_err, nt_features, setsize, regex) </span></span>
-<span><span class="co">#&gt; -  IMMbsc(resp_err, nt_features, nt_distances, setsize, regex) </span></span>
-<span><span class="co">#&gt; -  IMMfull(resp_err, nt_features, nt_distances, setsize, regex) </span></span>
-<span><span class="co">#&gt; -  mixture2p(resp_err) </span></span>
-<span><span class="co">#&gt; -  mixture3p(resp_err, nt_features, setsize, regex) </span></span>
-<span><span class="co">#&gt; -  sdmSimple(resp_err) </span></span>
+<span><span class="co">#&gt; -  imm(resp_error, nt_features, nt_distances, set_size, regex, links, version) </span></span>
+<span><span class="co">#&gt; -  mixture2p(resp_error, links) </span></span>
+<span><span class="co">#&gt; -  mixture3p(resp_error, nt_features, set_size, regex, links) </span></span>
+<span><span class="co">#&gt; -  sdm(resp_error, links, version) </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull</span></span></code></pre></div>
+<span><span class="co">#&gt; Type  ?modelname  to get information about a specific model, e.g.  ?imm</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="how-to-install-bmm">How to install bmm<a class="anchor" aria-label="anchor" href="#how-to-install-bmm"></a>
@@ -173,38 +171,32 @@
 <div class="section level2">
 <h2 id="fitting-models-using-bmm">Fitting models using bmm<a class="anchor" aria-label="anchor" href="#fitting-models-using-bmm"></a>
 </h2>
-<p>The core function of the bmm package is the <code><a href="reference/fit_model.html">fit_model()</a></code> function. This function takes:</p>
+<p>The core function of the bmm package is the <code><a href="reference/bmm.html">bmm()</a></code> function. This function takes:</p>
 <ol style="list-style-type: decimal">
 <li>a linear model formula specifying how parameters of the model should vary as a function of experimental conditions</li>
 <li>data containing the dependent variables, the variables predicting model parameters, and potentially additional variables providing information to identify the model</li>
 <li>the model that should be fit</li>
 </ol>
-<p>You can get more detailed information on the models implemented in bmm by invoking the documentation of each model typing <code>?bmmmodel</code> into your console. For example, calling the information on the full version of the Interference Measurement Model would look like this:</p>
+<p>You can get more detailed information on the models implemented in bmm by invoking the documentation of each model typing <code>?bmmodel</code> into your console. For example, calling the information on the full version of the Interference Measurement Model would look like this:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">?</span><span class="va">IMMfull</span></span></code></pre></div>
-<p>A complete call to fit a model using bmm could look like this. For this example, we are using the <code>OberauerLin_2017</code> data that is provided with the package.</p>
+<code class="sourceCode R"><span><span class="op">?</span><span class="va">imm</span></span></code></pre></div>
+<p>A complete call to fit a model using bmm could look like this. For this example, we are using the <code>oberauer_lin_2017</code> data that is provided with the package and we will show how to fit the Interference Measurement Model to this data. If you want a detailed description of this model and and in depth explanation of the parameters estimated in the model, please have a look at <code><a href="articles/bmm_imm.html">vignette("bmm_imm")</a></code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/venpopov/bmm" class="external-link">bmm</a></span><span class="op">)</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">OberauerLin_2017</span></span></code></pre></div>
-<p>For this quick example, we will show how to setup fitting the Interference Measurement Model to this data. If you want a detailed description of this model and and in depth explanation of the parameters estimated in the model, please have a look at <code><a href="articles/IMM.html">vignette("IMM")</a></code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bmmformula.html">bmmformula</a></span><span class="op">(</span><span class="va">c</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span>,</span>
-<span>                            <span class="va">a</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span>,</span>
-<span>                            <span class="va">s</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span>,</span>
-<span>                            <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/IMM.html">IMMfull</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"dev_rad"</span>,</span>
-<span>                 nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"col_nt"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span>
-<span>                 nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dist_nt"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span>
-<span>                 setsize <span class="op">=</span> <span class="st">"set_size"</span><span class="op">)</span></span>
+<span><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bmmformula.html">bmmformula</a></span><span class="op">(</span><span class="va">c</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span>,</span>
+<span>                      <span class="va">a</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span>,</span>
+<span>                      <span class="va">s</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span>,</span>
+<span>                      <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_model.html">fit_model</a></span><span class="op">(</span></span>
-<span>  formula <span class="op">=</span> <span class="va">model_formula</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">model</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/imm.html">imm</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"dev_rad"</span>,</span>
+<span>             nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"col_nt"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span>
+<span>             nt_distances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dist_nt"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,</span>
+<span>             set_size <span class="op">=</span> <span class="st">"set_size"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bmm.html">bmm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>, data <span class="op">=</span> <span class="va">data</span>, model <span class="op">=</span> <span class="va">model</span><span class="op">)</span></span></code></pre></div>
 <p>Using this call, the <code>fit</code> object will save all the information about the fitted model. As <code>bmm</code> calls <code>brms</code> to fit the models, these objects can be handled the same way a normal <code>brmsfit</code> object is handled:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># print summary</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span></span>
@@ -213,15 +205,15 @@
 <p>You can have a look at examples for how to fit all currently implemented models by reading the vignettes for each model <a href="https://venpopov.github.io/bmm/articles/index.html">here for the released version of the package</a> or <a href="https://venpopov.github.io/bmm/dev/articles/index.html">here for the development version</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="exploring-cogntive-measurement-models">Exploring cogntive measurement models<a class="anchor" aria-label="anchor" href="#exploring-cogntive-measurement-models"></a>
+<h2 id="exploring-measurement-models">Exploring measurement models<a class="anchor" aria-label="anchor" href="#exploring-measurement-models"></a>
 </h2>
 <p>To aid users in improving their intuition about what different models predict for observed data given a certain parameter set, the <code>bmm</code> package also includes density and random generation function for all implemented models.</p>
-<p>These function provide an easy way to see what a model predicts for data given a certain set of parameters. For example you can easily plot the probability density function of the data for the Interference Measurement model using the <code>dIMM</code> function. In similar fashion the random generation function included for each model, generates random data based on a set of data generating parameters. For the IMM, you can use <code>rIMM</code> to generate data given a set of parameters. Plotting the random data against the density illustrates that the data follows the theoretically implied density.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<p>These function provide an easy way to see what a model predicts for data given a certain set of parameters. For example you can easily plot the probability density function of the data for the Interference Measurement model using the <code>dimm</code> function. In similar fashion the random generation function included for each model, generates random data based on a set of data generating parameters. For the IMM, you can use <code>rimm</code> to generate data given a set of parameters. Plotting the random data against the density illustrates that the data follows the theoretically implied density.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">simData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  x <span class="op">=</span> <span class="fu">bmm</span><span class="fu">::</span><span class="fu"><a href="reference/IMMdist.html">rIMM</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  x <span class="op">=</span> <span class="fu">bmm</span><span class="fu">::</span><span class="fu"><a href="reference/IMMdist.html">rimm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>                mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="op">-</span><span class="fl">1.5</span>,<span class="fl">2.5</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span>                dist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                c <span class="op">=</span> <span class="fl">1.5</span>, a <span class="op">=</span> <span class="fl">0.3</span>, b <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="fl">2</span>, kappa <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
@@ -229,7 +221,7 @@
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">simData</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="va">density</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_function.html" class="external-link">geom_function</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="fu">bmm</span><span class="fu">::</span><span class="va"><a href="reference/IMMdist.html">dIMM</a></span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_function.html" class="external-link">geom_function</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="fu">bmm</span><span class="fu">::</span><span class="va"><a href="reference/IMMdist.html">dimm</a></span>,</span>
 <span>                args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="op">-</span><span class="fl">1.5</span>,<span class="fl">2.5</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span>                            dist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                            c <span class="op">=</span> <span class="fl">1.5</span>, a <span class="op">=</span> <span class="fl">0.3</span>, b <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="fl">2</span>, kappa <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -240,12 +232,12 @@
 <h2 id="the-general-structure-of-the-bmm-package">The general structure of the bmm package<a class="anchor" aria-label="anchor" href="#the-general-structure-of-the-bmm-package"></a>
 </h2>
 <p>The main building block of the bmm package is that cognitive measurement models can often be specified as distributional models for which the distributional parameters of the generalized linear mixed model are a function of cognitive measurement model parameters. These functions that translate the cognitive measurement model parameters into distributional parameters is what we implement in the bmm package.</p>
-<p><img src="reference/figures/README-bmmLogic.jpg" width="600" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-bmmLogic.png" width="600" style="display: block; margin: auto;"></p>
 <p>As these function can become complicated and their implementation changes with differences in experimental designs, the bmm package provides general translation functions that eases the use of the cognitive measurement models for end users. This way researchers that face challenges in writing their own STAN code to implement such models themselves can still use these models in almost any experimental design.</p>
-<p>Under the hood, the main <code>bmm</code> <code><a href="reference/fit_model.html">fit_model()</a></code> function will then call the appropriate functions for the specified model and will perform several steps:</p>
+<p>Under the hood, the main <code><a href="reference/bmm.html">bmm()</a></code> function will then call the appropriate functions for the specified model and will perform several steps:</p>
 <ol style="list-style-type: decimal">
 <li>Configure the Sample (e.g., set up prallelization)</li>
-<li>Check the information passed to the <code><a href="reference/fit_model.html">fit_model()</a></code> function:
+<li>Check the information passed to the <code><a href="reference/bmm.html">bmm()</a></code> function:
 <ul>
 <li>if the model is installed and all required arguments were provided</li>
 <li>if a valid formula was passed</li>
@@ -257,7 +249,7 @@
 <li>Posprocessing the output and passing it to the user</li>
 </ol>
 <p>This process is illustrated in the Figure below:</p>
-<p><img src="reference/figures/README-fitModel_process.jpg" width="600" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-fitModel_process.png" width="600" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="contributing-to-the-bmm-package">Contributing to the <code>bmm</code> package<a class="anchor" aria-label="anchor" href="#contributing-to-the-bmm-package"></a>

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,10 +63,10 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>print_call</dt>
-<dd><p>Logical; If TRUE (default), the function will print information about
-how each model function should be called and its required arguments. If FALSE,
-the function will return a character vector with the names of the available
-models</p></dd>
+<dd><p>Logical; If TRUE (default), the function will print
+information about how each model function should be called and its required
+arguments. If FALSE, the function will return a character vector with the
+names of the available models</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -83,14 +83,12 @@ models</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">supported_models</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> The following models are supported:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  IMMabc(resp_err, nt_features, setsize, regex) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  IMMbsc(resp_err, nt_features, nt_distances, setsize, regex) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  IMMfull(resp_err, nt_features, nt_distances, setsize, regex) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  mixture2p(resp_err) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  mixture3p(resp_err, nt_features, setsize, regex) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -  sdmSimple(resp_err) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  imm(resp_error, nt_features, nt_distances, set_size, regex, links, version) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  mixture2p(resp_error, links) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  mixture3p(resp_error, nt_features, set_size, regex, links) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -  sdm(resp_error, links, version) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Type  ?modelname  to get information about a specific model, e.g.  ?imm </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

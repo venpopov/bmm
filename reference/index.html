@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,9 +62,9 @@
 
       <dl><dt>
           
-          <code><a href="bmm-package.html">bmm</a></code> <code><a href="bmm-package.html">bmm-package</a></code> 
+          <code><a href="bmm.html">bmm()</a></code> <code><a href="bmm.html">fit_model()</a></code> 
         </dt>
-        <dd>bmm: Easy and Accesible Bayesian Measurement Models using 'brms'</dd>
+        <dd>Fit Bayesian Measurement Models</dd>
       </dl><dl><dt>
           
           <code><a href="supported_models.html">supported_models()</a></code> 
@@ -88,19 +88,24 @@
 
       <dl><dt>
           
-          <code><a href="fit_model.html">fit_model()</a></code> 
+          <code><a href="bmm.html">bmm()</a></code> <code><a href="bmm.html">fit_model()</a></code> 
         </dt>
-        <dd>Fit Measurement Models using BRMS</dd>
+        <dd>Fit Bayesian Measurement Models</dd>
       </dl><dl><dt>
           
-          <code><a href="bmmformula.html">bmmformula()</a></code> 
+          <code><a href="bmmformula.html">bmmformula()</a></code> <code><a href="bmmformula.html">bmf()</a></code> 
         </dt>
-        <dd>Create formula for predicting parameters of a <code>bmmmodel</code></dd>
+        <dd>Create formula for predicting parameters of a <code>bmmodel</code></dd>
       </dl><dl><dt>
           
           <code><a href="update.bmmfit.html">update(<i>&lt;bmmfit&gt;</i>)</a></code> 
         </dt>
         <dd>Update a bmm model</dd>
+      </dl><dl><dt>
+          
+          <code><a href="summary.bmmfit.html">summary(<i>&lt;bmmfit&gt;</i>)</a></code> 
+        </dt>
+        <dd>Create a summary of a fitted model represented by a <code>bmmfit</code> object</dd>
       </dl></div><div class="section level2">
       <h2 id="extract-model-information">Extract model information<a class="anchor" aria-label="anchor" href="#extract-model-information"></a></h2>
       
@@ -114,29 +119,24 @@
 
       <dl><dt>
           
+          <code><a href="default_prior.bmmformula.html">default_prior(<i>&lt;bmmformula&gt;</i>)</a></code> 
+        </dt>
+        <dd>Get Default priors for Measurement Models specified in BMM</dd>
+      </dl><dl><dt>
+          
           <code><a href="fit_info.html">fit_info()</a></code> 
         </dt>
         <dd>Extract information from a brmsfit object</dd>
       </dl><dl><dt>
           
-          <code><a href="get_model_prior.html">get_model_prior()</a></code> 
-        </dt>
-        <dd>Get Default priors for Measurement Models specified in BRMS</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get_stancode.html">get_stancode()</a></code> 
+          <code><a href="stancode.bmmformula.html">stancode(<i>&lt;bmmformula&gt;</i>)</a></code> 
         </dt>
         <dd>Generate Stan code for bmm models</dd>
       </dl><dl><dt>
           
-          <code><a href="get_stancode_parblock.html">get_stancode_parblock()</a></code> 
+          <code><a href="standata.bmmformula.html">standata(<i>&lt;bmmformula&gt;</i>)</a></code> 
         </dt>
-        <dd>Get the parameter block from a generated Stan code for bmm models</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get_standata.html">get_standata()</a></code> 
-        </dt>
-        <dd>Generate data for <code>bmm</code> models to be passed to Stan</dd>
+        <dd>Stan data for <code>bmm</code> models</dd>
       </dl></div><div class="section level2">
       <h2 id="specifying-models">Specifying models<a class="anchor" aria-label="anchor" href="#specifying-models"></a></h2>
       
@@ -150,14 +150,14 @@
 
       <dl><dt>
           
-          <code><a href="IMM.html">IMMfull()</a></code> <code><a href="IMM.html">IMMbsc()</a></code> <code><a href="IMM.html">IMMabc()</a></code> 
-        </dt>
-        <dd>Interference measurement model by Oberauer and Lin (2017).</dd>
-      </dl><dl><dt>
-          
-          <code><a href="SDM.html">sdmSimple()</a></code> 
+          <code><a href="SDM.html">sdm()</a></code> <code><a href="SDM.html">sdmSimple()</a></code> 
         </dt>
         <dd>Signal Discrimination Model (SDM) by Oberauer (2023)</dd>
+      </dl><dl><dt>
+          
+          <code><a href="imm.html">imm()</a></code> <code><a href="imm.html">IMMfull()</a></code> <code><a href="imm.html">IMMbsc()</a></code> <code><a href="imm.html">IMMabc()</a></code> 
+        </dt>
+        <dd>Interference measurement model by Oberauer and Lin (2017).</dd>
       </dl><dl><dt>
           
           <code><a href="mixture2p.html">mixture2p()</a></code> 
@@ -181,7 +181,7 @@
 
       <dl><dt>
           
-          <code><a href="IMMdist.html">dIMM()</a></code> <code><a href="IMMdist.html">pIMM()</a></code> <code><a href="IMMdist.html">qIMM()</a></code> <code><a href="IMMdist.html">rIMM()</a></code> 
+          <code><a href="IMMdist.html">dimm()</a></code> <code><a href="IMMdist.html">pimm()</a></code> <code><a href="IMMdist.html">qimm()</a></code> <code><a href="IMMdist.html">rimm()</a></code> 
         </dt>
         <dd>The Interference Measurement Model (IMM)</dd>
       </dl><dl><dt>
@@ -200,7 +200,7 @@
         </dt>
         <dd>The three-parameter mixture model (mixture3p)</dd>
       </dl></div><div class="section level2">
-      <h2 id="data-and-parameter-transformations">Data and parameter transformations<a class="anchor" aria-label="anchor" href="#data-and-parameter-transformations"></a></h2>
+      <h2 id="data-model-and-parameter-transformations">Data, model and parameter transformations<a class="anchor" aria-label="anchor" href="#data-model-and-parameter-transformations"></a></h2>
       
       <p class="section-desc"></p><p>Utility functions for transforming data and parameters</p>
 
@@ -229,7 +229,13 @@
           
           <code><a href="k2sd.html">k2sd()</a></code> 
         </dt>
-        <dd>Transform kappa of the von Mises distribution to the circular standard deviation</dd>
+        <dd>Transform kappa of the von Mises distribution to the circular standard
+deviation</dd>
+      </dl><dl><dt>
+          
+          <code><a href="restructure.bmmfit.html">restructure(<i>&lt;bmmfit&gt;</i>)</a></code> 
+        </dt>
+        <dd>Restructure Old <code>bmmfit</code> Objects</dd>
       </dl><dl><dt>
           
           <code><a href="softmax.html">softmax()</a></code> <code><a href="softmax.html">softmaxinv()</a></code> 
@@ -253,12 +259,12 @@
 
       <dl><dt>
           
-          <code><a href="OberauerLin_2017.html">OberauerLin_2017</a></code> 
+          <code><a href="oberauer_lin_2017.html">oberauer_lin_2017</a></code> 
         </dt>
         <dd>Data from Experiment 1 reported by Oberauer &amp; Lin (2017)</dd>
       </dl><dl><dt>
           
-          <code><a href="ZhangLuck_2008.html">ZhangLuck_2008</a></code> 
+          <code><a href="zhang_luck_2008.html">zhang_luck_2008</a></code> 
         </dt>
         <dd>Data from Experiment 2 reported by Zhang &amp; Luck (2008)</dd>
       </dl></div><div class="section level2">
@@ -299,6 +305,11 @@
         <dd>Generic S3 method for configuring the model to be fit by brms</dd>
       </dl><dl><dt>
           
+          <code><a href="configure_prior.html">configure_prior()</a></code> 
+        </dt>
+        <dd>Generic S3 method for configuring the default prior for a bmmodel</dd>
+      </dl><dl><dt>
+          
           <code><a href="postprocess_brm.html">postprocess_brm()</a></code> 
         </dt>
         <dd>Generic S3 method for postprocessing the fitted brm model</dd>
@@ -307,11 +318,6 @@
           <code><a href="revert_postprocess_brm.html">revert_postprocess_brm()</a></code> 
         </dt>
         <dd>Generic S3 method for reverting any postprocessing of the fitted brm model</dd>
-      </dl><dl><dt>
-          
-          <code><a href="set_default_prior.html">set_default_prior()</a></code> 
-        </dt>
-        <dd>Set default priors for a bmmmodel</dd>
       </dl><dl><dt>
           
           <code><a href="use_model_template.html">use_model_template()</a></code> 
