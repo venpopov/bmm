@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.7.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.8.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,8 +101,8 @@ margin-bottom: 1.5em ;
 <p>The <code>bmmformula</code> syntax generally follows the same principles as the formula syntax for <a href="https://rdrr.io/cran/brms/man/brmsformula.html" class="external-link"><code>brms</code> models</a>. A <code>bmmformula</code> follows the general structure:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">parameter</span> <span class="op">~</span> <span class="va">peffects</span> <span class="op">+</span> <span class="op">(</span> <span class="va">geffects</span> <span class="op">|</span> <span class="va">group</span><span class="op">)</span></span></code></pre></div>
-<p>However, instead of predicting a <code>response</code> - as is typically done in <code>brms</code> - in <code>bmm</code> a <code>bmmformula</code> predicts a <code>parameter</code> from a <code>bmmmodel</code><a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;You can always find information on the parameters of a &lt;code&gt;bmmmodel&lt;/code&gt; by calling the help for the model you want to fit: &lt;code&gt;?bmmmodel&lt;/code&gt;&lt;/p&gt;"><sup>1</sup></a>. The <code>peffects</code> part specifies all effects that are assumed to be the same across observations. In typical vocabulary such effects are called ‘population-level’ or ‘overall’ effects. The <code>geffects</code> part specifies effects that are assumed to vary across grouping variables specified in <code>group</code>. Typically, these effects are called ‘group-level’ or ‘varying’ effects.</p>
-<p>As you will typically provide a <code>bmmformula</code> for each parameter of a <code>bmmmodel</code>, we recommend to set up the formula in a separate object before passing it to the <code>fit_model</code> function. There are two ways to set up formulas, both work equally easy and well:</p>
+<p>However, instead of predicting a <code>response</code> - as is typically done in <code>brms</code> - in <code>bmm</code> a <code>bmmformula</code> predicts a <code>parameter</code> from a <code>bmmodel</code><a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;You can always find information on the parameters of a &lt;code&gt;bmmodel&lt;/code&gt; by calling the help for the model you want to fit: &lt;code&gt;?bmmodel&lt;/code&gt;&lt;/p&gt;"><sup>1</sup></a>. The <code>peffects</code> part specifies all effects that are assumed to be the same across observations. In typical vocabulary such effects are called ‘population-level’ or ‘overall’ effects. The <code>geffects</code> part specifies effects that are assumed to vary across grouping variables specified in <code>group</code>. Typically, these effects are called ‘group-level’ or ‘varying’ effects.</p>
+<p>As you will typically provide a <code>bmmformula</code> for each parameter of a <code>bmmodel</code>, we recommend to set up the formula in a separate object before passing it to the <code><a href="../reference/bmm.html">bmm()</a></code> function. There are two ways to set up formulas, both work equally easy and well:</p>
 <ol style="list-style-type: decimal">
 <li>a single call to the function <code>bmmformula</code> or its short form <code>bmf</code>, separating formulas for different parameters by commas.</li>
 <li>add a <code>bmmformula</code> for each parameter by using the <code>+</code> operator.</li>
@@ -123,7 +123,7 @@ margin-bottom: 1.5em ;
 <span><span class="co">#&gt; thetat ~ 1 + set_size</span></span>
 <span><span class="co">#&gt; thetant ~ 1 + set_size</span></span>
 <span><span class="co">#&gt; kappa ~ 1</span></span></code></pre></div>
-<p>As noted above, <code>bmm</code> generally assumes that you pass a <code>bmmformula</code> for each parameter of a model. If you do not pass a <code>bmmformula</code> for one or more parameters, <code>bmm</code> will throw a warning and only estimate a fixed intercept for the parameters for which no <code>bmmformula</code> was provided. If you are unsure about the parameters of a model, call the help via <code>?bmmmodel</code>, replacing ‘bmmmodel’ with the name of the model (e.g. <code><a href="../reference/SDM.html">?sdmSimple</a></code>).</p>
+<p>As noted above, <code>bmm</code> generally assumes that you pass a <code>bmmformula</code> for each parameter of a model. If you do not pass a <code>bmmformula</code> for one or more parameters, <code>bmm</code> will throw a warning and only estimate a fixed intercept for the parameters for which no <code>bmmformula</code> was provided. If you are unsure about the parameters of a model, call the help via <code>?bmmodel</code>, replacing ‘bmmodel’ with the name of the model (e.g. <code><a href="../reference/SDM.html">?sdmSimple</a></code>).</p>
 <p>As <code>bmmformula</code> syntax builds upon <code>brmsformula</code> syntax, you can use any functionality you might use in <code>brms</code> for specifying a <code>bmmformula</code>. One difference is, that you <em>do not</em> have to explicitly specify if a formula is a non-linear formula, as <code>bmm</code> recognizes a formula as non-linear as soon as one of the left-hand side arguments of a formula is also used as a right-hand side argument in the whole formula. So the argumetn <code>nl</code> does not exist for <code>bmmformula</code>. Similarly, adding grouping statements around group-level effects to estimate them separately for different sub-groups in your design can be added. So for example, a more complicated <code>bmmformula</code> could look like this:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">complex_formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmmformula.html">bmf</a></span><span class="op">(</span></span>
@@ -151,12 +151,12 @@ margin-bottom: 1.5em ;
 <h2 id="seperating-response-variables-from-model-parameters">
 <span class="header-section-number">2</span> Seperating response variables from model parameters<a class="anchor" aria-label="anchor" href="#seperating-response-variables-from-model-parameters"></a>
 </h2>
-<p>As the response is not provided to the <code>bmmformula</code>, in <code>bmm</code> the response variables, and also other variables relevant for a <code>bmmmodel</code>, are linked to the model when setting up the <code>bmmmodel</code> object. For example, when fitting the <code>mixture3p</code> model, you have to provide the names of the variables that reflect the response error (e.g., <code>y</code>), the location of the non-target features (e.g. <code>nt_col1</code>, …, <code>nt_col4</code>), and the set-size (e.g., <code>ss</code>) in our data:</p>
+<p>As the response is not provided to the <code>bmmformula</code>, in <code>bmm</code> the response variables, and also other variables relevant for a <code>bmmodel</code>, are linked to the model when setting up the <code>bmmodel</code> object. For example, when fitting the <code>mixture3p</code> model, you have to provide the names of the variables that reflect the response error (e.g., <code>y</code>), the location of the non-target features (e.g. <code>nt_col1</code>, …, <code>nt_col4</code>), and the set-size (e.g., <code>ss</code>) in our data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"y"</span>, </span>
+<code class="sourceCode R"><span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"y"</span>, </span>
 <span>                      nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"nt_col"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>, </span>
 <span>                      set_size <span class="op">=</span> <span class="st">"ss"</span><span class="op">)</span></span></code></pre></div>
-<p>Internally, <code>bmm</code> will then link the response variables to the <code>bmmformula</code> given for the parameters of a <code>bmmmodel</code>.</p>
+<p>Internally, <code>bmm</code> will then link the response variables to the <code>bmmformula</code> given for the parameters of a <code>bmmodel</code>.</p>
 </div>
 <div class="section level2" number="3">
 <h2 id="fixing-parameters-to-constant-values">
@@ -174,13 +174,13 @@ margin-bottom: 1.5em ;
 </h2>
 <p><code>bmm</code> fixes some parameters internally, as they are usually not an integral part of a measurement model, or need to be fixed to properly identify the model. For example in models for continuous reproduction visual working memory tasks, the distribution of target responses is usually assumed to be centered around the target. Consequently, the mean of this distribution <code>mu</code> is internally fixed to <code>0</code>. Such parameters are listed in the model object. So, you can see if a model has such parameters by accessing <code>my_model$fixed_parameters</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SDM.html">sdmSimple</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SDM.html">sdmSimple</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span>
 <span><span class="va">my_model</span><span class="op">$</span><span class="va">fixed_parameters</span></span>
 <span><span class="co">#&gt; $mu</span></span>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 <p>Fixed parameters that can be freely estimated are also listed in the <code>parameters</code> of a model, that you can access using <code>my_model$parameters</code>. Parameters that are only listed in the <code>fixed_parameters</code> but not part of the <code>parameters</code> need to be fixed for identification purposes and thus cannot be estimated freely. For example in the <code>mixture_vwm</code> models, the location <code>mu2</code> and precision <code>kappa2</code> of the guessing distributions needs to be fixed for model identification. These parameters are listed in the <code>fixed_parameters</code> but not in the <code>parameters</code> and therefore cannot be estimated. Only, the internally fixed location of the target responses <code>mu1</code> can be estimated freely if needed.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">my_model</span><span class="op">$</span><span class="va">fixed_parameters</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "mu1"    "mu2"    "kappa2"</span></span>
 <span></span>
@@ -188,7 +188,7 @@ margin-bottom: 1.5em ;
 <span><span class="co">#&gt; [1] "mu1"    "kappa"  "thetat"</span></span></code></pre></div>
 <p>If you want to freely estimate an internally fixed parameters, then you can freely estimate this parameter by providing a <code>bmmformula</code> for it. In the case of the above mentioned visual working memory models, you could for example be interested in seeing if subjects were biased (e.g., by distractors). If you want to estimate the overall bias in your data including variations between subjects indicated by <code>ID</code>, then you would additionally specify a <code>bmmformula</code> for <code>mu</code> in addition to the other formulas for the core mode parameters:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span>
 <span><span class="va">my_formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmmformula.html">bmf</a></span><span class="op">(</span></span>
 <span>  <span class="va">mu1</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>,</span>
 <span>  <span class="va">thetat</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>,</span>
@@ -206,14 +206,14 @@ margin-bottom: 1.5em ;
 <span>  <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span>
+<span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">bmmfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_model.html">fit_model</a></span><span class="op">(</span></span>
+<span><span class="va">bmmfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmm.html">bmm</a></span><span class="op">(</span></span>
 <span>  formula <span class="op">=</span> <span class="va">user_formula</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">my_data</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">my_model</span>,</span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>If you were now interested to see how the <code>bmmformula</code> that you passed to <code>bmm</code> is converted to a <code>brmsformula</code>, you can access the <code>brmsformula</code> via the <code>bmmfit</code> object that will be returned by the <code>fit_model</code> function:</p>
+<p>If you were now interested to see how the <code>bmmformula</code> that you passed to <code>bmm</code> is converted to a <code>brmsformula</code>, you can access the <code>brmsformula</code> via the <code>bmmfit</code> object that will be returned by the <code><a href="../reference/bmm.html">bmm()</a></code> function:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bmmfit</span><span class="op">$</span><span class="va">formula</span></span>
 <span><span class="co">#&gt; error ~ 1 </span></span>

@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.7.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.8.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -260,7 +260,7 @@ p(\theta) = p_{mem} \cdot \text{vM}(\theta; 0, \kappa) + p_{nt} \cdot \frac{\sum
 <li>
 <code>id</code> is a unique identifier for each participant</li>
 <li>
-<code>setsize</code> is the number of items presented in the memory array</li>
+<code>set_size</code> is the number of items presented in the memory array</li>
 <li>
 <code>response</code> the participant’s recollection of the target orientation in radians</li>
 <li>
@@ -315,18 +315,17 @@ the effect of set size to vary across participants.</p>
 <span>          <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Then we specify the model as simply as:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span></code></pre></div>
-<p>Finally, we fit the model with the <code>fit_model</code> function. The fit model function uses
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture2p.html">mixture2p</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"error"</span><span class="op">)</span></span></code></pre></div>
+<p>Finally, we fit the model with the <code><a href="../reference/bmm.html">bmm()</a></code> function. The fit model function uses
 the <code>brms</code> package to fit the model, so you can pass to it any argument that you would pass to the <code>brm</code> function.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_model.html">fit_model</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmm.html">bmm</a></span><span class="op">(</span></span>
 <span>  formula <span class="op">=</span> <span class="va">ff</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">dat_preprocessed</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>  parallel<span class="op">=</span><span class="cn">T</span>,</span>
-<span>  iter<span class="op">=</span><span class="fl">2000</span>,</span>
-<span>  refresh<span class="op">=</span><span class="fl">100</span>,</span>
-<span>  backend<span class="op">=</span><span class="st">'cmdstanr'</span></span>
+<span>  cores <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  refresh <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">'cmdstanr'</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2" number="4">
@@ -396,7 +395,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <span><span class="va">sd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/k2sd.html">k2sd</a></span><span class="op">(</span><span class="va">kappa</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span> </span>
 <span><span class="va">pmem</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">thetat</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">thetat</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">pg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">thetat</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p>Our estimates for kappa over setsize are:</p>
+<p>Our estimates for kappa over set_size are:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">kappa</span></span>
 <span><span class="co">#&gt;                  Estimate Est.Error      Q2.5     Q97.5</span></span>
@@ -455,7 +454,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <h2 id="fitting-the-3-parameter-mixture-model-with-bmm">
 <span class="header-section-number">5</span> Fitting the 3-parameter mixture model with <code>bmm</code><a class="anchor" aria-label="anchor" href="#fitting-the-3-parameter-mixture-model-with-bmm"></a>
 </h2>
-<p>Fitting the 3-parameter mixture model is very similar. We have an extra parameter <code>thetant</code> that represents the mixture weight for non-target responses<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;because now we have three mixture weights, you will need later to calculate the probability of target responses as &lt;span class="math inline"&gt;\(p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}\)&lt;/span&gt;, the probability of non-target responses as &lt;span class="math inline"&gt;\(p_{nt} =\frac{exp(\theta_{nontarget})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}\)&lt;/span&gt;, and the probability of guessing as &lt;span class="math inline"&gt;\(p_{guess} = 1-p_{mem}-p_{nt}\)&lt;/span&gt;&lt;/p&gt;'><sup>2</sup></a>. We also need to specify the names of the non-target variables and the setsize<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;When the setsize varies in an experiment, provide the name of the variable containing the setsize information. If the set size is the same for all trials, provide a number, e.g. &lt;code&gt;setsize=4&lt;/code&gt;&lt;/p&gt;"><sup>3</sup></a> variable in the <code>mixture3p</code> function.</p>
+<p>Fitting the 3-parameter mixture model is very similar. We have an extra parameter <code>thetant</code> that represents the mixture weight for non-target responses<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;because now we have three mixture weights, you will need later to calculate the probability of target responses as &lt;span class="math inline"&gt;\(p_{mem} = \frac{exp(\theta_{target})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}\)&lt;/span&gt;, the probability of non-target responses as &lt;span class="math inline"&gt;\(p_{nt} =\frac{exp(\theta_{nontarget})}{1+exp(\theta_{target})+exp(\theta_{nontarget})}\)&lt;/span&gt;, and the probability of guessing as &lt;span class="math inline"&gt;\(p_{guess} = 1-p_{mem}-p_{nt}\)&lt;/span&gt;&lt;/p&gt;'><sup>2</sup></a>. We also need to specify the names of the non-target variables and the set_size<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;When the set_size varies in an experiment, provide the name of the variable containing the set_size information. If the set size is the same for all trials, provide a number, e.g. &lt;code&gt;set_size=4&lt;/code&gt;&lt;/p&gt;"><sup>3</sup></a> variable in the <code>mixture3p</code> function.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmmformula.html">bmf</a></span><span class="op">(</span></span>
 <span>  <span class="va">thetat</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span>,</span>
@@ -463,28 +462,27 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <span>  <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">set_size</span> <span class="op">|</span> <span class="va">id</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span>, nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'non_target_'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>, setsize <span class="op">=</span> <span class="st">'set_size'</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"error"</span>, nt_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'non_target_'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>, set_size <span class="op">=</span> <span class="st">'set_size'</span><span class="op">)</span></span></code></pre></div>
 <p>Then we run the model just like before:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit3p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_model.html">fit_model</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">fit3p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmm.html">bmm</a></span><span class="op">(</span></span>
 <span>  formula <span class="op">=</span> <span class="va">ff</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">dat_preprocessed</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>  parallel<span class="op">=</span><span class="cn">T</span>,</span>
-<span>  iter<span class="op">=</span><span class="fl">2000</span>,</span>
-<span>  refresh<span class="op">=</span><span class="fl">100</span>,</span>
-<span>  backend<span class="op">=</span><span class="st">'cmdstanr'</span></span>
+<span>  cores <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  refresh <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">'cmdstanr'</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The rest of the analysis is the same as for the 2-parameter model. We can inspect the model fit, extract the parameter estimates, and visualize the posterior distributions.</p>
 <p>In the above example we specified all column names for the non_targets explicitely via <code>paste0('non_target_',1:5)</code>. Alternatively, you can use a regular expression to match the non-target feature columns in the dataset. This is useful when the non-target feature columns are named in a consistent way, e.g. <code>non_target_1</code>, <code>non_target_2</code>, <code>non_target_3</code>, etc. For example, you can specify the model a few different ways via regular expressions:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span>, </span>
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"error"</span>, </span>
 <span>                   nt_features <span class="op">=</span> <span class="st">"non_target_[1-5]"</span>, </span>
-<span>                   setsize <span class="op">=</span> <span class="st">'set_size'</span>, </span>
+<span>                   set_size <span class="op">=</span> <span class="st">'set_size'</span>, </span>
 <span>                   regex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_err <span class="op">=</span> <span class="st">"error"</span>, </span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mixture3p.html">mixture3p</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"error"</span>, </span>
 <span>                   nt_features <span class="op">=</span> <span class="st">"non_target_"</span>, </span>
-<span>                   setsize <span class="op">=</span> <span class="st">'set_size'</span>, </span>
+<span>                   set_size <span class="op">=</span> <span class="st">'set_size'</span>, </span>
 <span>                   regex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

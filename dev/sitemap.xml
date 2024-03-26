@@ -43,22 +43,19 @@
     <loc>https://venpopov.github.io/bmm/dev/reference/IMMdist.html</loc>
   </url>
   <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/OberauerLin_2017.html</loc>
-  </url>
-  <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/SDM.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/SDMdist.html</loc>
   </url>
   <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/ZhangLuck_2008.html</loc>
-  </url>
-  <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/bmf2bf.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/bmm-package.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/bmm.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/bmm_options.html</loc>
@@ -100,9 +97,6 @@
     <loc>https://venpopov.github.io/bmm/dev/reference/fit_info.html</loc>
   </url>
   <url>
-    <loc>https://venpopov.github.io/bmm/dev/reference/fit_model.html</loc>
-  </url>
-  <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/index.html</loc>
   </url>
   <url>
@@ -119,6 +113,9 @@
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/mixture3p_dist.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/oberauer_lin_2017.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/pipe.html</loc>
@@ -158,5 +155,8 @@
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/dev/reference/wrap.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/dev/reference/zhang_luck_2008.html</loc>
   </url>
 </urlset>
