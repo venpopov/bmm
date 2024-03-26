@@ -30,6 +30,8 @@
 ### Other changes
 * **bmm** now requires the latest version of **brms** (>= 2.21.0).
 
+# bmm 0.4.0
+
 ### New features
 
 * add a check for the **sdmSimple** model if the data is sorted by predictors. This leads to much faster sampling. The user can control the default behavior with the **sort_data** argument (#72)
