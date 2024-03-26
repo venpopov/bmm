@@ -21,9 +21,9 @@ options(cmdstanr_write_stan_file_dir = cmdstanr_output_dir,
 
 ## Introduction
 
-This document contains code snippets for internal model tests. Since official unit tests via testthat would take too long for actual models to run every time, we use a mock backend to make sure that the models are correctly specified and that the fit_model() function works as expected, except for the actual sampling part.
+This document contains code snippets for internal model tests. Since official unit tests via testthat would take too long for actual models to run every time, we use a mock backend to make sure that the models are correctly specified and that the bmm() function works as expected, except for the actual sampling part.
 
-Using this document, we can run the actual models and make sure they return the expected results even after changes to the code. The basic idea is that we have run and stored the model results at a point at which everything was working as expected. We can then compare the results of the models to the stored results. Passing a seed to the fit_model() function ensures that the results are reproducible. Differences might arise from changes in the underlying packages (brms, rstan, cmdstanr) or from changes to the model specifications. In which case we would have to make sure that the results are similar, even if not identical, and update the stored results.
+Using this document, we can run the actual models and make sure they return the expected results even after changes to the code. The basic idea is that we have run and stored the model results at a point at which everything was working as expected. We can then compare the results of the models to the stored results. Passing a seed to the bmm() function ensures that the results are reproducible. Differences might arise from changes in the underlying packages (brms, rstan, cmdstanr) or from changes to the model specifications. In which case we would have to make sure that the results are similar, even if not identical, and update the stored results.
 
 -   [] TODO: for now it's visual inspection. Maybe add explicit test with a threshold for estimation differences in a testthat test that is run manually only, or on a server.
 
@@ -88,22 +88,21 @@ fit <- list()
 <summary>Run the model</summary>
 
 ```{r sdm_fit}
-data <- ref_fits$sdm$data
+data <- ref_fits$sdmSimple$data
 
-formula <- bmf(c ~ 0 + SetSize,
-               kappa ~ 1)
+formula <- bmf(c ~ 0 + SetSize, kappa ~ 1)
 
 model <- sdm('dev_rad')
 
-fit$sdm <- fit_model(formula, data, model,
-                           parallel = TRUE,
-                           chains = 4,
-                           iter = 500,
-                           refresh = 500,
-                           init = 1,
-                           silent = 2,
-                           backend = 'cmdstanr',
-                           seed = seed)
+fit$sdmSimple <- bmm(formula, data, model,
+                     cores = 4,
+                     chains = 4,
+                     iter = 500,
+                     refresh = 500,
+                     init = 1,
+                     silent = 2,
+                     backend = 'cmdstanr',
+                     seed = seed)
 ```
 
 </details>
@@ -115,7 +114,7 @@ fit$sdm <- fit_model(formula, data, model,
 <summary>The results:</summary>
 
 ```{r sdm_results}
-summary(fit$sdm)
+summary(fit$sdmSimple)
 ```
 
 </details>
@@ -127,7 +126,7 @@ summary(fit$sdm)
 <summary>Compare with the reference fit:</summary>
 
 ```{r sdm_ref_results}
-summary(ref_fits$sdm)
+summary(ref_fits$sdmSimple)
 ```
 
 </details>
@@ -137,7 +136,7 @@ summary(ref_fits$sdm)
 Difference in estimates:
 
 ```{r sdm_diff}
-fixef(fit$sdm) - fixef(ref_fits$sdm)
+fixef(fit$sdmSimple) - fixef(ref_fits$sdmSimple)
 ```
 
 ## Test: mixture3p
@@ -157,15 +156,15 @@ model <- mixture3p(resp_error = 'dev_rad',
                    nt_features = paste0("Item", 2:4,"_Col_rad"),
                    set_size = "SetSize")
 
-fit$mixture3p <- fit_model(formula, data, model,
-                           parallel = TRUE,
-                           chains = 4,
-                           iter = 500,
-                           refresh = 500,
-                           init = 1,
-                           silent = 2,
-                           backend = 'cmdstanr',
-                           seed = seed)
+fit$mixture3p <- bmm(formula, data, model,
+                     cores = 4,
+                     chains = 4,
+                     iter = 500,
+                     refresh = 500,
+                     init = 1,
+                     silent = 2,
+                     backend = 'cmdstanr',
+                     seed = seed)
 ```
 
 </details>
@@ -201,7 +200,8 @@ Difference in estimates
 ```{r mixture3p_diff}
 withr::local_options(list(digits=3))
 fit_rows <- rownames(fixef(fit$mixture3p))
-round(fixef(fit$mixture3p) - fixef(ref_fits$mixture3p)[fit_rows,],3)
+fit_rows <- fit_rows[(fixef(fit$mixture3p)[,2]-0.000001) > 0]
+round(fixef(fit$mixture3p)[fit_rows,] - fixef(ref_fits$mixture3p)[fit_rows,],3)
 ```
 
 ## Test: mixture2p
@@ -218,15 +218,15 @@ formula <- bmf(thetat ~ 0 + SetSize,
 
 model <- mixture2p(resp_error = 'dev_rad')
 
-fit$mixture2p <- fit_model(formula, data, model,
-                           parallel = TRUE,
-                           chains = 4,
-                           iter = 2000,
-                           refresh = 500,
-                           init = 1,
-                           silent = 2,
-                           backend = 'cmdstanr',
-                           seed = seed)
+fit$mixture2p <- bmm(formula, data, model,
+                     cores = 4,
+                     chains = 4,
+                     iter = 2000,
+                     refresh = 500,
+                     init = 1,
+                     silent = 2,
+                     backend = 'cmdstanr',
+                     seed = seed)
 ```
 
 </details>
@@ -262,7 +262,8 @@ Difference in estimates
 ```{r}
 withr::local_options(list(digits=3))
 fit_rows <- rownames(fixef(fit$mixture2p))
-round(fixef(fit$mixture2p) - fixef(ref_fits$mixture2p)[fit_rows,],3)
+fit_rows <- fit_rows[(fixef(fit$mixture2p)[,2]-0.000001) > 0]
+round(fixef(fit$mixture2p)[fit_rows,] - fixef(ref_fits$mixture2p)[fit_rows,],3)
 ```
 
 ## Test: imm
@@ -271,8 +272,8 @@ round(fixef(fit$mixture2p) - fixef(ref_fits$mixture2p)[fit_rows,],3)
 
 <summary>Run the model</summary>
 
-```{r imm_fit}
-data <- ref_fits$imm$data
+```{r IMMfull_fit}
+data <- ref_fits$IMMfull$data
 
 formula <- bmf(a ~ 0 + SetSize,
                c ~ 0 + SetSize,
@@ -284,15 +285,15 @@ model <- imm(resp_error = 'dev_rad',
                  nt_distances = paste0("Item", 2:4,"_Pos_rad"),
                  set_size = "SetSize")
 
-fit$imm <- fit_model(formula, data, model,
-                           parallel = TRUE,
-                           chains = 4,
-                           iter = 500,
-                           refresh = 500,
-                           init = 1,
-                           silent = 2,
-                           backend = 'cmdstanr',
-                           seed = seed)
+fit$IMMfull <- bmm(formula, data, model,
+                   cores = 4,
+                   chains = 4,
+                   iter = 500,
+                   refresh = 500,
+                   init = 1,
+                   silent = 2,
+                   backend = 'cmdstanr',
+                   seed = seed)
 ```
 
 </details>
@@ -303,8 +304,8 @@ fit$imm <- fit_model(formula, data, model,
 
 <summary>Results</summary>
 
-```{r imm_results}
-summary(fit$imm)
+```{r IMMfull_results}
+summary(fit$IMMfull)
 ```
 
 </details>
@@ -315,8 +316,8 @@ summary(fit$imm)
 
 <summary>Compare with reference fit:</summary>
 
-```{r ref_fits_imm}
-ref_fits$imm
+```{r ref_fits_IMMfull}
+ref_fits$IMMfull
 ```
 
 </details>
@@ -325,10 +326,11 @@ ref_fits$imm
 
 Difference in estimates
 
-```{r imm_diff}
+```{r IMMfull_diff}
 withr::local_options(list(digits=3))
-fit_rows <- rownames(fixef(fit$imm))
-round(fixef(fit$imm) - fixef(ref_fits$imm)[fit_rows,],3)
+fit_rows <- rownames(fixef(fit$IMMfull))
+fit_rows <- fit_rows[(fixef(fit$IMMfull)[,2]-0.000001) > 0]
+round(fixef(fit$IMMfull)[fit_rows,] - fixef(ref_fits$IMMfull)[fit_rows,],3)
 ```
 
 ## Test: imm_bsc
@@ -338,26 +340,27 @@ round(fixef(fit$imm) - fixef(ref_fits$imm)[fit_rows,],3)
 <summary>Run the model</summary>
 
 ```{r imm_bsc_fit}
-data <- ref_fits$imm_bsc$data
+data <- ref_fits$IMMbsc$data
 
 formula <- bmf(c ~ 0 + SetSize,
                s ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
-model <- imm_bsc(resp_error = 'dev_rad',
-                nt_features = paste0("Item", 2:4,"_Col_rad"),
-                nt_distances = paste0("Item", 2:4,"_Pos_rad"),
-                set_size = "SetSize")
+model <- imm(resp_error = 'dev_rad',
+             nt_features = paste0("Item", 2:4,"_Col_rad"),
+             nt_distances = paste0("Item", 2:4,"_Pos_rad"),
+             set_size = "SetSize",
+             version = "bsc")
 
-fit$imm_bsc <- fit_model(formula, data, model,
-                        parallel = TRUE,
-                        chains = 4,
-                        iter = 500,
-                        refresh = 500,
-                        init = 1,
-                        silent = 2,
-                        backend = 'cmdstanr',
-                        seed = seed)
+fit$IMMbsc <- bmm(formula, data, model,
+                  cores = 4,
+                  chains = 4,
+                  iter = 500,
+                  refresh = 500,
+                  init = 1,
+                  silent = 2,
+                  backend = 'cmdstanr',
+                  seed = seed)
 ```
 
 </details>
@@ -369,7 +372,7 @@ fit$imm_bsc <- fit_model(formula, data, model,
 <summary>Results</summary>
 
 ```{r imm_bsc_results}
-summary(fit$imm_bsc)
+summary(fit$IMMbsc)
 ```
 
 </details>
@@ -381,7 +384,7 @@ summary(fit$imm_bsc)
 <summary>Compare with reference fit:</summary>
 
 ```{r ref_fits_imm_bsc}
-ref_fits$imm_bsc
+ref_fits$IMMbsc
 ```
 
 </details>
@@ -392,8 +395,9 @@ Difference in estimates
 
 ```{r imm_bsc_diff}
 withr::local_options(list(digits=3))
-fit_rows <- rownames(fixef(fit$imm_bsc))
-round(fixef(fit$imm_bsc) - fixef(ref_fits$imm_bsc)[fit_rows,],3)
+fit_rows <- rownames(fixef(fit$IMMbsc))
+fit_rows <- fit_rows[(fixef(fit$IMMbsc)[,2]-0.000001) > 0]
+round(fixef(fit$IMMbsc)[fit_rows,] - fixef(ref_fits$IMMbsc)[fit_rows,],3)
 ```
 
 ## Test: imm_abc
@@ -403,7 +407,7 @@ round(fixef(fit$imm_bsc) - fixef(ref_fits$imm_bsc)[fit_rows,],3)
 <summary>Run the model</summary>
 
 ```{r imm_abc_fit}
-data <- ref_fits$imm_abc$data
+data <- ref_fits$IMMabc$data
 
 formula <- bmf(a ~ 0 + SetSize,
                c ~ 0 + SetSize,
@@ -414,15 +418,15 @@ model <- imm(resp_error = 'dev_rad',
              set_size = "SetSize",
              version = "abc")
 
-fit$imm_abc <- fit_model(formula, data, model,
-                        parallel = TRUE,
-                        chains = 4,
-                        iter = 500,
-                        refresh = 500,
-                        init = 1,
-                        silent = 2,
-                        backend = 'cmdstanr',
-                        seed = seed)
+fit$IMMabc <- bmm(formula, data, model,
+                  cores = 4,
+                  chains = 4,
+                  iter = 500,
+                  refresh = 500,
+                  init = 1,
+                  silent = 2,
+                  backend = 'cmdstanr',
+                  seed = seed)
 ```
 
 </details>
@@ -434,7 +438,7 @@ fit$imm_abc <- fit_model(formula, data, model,
 <summary>Results</summary>
 
 ```{r imm_abc_results}
-summary(fit$imm_abc)
+summary(fit$IMMabc)
 ```
 
 </details>
@@ -446,7 +450,7 @@ summary(fit$imm_abc)
 <summary>Compare with reference fit:</summary>
 
 ```{r ref_fits_imm_abc}
-ref_fits$imm_abc
+ref_fits$IMMabc
 ```
 
 </details>
@@ -457,13 +461,14 @@ Difference in estimates
 
 ```{r imm_abc_diff}
 withr::local_options(list(digits=3))
-fit_rows <- rownames(fixef(fit$imm_abc))
-round(fixef(fit$imm_abc) - fixef(ref_fits$imm_abc)[fit_rows,],3)
+fit_rows <- rownames(fixef(fit$IMMabc))
+fit_rows <- fit_rows[(fixef(fit$IMMabc)[,2]-0.000001) > 0]
+round(fixef(fit$IMMabc)[fit_rows,] - fixef(ref_fits$IMMabc)[fit_rows,],3)
 ```
 
 
 save fit objects
 
 ```{r}
-saveRDS(fit, here::here("tests/internal/ref_fits0301/", paste0("fit_objects_", packageVersion('bmm'), "_seed-", seed, "_", date, ".rds")))
+saveRDS(fit, here::here("tests/internal/ref_fits0326/", paste0("fit_objects_", packageVersion('bmm'), "_seed-", seed, "_", date, ".rds")))
 ```
