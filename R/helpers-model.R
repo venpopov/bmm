@@ -475,8 +475,8 @@ use_model_template <- function(model_name,
                                   "<<model_name>> <- function(resp_var1, required_arg1, required_arg2, links = NULL, version = NULL, ...) {\n",
                                   "   call <- match.call()\n",
                                   "   stop_missing_args()\n",
-                                  "   .model_<<model_name>>(resp_var1 = resp_var1, required_arg1 = required_arg1, equired_arg2 = required_arg2,\n",
-                                  "                rlinks = links, version = version,call = call, ...)\n",
+                                  "   .model_<<model_name>>(resp_var1 = resp_var1, required_arg1 = required_arg1, required_arg2 = required_arg2,\n",
+                                  "                links = links, version = version,call = call, ...)\n",
                                   "}\n\n",
                                   .open = "<<", .close = ">>")
 
