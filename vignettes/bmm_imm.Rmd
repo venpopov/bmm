@@ -203,7 +203,9 @@ model <- imm(resp_error = "resp_error",
 ```
 
 
-By default the imm() function implements the full imm model. You can specify a reduced model by setting the version argument to "abc" or "bsc" (see `?imm`). Finally, we can fit the model by passing all the relevant arguments to the `bmm()` function:
+By default the imm() function implements the full imm model. You can specify a reduced model by setting the version argument to "abc" or "bsc" (see `?imm`). 
+
+Finally, we can fit the model by passing all the relevant arguments to the `bmm()` function:
 
 ``` r 
 fit <- bmm(

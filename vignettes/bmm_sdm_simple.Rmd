@@ -41,10 +41,16 @@ fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 
 # Introduction to the model
 
-The Signal Discrimination Model is a measurement model for continuous reproduction tasks in the visual working memory domain. The model was originally introduced by @Oberauer_2023. As other measurement models for continuous reproduction tasks, it's goal is to model the distribution of angular response errors.
+The Signal Discrimination Model is a measurement model for continuous
+reproduction tasks in the visual working memory domain. The model was originally
+introduced by @Oberauer_2023. As other measurement models for continuous
+reproduction tasks, it's goal is to model the distribution of angular response
+errors.
 
-The model assumes that when a test probe appears, all possible responses on the circle ($\theta$) are activated with a strength that depends on the distance between the 
-feature stored in memory ($\mu$) and the response options. Formally, this is given by the following activation function:
+The model assumes that when a test probe appears, all possible responses on the
+circle ($\theta$) are activated with a strength that depends on the distance
+between the feature stored in memory ($\mu$) and the response options. Formally,
+this is given by the following activation function:
 
 
 $$
@@ -52,30 +58,46 @@ S(\theta) = c \cdot \frac{\exp(\kappa \cdot \cos(y-\mu))}{2\pi I_0(\kappa)}
 $$
 
 
-where $c$ is the memory strength parameter, $\kappa$ is the precision parameter, and $I_0$ is the modified Bessel function of the first kind of order 0. Thus, the activation function follows a von Mises distribution, weigthed by a memory strength parameter.
+where $c$ is the memory strength parameter, $\kappa$ is the precision parameter,
+and $I_0$ is the modified Bessel function of the first kind of order 0. Thus,
+the activation function follows a von Mises distribution, weigthed by a memory
+strength parameter.
 
-The activation of response options is corrupted by noise, which is assumed to follow a Gumbel distribution. Then the response is the option with the highest activation value:
+The activation of response options is corrupted by noise, which is assumed to
+follow a Gumbel distribution. Then the response is the option with the highest
+activation value:
 
 $$
 Pr(\theta) = argmax(S(\theta) + \epsilon) \\ \epsilon \sim Gumbel(0,1)
 $$
-This is equivalent to the following softmax function (also known as the exponentiated Luce's choice rule):
+This is equivalent to the following softmax function (also known as the
+exponentiated Luce's choice rule):
 
 $$
 Pr(\theta) = \frac{\exp(S(\theta)}{\sum_{i=1}^{n} \exp(S(\theta_i))}
 $$
-where n is the number of response options, most often 360 in typical visual working memory experiments.
 
-In summary, the model assumes that response errors come from the following distribution, where $\mu = 0$:
+where n is the number of response options, most often 360 in typical visual
+working memory experiments.
+
+In summary, the model assumes that response errors come from the following
+distribution, where $\mu = 0$:
 
 $$
 \Large{f(\theta\ |\ \mu,c,\kappa) = \frac{e^ {c \ \frac{e^{k\ cos(\theta-\mu)}}{2\pi I_o(k)}}}{Z}}
 $$
+
 and Z is the normalizing constant to ensure that the probability mass sums to 1.
 
 # Parametrization in the `bmm` package
 
-In the `bmm` package we use a different parametrization. The parametrization is chosen for numerical stability and efficiency. Three features of the parametrization above make it difficult to work with in practice. First, the modified bessel function $I_0$ increases rapidly, often leading to numerical overflow. Second, the bessel function is expensive to compute, and estimating this model with MCMC methods can be slow. Third, the normalizing constant in the denominator requires summing 360 terms, which is also slow.
+In the `bmm` package we use a different parametrization. The parametrization is
+chosen for numerical stability and efficiency. Three features of the
+parametrization above make it difficult to work with in practice. First, the
+modified bessel function $I_0$ increases rapidly, often leading to numerical
+overflow. Second, the bessel function is expensive to compute, and estimating
+this model with MCMC methods can be slow. Third, the normalizing constant in the
+denominator requires summing 360 terms, which is also slow.
 
 To address these issues, we use the following parametrization of the SDM distribution:
 
@@ -85,27 +107,40 @@ e^{c \ \sqrt{\frac{k}{2\pi}} e^{k \ (cos(\theta-\mu)-1)}}
 }{Z}}
 $$
 
-This parametrization is derived from the known approximation of the modified bessel function for large $k$ (@abramowitz1988handbook):
+This parametrization is derived from the known approximation of the modified
+bessel function for large $k$ (@abramowitz1988handbook):
 
 $$
 I_0(\kappa) \sim ~ \frac{e^{\kappa}}{\sqrt{2\pi \kappa}}, \ \ \ \ \kappa \rightarrow \infty
 $$
 
-If needed, the $c$ parameter of the original formulation by Oberauer (2023) can be computed by:
+If needed, the $c$ parameter of the original formulation by Oberauer (2023) can
+be computed by:
 
 $$
 c_{oberauer} = c_{bmm} \ e^{-\kappa} I_0(\kappa)\sqrt{2 \pi \kappa}
 $$
 
-This parametrization does not change the predicted shape of the distribution, but it produces slightly different values of $c$ for small values of $kappa$. The parametrization is the default in the `bmm` package.
+This parametrization does not change the predicted shape of the distribution,
+but it produces slightly different values of $c$ for small values of $kappa$.
+The parametrization is the default in the `bmm` package.
 
-A second optimization concerns the calculation of the normalizing constant $Z$. The original model assumed that responses can only be one of 360 discrete values, resulting in a probability mass function. In `bmm` we treat the response variable as continuous, which makes $f(\theta)$ a probability density function. This means that we can calculate the normalizing constant $Z$ by integrating $f(\theta)$ over the entire circle:
+A second optimization concerns the calculation of the normalizing constant $Z$.
+The original model assumed that responses can only be one of 360 discrete
+values, resulting in a probability mass function. In `bmm` we treat the response
+variable as continuous, which makes $f(\theta)$ a probability density function.
+This means that we can calculate the normalizing constant $Z$ by integrating
+$f(\theta)$ over the entire circle:
 
 $$
 Z = \int_{-\pi}^{\pi} f(\theta) d\theta
 $$
 
-This integral cannot be expressed in closed form, but it can be approximated using numerical integration methods. The results between the discrete and continuous formulations are nearly identical, for large number of response options (as in typical applications), but not when the number of response options is small, for example in 4-AFC tasks.
+This integral cannot be expressed in closed form, but it can be approximated
+using numerical integration methods. The results between the discrete and
+continuous formulations are nearly identical, for large number of response
+options (as in typical applications), but not when the number of response
+options is small, for example in 4-AFC tasks.
 
 # Fitting the model with `bmm`
 
@@ -117,7 +152,13 @@ library(bmm)
 
 ## Generating simulated data
 
-If you already have data you want to fit, you can skip this section. For the current illustration, we will generate some simulated data from equation \@ref(eq:dsdm-bmm) with known parameters. `bmm` provides density functions in typical R style, with the prefix `d` for density (`dsdm`), `p` for the cumulative distribution function (`psdm`), `q` for the quantile function (`qsdm`), and (`rsdm`) for generating random deviates. Here's how to simulate data from the SDM distribution for three conditions:
+If you already have data you want to fit, you can skip this section. For the
+current illustration, we will generate some simulated data with known
+parameters. `bmm` provides density functions in typical R style, with the prefix
+`d` for density (`dsdm`), `p` for the cumulative distribution function (`psdm`),
+`q` for the quantile function (`qsdm`), and (`rsdm`) for generating random
+deviates. Here's how to simulate data from the SDM distribution for three
+conditions:
 
 
 ```{r}
@@ -132,11 +173,11 @@ kappas <- c(3, 1, 8)
 y <- c(rsdm(n = 1000, mu=0, c = cs[1], kappa = kappas[1], parametrization = "sqrtexp"),
        rsdm(n = 1000, mu=0, c = cs[2], kappa = kappas[2], parametrization = "sqrtexp"),
        rsdm(n = 1000, mu=0, c = cs[3], kappa = kappas[3], parametrization = "sqrtexp"))
-dat <- data.frame(y = y,
-                  cond = factor(rep(c('A','B','C'), each=1000)))
+dat <- data.frame(y = y, cond = factor(rep(c('A','B','C'), each=1000)))
 ```
 
-This gives us the following distribution of response errors, with lines overlaying the predicted density generated with `dsdm`:
+This gives us the following distribution of response errors, with lines
+overlaying the predicted density generated with `dsdm`:
 
 ```{r warning=FALSE, message=FALSE, fig.width=8, fig.height=3}
 # generate predicted SDM density:
@@ -144,7 +185,7 @@ dd <- data.frame(y = rep(seq(-pi, pi, length.out=1000),3),
                  cond = factor(rep(c('A','B','C'), each=1000)),
                  c = rep(cs, each=1000),
                  kappa = rep(kappas, each=1000))
-dd$d <- dsdm(dd$y, mu=0, c=dd$c, kappa=dd$kappa, parametrization = "sqrtexp")
+dd$d <- dsdm(dd$y, mu = 0, c = dd$c, kappa = dd$kappa, parametrization = "sqrtexp")
 
 # prepare labels for plots
 par_labels <- data.frame(cond = c('A','B','C'),
@@ -155,7 +196,7 @@ par_labels$label <- paste0('c = ', par_labels$c, '\nkappa = ', par_labels$kappa)
 # plot the data and the predicted density
 library(ggplot2)
 ggplot(dat, aes(x=y, fill=cond)) +
-  geom_histogram(aes(y=..density..), binwidth = 0.1, position = "identity", alpha=0.5) +
+  geom_histogram(aes(y=..density..), binwidth = 0.1, position = "identity", alpha = 0.5) +
   theme_classic() +
   facet_wrap(~cond) +
   geom_line(data=dd, fun=dsdm, aes(y, d)) +
@@ -163,27 +204,33 @@ ggplot(dat, aes(x=y, fill=cond)) +
   labs(title = "Simulated data from the SDM distribution",
        x = "Response error (radians)",
        y = "Density") +
-  geom_text(data=par_labels, aes(x=-pi, y=0.5, label=label), hjust=0, vjust=0, size=3)
+  geom_text(data=par_labels, aes(x = -pi, y = 0.5, label = label), 
+            hjust = 0, vjust = 0, size = 3)
 ```
 
 ## Estimating the model with `bmm`
 
-To estimate the parameters of the SDM distribution, we can use the `bmm()` function. First, let's specify the model formula. We want `c` and `kappa` to vary over conditions. The first two lines of the formula specify how the parameters vary over conditions. In this case, we want them to vary over the `cond` variable, so we use `c ~ 0 + cond` and `kappa ~ 0 + cond`:
+To estimate the parameters of the SDM distribution, we can use the `bmm()`
+function. First, let's specify the model formula. We want `c` and `kappa` to
+vary over conditions. The first two lines of the formula specify how the
+parameters vary over conditions. In this case, we want them to vary over the
+`cond` variable, so we use `c ~ 0 + cond` and `kappa ~ 0 + cond`:
 
 ```{r}
-ff <- bmf(
-  c ~ 0 + cond,
-  kappa ~ 0 + cond
-)
+ff <- bmf(c ~ 0 + cond, kappa ~ 0 + cond)
 ```
 
-Then we specify the model, which in this case is just `sdm()`, and we provide the name of the response error variable in the dataset:
+Then we specify the model, which in this case is just `sdmSimple()`, and we
+provide the name of the response error variable in the dataset:
 
 ```{r}
 model <- sdm(resp_error = "y")
 ```
 
-Finally, we can fit the model. We strongly recommend using `cmdstanr` as a backend for fitting the SDM model, as it is much faster and more stable than the default `rstan` backend for this particular model. Here's how to fit the model with `cmdstanr`:
+Finally, we can fit the model. We strongly recommend using `cmdstanr` as a
+backend for fitting the SDM model, as it is much faster and more stable than the
+default `rstan` backend for this particular model. Here's how to fit the model
+with `cmdstanr`:
 
 
 ``` r
@@ -209,7 +256,11 @@ We can now inspect the results of the model fit:
 summary(fit)
 ```
 
-We see that all Rhat values are less than 1.01, which is a good sign that the chains have converged. In principle you have to do more inspection, but let us see the estimated parameters. The model uses a log-link function for the `c` and `kappa` parameters, so we have to exponentiate the coefficients to get the estimated parameters:
+We see that all Rhat values are less than 1.01, which is a good sign that the
+chains have converged. In principle you have to do more inspection, but let us
+see the estimated parameters. The model uses a log-link function for the `c` and
+`kappa` parameters, so we have to exponentiate the coefficients to get the
+estimated parameters:
 
 ```{r}
 exp(brms::fixef(fit)[2:7,1])
@@ -221,7 +272,9 @@ which are close to the true values we used to simulate the data:
 par_labels[,1:3]
 ```
 
-We can see that even though the estimated parameters are close, they are not exactly the same as the true parameters. To get a better picture, we can plot the estimated posterior distributions of the parameters:
+We can see that even though the estimated parameters are close, they are not
+exactly the same as the true parameters. To get a better picture, we can plot
+the estimated posterior distributions of the parameters:
 
 ```{r, message=FALSE, warning=FALSE, fig.width=5}
 library(tidybayes)
@@ -238,51 +291,65 @@ as.data.frame(draws) %>%
   mutate(value = exp(value)) %>% 
   ggplot(aes(value, par)) +
   tidybayes::stat_halfeyeh(normalize = "groups") +
-  geom_point(data = data.frame(par = c('b_c_condA','b_c_condB','b_c_condC',
-                                       'b_kappa_condA','b_kappa_condB','b_kappa_condC'),
+  geom_point(data = data.frame(par = c('b_c_condA', 'b_c_condB', 'b_c_condC',
+                                       'b_kappa_condA', 'b_kappa_condB', 'b_kappa_condC'),
                                value = c(cs, kappas)),
-             aes(value,par), color = "red",
+             aes(value, par), color = "red",
              shape = "diamond", size = 2.5) +
-  scale_x_continuous(lim=c(0,20))
+  scale_x_continuous(lim = c(0, 20))
 ```
 
-The true parameters all lie within the 50% credible intervals, which is a good sign that the model is able to recover the true parameters from the data. 
+The true parameters all lie within the 50% credible intervals, which is a good
+sign that the model is able to recover the true parameters from the data.
 
-As a final step, we can plot our data again, adding another line overlay with the density predicted by the estimated parameters:
+As a final step, we can plot our data again, adding another line overlay with
+the density predicted by the estimated parameters:
 
 ```{r warning=FALSE, message=FALSE, fig.width=8, fig.height=4}
 # generate predicted SDM density:
-ddest <- data.frame(y = rep(seq(-pi, pi, length.out=1000),3),
-                    cond = factor(rep(c('A','B','C'), each=1000)),
-                    c = rep(exp(brms::fixef(fit)[2:4,1]), each=1000),
-                    kappa = rep(exp(brms::fixef(fit)[5:7,1]), each=1000))
+ddest <- data.frame(
+  y = rep(seq(-pi, pi, length.out = 1000), 3),
+  cond = factor(rep(c("A", "B", "C"), each = 1000)),
+  c = rep(exp(brms::fixef(fit)[2:4, 1]), each = 1000),
+  kappa = rep(exp(brms::fixef(fit)[5:7, 1]), each = 1000)
+)
 
 # prepare labels for plots
-par_labels <- data.frame(cond = c('A','B','C'),
-                         c_est = exp(brms::fixef(fit)[2:4,1]),
-                         kappa_est = exp(brms::fixef(fit)[5:7,1]),
-                         c = c(2, 9, 2),
-                         kappa = c(3, 1, 8))
-par_labels$label <- paste0('c = ', par_labels$c, ' (estimate = ', round(par_labels$c_est,2), ')\n',
-                           'kappa = ', par_labels$kappa, ' (estimate = ', round(par_labels$kappa_est,2), ')')
+par_labels <- data.frame(
+  cond = c("A", "B", "C"),
+  c_est = exp(brms::fixef(fit)[2:4, 1]),
+  kappa_est = exp(brms::fixef(fit)[5:7, 1]),
+  c = c(2, 9, 2),
+  kappa = c(3, 1, 8)
+)
+par_labels$label <- paste0(
+  "c = ", par_labels$c, " (estimate = ", round(par_labels$c_est, 2), ")\n",
+  "kappa = ", par_labels$kappa, " (estimate = ", round(par_labels$kappa_est, 2), ")"
+)
 
-ddest$d <- dsdm(ddest$y, mu=0, c=ddest$c, kappa=ddest$kappa, parametrization = "sqrtexp")
+ddest$d <- dsdm(ddest$y, mu = 0, c = ddest$c, kappa = ddest$kappa, parametrization = "sqrtexp")
 
 # plot the data and the predicted density
-ggplot(dat, aes(x=y, fill=cond)) +
-  geom_histogram(aes(y=..density..), binwidth = 0.1, position = "identity", alpha=0.5) +
+ggplot(dat, aes(x = y, fill = cond)) +
+  geom_histogram(aes(y = ..density..), binwidth = 0.1, position = "identity", alpha = 0.5) +
   theme_classic() +
   facet_wrap(~cond) +
-  geom_line(data=dd, fun=dsdm, aes(y, d), color='black') +
-  geom_line(data=ddest, fun=dsdm, aes(y, d), color='red') +
+  geom_line(data = dd, fun = dsdm, aes(y, d), color = "black") +
+  geom_line(data = ddest, fun = dsdm, aes(y, d), color = "red") +
   scale_x_continuous(limits = c(-pi, pi)) +
-  labs(title = "Simulated data from the SDM distribution",
-       x = "Response error (radians)",
-       y = "Density") +
-  geom_text(data=par_labels, aes(x=-pi, y=0.9, label=label), hjust=0, vjust=0, size=3) +
-  scale_y_continuous(limits = c(0,1))
+  labs(
+    title = "Simulated data from the SDM distribution",
+    x = "Response error (radians)",
+    y = "Density"
+  ) +
+  geom_text(data = par_labels, aes(x = -pi, y = 0.9, label = label), 
+            hjust = 0, vjust = 0, size = 3) +
+  scale_y_continuous(limits = c(0, 1))
 ```
 
-The histograms represent the data, the black lines represent the predicted density from the true parameters, and the red lines represent the predicted density from the estimated parameters. We can see that the estimated parameters are able to capture the main features of the data.
+The histograms represent the data, the black lines represent the predicted
+density from the true parameters, and the red lines represent the predicted
+density from the estimated parameters. We can see that the estimated parameters
+are able to capture the main features of the data.
 
 # References

@@ -102,7 +102,7 @@ prepare a list to hold data the fits
 fit <- list()
 ```
 
-## Test: sdm
+## Test: sdmSimple
 
 *Note: In the future if the API doesn’t change, we can just use
 arguments from the reference fit. For now it doesn’t work since the
@@ -114,14 +114,14 @@ Run the model
 </summary>
 
 ``` r
-data <- ref_fits$sdm$data
+data <- ref_fits$sdmSimple$data
 
 formula <- bmf(c ~ 0 + SetSize,
                kappa ~ 1)
 
-model <- sdm('dev_rad')
+model <- sdmSimple('dev_rad')
 
-fit$sdm <- fit_model(formula, data, model,
+fit$sdmSimple <- fit_model(formula, data, model,
                            parallel = TRUE,
                            chains = 4,
                            iter = 2000,
@@ -140,7 +140,7 @@ The results:
 </summary>
 
 ``` r
-summary(fit$sdm)
+summary(fit$sdmSimple)
 ```
 
     ##  Family: sdm_simple 
@@ -176,7 +176,7 @@ Compare with the reference fit:
 </summary>
 
 ``` r
-summary(ref_fits$sdm)
+summary(ref_fits$sdmSimple)
 ```
 
     ##  Family: sdm_simple 
@@ -208,7 +208,7 @@ summary(ref_fits$sdm)
 Difference in estimates:
 
 ``` r
-fixef(fit$sdm) - fixef(ref_fits$sdm)
+fixef(fit$sdmSimple) - fixef(ref_fits$sdmSimple)
 ```
 
     ##                      Estimate     Est.Error        Q2.5       Q97.5
@@ -536,7 +536,7 @@ round(fixef(fit$mixture2p) - fixef(ref_fits$mixture2p)[fit_rows,],3)
     ## thetat_SetSize3    -0.005    -0.005  0.008 -0.012
     ## thetat_SetSize4     0.002     0.000  0.004  0.005
 
-## Test: imm_full
+## Test: IMMfull
 
 <details>
 <summary>
@@ -544,19 +544,19 @@ Run the model
 </summary>
 
 ``` r
-data <- ref_fits$imm_full$data
+data <- ref_fits$IMMfull$data
 
 formula <- bmf(a ~ 0 + SetSize,
                c ~ 0 + SetSize,
                s ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
-model <- imm_full(resp_error = 'dev_rad',
+model <- IMMfull(resp_error = 'dev_rad',
                  nt_features = paste0("Item", 2:4,"_Col_rad"),
                  nt_distances = paste0("Item", 2:4,"_Pos_rad"),
                  set_size = "SetSize")
 
-fit$imm_full <- fit_model(formula, data, model,
+fit$IMMfull <- fit_model(formula, data, model,
                            parallel = TRUE,
                            chains = 4,
                            iter = 1000,
@@ -577,7 +577,7 @@ Results
 </summary>
 
 ``` r
-summary(fit$imm_full)
+summary(fit$IMMfull)
 ```
 
     ##  Family: mixture(von_mises, von_mises, von_mises, von_mises, von_mises) 
@@ -642,7 +642,7 @@ Compare with reference fit:
 </summary>
 
 ``` r
-ref_fits$imm_full
+ref_fits$IMMfull
 ```
 
     ##  Family: mixture(von_mises, von_mises, von_mises, von_mises, von_mises) 
@@ -705,8 +705,8 @@ Difference in estimates
 
 ``` r
 withr::local_options(list(digits=3))
-fit_rows <- rownames(fixef(fit$imm_full))
-round(fixef(fit$imm_full) - fixef(ref_fits$imm_full)[fit_rows,],3)
+fit_rows <- rownames(fixef(fit$IMMfull))
+round(fixef(fit$IMMfull) - fixef(ref_fits$IMMfull)[fit_rows,],3)
 ```
 
     ##                  Estimate Est.Error   Q2.5  Q97.5
@@ -730,7 +730,7 @@ round(fixef(fit$imm_full) - fixef(ref_fits$imm_full)[fit_rows,],3)
     ## s_SetSize3          0.013     0.024  0.015  0.105
     ## s_SetSize4          0.001    -0.005 -0.024 -0.080
 
-## Test: imm_bsc
+## Test: IMMbsc
 
 <details>
 <summary>
@@ -738,18 +738,18 @@ Run the model
 </summary>
 
 ``` r
-data <- ref_fits$imm_bsc$data
+data <- ref_fits$IMMbsc$data
 
 formula <- bmf(c ~ 0 + SetSize,
                s ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
-model <- imm_bsc(resp_error = 'dev_rad',
+model <- IMMbsc(resp_error = 'dev_rad',
                 nt_features = paste0("Item", 2:4,"_Col_rad"),
                 nt_distances = paste0("Item", 2:4,"_Pos_rad"),
                 set_size = "SetSize")
 
-fit$imm_bsc <- fit_model(formula, data, model,
+fit$IMMbsc <- fit_model(formula, data, model,
                         parallel = TRUE,
                         chains = 4,
                         iter = 1000,
@@ -770,7 +770,7 @@ Results
 </summary>
 
 ``` r
-summary(fit$imm_bsc)
+summary(fit$IMMbsc)
 ```
 
     ##  Family: mixture(von_mises, von_mises, von_mises, von_mises, von_mises) 
@@ -830,7 +830,7 @@ Compare with reference fit:
 </summary>
 
 ``` r
-ref_fits$imm_bsc
+ref_fits$IMMbsc
 ```
 
     ##  Family: mixture(von_mises, von_mises, von_mises, von_mises, von_mises) 
@@ -888,8 +888,8 @@ Difference in estimates
 
 ``` r
 withr::local_options(list(digits=3))
-fit_rows <- rownames(fixef(fit$imm_bsc))
-round(fixef(fit$imm_bsc) - fixef(ref_fits$imm_bsc)[fit_rows,],3)
+fit_rows <- rownames(fixef(fit$IMMbsc))
+round(fixef(fit$IMMbsc) - fixef(ref_fits$IMMbsc)[fit_rows,],3)
 ```
 
     ##                  Estimate Est.Error   Q2.5  Q97.5
@@ -909,7 +909,7 @@ round(fixef(fit$imm_bsc) - fixef(ref_fits$imm_bsc)[fit_rows,],3)
     ## s_SetSize3         -0.009    -0.020  0.014 -0.048
     ## s_SetSize4          0.003    -0.016 -0.009 -0.024
 
-## Test: imm_abc
+## Test: IMMabc
 
 <details>
 <summary>
@@ -917,17 +917,17 @@ Run the model
 </summary>
 
 ``` r
-data <- ref_fits$imm_abc$data
+data <- ref_fits$IMMabc$data
 
 formula <- bmf(a ~ 0 + SetSize,
                c ~ 0 + SetSize,
                kappa ~ 0 + SetSize)
 
-model <- imm_abc(resp_error = 'dev_rad',
+model <- IMMabc(resp_error = 'dev_rad',
                 nt_features = paste0("Item", 2:4,"_Col_rad"),
                 set_size = "SetSize")
 
-fit$imm_abc <- fit_model(formula, data, model,
+fit$IMMabc <- fit_model(formula, data, model,
                         parallel = TRUE,
                         chains = 4,
                         iter = 1000,
@@ -948,7 +948,7 @@ Results
 </summary>
 
 ``` r
-summary(fit$imm_abc)
+summary(fit$IMMabc)
 ```
 
     ##  Family: mixture(von_mises, von_mises, von_mises, von_mises, von_mises) 
@@ -1007,7 +1007,7 @@ Compare with reference fit:
 </summary>
 
 ``` r
-ref_fits$imm_abc
+ref_fits$IMMabc
 ```
 
     ##  Family: mixture(von_mises, von_mises, von_mises, von_mises, von_mises) 
@@ -1064,8 +1064,8 @@ Difference in estimates
 
 ``` r
 withr::local_options(list(digits=3))
-fit_rows <- rownames(fixef(fit$imm_abc))
-round(fixef(fit$imm_abc) - fixef(ref_fits$imm_abc)[fit_rows,],3)
+fit_rows <- rownames(fixef(fit$IMMabc))
+round(fixef(fit$IMMabc) - fixef(ref_fits$IMMabc)[fit_rows,],3)
 ```
 
     ##                  Estimate Est.Error   Q2.5  Q97.5

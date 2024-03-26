@@ -41,10 +41,19 @@ fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 
 # Default priors for models in the `bmm` package
 
-Each model in `bmm` comes with default priors on all of its parameters. Unlike in the `brms` package, the default priors in `bmm` are informative, based on current expert knowledge in the domain of the model. These default priors help with model
-identifiability and improve estimation. However, because the priors are informed, it is even more important for you to understand what priors are used when you estimate a model, or when you report the results of a model fit.
+Each model in `bmm` comes with default priors on all of its parameters. Unlike
+in the `brms` package, the default priors in `bmm` are informative, based on
+current expert knowledge in the domain of the model. These default priors help
+with model identifiability and improve estimation. However, because the priors
+are informed, it is even more important for you to understand what priors are
+used when you estimate a model, or when you report the results of a model fit.
 
-You can use the function `default_prior()` from the `brms` package to extract the default priors for a model. The arguments to `default_prior` are the same as for the `bmm()` function in `bmm`. For example, if you want to extract the default priors for the SDM model (`vignette("sdm-simple")`), where you have a set_size categorical predictor of `c` and `kappa`, you can use the following code:
+You can use the function `default_prior()` from the `brms` package to extract
+the default priors for a model. The arguments to `default_prior` are the same as
+for the `bmm()` function in `bmm`. For example, if you want to extract the
+default priors for the SDM model (`vignette("bmm_sdm_simple")`), where you have
+a set_size categorical predictor of `c` and `kappa`, you can use the following
+code:
 
 
 ```{r message=FALSE, warning=FALSE}
@@ -55,25 +64,40 @@ default_prior(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size),
               model = sdm(resp_error = 'dev_rad'))
 ```
 
-In this case we used a formula of the type `~ 0 + factor`, which means that the intercept is suppressed, and a separate parameter is estimated for each level of the set_size factor variable. For the SDM model, both `kappa` and `c` have to be positive, so they are defined in the model on the log scale, and exponentiated afterwards. Thus, the parameters are sampled on the log scale, and the priors are defined on the log scale as well. The default prior for `c` is a student-t distribution with 5 degrees of freedom, a mean of 2, and a standard deviation of 0.75. This corresponds to the following prior distribution over the log scale, with 80% of the prior mass between 0.9 and 3.10:
+In this case we used a formula of the type `~ 0 + factor`, which means that the
+intercept is suppressed, and a separate parameter is estimated for each level of
+the set_size factor variable. For the SDM model, both `kappa` and `c` have to be
+positive, so they are defined in the model on the log scale, and exponentiated
+afterwards. Thus, the parameters are sampled on the log scale, and the priors
+are defined on the log scale as well. The default prior for `c` is a student-t
+distribution with 5 degrees of freedom, a mean of 2, and a standard deviation of
+0.75. This corresponds to the following prior distribution over the log scale,
+with 80% of the prior mass between 0.9 and 3.10:
 
 ```{r fig.width=4.5, fig.height=4}
 log_c <- seq(-2,6, 0.01)
 y <- brms::dstudent_t(log_c, df = 5, mu = 2, sigma = 0.75)
-plot(log_c, y, type = 'l', xlab = 'log(c)', ylab = 'Density', main = 'Prior distribution for log(c)')
+plot(log_c, y, type = 'l', xlab = 'log(c)', ylab = 'Density', 
+     main = 'Prior distribution for log(c)')
 ```
 
-This corresponds to the following log-T prior over the native scale of `c`, with a median of ~7.4, and 80% of the prior mass between 2.44 and 22.35:
+This corresponds to the following log-T prior over the native scale of `c`, with
+a median of ~7.4, and 80% of the prior mass between 2.44 and 22.35:
 
 ```{r fig.width=4.5, fig.height=4}
 c <- seq(0, 50, 0.01)
 y <- brms::dstudent_t(log(c), df = 5, mu = 2, sigma = 0.75) / c
-plot(c, y, type = 'l', xlab = 'c', ylab = 'Density', main = 'Prior distribution for c')
+plot(c, y, type = 'l', xlab = 'c', ylab = 'Density', 
+     main = 'Prior distribution for c')
 ```
 
-The default prior for `kappa` is similar, with a lower mean, a student-t distribution with 5 degrees of freedom, a mean of 1.75, and a standard deviation of 0.75, which corresponds to a median of 3.5 on the native scale.
+The default prior for `kappa` is similar, with a lower mean, a student-t
+distribution with 5 degrees of freedom, a mean of 1.75, and a standard deviation
+of 0.75, which corresponds to a median of 3.5 on the native scale.
 
-If we had retained the intercept in the formula, the default prior above would be placed on the intercept, while the effects of each factor level relative to the intercept would have a default prior of normal(0, 1):
+If we had retained the intercept in the formula, the default prior above would
+be placed on the intercept, while the effects of each factor level relative to
+the intercept would have a default prior of normal(0, 1):
 
 ```{r message=FALSE, warning=FALSE}
 default_prior(bmf(c ~ 1 + set_size, kappa ~ 1 + set_size), 
@@ -81,7 +105,12 @@ default_prior(bmf(c ~ 1 + set_size, kappa ~ 1 + set_size),
               model = sdm(resp_error = 'dev_rad'))
 ```
 
-You can also see that in both cases, the last line is "constant(0)" on the Intercept of the `mu` parameter, which is fixed to 0 by default in the model, and is not estimated. You might wonder why it doesn't say `mu` in the `dpar` column of that prior - this is because `brms` assumes `mu` is the default parameter in all models, so it hides it in the output. If you wanted to estimate `mu`, instead of leaving it fixed, the prior for it would change as well:
+You can also see that in both cases, the last line is "constant(0)" on the
+Intercept of the `mu` parameter, which is fixed to 0 by default in the model,
+and is not estimated. You might wonder why it doesn't say `mu` in the `dpar`
+column of that prior - this is because `brms` assumes `mu` is the default
+parameter in all models, so it hides it in the output. If you wanted to estimate
+`mu`, instead of leaving it fixed, the prior for it would change as well:
 
 ```{r message=FALSE, warning=FALSE}
 default_prior(bmf(mu ~ 1 + set_size, c ~ 1, kappa ~ 1),
@@ -89,15 +118,29 @@ default_prior(bmf(mu ~ 1 + set_size, c ~ 1, kappa ~ 1),
               model = sdm(resp_error = 'dev_rad'))
 ```
 
-The `mu` parameter uses a `tan_half` link function, which means that the `student_t(1, 0, 1)` prior results in a uniform prior over the native scale of `mu` from -pi to pi. You will also notice above that for the regression coefficients on `mu`, the default prior is an improper flat prior - this is the only parameter in `bmm` models which has a flat prior by default, and we strongly recommend you set a prior on it, if you want to calculate Bayes Factors or use other Bayesian inference methods.
+The `mu` parameter uses a `tan_half` link function, which means that the
+`student_t(1, 0, 1)` prior results in a uniform prior over the native scale of
+`mu` from -pi to pi. You will also notice above that for the regression
+coefficients on `mu`, the default prior is an improper flat prior - this is the
+only parameter in `bmm` models which has a flat prior by default, and we
+strongly recommend you set a prior on it, if you want to calculate Bayes Factors
+or use other Bayesian inference methods.
 
-All of the above examples make an important point - priors are always specified on the scale at which the parameters are sampled. You can always check the documentation for a given model to see the links for the parameters (e.g. `?sdm`). 
+All of the above examples make an important point - priors are always specified
+on the scale at which the parameters are sampled. You can always check the
+documentation for a given model to see the links for the parameters (e.g.
+`?sdm`).
 
-To overwrite the default priors and set your own, you can use the `set_prior` function from `brms`. For more information, see `?brms::set_prior`.
+To overwrite the default priors and set your own, you can use the `set_prior`
+function from `brms`. For more information, see `?brms::set_prior`.
 
 # Extracting the Stan code
 
-The Stan code used for fitting a model is generated together by `bmm` and `brms`. `bmm` takes care of the code specific to the model, while `brms` generates the code for the regression syntax, priors and everything else. If you want to get the Stan code that would be used for fitting a model, so that you can inspect it or modify it, you can use the `stancode()` function from `brms`:
+The Stan code used for fitting a model is generated together by `bmm` and
+`brms`. `bmm` takes care of the code specific to the model, while `brms`
+generates the code for the regression syntax, priors and everything else. If you
+want to get the Stan code that would be used for fitting a model, so that you
+can inspect it or modify it, you can use the `stancode()` function from `brms`:
 
 ```{r comment = "", collapse=FALSE}
 stancode(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
@@ -106,7 +149,8 @@ stancode(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size),
 ```
 
 
-Alternatively, if you already have a fitted model object, you can just call `stancode()` on that object, which will give you the same result:
+Alternatively, if you already have a fitted model object, you can just call
+`stancode()` on that object, which will give you the same result:
 
 ```r
 fit <- bmm(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
@@ -117,12 +161,13 @@ stancode(fit)
 
 # Extracting the Stan data
 
-If you want to extract the data that would be used for fitting a model, you can use the `standata()` function from `brms`. This function will return a list with the data that would be passed to Stan for fitting the model. 
+If you want to extract the data that would be used for fitting a model, you can
+use the `standata()` function from `brms`. This function will return a list with
+the data that would be passed to Stan for fitting the model.
 
-```{r}
+```{r, message=F, warning=F}
 sd <- standata(bmf(c ~ 0 + set_size, kappa ~ 0 + set_size), 
                data = oberauer_lin_2017,
-               model = sdm(resp_error = 'dev_rad'),
-               sort_data = TRUE)
+               model = sdm(resp_error = 'dev_rad'))
 str(sd)
 ```
