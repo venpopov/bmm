@@ -3,7 +3,7 @@
 #############################################################################!
 
 .model_mixture3p <- function(resp_error = NULL, nt_features = NULL, set_size = NULL,
-                             regex = FALSE, links = NULL, ...) {
+                             regex = FALSE, links = NULL, call = NULL, ...) {
 
   out <- structure(
     list(
@@ -51,7 +51,8 @@
     # attributes
     regex = regex,
     regex_vars = c('nt_features'),
-    class =  c("bmmodel", "vwm", "non_targets", "mixture3p")
+    class =  c("bmmodel", "vwm", "non_targets", "mixture3p"),
+    call = call
   )
   out$links[names(links)] <- links
   out
@@ -123,6 +124,7 @@
 #' }
 mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE,
                       links = NULL, ...) {
+  call <- match.call()
   dots <- list(...)
   if ("setsize" %in% names(dots)) {
     set_size <- dots$setsize
@@ -130,7 +132,8 @@ mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE,
   }
   stop_missing_args()
   .model_mixture3p(resp_error = resp_error, nt_features = nt_features,
-                   set_size = set_size, regex = regex, links = links, ...)
+                   set_size = set_size, regex = regex, links = links,
+                   call = call, ...)
 }
 
 #############################################################################!

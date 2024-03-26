@@ -180,9 +180,6 @@ summarise_model <- function(model, ...) {
 # TODO: build this up
 #' @export
 summarise_model.bmmodel <- function(model, ...) {
-  if (!is.null(attr(model, 'call'))) {
-    return(deparse(attr(model, 'call')))
-  }
   construct_model_call(model, ...)
 }
 
@@ -190,25 +187,33 @@ summarise_model.bmmodel <- function(model, ...) {
 # creates a string representation of the call to the model with the user variables
 # will likely also depend on the theme users have
 construct_model_call <- function(model, newline = FALSE, wsp = 1, ...) {
-  classes <- class(model)
-  spec <- classes[length(classes)]
+  call <- attr(model, "call")
+  if(is.null(call)) {
+    classes <- class(model)
+    model_name <- classes[length(classes)]
+
+    # construct the inner part of the call
+    rvars <- model$resp_vars
+    ovars <- model$other_vars
+    allvars <- c(rvars, ovars)
+    vnames <- names(allvars)
+  } else {
+    model_name <- deparse(call[[1]])
+    allvars <- as.list(call)[-1]
+    vnames <- names(allvars)
+  }
 
   # create necessary padding
-  wspace <- collapse(rep(' ', wsp+nchar(spec)+1))
+  wspace <- collapse(rep(' ', wsp + nchar(model_name) + 1))
   sep <- paste0(ifelse(newline, ',\n', ','), wspace)
 
-  # construct the inner part of the call
-  rvars <- model$resp_vars
-  ovars <- model$other_vars
-  allvars <- c(rvars, ovars)
-  vnames <- names(allvars)
   args <- sapply(vnames, function(var) {
     paste0(var, " = ", paste0(deparse(allvars[[var]]), collapse = ', '))
   })
 
   # combine with the padding and the function name
   args <- paste0(args, collapse = sep)
-  paste0(style('coral2')(spec), "(", args, ")")
+  paste0(style('coral2')(model_name), "(", args, ")")
 }
 
 # helper function to print summary matrices in nice format

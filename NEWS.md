@@ -1,3 +1,8 @@
+# bmm 0.5.1
+
+### Bug fixes
+* fix the display of the model call in the summary method for bmm models
+
 # bmm 0.5.0
 
 ### New features

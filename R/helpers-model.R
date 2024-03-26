@@ -428,7 +428,7 @@ use_model_template <- function(model_name,
     "# ?postprocess_brm for details\n\n")
 
 
-  model_object <- glue(".model_<<model_name>> <- function(resp_var1 = NULL, required_arg1 = NULL, required_arg2 = NULL, links = NULL, version = NULL, ...) {\n",
+  model_object <- glue(".model_<<model_name>> <- function(resp_var1 = NULL, required_arg1 = NULL, required_arg2 = NULL, links = NULL, version = NULL, call = NULL, ...) {\n",
                        "   out <- structure(\n",
                        "     list(\n",
                        "       resp_vars = nlist(resp_var1),\n",
@@ -445,7 +445,8 @@ use_model_template <- function(model_name,
                        "       default_priors = list(par1 = list(), par2 = list()),\n",
                        "       void_mu = FALSE\n",
                        "     ),\n",
-                       "     class = c('bmmodel', '<<model_name>>')\n",
+                       "     class = c('bmmodel', '<<model_name>>'),\n",
+                       "     call = call\n",
                        "   )\n",
                        "   if(!is.null(version)) class(out) <- c(class(out), paste0(\"<<model_name>>_\",version))\n",
                        "   out$links[names(links)] <- links\n",
@@ -472,9 +473,10 @@ use_model_template <- function(model_name,
                                   "#' # put a full example here (see 'R/model_mixture3p.R' for an example)\n",
                                   "#' }\n",
                                   "<<model_name>> <- function(resp_var1, required_arg1, required_arg2, links = NULL, version = NULL, ...) {\n",
+                                  "   call <- match.call()\n",
                                   "   stop_missing_args()\n",
-                                  "   .model_<<model_name>>(resp_var1 = resp_var1, required_arg1 = required_arg1,",
-                                  " required_arg2 = required_arg2, links = links, version = version, ...)\n",
+                                  "   .model_<<model_name>>(resp_var1 = resp_var1, required_arg1 = required_arg1, equired_arg2 = required_arg2,\n",
+                                  "                rlinks = links, version = version,call = call, ...)\n",
                                   "}\n\n",
                                   .open = "<<", .close = ">>")
 
@@ -483,10 +485,10 @@ use_model_template <- function(model_name,
                                   "   # retrieve required arguments\n",
                                   "   required_arg1 <- model$other_vars$required_arg1\n",
                                   "   required_arg2 <- model$other_vars$required_arg2\n\n",
-                                  "   # check the data (required)\n\n\n",
+                                  "   # check the data (required)\n\n",
                                   "   # compute any necessary transformations (optional)\n\n",
                                   "   # save some variables as attributes of the data for later use (optional)\n\n",
-                                  "   NextMethod('check_data')\n\n",
+                                  "   NextMethod('check_data')\n",
                                   "}\n\n",
                                   .open = "<<", .close = ">>")
 
@@ -552,7 +554,7 @@ use_model_template <- function(model_name,
 
   family_comment <- ifelse(custom_family,
                            "   # construct the family & add to formula object \n",
-                           "   # add family to formula object")
+                           "   # add family to formula object\n")
 
   configure_model_method <- glue::glue("#' @export\n",
                                        "configure_model.<<model_name>> <- function(model, data, formula) {\n",
@@ -573,7 +575,7 @@ use_model_template <- function(model_name,
 
   postprocess_brm_method <- glue::glue("#' @export\n",
                                        "postprocess_brm.<<model_name>> <- function(model, fit) {\n",
-                                       "   # any required postprocessing (if none, delete this section)\n\n",
+                                       "   # any required postprocessing (if none, delete this section)\n",
                                        "   fit\n",
                                        "}\n\n",
                                        .open = "<<", .close = ">>")

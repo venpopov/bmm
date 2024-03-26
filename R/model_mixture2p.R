@@ -2,7 +2,7 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-.model_mixture2p <- function(resp_error = NULL, links = NULL, ...) {
+.model_mixture2p <- function(resp_error = NULL, links = NULL, call = NULL, ...) {
   out <- structure(
     list(
       resp_vars = nlist(resp_error),
@@ -40,7 +40,8 @@
       ),
       void_mu = FALSE
     ),
-    class = c("bmmodel", "vwm", "mixture2p")
+    class = c("bmmodel", "vwm", "mixture2p"),
+    call = call
   )
   out$links[names(links)] <- links
   out
@@ -79,8 +80,9 @@
 #' }
 #' @export
 mixture2p <- function(resp_error, links = NULL, ...) {
+  call <- match.call()
   stop_missing_args()
-  .model_mixture2p(resp_error = resp_error, links = links, ...)
+  .model_mixture2p(resp_error = resp_error, links = links, call = call, ...)
 }
 
 #############################################################################!
