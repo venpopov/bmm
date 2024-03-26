@@ -2,7 +2,6 @@
 % Please edit documentation in R/bmm-package.R
 \docType{package}
 \name{bmm-package}
-\alias{bmm}
 \alias{bmm-package}
 \title{bmm: Easy and Accesible Bayesian Measurement Models using 'brms'}
 \description{
@@ -27,7 +26,7 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Paul B<U+00FC>rkner \email{paul.buerkner@gmail.com} (Creator of brms, a package for Bayesian regression model that this package builds upon.) [copyright holder]
+  \item Paul Bürkner \email{paul.buerkner@gmail.com} (Creator of brms, a package for Bayesian regression model that this package builds upon.) [copyright holder]
 }
 
 }

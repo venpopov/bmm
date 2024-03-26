@@ -1,6 +1,6 @@
 Package: bmm
 Title: Easy and Accesible Bayesian Measurement Models using 'brms'
-Version: 0.4.0
+Version: 0.5.0
 Authors@R: c(
     person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph")),
     person("Gidon", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph")),
@@ -19,7 +19,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 Suggests: 
     testthat (>= 3.0.0),
-    glue,
     usethis,
     knitr,
     rmarkdown,
@@ -31,10 +30,13 @@ Suggests:
     cowplot,
     stringr,
     remotes, 
-    waldo
+    waldo,
+    fansi,
+    cmdstanr (>= 0.7.0)
 Config/testthat/edition: 3
 Imports: 
     magrittr,
+    glue,
     parallel,
     dplyr,
     withr,
@@ -47,9 +49,8 @@ URL: https://github.com/venpopov/bmm, https://venpopov.github.io/bmm/
 BugReports: https://github.com/venpopov/bmm/issues
 Additional_repositories:
     https://mc-stan.org/r-packages/
-    https://paul-buerkner.github.io/brms/
 VignetteBuilder: knitr
 Depends: 
-    R (>= 2.10),
-    brms
+    R (>= 3.6.0),
+    brms (>= 2.21.0)
 LazyData: true

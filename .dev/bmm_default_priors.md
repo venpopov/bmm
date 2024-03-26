@@ -21,7 +21,7 @@ Click to expand
 It puts a default prior on all parameters that have only an intercept
 
 ``` r
-dat <- OberauerLin_2017
+dat <- oberauer_lin_2017
 dat$cond <- factor(rep(1:4, each=nrow(dat)/4))   # fake condition for testing formulas
 get_prior(bf(dev_rad ~ 1, sigma ~ 1), dat)
 ```
@@ -136,7 +136,7 @@ get_prior(bf(dev_rad ~ 1, sigma ~ set_size + (set_size|ID)), dat)
 
 Currently we put a default prior on all parameters, assuming naively
 that they are specified with a suppressed intercept (except for the
-sdmSimple, for which we have no default priors yet). We don’t want to
+sdm, for which we have no default priors yet). We don’t want to
 follow `brms` approach, because these measurement models need meaningful
 default priors to help with sampling.
 
@@ -175,7 +175,7 @@ All model parameters are `nlpar` so they get class `b` with coef
 `Intercept`
 
 ``` r
-model <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), setsize='set_size')
+model <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), set_size='set_size')
 formula <- bmf(kappa ~ 1, thetat ~ 1, thetant ~ 1)
 get_model_prior(formula, dat, model)
 ```
@@ -661,7 +661,7 @@ compare_priors <- function(formula,dat,model) {
 ```
 
 ``` r
-model3p <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), setsize='set_size')
+model3p <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), set_size='set_size')
 ```
 
 <details>
@@ -912,7 +912,7 @@ compare_priors(formula, dat, model3p)
 
 ``` r
 options(bmm.sort_data = F)
-modelSDM <- sdmSimple('dev_rad')
+modelSDM <- sdm('dev_rad')
 ```
 
 <details>

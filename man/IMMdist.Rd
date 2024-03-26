@@ -2,13 +2,13 @@
 % Please edit documentation in R/distributions.R
 \name{IMMdist}
 \alias{IMMdist}
-\alias{dIMM}
-\alias{pIMM}
-\alias{qIMM}
-\alias{rIMM}
+\alias{dimm}
+\alias{pimm}
+\alias{qimm}
+\alias{rimm}
 \title{The Interference Measurement Model (IMM)}
 \usage{
-dIMM(
+dimm(
   x,
   mu = c(0, 2, -1.5),
   dist = c(0, 0.5, 2),
@@ -20,7 +20,7 @@ dIMM(
   log = FALSE
 )
 
-pIMM(
+pimm(
   q,
   mu = c(0, 2, -1.5),
   dist = c(0, 0.5, 2),
@@ -31,7 +31,7 @@ pIMM(
   kappa = 5
 )
 
-qIMM(
+qimm(
   p,
   mu = c(0, 2, -1.5),
   dist = c(0, 0.5, 2),
@@ -42,7 +42,7 @@ qIMM(
   kappa = 5
 )
 
-rIMM(
+rimm(
   n,
   mu = c(0, 2, -1.5),
   dist = c(0, 0.5, 2),
@@ -79,10 +79,11 @@ rIMM(
 \item{n}{Number of observations to generate data for}
 }
 \value{
-\code{dIMM} gives the density of the interference measurement model, \code{pIMM}
-gives the cumulative distribution function of the interference measurement model,
-\code{qIMM} gives the quantile function of the interference measurement model, and
-\code{rIMM} gives the random generation function for the interference measurement model.
+\code{dimm} gives the density of the interference measurement model,
+\code{pimm} gives the cumulative distribution function of the interference
+measurement model, \code{qimm} gives the quantile function of the interference
+measurement model, and \code{rimm} gives the random generation function for the
+interference measurement model.
 }
 \description{
 Density, distribution, and random generation functions for the
@@ -97,7 +98,7 @@ generalization gradient \code{s}, and the precision of memory representations
 }
 \references{
 Oberauer, K., Stoneking, C., Wabersich, D., & Lin, H.-Y. (2017).
-Hierarchical Bayesian measurement models for continuous reproduction of visual
-features from working memory. Journal of Vision, 17(5), 11.
+Hierarchical Bayesian measurement models for continuous reproduction of
+visual features from working memory. Journal of Vision, 17(5), 11.
 }
 \keyword{distribution}

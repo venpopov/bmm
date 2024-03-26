@@ -7,10 +7,10 @@
 supported_models(print_call = TRUE)
 }
 \arguments{
-\item{print_call}{Logical; If TRUE (default), the function will print information about
-how each model function should be called and its required arguments. If FALSE,
-the function will return a character vector with the names of the available
-models}
+\item{print_call}{Logical; If TRUE (default), the function will print
+information about how each model function should be called and its required
+arguments. If FALSE, the function will return a character vector with the
+names of the available models}
 }
 \value{
 A character vector of measurement models available in \code{bmm}

@@ -16,7 +16,7 @@
 #' @param kappa Vector of precision values
 #' @param log Logical; if `TRUE`, values are returned on the log scale.
 #' @param parametrization Character; either `"bessel"` or `"sqrtexp"`
-#'   (default). See `vignette("sdm-simple")` for details on the
+#'   (default). See `vignette("bmm_sdm_simple")` for details on the
 #'   parameterization.
 #' @param log.p Logical; if `TRUE`, probabilities are returned on the log
 #'   scale.
@@ -36,7 +36,7 @@
 #'
 #' @details **Parametrization**
 #'
-#' See `vignette("sdm-simple")` for details on the parameterization.
+#' See `vignette("bmm_sdm_simple")` for details on the parameterization.
 #' Oberauer (2023) introduced the SDM with the bessel parametrization. The
 #' sqrtexp parametrization is the default in the `bmm` package for
 #' numerical stability and efficiency. The two parametrizations are related by
@@ -81,31 +81,26 @@
 #'
 dsdm <- function(x, mu = 0, c = 3, kappa = 3.5, log = FALSE,
                  parametrization = "sqrtexp") {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(c < 0)), "c must be non-negative")
 
   .dsdm_numer <- switch(parametrization,
                         "bessel" = .dsdm_numer_bessel,
                         "sqrtexp" = .dsdm_numer_sqrtexp)
 
-  lnumerator <- .dsdm_numer(x, mu, c, kappa, log=TRUE)
+  lnumerator <- .dsdm_numer(x, mu, c, kappa, log = TRUE)
 
   if (any(length(mu) > 1, length(c) > 1, length(kappa) > 1)) {
     denom <- .dsdm_integrate_numer_v(.dsdm_numer, mu, c, kappa, lower = mu,
-                                     upper = mu+pi)
+                                     upper = mu + pi)
   } else {
     denom <- .dsdm_integrate_numer(.dsdm_numer, mu, c, kappa, lower = mu,
-                                   upper = mu+pi)
+                                   upper = mu + pi)
   }
 
   denom <- 2*denom
 
-  if(!log) {
+  if (!log) {
     return(exp(lnumerator)/denom)
   }
   lnumerator - log(denom)
@@ -116,13 +111,8 @@ dsdm <- function(x, mu = 0, c = 3, kappa = 3.5, log = FALSE,
 psdm <- function(q, mu = 0, c = 3, kappa = 3.5, lower.tail = TRUE, log.p = FALSE,
                  lower.bound = -pi, parametrization = "sqrtexp") {
   # parts adapted from brms::pvon_mises
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(c < 0)), "c must be non-negative")
 
   pi <- base::pi
   pi2 <- 2 * pi
@@ -163,17 +153,9 @@ qsdm <- function(p, mu=0, c=3, kappa=3.5, parametrization = "sqrtexp") {
 #' @rdname SDMdist
 #' @export
 rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
-
-  if (length(n) > 1) {
-    stop("n must be a single integer")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(c < 0)), "c must be non-negative")
+  stopif(length(n) > 1, "n must be a single integer")
 
   maxy <- dsdm(0, 0, c, kappa)
   xa <- c()
@@ -181,7 +163,7 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
   .rsdm_inner <- function(n, mu, c, kappa, parametrization, xa) {
     x <- stats::runif(n, -pi, pi)
     y <- stats::runif(n, 0, 1) * maxy
-    accept <- y < dsdm(x, mu, c, kappa, parametrization=parametrization)
+    accept <- y < dsdm(x, mu, c, kappa, parametrization = parametrization)
     xa <- c(xa, x[accept])
 
     if (length(xa) < n) {
@@ -195,33 +177,23 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 }
 
 # helper functions for calculating the density of the SDM distribution
-.dsdm_numer_bessel <- function(x, mu, c, kappa, log=FALSE) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
+.dsdm_numer_bessel <- function(x, mu, c, kappa, log = FALSE) {
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(c < 0)), "c must be non-negative")
 
   be <- besselI(kappa, nu = 0, expon.scaled = TRUE)
-  out <- c * exp(kappa * (cos(x-mu)-1))/(2*pi*be)
+  out <- c * exp(kappa * (cos(x - mu) - 1)) / (2 * pi * be)
   if (!log) {
     out <- exp(out)
   }
   out
 }
 
-.dsdm_numer_sqrtexp <- function(x, mu, c, kappa, log=FALSE) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
+.dsdm_numer_sqrtexp <- function(x, mu, c, kappa, log = FALSE) {
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(c < 0)), "c must be non-negative")
 
-  if (isTRUE(any(c < 0))) {
-    stop("c must be non-negative")
-  }
-
-  out <- c * exp(kappa * (cos(x-mu)-1)) * sqrt(kappa) / sqrt(2 * pi)
+  out <- c * exp(kappa * (cos(x - mu) - 1)) * sqrt(kappa) / sqrt(2 * pi)
   if (!log) {
     out <- exp(out)
   }
@@ -235,13 +207,16 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 }
 
 .dsdm_integrate_numer_v <- Vectorize(.dsdm_integrate_numer,
-                                     vectorize.args = c("mu", "c", "kappa", 'lower','upper'))
+    vectorize.args = c("mu", "c", "kappa", 'lower','upper'))
+
+
 
 #' @title The two-parameter mixture model (mixture2p)
 #'
 #' @description Density, distribution, and random generation functions for the
 #'   two-parameter mixture model with the location of `mu`, precision of memory
-#'   representations `kappa` and probability of recalling items from memory `pMem`.
+#'   representations `kappa` and probability of recalling items from memory
+#'   `pMem`.
 #'
 #' @name mixture2p_dist
 #'
@@ -259,10 +234,11 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 #' @references Zhang, W., & Luck, S. J. (2008). Discrete fixed-resolution
 #'   representations in visual working memory. Nature, 453.
 #'
-#' @return `dmixture2p` gives the density of the two-parameter mixture model, `pmixture2p`
-#'   gives the cumulative distribution function of the two-parameter mixture model,
-#'   `qmixture2p` gives the quantile function of the two-parameter mixture model, and
-#'   `rmixture2p` gives the random generation function for the two-parameter mixture model.
+#' @return `dmixture2p` gives the density of the two-parameter mixture model,
+#'   `pmixture2p` gives the cumulative distribution function of the
+#'   two-parameter mixture model, `qmixture2p` gives the quantile function of
+#'   the two-parameter mixture model, and `rmixture2p` gives the random
+#'   generation function for the two-parameter mixture model.
 #'
 #' @export
 #'
@@ -270,17 +246,9 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 #' # example code
 #'
 dmixture2p <- function(x, mu=0, kappa=5, pMem = 0.6, log = FALSE) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(pMem < 0))) {
-    stop("pMem must be larger than zero.")
-  }
-
-  if (isTRUE(any(pMem > 1))) {
-    stop("pMem must be smaller than one.")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(pMem < 0)), "pMem must be larger than zero.")
+  stopif(isTRUE(any(pMem > 1)), "pMem must be smaller than one.")
 
   density <- matrix(data = NaN, nrow = length(x), ncol = 2)
 
@@ -311,17 +279,9 @@ qmixture2p <- function(p, mu=0, kappa=5, pMem = 0.6) {
 #' @rdname mixture2p_dist
 #' @export
 rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(pMem < 0))) {
-    stop("pMem must be larger than zero.")
-  }
-
-  if (isTRUE(any(pMem > 1))) {
-    stop("pMem must be smaller than one.")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(pMem < 0)), "pMem must be larger than zero.")
+  stopif(isTRUE(any(pMem > 1)), "pMem must be smaller than one.")
 
   maxy <- dmixture2p(0, 0, kappa, pMem)
   xa <- c()
@@ -346,9 +306,9 @@ rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
 #' @title The three-parameter mixture model (mixture3p)
 #'
 #' @description Density, distribution, and random generation functions for the
-#'   three-parameter mixture model with the location of `mu`, precision of memory
-#'   representations `kappa`, probability of recalling items from memory `pMem`,
-#'   and probability of recalling non-targets `pNT`.
+#'   three-parameter mixture model with the location of `mu`, precision of
+#'   memory representations `kappa`, probability of recalling items from memory
+#'   `pMem`, and probability of recalling non-targets `pNT`.
 #'
 #' @name mixture3p_dist
 #'
@@ -356,8 +316,9 @@ rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
 #' @param q Vector of quantiles
 #' @param p Vector of probability
 #' @param n Number of observations to generate data for
-#' @param mu Vector of locations. First value represents the location of the target item
-#'   and any additional values indicate the location of non-target items.
+#' @param mu Vector of locations. First value represents the location of the
+#'   target item and any additional values indicate the location of non-target
+#'   items.
 #' @param kappa Vector of precision values
 #' @param pMem Vector of probabilities for memory recall
 #' @param pNT Vector of probabilities for swap errors
@@ -365,13 +326,15 @@ rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
 #'
 #' @keywords distribution
 #'
-#' @references Bays, P. M., Catalao, R. F. G., & Husain, M. (2009). The precision of visual
-#'   working memory is set by allocation of a shared resource. Journal of Vision, 9(10), 7.
+#' @references Bays, P. M., Catalao, R. F. G., & Husain, M. (2009). The
+#'   precision of visual working memory is set by allocation of a shared
+#'   resource. Journal of Vision, 9(10), 7.
 #'
-#' @return `dmixture3p` gives the density of the three-parameter mixture model, `pmixture3p`
-#'   gives the cumulative distribution function of the two-parameter mixture model,
-#'   `qmixture3p` gives the quantile function of the two-parameter mixture model, and
-#'   `rmixture3p` gives the random generation function for the two-parameter mixture model.
+#' @return `dmixture3p` gives the density of the three-parameter mixture model,
+#'   `pmixture3p` gives the cumulative distribution function of the
+#'   two-parameter mixture model, `qmixture3p` gives the quantile function of
+#'   the two-parameter mixture model, and `rmixture3p` gives the random
+#'   generation function for the two-parameter mixture model.
 #'
 #' @export
 #'
@@ -379,21 +342,10 @@ rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
 #' # example code
 #'
 dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2, log = FALSE) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(pMem < 0))) {
-    stop("pMem must be larger than zero.")
-  }
-
-  if (isTRUE(any(pNT < 0))) {
-    stop("pMem must be larger than zero.")
-  }
-
-  if (isTRUE(any(pMem + pNT > 1))) {
-    stop("The sum of pMem and pNT must be smaller than one.")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(pMem < 0)), "pMem must be larger than zero.")
+  stopif(isTRUE(any(pNT < 0)), "pNT must be larger than zero.")
+  stopif(isTRUE(any(pMem + pNT > 1)), "The sum of pMem and pNT must be smaller than one.")
 
   density <- matrix(data = NaN, nrow = length(x), ncol = length(mu) + 1)
   probs <- c(pMem,
@@ -432,21 +384,10 @@ qmixture3p <- function(p, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
 #' @rdname mixture3p_dist
 #' @export
 rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (isTRUE(any(pMem < 0))) {
-    stop("pMem must be larger than zero.")
-  }
-
-  if (isTRUE(any(pNT < 0))) {
-    stop("pMem must be larger than zero.")
-  }
-
-  if (isTRUE(any(pMem + pNT > 1))) {
-    stop("The sum of pMem and pNT must be smaller than one.")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(isTRUE(any(pMem < 0)), "pMem must be larger than zero.")
+  stopif(isTRUE(any(pNT < 0)), "pNT must be larger than zero.")
+  stopif(isTRUE(any(pMem + pNT > 1)), "The sum of pMem and pNT must be smaller than one.")
 
   maxy <- dmixture3p(mu[1], mu, kappa, pMem, pNT)
   xa <- c()
@@ -493,36 +434,27 @@ rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
 #' @keywords distribution
 #'
 #' @references Oberauer, K., Stoneking, C., Wabersich, D., & Lin, H.-Y. (2017).
-#'   Hierarchical Bayesian measurement models for continuous reproduction of visual
-#'   features from working memory. Journal of Vision, 17(5), 11.
+#'   Hierarchical Bayesian measurement models for continuous reproduction of
+#'   visual features from working memory. Journal of Vision, 17(5), 11.
 #'
-#' @return `dIMM` gives the density of the interference measurement model, `pIMM`
-#'   gives the cumulative distribution function of the interference measurement model,
-#'   `qIMM` gives the quantile function of the interference measurement model, and
-#'   `rIMM` gives the random generation function for the interference measurement model.
+#' @return `dimm` gives the density of the interference measurement model,
+#'   `pimm` gives the cumulative distribution function of the interference
+#'   measurement model, `qimm` gives the quantile function of the interference
+#'   measurement model, and `rimm` gives the random generation function for the
+#'   interference measurement model.
 #'
 #' @export
 #'
 #' @examples
 #' # example code
 #'
-dIMM <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+dimm <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
                  c=1, a = 0.2, b = 0, s = 2, kappa=5, log = FALSE) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
-
-  if (length(mu) != length(dist)) {
-    stop("The number of items does not match the distances provided from the cued location.")
-  }
-
-  if (isTRUE(any(s < 0))) {
-    stop("s must be non-negative")
-  }
-
-  if (isTRUE(any(dist < 0))) {
-    stop("all distances have to be positive.")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(length(mu) != length(dist),
+         "The number of items does not match the distances provided from the cued location.")
+  stopif(isTRUE(any(s < 0)), "s must be non-negative")
+  stopif(isTRUE(any(dist < 0)), "all distances have to be positive.")
 
   # compute activation for all items
   acts <- rep(c, length(mu)) * exp(-s*dist) + rep(a, length(mu))
@@ -554,49 +486,43 @@ dIMM <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
 
 #' @rdname IMMdist
 #' @export
-pIMM <- function(q, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+pimm <- function(q, mu=c(0,2,-1.5), dist = c(0,0.5,2),
                  c=1, a = 0.2, b = 0, s = 2, kappa=5) {
   .NotYetImplemented()
 }
 
 #' @rdname IMMdist
 #' @export
-qIMM <- function(p, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+qimm <- function(p, mu=c(0,2,-1.5), dist = c(0,0.5,2),
                  c=1, a = 0.2, b = 0, s = 2, kappa=5) {
   .NotYetImplemented()
 }
 
 #' @rdname IMMdist
 #' @export
-rIMM <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
+rimm <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
                  c=1, a = 0.2, b = 0, s = 2, kappa=5) {
-  if (isTRUE(any(kappa < 0))) {
-    stop("kappa must be non-negative")
-  }
+  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
+  stopif(length(mu) != length(dist),
+         "The number of items does not match the distances provided from the cued location.")
+  stopif(isTRUE(any(s < 0)), "s must be non-negative")
+  stopif(isTRUE(any(dist < 0)), "all distances have to be positive.")
 
-  if (length(mu) != length(dist)) {
-    stop("The number of items does not match the distances provided from the cued location.")
-  }
-
-  if (isTRUE(any(s < 0))) {
-    stop("s must be non-negative")
-  }
-
-  maxy <- dIMM(mu[1], mu, dist, c, a, b, s, kappa)
+  maxy <- dimm(mu[1], mu, dist, c, a, b, s, kappa)
   xa <- c()
 
-  .rIMM_inner <- function(n, mu, dist, c, a, b, s, kappa, xa) {
+  .rimm_inner <- function(n, mu, dist, c, a, b, s, kappa, xa) {
     x <- stats::runif(n, -pi, pi)
     y <- stats::runif(n, 0, 1) * maxy
-    accept <- y < dIMM(x, mu, dist, c, a, b, s, kappa)
+    accept <- y < dimm(x, mu, dist, c, a, b, s, kappa)
     xa <- c(xa, x[accept])
 
     if (length(xa) < n) {
-      return(.rIMM_inner(n, mu, dist, c, a, b, s, kappa, xa))
+      return(.rimm_inner(n, mu, dist, c, a, b, s, kappa, xa))
     }
 
     xa[1:n]
   }
 
-  .rIMM_inner(n, mu, dist, c ,a ,b ,s ,kappa , xa)
+  .rimm_inner(n, mu, dist, c ,a ,b ,s ,kappa , xa)
 }

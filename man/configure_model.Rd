@@ -25,7 +25,7 @@ See \code{\link[brms:custom_family]{brms::custom_family()}} for more details.
 }
 }
 \description{
-Called by fit_model() to automatically construct the model
+Called by bmm() to automatically construct the model
 formula, family objects and default priors for the model specified by the
 user. It will call the appropriate configure_model.* functions based on the
 list of classes defined in the .model_* functions. Currently, we have a
@@ -57,60 +57,39 @@ A bare bones configure_model.* method should look like this:
 }
 \examples{
 \dontrun{
-configure_model.3p <- function(model, data, formula) {
-   # retrieve arguments from the data check
-   max_setsize <- attr(data, "max_setsize")
-   nt_features <- attr(data, "nt_features")
-   lure_idx_vars <- attr(data, "lure_idx_vars")
-   setsize_var <- attr(data, "setsize_var")
+configure_model.mixture3p <- function(model, data, formula) {
+  # retrieve arguments from the data check
+  max_set_size <- attr(data, "max_set_size")
+  lure_idx <- attr(data, "lure_idx_vars")
+  nt_features <- model$other_vars$nt_features
+  set_size_var <- model$other_vars$set_size
 
-   # names for parameters
-   kappa_nts <- paste0('kappa', 2:max_setsize)
-   kappa_unif <- paste0('kappa',max_setsize + 1)
-   theta_nts <- paste0('theta',2:max_setsize)
-   mu_nts <- paste0('mu', 2:max_setsize)
-   mu_unif <- paste0('mu', max_setsize + 1)
+  # construct initial brms formula
+  formula <- bmf2bf(model, formula) +
+    brms::lf(kappa2 ~ 1) +
+    brms::lf(mu2 ~ 1) +
+    brms::nlf(theta1 ~ thetat) +
+    brms::nlf(kappa1 ~ kappa)
 
-   # construct main brms formula from the bmm formula
-   bmm_formula <- formula
-   formula <- bmf2bf(model, bmm_formula)
+  # additional internal terms for the mixture model formula
+  kappa_nts <- paste0("kappa", 3:(max_set_size + 1))
+  theta_nts <- paste0("theta", 3:(max_set_size + 1))
+  mu_nts <- paste0("mu", 3:(max_set_size + 1))
 
-   # construct formula
-   formula <- formula +
-     glue_lf(kappa_unif,' ~ 1') +
-     glue_lf(mu_unif, ' ~ 1') +
-     brms::nlf(theta1 ~ thetat) +
-     brms::nlf(kappa1 ~ kappa)
+  for (i in 1:(max_set_size - 1)) {
+    formula <- formula +
+      glue_nlf("{kappa_nts[i]} ~ kappa") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (thetant + log(inv_ss)) + ",
+               "(1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
+  }
 
-   for (i in 1:(max_setsize-1)) {
-     formula <- formula +
-       glue_nlf(kappa_nts[i], ' ~ kappa') +
-       glue_nlf(theta_nts[i], ' ~ ', lure_idx_vars[i], '*(thetant + log(inv_ss)) + ',
-                '(1-', lure_idx_vars[i], ')*(-100)') +
-       glue_nlf(mu_nts[i], ' ~ ', nt_features[i])
-   }
+  # define mixture family
+  vm_list <- lapply(1:(max_set_size + 1), function(x) brms::von_mises(link = "identity"))
+  vm_list$order <- "none"
+  formula$family <- brms::do_call(brms::mixture, vm_list)
 
-   # define mixture family
-   vm_list = lapply(1:(max_setsize+1), function(x) brms::von_mises(link="identity"))
-   vm_list$order = "none"
-   family <- brms::do_call(brms::mixture, vm_list)
-
-   # define prior
-   prior <-
-     brms::prior_("constant(0)", class = "Intercept", dpar = "mu1") +
-     brms::prior_("constant(0)", class = "Intercept", dpar = mu_unif) +
-     brms::prior_("constant(-100)", class = "Intercept", dpar = kappa_unif) +
-     brms::prior_("normal(2, 1)", class = "b", nlpar = "kappa") +
-     brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetat") +
-     brms::prior_("logistic(0, 1)", class = "b", nlpar = "thetant")
-
-   # if there is setsize 1 in the data, set constant prior over thetant for setsize1
-   if ((1 \%in\% data$ss_numeric) && !is.numeric(data[[setsize_var]])) {
-     prior <- prior +
-       brms::prior_("constant(-100)", class="b", coef = paste0(setsize_var, 1), nlpar="thetant")
-   }
-
-   nlist(formula, data, family, prior)
+  nlist(formula, data)
 }
 }
 
