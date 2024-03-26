@@ -162,7 +162,8 @@ configure_model.mixture3p <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (thetant + log(inv_ss)) + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (thetant + log(inv_ss))",
+               " + (1 - {lure_idx[i]}) * (-100)") +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
@@ -183,7 +184,8 @@ configure_prior.mixture3p <- function(model, data, formula, user_prior, ...) {
   set_size_var <- model$other_vars$set_size
   thetant_preds <- rhs_vars(formula$pforms$thetant)
   prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) && set_size_var %in% thetant_preds) {
+  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
+      set_size_var %in% thetant_preds) {
     prior <- brms::prior_("constant(-100)",
                           class = "b",
                           coef = paste0(set_size_var, 1),
