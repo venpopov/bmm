@@ -92,7 +92,7 @@ configure_options <- function(opts, env = parent.frame()) {
     list(
       mc.cores = cores,
       bmm.silent = opts$silent,
-      bmm.sort_data = opts$sort_data
+      bmm.sort_data = opts$sort_data %||% getOption('bmm.sort_data', 'check')
     ),
     .local_envir = env)
 
@@ -661,4 +661,8 @@ deprecated_args <- function(...) {
   warnif("parallel" %in% names(dots),
          'The "parallel" argument is deprecated. Please use cores instead.
          See `help("brm")` for more information.')
+}
+
+`%||%` <- function(a, b) {
+  if (!is.null(a)) a else b
 }
