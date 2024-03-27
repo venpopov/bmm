@@ -117,7 +117,7 @@ bmf2bf.m3 <- function(model, formula) {
    # retrieve choice rule
    choice_rule <- tolower(model$other_vars$choice_rule)
 
-   # add transformation to activations according to choice rules
+   # add transformation to activation according to choice rules
    transform_act <- ifelse(choice_rule == "luce","log(","")
    end_act <- ifelse(choice_rule == "luce",")","")
    zero_Opt <- ifelse(model$other_vars$choice_rule == "softmax","(-100)","(exp(-100))")
