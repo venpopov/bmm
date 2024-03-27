@@ -80,5 +80,4 @@ imm_formula2 <- bmf(
 )
 identical(imm_formula, imm_formula2)
 
-
 }

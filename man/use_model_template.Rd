@@ -58,15 +58,17 @@ usually rewriting the numbers (issue, page numbers) manually fixes it
 }
 \examples{
 \dontrun{
- library(usethis)
+library(usethis)
 
- # create a new model file without a brms::custom_family, and open the file
- use_model_template("newmodel")
+# create a new model file without a brms::custom_family, and open the file
+use_model_template("newmodel")
 
- # create a new model file with a brms::custom_family, three .stan files in
- # inst/stan_chunks/ and open the files
- use_model_template('abc',custom_family = TRUE,
-                    stanvar_blocks = c('functions','likelihood','tdata'))
+# create a new model file with a brms::custom_family, three .stan files in
+# inst/stan_chunks/ and open the files
+use_model_template("abc",
+  custom_family = TRUE,
+  stanvar_blocks = c("functions", "likelihood", "tdata")
+)
 }
 }
 \keyword{developer}

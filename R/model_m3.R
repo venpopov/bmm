@@ -3,8 +3,8 @@
 #############################################################################!
 # see file 'R/bmm_model_mixture3p.R' for an example
 
-.model_M3custom <- function(resp_cats = NULL, num_options = NULL, links = NULL,
-                            choice_rule = "softmax", ...) {
+.model_m3 <- function(resp_cats = NULL, num_options = NULL, links = NULL,
+                            choice_rule = "softmax", version = "custom", ...) {
    # name the number of options in each response categories if no names are provided
    if (is.null(names(num_options))) names(num_options) <- resp_cats
 
@@ -17,7 +17,7 @@
       task = 'n-AFC retrieval',
       name = 'The Memory Measurement Model by Oberauer & Lewandowsky (2019)',
       citation = 'Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.',
-      version = 'custom',
+      version = version,
       requirements = '- Provide names for variables specifying the number of responses in a set of response categories.\n
          - Specify activation sources for each response categories \n
          - Include at least an activation source "b" for all response categories \n
@@ -38,7 +38,7 @@
       ),
       void_mu = FALSE
    )
-   class(out) <- c('bmmmodel','M3', 'M3custom')
+   class(out) <- c('bmmodel','m3', paste0("m3_",version))
    out
 }
 
@@ -47,12 +47,9 @@
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_M3()$info
 
-#' @title `r .model_M3custom()$name`
-#' @name M3
+#' @title `r .model_m3()$name`
+#' @name m3
 #'
-#' @details
-#'   #### Version: `M3custom`
-#'   `r model_info(.model_M3custom(), components =c('domain', 'task', 'name', 'citation'))`
 #'
 #' @param resp_cats The variable names that contain the number of responses for each of the
 #'   response categories used for the M3.
@@ -86,10 +83,18 @@
 #' }
 #'
 #' @export
-M3custom <- function(resp_cats, num_options, links, choice_rule = "softmax", ...) {
+#'
+#'
+m3 <- function(resp_cats, num_options, links, choice_rule = "softmax", version = "custom", ...) {
+   stop_missing_args()
+   .model_m3(resp_cats = resp_cats, num_options = num_options,
+                   choice_rule = choice_rule, links = links, version = version, ...)
+}
+
+m3_custom <- function(resp_cats, num_options, links, choice_rule = "softmax", version = "custom", ...) {
    stop_missing_args()
    .model_M3custom(resp_cats = resp_cats, num_options = num_options,
-                   choice_rule = choice_rule, links = links, ...)
+                   choice_rule = choice_rule, links = links, version = version, ...)
 }
 
 
@@ -103,7 +108,7 @@ M3custom <- function(resp_cats, num_options, links, choice_rule = "softmax", ...
 # (YOU CAN DELETE THIS SECTION IF YOUR MODEL USES A STANDARD FORMULA WITH 1 RESPONSE VARIABLE)
 
 #' @export
-bmf2bf.M3 <- function(model, formula) {
+bmf2bf.m3 <- function(model, formula) {
    # retrieve required response arguments
    resp_cats <- model$resp_vars$resp_cats
    nOpt_idx_vars <- paste0("Idx_", resp_cats)
@@ -145,7 +150,7 @@ bmf2bf.M3 <- function(model, formula) {
 # ?configure_model for more information.
 
 #' @export
-configure_model.M3 <- function(model, data, formula) {
+configure_model.m3 <- function(model, data, formula) {
    # construct brms formula from the bmm formula
    bmm_formula <- formula
    formula <- bmf2bf(model, bmm_formula)

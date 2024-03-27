@@ -242,15 +242,13 @@ configure_prior.default <- function(model, data, formula, user_prior, ...) {
 }
 
 #' @export
-configure_prior.bmmmodel <- function(model, data, formula, user_prior = NULL, ...) {
-  if ("M3" %in% class(model)) {
+configure_prior.bmmodel <- function(model, data, formula, user_prior = NULL, ...) {
+  if ("m3" %in% class(model)) {
     if (model$other_vars$choice_rule == "softmax") {
       prior <- brms::prior("constant(0)", class = "b", nlpar = "b")
     } else {
       prior <- brms::prior("constant(0.1)", class = "b", nlpar = "b")
     }
-    # default_prior <- set_default_prior(model, data, formula)
-    # default_prior <- set_default_prior(model, data, formula)
   } else {
     prior <- fixed_pars_priors(model, formula)
     default_prior <- set_default_prior(model, data, formula)

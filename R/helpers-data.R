@@ -2,7 +2,6 @@
 # CHECK_DATA METHODS                                                     ####
 ############################################################################# !
 
-
 #' @title Generic S3 method for checking data based on model type
 #' @description Called by [bmm()] to automatically perform checks on the
 #'   data depending on the model type. It will call the appropriate check_data
@@ -149,7 +148,7 @@ check_var_set_size <- function(set_size, data) {
 }
 
 #' @export
-check_data.M3 <- function(model, data, formula) {
+check_data.m3 <- function(model, data, formula) {
   # Get the vector of the response variables
   resp_name <- model$resp_vars$resp_cats
   # Get the names for each columns
