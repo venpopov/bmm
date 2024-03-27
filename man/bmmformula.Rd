@@ -3,14 +3,14 @@
 \name{bmmformula}
 \alias{bmmformula}
 \alias{bmf}
-\title{Create formula for predicting parameters of a \code{bmmmodel}}
+\title{Create formula for predicting parameters of a \code{bmmodel}}
 \usage{
 bmmformula(...)
 
 bmf(...)
 }
 \arguments{
-\item{...}{Formulas for predicting a \code{bmmmodel} parameter. Each formula for a
+\item{...}{Formulas for predicting a \code{bmmodel} parameter. Each formula for a
 parameter should be specified as a separate argument, separated by commas}
 }
 \value{
@@ -18,7 +18,7 @@ A list of formulas for each parameters being predicted
 }
 \description{
 This function is used to specify the formulas predicting the
-different parameters of a \code{bmmmodel}.
+different parameters of a \code{bmmodel}.
 }
 \section{General formula structure}{
 The formula argument accepts formulas of the following syntax:
@@ -56,7 +56,7 @@ In \code{bmm}, the same formula would be written as:
 }\if{html}{\out{</div>}}
 
 and the rt and response variables would be specified in the model argument of
-the \code{fit_model} function.
+the \code{bmm()} function.
 
 Aside from that, the \code{bmm} formula syntax is the same as the \code{brms} formula
 syntax. For more information on the \code{brms} formula syntax, see
@@ -67,16 +67,16 @@ You can also use the \code{bmf()} function as a shorthand for \code{bmmformula()
 
 \examples{
 imm_formula <- bmmformula(
-  c ~ 0 + setsize + (0 + setsize | id),
+  c ~ 0 + set_size + (0 + set_size | id),
   a ~ 1,
-  kappa ~ 0 + setsize + (0 + setsize | id)
+  kappa ~ 0 + set_size + (0 + set_size | id)
 )
 
 # or use the shorter alias 'bmf'
 imm_formula2 <- bmf(
-  c ~ 0 + setsize + (0 + setsize | id),
+  c ~ 0 + set_size + (0 + set_size | id),
   a ~ 1,
-  kappa ~ 0 + setsize + (0 + setsize | id)
+  kappa ~ 0 + set_size + (0 + set_size | id)
 )
 identical(imm_formula, imm_formula2)
 

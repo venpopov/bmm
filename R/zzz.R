@@ -1,11 +1,5 @@
 .onLoad <- function(libname, pkgname) {
   suppressMessages(bmm_options(reset_options = TRUE))
-  if (utils::packageVersion('brms') >= '2.20.15') {
-    registerS3method("default_prior", "bmmformula", get_model_prior,
-                     envir = asNamespace("brms"))
-    registerS3method("restructure", "bmmfit", restructure_bmm,
-                     envir = asNamespace("brms"))
-  }
 }
 
 .onAttach <- function(libname, pkgname) {

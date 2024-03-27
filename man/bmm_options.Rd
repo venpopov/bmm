@@ -16,12 +16,12 @@ bmm_options(
 \arguments{
 \item{sort_data}{logical. If TRUE, the data will be sorted by the predictors.
 If FALSE, the data will not be sorted, but sampling will be slower. If
-"check" (the default), \code{fit_model()} will check if the data is sorted, and
+"check" (the default), \code{bmm()} will check if the data is sorted, and
 ask you via a console prompt if it should be sorted. \strong{Default: "check"}}
 
 \item{parallel}{logical. If TRUE, chains will be run in parallel. If FALSE,
 chains will be run sequentially. You can also set these value for each
-model separately via the argument \code{parallel} in \code{fit_model()}. \strong{Default:
+model separately via the argument \code{parallel} in \code{bmm()}. \strong{Default:
 FALSE}}
 
 \item{default_priors}{logical. If TRUE (default), the default bmm priors will
@@ -52,7 +52,7 @@ options. If no arguments are provided, the function will return the current
 options. If arguments are provided, the function will change the options
 and return the old options invisibly. If you provide only some of the
 arguments, the other options will not be changed. The options are stored in
-the global options list and will be used by \code{fit_model()} and other
+the global options list and will be used by \code{bmm()} and other
 functions in the \code{bmm} package. Each of these options can also be set
 manually using the built-in \code{options()} function, by setting the
 \code{bmm.sort_data},  \code{bmm.default_priors}, and \code{bmm.silent} options.

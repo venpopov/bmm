@@ -12,7 +12,8 @@
 #' @keywords transform
 #' @export
 #' @importFrom utils packageVersion
-restructure_bmm <- function(x, ...) {
+#' @importFrom brms restructure
+restructure.bmmfit <- function(x, ...) {
   version <- x$version$bmm
   if (is.null(version)) {
     version <- as.package_version('0.2.1')
@@ -25,11 +26,7 @@ restructure_bmm <- function(x, ...) {
   restr_version <- restructure_version.bmm(x)
 
   if (restr_version >= current_version) {
-    if (packageVersion("brms") >= "2.20.15") {
-      x <- NextMethod('restructure')
-    } else {
-      x <- brms::restructure(x)
-    }
+    x <- NextMethod('restructure')
     return(x)
   }
 
@@ -58,13 +55,33 @@ restructure_bmm <- function(x, ...) {
     x$bmm$model <- check_model(new_model, x$data, x$bmm$user_formula)
   }
 
-  x$version$bmm_restructure <- current_version
-  if (packageVersion("brms") >= "2.20.15") {
-    x <- NextMethod('restructure')
-  } else {
-    x <- brms::restructure(x)
+  if (restr_version < "0.4.8") {
+    cl <- class(x$bmm$model)
+    cl[1] <- "bmmodel"
+    if ('sdmSimple' %in% cl) {
+      cl[cl == 'sdmSimple'] <- 'sdm'
+      cl <- c(cl, 'sdm_simple')
+    } else if ('IMMfull' %in% cl) {
+      cl[cl == 'IMMfull'] <- 'imm'
+      cl <- c(cl, 'imm_full')
+    } else if ('IMMabc' %in% cl) {
+      cl[cl == 'IMMabc'] <- 'imm'
+      cl <- c(cl, 'imm_abc')
+    } else if ('IMMbsc' %in% cl) {
+      cl[cl == 'IMMbsc'] <- 'imm'
+      cl <- c(cl, 'imm_bsc')
+    }
+    if ('nontargets' %in% cl) {
+      cl[cl == 'nontargets'] <- 'non_targets'
+      cl <- c(cl, 'non_targets')
+    }
+    class(x$bmm$model) <- cl
+
+
   }
-  x
+
+  x$version$bmm_restructure <- current_version
+  NextMethod('restructure')
 }
 
 restructure_version.bmm <- function(x) {
@@ -86,7 +103,7 @@ add_links.bmmfit <- function(x) {
 }
 
 #' @export
-add_links.bmmmodel <- function(x) {
+add_links.bmmodel <- function(x) {
   model_name <- class(x)[length(class(x))]
   new_model <- get_model(model_name)()
   x$links <- new_model$links
@@ -103,9 +120,9 @@ add_bmm_info <- function(x) {
   names(pforms) <- NULL
   user_formula <- brms::do_call("bmf", pforms)
   model = env$model
-  model$resp_vars <- list(resp_err = env$formula$resp)
+  model$resp_vars <- list(resp_error = env$formula$resp)
   model$other_vars <- list()
-  if (inherits(model, 'sdmSimple')) {
+  if (inherits(model, 'sdm')) {
     model$info$parameters$mu <- glue('Location parameter of the SDM distribution \\
                                      (in radians; by default fixed internally to 0)')
   } else {

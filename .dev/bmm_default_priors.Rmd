@@ -26,7 +26,7 @@ First, we can see what happens by default in `brms`. Let's look at a simple line
 It puts a default prior on all parameters that have only an intercept
 
 ```{r}
-dat <- OberauerLin_2017
+dat <- oberauer_lin_2017
 dat$cond <- factor(rep(1:4, each=nrow(dat)/4))   # fake condition for testing formulas
 get_prior(bf(dev_rad ~ 1, sigma ~ 1), dat)
 ```
@@ -63,7 +63,7 @@ get_prior(bf(dev_rad ~ 1, sigma ~ set_size + (set_size|ID)), dat)
 
 ## How should we do it in `bmm`
 
-Currently we put a default prior on all parameters, assuming naively that they are specified with a suppressed intercept (except for the sdmSimple, for which we have no default priors yet). We don't want to follow `brms` approach, because these measurement models need meaningful default priors to help with sampling.
+Currently we put a default prior on all parameters, assuming naively that they are specified with a suppressed intercept (except for the sdm, for which we have no default priors yet). We don't want to follow `brms` approach, because these measurement models need meaningful default priors to help with sampling.
 
 Options: 1) we do it like `brms` and let the user specify priors for all parameters 2) we put reasonable priors on intercepts and on all effects when an intercept is suprresed, but leave flat priors for effects when an intercept is present 3) we put reasonable priors on all parameters, regardless of the formula
 
@@ -87,9 +87,9 @@ options(list(bmm.default_priors = FALSE))
 All model parameters are `nlpar` so they get class `b` with coef `Intercept`
 
 ```{r}
-model <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), setsize='set_size')
+model <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), set_size='set_size')
 formula <- bmf(kappa ~ 1, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -102,7 +102,7 @@ For kappa, which we include and intercept and a predictor, we get class `b` with
 
 ```{r}
 formula <- bmf(kappa ~ session, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -115,7 +115,7 @@ For kappa, which we include and intercept and a predictor, we get class `b` with
 
 ```{r}
 formula <- bmf(kappa ~ 0+session, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -126,7 +126,7 @@ terms(formula$kappa)
 
 ```{r}
 formula <- bmf(kappa ~ 0+session + ( 0+session|ID), thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -138,7 +138,7 @@ terms(formula$kappa)
 ```{r}
 
 formula <- bmf(kappa ~ session + cond, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -154,7 +154,7 @@ What we can do, is for each predictor, check how many levels appear.
 ```{r}
 
 formula <- bmf(kappa ~ 0 + session + cond, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -166,7 +166,7 @@ terms(formula$kappa)
 ```{r}
 
 formula <- bmf(kappa ~ 0 + session * cond, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -178,7 +178,7 @@ terms(formula$kappa)
 ```{r}
 
 formula <- bmf(kappa ~ 0 + session:cond + cond + session, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -190,7 +190,7 @@ terms(formula$kappa)
 ```{r}
 
 formula <- bmf(kappa ~ 0 + session:cond, thetat ~ 1, thetant ~ 1)
-get_model_prior(formula, dat, model)
+default_prior(formula, dat, model)
 ```
 
 ```{r}
@@ -235,11 +235,11 @@ A helper function to compare the priors with and without the default priors.
 
 ```{r}
 compare_priors <- function(formula,dat,model) {
-  p1 <- withr::with_options(list('bmm.default_priors'=FALSE), get_model_prior(formula, dat, model)) %>% 
+  p1 <- withr::with_options(list('bmm.default_priors'=FALSE), default_prior(formula, dat, model)) %>% 
     brms:::prepare_print_prior() %>% 
     rename(priorBRMS=prior) %>% 
     select(priorBRMS,class,coef,group,resp,dpar,nlpar)
-  p2 <- withr::with_options(list('bmm.default_priors'=TRUE), get_model_prior(formula, dat, model)) %>% 
+  p2 <- withr::with_options(list('bmm.default_priors'=TRUE), default_prior(formula, dat, model)) %>% 
     brms:::prepare_print_prior() %>% 
     rename(priorBMM=prior) %>% 
     select(priorBMM,class,coef,group,resp,dpar,nlpar)
@@ -252,7 +252,7 @@ compare_priors <- function(formula,dat,model) {
 
 
 ```{r}
-model3p <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), setsize='set_size')
+model3p <- mixture3p('dev_rad', nt_features = paste0('col_nt',1:7), set_size='set_size')
 ```
 
 <details><summary>Click to expand</summary>
@@ -349,7 +349,7 @@ compare_priors(formula, dat, model3p)
 
 ```{r}
 options(bmm.sort_data = F)
-modelSDM <- sdmSimple('dev_rad')
+modelSDM <- sdm('dev_rad')
 ```
 
 <details><summary>Click to expand</summary>

@@ -1,10 +1,6 @@
 test_that("update.bmmfit works", {
   skip_on_cran()
-  if (packageVersion('brms') < '2.20.15') {
-    fit1 <- restructure_bmm(bmmfit_example1)
-  } else {
-    fit1 <- brms::restructure(bmmfit_example1)
-  }
+  fit1 <- restructure(bmmfit_example1)
   data <- fit1$data
 
   # formula is replaced
@@ -32,7 +28,7 @@ test_that("update.bmmfit works", {
 
   # refuse to change model
   expect_error(
-    update(fit1, model = mixture2p(resp_err = "dev_rad")),
+    update(fit1, model = mixture2p(resp_error = "dev_rad")),
     "You cannot update with a different model"
   )
 

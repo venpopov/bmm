@@ -1,8 +1,8 @@
-data <- OberauerLin_2017
+data <- oberauer_lin_2017
 data$session <- as.factor(data$session)
 formula <- bmf(c ~ 0 + set_size, kappa ~ session)
-model <- sdmSimple('dev_rad')
-get_model_prior(formula, data, model)
+model <- sdm('dev_rad')
+default_prior(formula, data, model)
 
 
 x <- exp(rnorm(1000000,3,1.75))

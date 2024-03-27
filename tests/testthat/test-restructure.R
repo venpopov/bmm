@@ -12,7 +12,7 @@ test_that("restructure works", {
   file <- file.path(path, "../internal/ref_fits", "20240215_v0.2.1_mixture2p_seed-365_6ae900f5a4.rds")
   old_fit <- readRDS(file)
   class(old_fit) <- c("bmmfit", class(old_fit))
-  new_fit <- restructure_bmm(old_fit)
+  new_fit <- restructure(old_fit)
   expect_equal(new_fit$bmm$model$links,.model_mixture2p()$links)
 })
 

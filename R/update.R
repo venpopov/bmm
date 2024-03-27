@@ -30,13 +30,9 @@ update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ..
   }
   if ("model" %in% names(dots)) {
     stop2("You cannot update with a different model.
-          If you want to use a different model, please use `fit_model()` instead.")
+          If you want to use a different model, please use `bmm()` instead.")
   }
-  if (packageVersion('brms') < '2.20.15') {
-    object <- restructure_bmm(object)
-  } else {
-    object <- brms::restructure(object)
-  }
+  object <- restructure(object)
 
   model <- object$bmm$model
   old_user_formula <- object$bmm$user_formula

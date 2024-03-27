@@ -8,11 +8,7 @@
 #' options(bmm.color_summary = FALSE) or bmm_options(color_summary = FALSE)
 #' @export
 summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE,  mc_se = FALSE, ..., backend = 'bmm') {
-  if (packageVersion('brms') < '2.20.15') {
-    object <- restructure_bmm(object)
-  } else {
-    object <- brms::restructure(object)
-  }
+  object <- restructure(object)
   backend <- match.arg(backend, c('bmm', 'brms'))
 
   # get summary object from brms, since it contains a lot of necessary information:
@@ -24,11 +20,11 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
   out <- rename_mu_smry(out, get_mu_pars(object))
 
   # get the bmm specific information
-  bmmmodel <- object$bmm$model
+  bmmodel <- object$bmm$model
   bmmform <- object$bmm$user_formula
 
   out$formula <- bmmform
-  out$model <- bmmmodel
+  out$model <- bmmodel
   out$data <- object$data
 
   # assign bmmsummary class to handle the printing
@@ -80,10 +76,7 @@ print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary
     for (i in seq_along(x$random)) {
       g <- names(x$random)[i]
       cat(paste0("~", g, " (Number of levels: ", x$ngrps[[g]], ") \n"))
-      include <- sapply(paste0(pars_to_print,'_'), function(p) grepl(p, rownames(x$random[[g]])))
-      include <- apply(include, 1, any)
-      reduced <- x$random[[g]][include,]
-      print_format(reduced, digits)
+      print_format(x$random[[g]], digits)
       cat("\n")
     }
   }
@@ -157,18 +150,28 @@ summarise_links <- function(links) {
 
 summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp=0, model = NULL) {
   fixpars <- NULL
-  wspace <- collapse(rep(' ', wsp))
-  sep <- paste0(ifelse(newline, '\n', ','), wspace)
   if (!is.null(model)) {
     formula <- suppressMessages(add_missing_parameters(model, formula, replace_fixed = FALSE))
     fixpars <- model$fixed_parameters
-    fpnames <- names(fixpars)
-    fpnames <- fpnames[fpnames %in% names(model$parameters)]
-    fpforms <- collapse(paste0(fpnames, " = ", fixpars[fpnames], sep))
+    fixpars <- fixpars[names(fixpars) %in% names(model$parameters)]
+    formula[names(fixpars)] <- fixpars
   }
-  formula <- formula[!is_constant(formula)]
-  paste0(fpforms, paste0(formula, collapse = sep))
+  print(formula, newline = newline, wsp = wsp)
 }
+
+
+#' @export
+print.bmmformula <- function(x, newline = TRUE, wsp=0, ...) {
+  wspace <- collapse(rep(' ', wsp))
+  sep <- paste0(ifelse(newline, '\n', ','), wspace)
+  for (i in 1:length(x)) {
+    if (is.numeric(x[[i]])) {
+      x[[i]] <- paste0(names(x)[i], " = ", x[[i]])
+    }
+  }
+  cat(paste0(x, collapse = sep))
+}
+
 
 summarise_model <- function(model, ...) {
   UseMethod('summarise_model')
@@ -176,7 +179,7 @@ summarise_model <- function(model, ...) {
 
 # TODO: build this up
 #' @export
-summarise_model.bmmmodel <- function(model, ...) {
+summarise_model.bmmodel <- function(model, ...) {
   construct_model_call(model, ...)
 }
 
@@ -184,25 +187,33 @@ summarise_model.bmmmodel <- function(model, ...) {
 # creates a string representation of the call to the model with the user variables
 # will likely also depend on the theme users have
 construct_model_call <- function(model, newline = FALSE, wsp = 1, ...) {
-  classes <- class(model)
-  spec <- classes[length(classes)]
+  call <- attr(model, "call")
+  if(is.null(call)) {
+    classes <- class(model)
+    model_name <- classes[length(classes)]
+
+    # construct the inner part of the call
+    rvars <- model$resp_vars
+    ovars <- model$other_vars
+    allvars <- c(rvars, ovars)
+    vnames <- names(allvars)
+  } else {
+    model_name <- deparse(call[[1]])
+    allvars <- as.list(call)[-1]
+    vnames <- names(allvars)
+  }
 
   # create necessary padding
-  wspace <- collapse(rep(' ', wsp+nchar(spec)+1))
+  wspace <- collapse(rep(' ', wsp + nchar(model_name) + 1))
   sep <- paste0(ifelse(newline, ',\n', ','), wspace)
 
-  # construct the inner part of the call
-  rvars <- model$resp_vars
-  ovars <- model$other_vars
-  allvars <- c(rvars, ovars)
-  vnames <- names(allvars)
   args <- sapply(vnames, function(var) {
     paste0(var, " = ", paste0(deparse(allvars[[var]]), collapse = ', '))
   })
 
   # combine with the padding and the function name
   args <- paste0(args, collapse = sep)
-  paste0(style('coral2')(spec), "(", args, ")")
+  paste0(style('coral2')(model_name), "(", args, ")")
 }
 
 # helper function to print summary matrices in nice format

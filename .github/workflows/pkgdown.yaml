@@ -33,8 +33,33 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
-          needs: website
+          dependencies: NA
+          extra-packages: |
+            rmarkdown
+            withr
+            knitr
+            posterior
+            here
+            stan-dev/cmdstanr
+            rmarkdown
+            bookdown
+            tidybayes
+            ggplot2
+            mixtur
+            ggthemes
+            cowplot
+            stringr
+            remotes
+            waldo
+            fansi
+            any::pkgdown
+            local::.
+
+      - name: Build Cmdstan
+        run: |
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(cores = parallel::detectCores())
+        shell: Rscript {0}
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)

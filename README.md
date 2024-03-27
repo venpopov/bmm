@@ -67,14 +67,12 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  IMMabc(resp_err, nt_features, setsize, regex, links) 
-#> -  IMMbsc(resp_err, nt_features, nt_distances, setsize, regex, links) 
-#> -  IMMfull(resp_err, nt_features, nt_distances, setsize, regex, links) 
-#> -  mixture2p(resp_err, links) 
-#> -  mixture3p(resp_err, nt_features, setsize, regex, links) 
-#> -  sdmSimple(resp_err, links) 
+#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, links, version) 
+#> -  mixture2p(resp_error, links) 
+#> -  mixture3p(resp_error, nt_features, set_size, regex, links) 
+#> -  sdm(resp_error, links, version) 
 #> 
-#> Type  ?modelname  to get information about a specific model, e.g.  ?IMMfull
+#> Type  ?modelname  to get information about a specific model, e.g.  ?imm
 ```
 
 ## How to install bmm
@@ -165,7 +163,7 @@ remotes::install_github("venpopov/bmm@v0.0.1")
 
 ## Fitting models using bmm
 
-The core function of the bmm package is the `fit_model()` function. This
+The core function of the bmm package is the `bmm()` function. This
 function takes:
 
 1.  a linear model formula specifying how parameters of the model should
@@ -176,44 +174,35 @@ function takes:
 3.  the model that should be fit
 
 You can get more detailed information on the models implemented in bmm
-by invoking the documentation of each model typing `?bmmmodel` into your
+by invoking the documentation of each model typing `?bmmodel` into your
 console. For example, calling the information on the full version of the
 Interference Measurement Model would look like this:
 
 ``` r
-?IMMfull
+?imm
 ```
 
 A complete call to fit a model using bmm could look like this. For this
-example, we are using the `OberauerLin_2017` data that is provided with
-the package.
+example, we are using the `oberauer_lin_2017` data that is provided with
+the package and we will show how to fit the Interference Measurement
+Model to this data. If you want a detailed description of this model and
+and in depth explanation of the parameters estimated in the model,
+please have a look at `vignette("bmm_imm")`.
 
 ``` r
 library(bmm)
-data <- OberauerLin_2017
-```
 
-For this quick example, we will show how to setup fitting the
-Interference Measurement Model to this data. If you want a detailed
-description of this model and and in depth explanation of the parameters
-estimated in the model, please have a look at `vignette("IMM")`.
+formula <- bmmformula(c ~ 0 + set_size,
+                      a ~ 0 + set_size,
+                      s ~ 0 + set_size,
+                      kappa ~ 0 + set_size)
 
-``` r
-model_formula <- bmmformula(c ~ 0 + set_size,
-                            a ~ 0 + set_size,
-                            s ~ 0 + set_size,
-                            kappa ~ 0 + set_size)
+model <- imm(resp_error = "dev_rad",
+             nt_features = paste0("col_nt", 1:7),
+             nt_distances = paste0("dist_nt",1:7),
+             set_size = "set_size")
 
-model <- IMMfull(resp_err = "dev_rad",
-                 nt_features = paste0("col_nt", 1:7),
-                 nt_distances = paste0("dist_nt",1:7),
-                 setsize = "set_size")
-
-fit <- fit_model(
-  formula = model_formula,
-  data = data,
-  model = model
-)
+fit <- bmm(formula = formula, data = data, model = model)
 ```
 
 Using this call, the `fit` object will save all the information about
@@ -235,7 +224,7 @@ package](https://venpopov.github.io/bmm/articles/index.html) or [here
 for the development
 version](https://venpopov.github.io/bmm/dev/articles/index.html).
 
-## Exploring cogntive measurement models
+## Exploring measurement models
 
 To aid users in improving their intuition about what different models
 predict for observed data given a certain parameter set, the `bmm`
@@ -245,10 +234,10 @@ implemented models.
 These function provide an easy way to see what a model predicts for data
 given a certain set of parameters. For example you can easily plot the
 probability density function of the data for the Interference
-Measurement model using the `dIMM` function. In similar fashion the
+Measurement model using the `dimm` function. In similar fashion the
 random generation function included for each model, generates random
 data based on a set of data generating parameters. For the IMM, you can
-use `rIMM` to generate data given a set of parameters. Plotting the
+use `rimm` to generate data given a set of parameters. Plotting the
 random data against the density illustrates that the data follows the
 theoretically implied density.
 
@@ -256,7 +245,7 @@ theoretically implied density.
 library(ggplot2)
 
 simData <- data.frame(
-  x = bmm::rIMM(n = 500,
+  x = bmm::rimm(n = 500,
                 mu = c(0,-1.5,2.5,1),
                 dist = c(0, 2, 0.3, 1),
                 c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)
@@ -264,7 +253,7 @@ simData <- data.frame(
 
 ggplot(data = simData, aes(x = x)) +
   geom_histogram(aes(y = after_stat(density))) +
-  geom_function(fun = bmm::dIMM,
+  geom_function(fun = bmm::dimm,
                 args = list(mu = c(0,-1.5,2.5,1),
                             dist = c(0, 2, 0.3, 1),
                             c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)) +
@@ -291,12 +280,11 @@ cognitive measurement models for end users. This way researchers that
 face challenges in writing their own STAN code to implement such models
 themselves can still use these models in almost any experimental design.
 
-Under the hood, the main `bmm` `fit_model()` function will then call the
-appropriate functions for the specified model and will perform several
-steps:
+Under the hood, the main `bmm()` function will then call the appropriate
+functions for the specified model and will perform several steps:
 
 1.  Configure the Sample (e.g., set up prallelization)
-2.  Check the information passed to the `fit_model()` function:
+2.  Check the information passed to the `bmm()` function:
     - if the model is installed and all required arguments were provided
     - if a valid formula was passed
     - if the data contains all necessary variables

@@ -1,23 +1,17 @@
 test_that("bmm version is added to mock model", {
-  dat <- data.frame(y = rsdm(n=10))
-
-  ff <- bmmformula(c ~ 1,
-                   kappa ~ 1)
-
-  fit <- fit_model(formula = ff,
-                   data = dat,
-                   model = sdmSimple(resp_err = "y"),
-                   parallel=T,
-                   iter=500,
-                   backend='mock',
-                   rename = F,
-                   mock = 1)
+  fit <- bmm(formula = bmmformula(c ~ 1, kappa ~ 1),
+             data = data.frame(y = rsdm(n=10)),
+             model = sdm(resp_error = "y"),
+             backend = 'mock',
+             rename = F,
+             mock = 1)
   expect_true("bmm" %in% names(fit$version))
 })
 
 
 test_that("get_mu_pars works",{
-  a <- brm(y~ a, data.frame(y = c(1,2,3), a = c('A',"B","C")), backend = "mock", mock_fit = 1, rename=F)
+  a <- brm(y~ a, data.frame(y = c(1,2,3), a = c('A',"B","C")),
+           backend = "mock", mock_fit = 1, rename=F)
   mus <- get_mu_pars(a)
   expect_equal(mus, c("Intercept", "aB", "aC"))
 })

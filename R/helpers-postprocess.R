@@ -1,11 +1,11 @@
 #' @title Generic S3 method for postprocessing the fitted brm model
-#' @description Called by fit_model() to automatically perform some type of postprocessing
+#' @description Called by bmm() to automatically perform some type of postprocessing
 #'   depending on the model type. It will call the appropriate postprocess_brm.*
 #'   methods based on the list of classes defined in the .model_* functions. For
 #'   models with several classes listed, it will call the functions in the order
 #'   they are listed. Thus, any operations that are common to a group of models
 #'   should be defined in the appropriate postprocess_brm.* function, where \*
-#'   corresponds to the shared class. For example, for the sdmSimple model, the
+#'   corresponds to the shared class. For example, for the sdm model, the
 #'   postprocessing involves setting the link function for the c parameter to "log",
 #'   because it was coded manually in the stan code, but it was specified as "identity"
 #'   in the brms custom family. If your model requires no postprocessing, you can
@@ -22,13 +22,19 @@ postprocess_brm <- function(model, fit, ...) {
 }
 
 #' @export
-postprocess_brm.bmmmodel <- function(model, fit, ...) {
+postprocess_brm.bmmodel <- function(model, fit, ...) {
   dots <- list(...)
   class(fit) <- c('bmmfit','brmsfit')
   fit$version$bmm <- utils::packageVersion('bmm')
-  fit$bmm <- nlist(model, user_formula = dots$user_formula, configure_opts = dots$configure_opts)
+  fit$bmm <- nlist(model, user_formula = dots$user_formula,
+                   configure_opts = dots$configure_opts)
   attr(fit$data, 'data_name') <- attr(dots$fit_args$data, 'data_name')
+
+  # add bmm version to the stancode
+  fit$model <- add_bmm_version_to_stancode(fit$model)
+
   fit <- NextMethod('postprocess_brm')
+
   # clean up environments stored in the fit object
   reset_env(fit)
 }
@@ -54,7 +60,7 @@ get_mu_pars <- function(object) {
 #'   depending on the model type. It will call the appropriate revert_postprocess_brm.*
 #'   methods based on the list of classes defined in the .model_* functions. For
 #'   models with several classes listed, it will call the functions in the order
-#'   they are listed. For example, for the sdmSimple model, the
+#'   they are listed. For example, for the sdm model, the
 #'   postprocessing involves setting the link function for the c parameter to "log",
 #'   because it was coded manually in the stan code, but it was specified as "identity"
 #'   in the brms custom family. However, during the update process, the link function

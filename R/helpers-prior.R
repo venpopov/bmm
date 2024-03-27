@@ -6,79 +6,56 @@
 #'   model. Additionally, it will return all model parameters that have no prior
 #'   specified (flat priors). This can help to get an idea about which priors
 #'   need to be specified and also know which priors were used if no
-#'   user-specified priors were passed to the [fit_model()] function.
+#'   user-specified priors were passed to the [bmm()] function.
 #'
-#' @inheritParams fit_model
+#'   The default priors in `bmm` tend to be more informative than the default
+#'   priors in `brms`, as we use domain knowledge to specify the priors.
+#'
+#' @inheritParams bmm
 #' @param object A `bmmformula` object
-#' @param formula Deprecated. Use `object` instead.
-#' @param ... Further arguments passed to \code{\link[brms:get_prior]{brms::get_prior()}}. See the
-#'   description of \code{\link[brms:get_prior]{brms::get_prior()}} for more details
-#'
-#' @details This function is deprecated. Please use `default_prior()` or `get_prior()` (if using
-#' `brms` >= 2.20.14) instead. In `brms` >= 2.20.14, `get_prior()` became an
-#' alias for `default_prior()`, and `default_prior()` is the recommended function to use.
+#' @param ... Further arguments passed to [brms::default_prior()]
 #'
 #' @returns A data.frame with columns specifying the `prior`, the `class`, the
 #'   `coef` and `group` for each of the priors specified. Separate rows contain
 #'   the information on the parameters (or parameter classes) for which priors
 #'   can be specified.
 #'
-#' @name get_model_prior
-#'
-#' @seealso [supported_models()], \code{\link[brms:get_prior]{brms::get_prior()}}.
+#' @seealso [supported_models()], [brms::default_prior()]
 #'
 #' @keywords extract_info
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # if using brms >= 2.20.14
 #' default_prior(bmf(c ~ 1, kappa ~ 1),
-#'   data = OberauerLin_2017,
-#'   model = sdmSimple(resp_err = "dev_rad")
+#'   data = oberauer_lin_2017,
+#'   model = sdm(resp_error = "dev_rad")
 #' )
-#' # if using brms < 2.20.14
-#' get_prior(bmf(c ~ 1, kappa ~ 1),
-#'   data = OberauerLin_2017,
-#'   model = sdmSimple(resp_err = "dev_rad")
-#' )
-#' }
+#' @importFrom brms default_prior
 #' @export
-get_model_prior <- function(object, data, model, formula = object, ...) {
-  fcall <- as.character(match.call()[1])
-  if (fcall == "get_model_prior") {
-    if (utils::packageVersion("brms") >= "2.20.14") {
-      message("get_model_prior is deprecated. Please use get_prior() or default_prior()")
-    } else {
-      message("get_model_prior is deprecated. Please use get_prior() instead.")
-    }
-  }
-  if (missing(object) && !missing(formula)) {
-    warning2(
-      "The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
-      " Please use 'object' instead."
-    )
-  }
+default_prior.bmmformula <- function(object, data, model, formula = object, ...) {
+  withr::local_options(bmm.sort_data = FALSE)
+
   formula <- object
   model <- check_model(model, data, formula)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
   config_args <- configure_model(model, data, formula)
+  prior <- configure_prior(model, data, config_args$formula, user_prior = NULL)
 
   dots <- list(...)
-  prior_args <- c(config_args, dots)
-  brms_priors <- brms::do_call(brms::get_prior, prior_args)
+  prior_args <- combine_args(nlist(config_args, dots, prior))
+  prior_args$object <- prior_args$formula
+  prior_args$formula <- NULL
+
+  brms_priors <- brms::do_call(brms::default_prior, prior_args)
 
   combine_prior(brms_priors, prior_args$prior)
 }
 
 
-
-
-
 #' @title construct constant priors to fix fixed model parameters
-#' @param model a `bmmmodel` object
+#' @param model a `bmmodel` object
 #' @param formula a `brmsformula` object
 #' @param additional_pars a list of name=value pairs to fix additional
 #'   parameters where the name is the parameter name and the value is the fixed
@@ -95,17 +72,23 @@ get_model_prior <- function(object, data, model, formula = object, ...) {
 #'   class="Intercept", dpar=parameter_name) for all fixed parameters in the
 #'   model
 #' @noRd
-fixed_pars_priors <- function(model, formula, additional_pars = list(), ...) {
-  # determine type of parameters
-  bterms <- brms::brmsterms(formula)
-  dpars <- names(bterms$dpars)
-  nlpars <- names(bterms$nlpars)
+fixed_pars_priors <- function(model, formula, additional_pars = list()) {
+  fix_pars <- model$fixed_parameters
+  if (length(fix_pars) == 0) {
+    return(brms::empty_prior())
+  }
+
 
   # construct parameter names and prior values
   par_list <- c(model$fixed_parameters, additional_pars)
   pars <- names(par_list)
   values <- unlist(par_list)
   priors <- glue::glue("constant({values})")
+
+  # determine type of parameters
+  bterms <- brms::brmsterms(formula)
+  dpars <- names(bterms$dpars)
+  nlpars <- names(bterms$nlpars)
 
   # flexibly set the variables for set_prior
   classes <- ifelse(pars %in% dpars, "Intercept", "b")
@@ -116,7 +99,7 @@ fixed_pars_priors <- function(model, formula, additional_pars = list(), ...) {
 }
 
 
-#' Set default priors for a bmmmodel
+#' Set default priors for a bmmodel
 #'
 #' This function
 #' allows you to specify default priors flexibly regardless of the formula the
@@ -126,7 +109,7 @@ fixed_pars_priors <- function(model, formula, additional_pars = list(), ...) {
 #' intercept, and priors on the effects of the predictors relative to the
 #' intercept.
 #'
-#' @param model A `bmmmodel` object
+#' @param model A `bmmodel` object
 #' @param formula A `brmsformula` object
 #' @param data A data.frame containing the data used in the model
 #'
@@ -187,8 +170,8 @@ set_default_prior <- function(model, data, formula) {
     if (attr(terms, "intercept")) {
       if (par %in% nlpars) {
         prior2 <- brms::prior_(prior_desc$main,
-                               class = "b",
-                               coef = "Intercept", nlpar = par
+          class = "b",
+          coef = "Intercept", nlpar = par
         )
       } else {
         prior2 <- brms::prior_(prior_desc$main, class = "Intercept", dpar = par)
@@ -228,24 +211,24 @@ set_default_prior <- function(model, data, formula) {
   prior
 }
 
-#' Generic S3 method for configuring the default prior for a bmmmodel
+#' Generic S3 method for configuring the default prior for a bmmodel
 #'
-#' Called by fit_model() to automatically construct the priors for a given
+#' Called by bmm() to automatically construct the priors for a given
 #' model, data and formula, and combine it with the prior given by the user. The
-#' first method executed is configure_prior.bmmmodel, which will build the prior
+#' first method executed is configure_prior.bmmodel, which will build the prior
 #' based on information from the model object such as fixed_parameters,
 #' default_priors, etc. Thus it is important to define these values in the model
 #' object. The function will also recognize if the user has specified that some
 #' parameters should be fixed to a constant and put the appropriate constant
 #' priors. Any additional priors that a developer wants to specify, which are
 #' not based on information in the model object, can be defined in the
-#' configure_prior.* method for the model. See configure_prior.IMMfull for an
+#' configure_prior.* method for the model. See configure_prior.imm_full for an
 #' example.
-#' @param model A `bmmmodel` object
+#' @param model A `bmmodel` object
 #' @param data A data.frame containing the data used in the model
 #' @param formula A `brmsformula` object returned from configure_model()
 #' @param user_prior A `brmsprior` object given by the user as an argument to
-#'  fit_model()
+#'  bmm()
 #' @param ... Additional arguments passed to the method
 #' @export
 #' @keywords internal, developer
@@ -261,7 +244,7 @@ configure_prior.default <- function(model, data, formula, user_prior, ...) {
 #' @export
 configure_prior.bmmmodel <- function(model, data, formula, user_prior = NULL, ...) {
   if ("M3" %in% class(model)) {
-    if(model$other_vars$choice_rule == "softmax"){
+    if (model$other_vars$choice_rule == "softmax") {
       prior <- brms::prior("constant(0)", class = "b", nlpar = "b")
     } else {
       prior <- brms::prior("constant(0.1)", class = "b", nlpar = "b")
@@ -286,11 +269,26 @@ configure_prior.bmmmodel <- function(model, data, formula, user_prior = NULL, ..
 combine_prior <- function(prior1, prior2) {
   if (!is.null(prior2)) {
     combined_prior <- dplyr::anti_join(prior1, prior2,
-                                       by = c("class", "dpar", "nlpar", "coef", "group", "resp")
+      by = c("class", "dpar", "nlpar", "coef", "group", "resp")
     )
     prior <- combined_prior + prior2
   } else {
     prior <- prior1
   }
   return(prior)
+}
+
+
+summarise_default_prior <- function(prior_list) {
+  pars <- names(prior_list)
+  prior_info <- ""
+  for (par in pars) {
+    prior_info <- paste0(prior_info, "   - `", par, "`:\n")
+    types <- names(prior_list[[par]])
+    for (type in types) {
+      prior <- prior_list[[par]][[type]]
+      prior_info <- paste0(prior_info, "      - `", type, "`: ", prior, "\n")
+    }
+  }
+  prior_info
 }

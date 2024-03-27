@@ -4,16 +4,16 @@
 
 
 #' @title Generic S3 method for checking data based on model type
-#' @description Called by fit_model() to automatically perform checks on the
+#' @description Called by [bmm()] to automatically perform checks on the
 #'   data depending on the model type. It will call the appropriate check_data
 #'   methods based on the list of classes defined in the .model_* functions. For
 #'   models with several classes listed, it will call the functions in the order
 #'   they are listed. Thus, any operations that are common to a group of models
 #'   should be defined in the appropriate check_data.* function, where \*
-#'   corresponds to the shared class. For example, for the .model_IMMabc model,
+#'   corresponds to the shared class. For example, for the .model_imm_abc model,
 #'   this corresponds to the following order of check_data.* functions:
-#'   check_data() -> check_data.vwm(), check_data.nontargets() the output of the
-#'   final function is returned to fit_model().
+#'   check_data() -> check_data.vwm(), check_data.non_targets() the output of the
+#'   final function is returned to bmm().
 #' @param model A model list object returned from check_model()
 #' @param data The user supplied data.frame containing the data to be checked
 #' @param formula The user supplied formula
@@ -35,7 +35,7 @@ check_data.default <- function(model, data, formula) {
 }
 
 #' @export
-check_data.bmmmodel <- function(model, data, formula) {
+check_data.bmmodel <- function(model, data, formula) {
   stopif(missing(data), "Data must be specified using the 'data' argument.")
   data <- try(as.data.frame(data), silent = TRUE)
   stopif(is_try_error(data), "Argument 'data' must be coercible to a data.frame.")
@@ -65,7 +65,7 @@ check_data.vwm <- function(model, data, formula) {
 }
 
 #' @export
-check_data.nontargets <- function(model, data, formula) {
+check_data.non_targets <- function(model, data, formula) {
   nt_features <- model$other_vars$nt_features
   warnif(
     max(abs(data[, nt_features]), na.rm = T) > 2 * pi,
@@ -74,19 +74,19 @@ check_data.nontargets <- function(model, data, formula) {
           The model will continue to run, but the results may be compromised."
   )
 
-  ss <- check_var_setsize(model$other_vars$setsize, data)
-  max_setsize <- ss$max_setsize
+  ss <- check_var_set_size(model$other_vars$set_size, data)
+  max_set_size <- ss$max_set_size
   ss_numeric <- ss$ss_numeric
 
   stopif(
-    !isTRUE(all.equal(length(nt_features), max_setsize - 1)),
+    !isTRUE(all.equal(length(nt_features), max_set_size - 1)),
     "The number of columns for non-target values in the argument \\
-         'nt_features' should equal max(setsize)-1"
+         'nt_features' should equal max(set_size)-1"
   )
 
-  # create index variables for nt_features and correction variable for theta due to setsize
-  lure_idx_vars <- paste0("LureIdx", 1:(max_setsize - 1))
-  for (i in 1:(max_setsize - 1)) {
+  # create index variables for nt_features and correction variable for theta due to set_size
+  lure_idx_vars <- paste0("LureIdx", 1:(max_set_size - 1))
+  for (i in 1:(max_set_size - 1)) {
     data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
   }
   data$ss_numeric <- ss_numeric
@@ -95,56 +95,57 @@ check_data.nontargets <- function(model, data, formula) {
   data[, nt_features][is.na(data[, nt_features])] <- 0
 
   # save some variables for later use
-  attr(data, "max_setsize") <- max_setsize
+  attr(data, "max_set_size") <- max_set_size
   attr(data, "lure_idx_vars") <- lure_idx_vars
 
   NextMethod("check_data")
 }
 
-check_var_setsize <- function(setsize, data) {
+
+check_var_set_size <- function(set_size, data) {
   stopif(
-    length(setsize) > 1,
-    "The setsize variable '{setsize}' must be a single numeric value or \\
+    length(set_size) > 1,
+    "The set_size variable '{set_size}' must be a single numeric value or \\
           a single variable in your data. You provided a vector of length \\
-          {length(setsize)}"
+          {length(set_size)}"
   )
 
-  # class check - is setsize a single numeric value or a variable in the data
+  # class check - is set_size a single numeric value or a variable in the data
   # coericble to a numeric vector?
-  if (is_data_var(setsize, data)) {
-    ss_numeric <- try(as_numeric_vector(data[[setsize]]), silent = T)
+  if (is_data_var(set_size, data)) {
+    ss_numeric <- try(as_numeric_vector(data[[set_size]]), silent = T)
 
     stopif(
       is_try_error(ss_numeric),
-      "The setsize variable '{setsize}' must be coercible to a numeric \\
+      "The set_size variable '{set_size}' must be coercible to a numeric \\
            vector. Did you code your set size as a character vector?"
     )
 
-    max_setsize <- max(ss_numeric, na.rm = T)
+    max_set_size <- max(ss_numeric, na.rm = T)
   } else {
-    max_setsize <- try(as_one_integer(setsize), silent = T)
+    max_set_size <- try(as_one_integer(set_size), silent = T)
 
     stopif(
-      is_try_error(max_setsize) | is.logical(setsize),
-      "The setsize variable '{setsize}' must be either a variable in your \\
+      is_try_error(max_set_size) | is.logical(set_size),
+      "The set_size variable '{set_size}' must be either a variable in your \\
        data or a single numeric value"
     )
 
-    ss_numeric <- rep(max_setsize, nrow(data))
+    ss_numeric <- rep(max_set_size, nrow(data))
   }
 
   # value check
   stopif(
     any(ss_numeric < 1, na.rm = T),
-    "Values of the setsize variable '{setsize}' must be greater than 0"
+    "Values of the set_size variable '{set_size}' must be greater than 0"
   )
 
   stopif(
     any(ss_numeric %% 1 != 0, na.rm = T),
-    "Values of the setsize variable '{setsize}' must be whole numbers"
+    "Values of the set_size variable '{set_size}' must be whole numbers"
   )
 
-  list(max_setsize = max_setsize, ss_numeric = ss_numeric)
+  list(max_set_size = max_set_size, ss_numeric = ss_numeric)
 }
 
 #' @export
@@ -328,58 +329,32 @@ rad2deg <- function(rad) {
 #'   this function will return the combined stan data generated by `bmm` and
 #'   `brms`
 #'
-#' @details This function is deprecated. Please use `standata()` or
-#'   `make_standata()` (if using `brms` >= 2.20.14) instead. In `brms` >=
-#'   2.20.14, `make_standata()` became an alias for `standata()`, and
-#'   `standata()` is the recommended function to use.
-#'
-#' @inheritParams fit_model
+#' @inheritParams bmm
 #' @param object A `bmmformula` object
-#' @param formula Deprecated. Use `object` instead.
-#' @param ... Further arguments passed to [brms::make_standata()]. See the
-#'   description of [brms::make_standata()] for more details
+#' @param ... Further arguments passed to [brms::standata()]. See the
+#'   description of [brms::standata()] for more details
 #'
 #' @returns A named list of objects containing the required data to fit a bmm
 #'   model with Stan.
 #'
-#'
-#' @seealso [supported_models()], [brms::make_standata()], [brms::standata()]
+#' @seealso [supported_models()], [brms::standata()]
 #'
 #' @export
 #'
 #' @keywords extract_info
-#' @importFrom brms standata
 #'
 #' @examples
 #' sdata1 <- standata(bmf(c ~ 1, kappa ~ 1),
-#'   data = OberauerLin_2017,
-#'   model = sdmSimple(resp_err = "dev_rad")
+#'   data = oberauer_lin_2017,
+#'   model = sdm(resp_error = "dev_rad")
 #' )
 #' str(sdata1)
+#' @importFrom brms standata
 #' @export
-get_standata <- function(object, data, model, prior = NULL, formula = object, ...) {
-  if (utils::packageVersion("brms") >= "2.20.14") {
-    message("get_standata is deprecated. Please use standata() or make_standata() instead.")
-  } else {
-    message("get_standata is deprecated. Please use standata() instead.")
-  }
-  warnif(
-    missing(object) && !missing(formula),
-    "The 'formula' argument is deprecated for consistency with brms (>= 2.20.14). \\
-         Please use 'object' instead."
-  )
-
-  standata.bmmformula(
-    object = formula, data = data,
-    model = model, prior = prior, ...
-  )
-}
-
-#' @export
-#' @rdname get_standata
 standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # check model, formula and data, and transform data if necessary
   formula <- object
+  configure_options(list(...))
   model <- check_model(model, data, formula)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
@@ -393,7 +368,9 @@ standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # extract stan code
   dots <- list(...)
   fit_args <- combine_args(nlist(config_args, dots, prior))
-  brms::do_call(brms::make_standata, fit_args)
+  fit_args$object <- fit_args$formula
+  fit_args$formula <- NULL
+  brms::do_call(brms::standata, fit_args)
 }
 
 # check if the data is sorted by the predictors
