@@ -14,7 +14,7 @@
         'Oberauer, K. (2023). Measurement models for visual working memory - \\
         A factorial model comparison. Psychological Review, 130(3), 841-852'
       ),
-      version = 'Simple (no non-targets)',
+      version = version,
       requirements = glue(
         '- The response variable should be in radians and represent the angular \\
         error relative to the target'
