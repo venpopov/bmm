@@ -95,7 +95,7 @@ get_model_prior <- function(object, data, model, formula = object, ...) {
 #'   class="Intercept", dpar=parameter_name) for all fixed parameters in the
 #'   model
 #' @noRd
-fixed_pars_priors <- function(model, formula, additional_pars = list()) {
+fixed_pars_priors <- function(model, formula, additional_pars = list(), ...) {
   # determine type of parameters
   bterms <- brms::brmsterms(formula)
   dpars <- names(bterms$dpars)
@@ -187,8 +187,8 @@ set_default_prior <- function(model, data, formula) {
     if (attr(terms, "intercept")) {
       if (par %in% nlpars) {
         prior2 <- brms::prior_(prior_desc$main,
-          class = "b",
-          coef = "Intercept", nlpar = par
+                               class = "b",
+                               coef = "Intercept", nlpar = par
         )
       } else {
         prior2 <- brms::prior_(prior_desc$main, class = "Intercept", dpar = par)
@@ -259,14 +259,25 @@ configure_prior.default <- function(model, data, formula, user_prior, ...) {
 }
 
 #' @export
-configure_prior.bmmmodel <- function(model, data, formula, user_prior, ...) {
-  prior <- fixed_pars_priors(model, formula)
-  default_prior <- set_default_prior(model, data, formula)
-  prior <- combine_prior(default_prior, prior)
+configure_prior.bmmmodel <- function(model, data, formula, user_prior = NULL, ...) {
+  if ("M3" %in% class(model)) {
+    if(model$other_vars$choice_rule == "softmax"){
+      prior <- brms::prior("constant(0)", class = "b", nlpar = "b")
+    } else {
+      prior <- brms::prior("constant(0.1)", class = "b", nlpar = "b")
+    }
+    # default_prior <- set_default_prior(model, data, formula)
+    # default_prior <- set_default_prior(model, data, formula)
+  } else {
+    prior <- fixed_pars_priors(model, formula)
+    default_prior <- set_default_prior(model, data, formula)
+    prior <- combine_prior(default_prior, prior)
+  }
   prior <- combine_prior(prior, user_prior)
   additional_prior <- NextMethod("configure_prior")
   combine_prior(prior, additional_prior)
 }
+
 
 
 # internal function to combine two priors (e.g. the default prior with the user
@@ -275,7 +286,7 @@ configure_prior.bmmmodel <- function(model, data, formula, user_prior, ...) {
 combine_prior <- function(prior1, prior2) {
   if (!is.null(prior2)) {
     combined_prior <- dplyr::anti_join(prior1, prior2,
-      by = c("class", "dpar", "nlpar", "coef", "group", "resp")
+                                       by = c("class", "dpar", "nlpar", "coef", "group", "resp")
     )
     prior <- combined_prior + prior2
   } else {

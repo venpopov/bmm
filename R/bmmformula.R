@@ -242,11 +242,10 @@ bmf2bf.bmmmodel <- function(model, formula) {
   resp <- model$resp_vars
   constants <- model$fixed_parameters
 
-
   if (length(resp) > 1) {
     brms_formula <- NextMethod("bmf2bf")
     return(formula)
-  } else if("M3" %in% class(model)) {
+  } else if ("M3" %in% class(model)) {
     brms_formula <- NextMethod("bmf2bf")
   } else {
     resp <- resp[[1]]
@@ -256,7 +255,7 @@ bmf2bf.bmmmodel <- function(model, formula) {
   }
 
 
-  if("M3custom" %in% class(model)){
+  if ("M3custom" %in% class(model)) {
     formula <- apply_links(formula, model$links)
     formula <- assign_nl(formula)
   }

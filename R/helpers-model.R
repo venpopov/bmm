@@ -128,7 +128,7 @@ check_model.bmmmodel <- function(model, data = NULL, formula = NULL) {
 }
 
 #' @export
-check_model.M3 <- function(model, data = NULL) {
+check_model.M3 <- function(model, data = NULL, formula = NULL) {
   if (is.null(names(model$other_vars$num_options))) names(model$other_vars$num_options) <- model$resp_vars$resp_cats
   NextMethod("check_model")
 }

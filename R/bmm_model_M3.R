@@ -31,6 +31,11 @@
       fixed_parameters = list(
          b = ifelse(choice_rule == "softmax", 0, 0.1)
       ),
+      default_priors = list(
+         a = list(main = "normal(0,1)", effects = "normal(0,1)"),
+         c = list(main = "normal(0,1)", effects = "normal(0,1)"),
+         d = list(main = "normal(0,1)", effects = "normal(0,1)")
+      ),
       void_mu = FALSE
    )
    class(out) <- c('bmmmodel','M3', 'M3custom')
@@ -146,10 +151,10 @@ configure_model.M3 <- function(model, data, formula) {
    formula <- bmf2bf(model, bmm_formula)
 
    # construct the family
-   family <- brms::multinomial(refcat = NA)
+   formula$family <- brms::multinomial(refcat = NA)
 
    # construct the default prior
-   prior <- fixed_pars_priors(model, partype = "nlpar", class = "b")
+   # prior <- fixed_pars_priors(model, formula)
    # if (getOption("bmm.default_priors", TRUE)) {
    #    prior <- prior +
    #       set_default_prior(bmm_formula, data,
@@ -159,6 +164,6 @@ configure_model.M3 <- function(model, data, formula) {
    # }
 
    # return the list
-   out <- nlist(formula, data, family, prior)
+   out <- nlist(formula, data)
    return(out)
 }
