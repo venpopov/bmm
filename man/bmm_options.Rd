@@ -10,6 +10,7 @@ bmm_options(
   default_priors,
   silent,
   color_summary,
+  file_refit,
   reset_options = FALSE
 )
 }
@@ -35,6 +36,9 @@ still printed. \strong{Default: 1}}
 
 \item{color_summary}{logical. If TRUE, the summary of the model will be
 printed in color. \strong{Default: TRUE}}
+
+\item{file_refit}{logical. If TRUE, bmm() will refit the model even if the
+file argument is specified. \strong{Default: FALSE}}
 
 \item{reset_options}{logical. If TRUE, the options will be reset to their
 default values \strong{Default: FALSE}}
