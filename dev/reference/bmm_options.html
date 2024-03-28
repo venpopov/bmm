@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">bmm</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.5.1.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.5.2.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,7 @@
 <span>  <span class="va">default_priors</span>,</span>
 <span>  <span class="va">silent</span>,</span>
 <span>  <span class="va">color_summary</span>,</span>
+<span>  <span class="va">file_refit</span>,</span>
 <span>  reset_options <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -101,6 +102,11 @@ still printed. <strong>Default: 1</strong></p></dd>
 printed in color. <strong>Default: TRUE</strong></p></dd>
 
 
+<dt>file_refit</dt>
+<dd><p>logical. If TRUE, bmm() will refit the model even if the
+file argument is specified. <strong>Default: FALSE</strong></p></dd>
+
+
 <dt>reset_options</dt>
 <dd><p>logical. If TRUE, the options will be reset to their
 default values <strong>Default: FALSE</strong></p></dd>
@@ -136,6 +142,7 @@ manually using the built-in <code><a href="https://rdrr.io/r/base/options.html" 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  parallel = FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  default_priors = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  silent = 1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  file_refit = FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  color_summary = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> For more information on these options or how to change them, see help(bmm_options).</span>
 <span class="r-in"><span></span></span>
@@ -146,6 +153,7 @@ manually using the built-in <code><a href="https://rdrr.io/r/base/options.html" 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  parallel = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  default_priors = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  silent = 1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  file_refit = FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  color_summary = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> For more information on these options or how to change them, see help(bmm_options).</span>
 <span class="r-in"><span></span></span>
@@ -156,6 +164,7 @@ manually using the built-in <code><a href="https://rdrr.io/r/base/options.html" 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  parallel = FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  default_priors = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  silent = 1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  file_refit = FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  color_summary = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> For more information on these options or how to change them, see help(bmm_options).</span>
 <span class="r-in"><span></span></span>
@@ -167,6 +176,7 @@ manually using the built-in <code><a href="https://rdrr.io/r/base/options.html" 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  parallel = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  default_priors = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  silent = 1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  file_refit = FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  color_summary = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> For more information on these options or how to change them, see help(bmm_options).</span>
 <span class="r-in"><span></span></span>
@@ -177,6 +187,7 @@ manually using the built-in <code><a href="https://rdrr.io/r/base/options.html" 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  parallel = FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  default_priors = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  silent = 1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  file_refit = FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  color_summary = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> For more information on these options or how to change them, see help(bmm_options).</span>
 <span class="r-in"><span></span></span>
@@ -188,6 +199,7 @@ manually using the built-in <code><a href="https://rdrr.io/r/base/options.html" 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  parallel = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  default_priors = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  silent = 1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  file_refit = FALSE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">  color_summary = TRUE</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> For more information on these options or how to change them, see help(bmm_options).</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/on.exit.html" class="external-link">on.exit</a></span><span class="op">(</span><span class="fu">bmm_options</span><span class="op">(</span><span class="va">old_op</span><span class="op">)</span><span class="op">)</span></span></span>
