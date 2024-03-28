@@ -8,7 +8,7 @@ The following contributions will be acknowledge in the `NEWS` for each release o
 -   Submitting a bug fix
 -   Discussing and proposing improvements on the current state of the code, in particular:
 -   improving stability of model estimation
--   speeding uo model estimation
+-   speeding up model estimation
 -   generalizing functions across multiple already implemented `bmmodels`
 
 More extensive contributions will be acknowledge by being listed as a contributor in the package documentation. These entail:
