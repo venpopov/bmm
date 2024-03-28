@@ -251,23 +251,11 @@ bmf2bf.bmmodel <- function(model, formula) {
   resp <- model$resp_vars
   constants <- model$fixed_parameters
 
-  if (length(resp) > 1) {
-    brms_formula <- NextMethod("bmf2bf")
-    return(formula)
-  } else if ("m3" %in% class(model)) {
-    brms_formula <- NextMethod("bmf2bf")
-  } else {
-    resp <- resp[[1]]
+  resp <- resp[[1]]
 
-    # set base brms formula based on response
-    brms_formula <- brms::bf(paste0(resp, "~ 1"))
-  }
-
-
-  if ("m3_custom" %in% class(model)) {
-    formula <- apply_links(formula, model$links)
-    formula <- assign_nl(formula)
-  }
+  # set base brms formula based on response
+  brms_formula <- brms::bf(paste0(resp, "~ 1"))
+  brms_formula <- NextMethod("bmf2bf")
 
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function

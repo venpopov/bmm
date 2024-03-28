@@ -4,7 +4,7 @@
 # see file 'R/bmm_model_mixture3p.R' for an example
 
 .model_m3 <- function(resp_cats = NULL, num_options = NULL, links = NULL,
-                            choice_rule = "softmax", version = "custom", ...) {
+                      choice_rule = "softmax", version = "custom", ...) {
    # name the number of options in each response categories if no names are provided
    if (is.null(names(num_options))) names(num_options) <- resp_cats
 
@@ -23,21 +23,65 @@
          - Include at least an activation source "b" for all response categories \n
          - Predict the specified activation at least by a fixed intercept and any additional predictors from your data',
       parameters = list(
-         b = "Background activation. This source of activation should be added to the
-              activation function for each response category, and represents the background
-              noise. This parameter is fixed for scaling, but needs to be included in all
-              models."
+         b = "Background activation. Activation added to the activation function for each response category, and represents the background
+              noise. This parameter is fixed for scaling, but needs to be included in all models."
       ),
       fixed_parameters = list(
          b = ifelse(choice_rule == "softmax", 0, 0.1)
       ),
-      default_priors = list(
-         a = list(main = "normal(0,1)", effects = "normal(0,1)"),
-         c = list(main = "normal(0,1)", effects = "normal(0,1)"),
-         d = list(main = "normal(0,1)", effects = "normal(0,1)")
-      ),
+      default_priors = list(),
       void_mu = FALSE
    )
+
+   # add version specific information
+   if (version == "ss") {
+      ss_parameters <- list(
+         c = "Context activation. This source of activation is added to the item cued to be recalled, that is the correct item.",
+         a = "General activation. This source of activation is added to all items that were presented during the current trial."
+      )
+      ss_links <- list(
+         c = "exp",
+         a = "exp"
+      )
+      missing_links <- !names(out$links) %in% ss_links
+
+      ss_default_priors <- list(
+         a = list(main = "normal(0,1)", effects = "normal(0,1)"),
+         c = list(main = "normal(0,1)", effects = "normal(0,1)"),
+      )
+      missing_priors <- !names(out$default_priors) %in% ss_default_priors
+
+      # add version specific info to the model object
+      out$parameters <- c(out$parameters, ss_parameters)
+      out$links <- c(out$links, ss_links[missing_links])
+      out$default_priors$s <- c(out$default_priors, ss_default_priors[missing_priors])
+   } else if (version == "cs") {
+      cs_parameters <- list(
+         c = "Context activation. This source of activation is added to the item cued to be recalled, that is the correct item.",
+         a = "General activation. This source of activation is added to all items that were presented during the current trial.",
+         f = "Filtering. This parameter captures the extent to which distractors remained in working memory."
+      )
+
+      cs_links <- list(
+         c = "exp",
+         a = "exp",
+         f = "logit"
+      )
+      missing_links <- !names(out$links) %in% cs_links
+
+      cs_default_priors <- list(
+         a = list(main = "normal(0,1)", effects = "normal(0,1)"),
+         c = list(main = "normal(0,1)", effects = "normal(0,1)"),
+         f = list(main = "normal(0,1)", effects = "normal(0,1)")
+      )
+      missing_priors <- !names(out$default_priors) %in% cs_default_priors
+
+      # add version specific info to the model object
+      out$parameters <- c(out$parameters, cs_parameters)
+      out$links <- c(out$links, cs_links[missing_links])
+      out$default_priors$s <- c(out$default_priors, cs_default_priors[missing_priors])
+   }
+
    class(out) <- c('bmmodel','m3', paste0("m3_",version))
    out
 }
@@ -83,20 +127,76 @@
 #' }
 #'
 #' @export
-#'
-#'
 m3 <- function(resp_cats, num_options, links, choice_rule = "softmax", version = "custom", ...) {
    stop_missing_args()
    .model_m3(resp_cats = resp_cats, num_options = num_options,
-                   choice_rule = choice_rule, links = links, version = version, ...)
+             choice_rule = choice_rule, links = links, version = version, ...)
 }
 
-m3_custom <- function(resp_cats, num_options, links, choice_rule = "softmax", version = "custom", ...) {
-   stop_missing_args()
-   .model_M3custom(resp_cats = resp_cats, num_options = num_options,
-                   choice_rule = choice_rule, links = links, version = version, ...)
+
+#############################################################################!
+# CHECK_Model S3 methods                                                 ####
+#############################################################################!
+
+#' @export
+check_model.m3 <- function(model, data = NULL, formula = NULL) {
+   # name number of response options if names are empty
+   if (is.null(names(model$other_vars$num_options))) names(model$other_vars$num_options) <- model$resp_vars$resp_cats
+   NextMethod("check_model")
 }
 
+#' @export
+check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
+   existing_par_names <- names(model$parameters)
+
+   # add user defined parameters to the model object
+   act_funs <- formula[model$resp_vars$resp_cats]
+   user_pars <- rhs_vars(act_funs)
+   user_pars <- user_pars[which(!user_pars %in% names(model$parameters))]
+   if (length(user_pars > 0)) {
+      model$parameters <- append(model$parameters, user_pars)
+      names(model$parameters) <- c(existing_par_names,user_pars)
+   }
+
+   NextMethod("check_model")
+}
+
+#############################################################################!
+# CHECK_Formula S3 methods                                               ####
+#############################################################################!
+
+#' @export
+check_formula.m3 <- function(model, data, formula){
+   formula <- apply_links(formula, model$links)
+   formula <- assign_nl(formula)
+
+   NextMethod("check_formula")
+}
+
+#' @export
+check_formula.m3_custom <- function(model, data, formula){
+   # test if activation functions for all categories are provided
+   missing_act_funs <- which(!model$resp_vars$resp_cats %in% names(formula))
+   stopif(length(missing_act_funs) > 0,
+          paste0("You did not provide activation functions for all response categories.\n ",
+                 "Please provide activation functions for the following response categories in your bmmformula:\n ",
+                 model$resp_vars$resp_cats[missing_act_funs]))
+
+   # test if all activation functions contain background noise "b"
+   act_funs <- formula[model$resp_vars$resp_cats]
+   form_miss_b <- unlist(lapply(act_funs, missing_b))
+   stopif(any(form_miss_b),
+          paste0("Some of your activation functions do not contain the background noise parameter \"b\".\n ",
+                 "The following activation functions need a background noise parameter: \n",
+                 model$resp_vars$resp_cats[which(form_miss_b)]))
+
+   NextMethod("check_formula")
+}
+
+# helper to test if background noise par is missing
+missing_b <- function(formula) {
+   !("b" %in% rhs_vars(formula))
+}
 
 #############################################################################!
 # Convert bmmformula to brmsformla methods                               ####
@@ -157,6 +257,9 @@ configure_model.m3 <- function(model, data, formula) {
 
    # construct the family
    formula$family <- brms::multinomial(refcat = NA)
+
+   formula$family$cats <- model$resp_vars$resp_cats
+   formula$family$dpars <- paste0("mu",model$resp_vars$resp_cats)
 
    # construct the default prior
    # prior <- fixed_pars_priors(model, formula)
