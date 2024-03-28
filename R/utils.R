@@ -78,7 +78,7 @@ configure_options <- function(opts, env = parent.frame()) {
       chains <- 4
     }
   } else {
-    cores = opts$cores
+    cores = opts$cores %||% getOption('mc.cores', 1)
   }
   if (not_in_list('silent', opts)) {
     opts$silent <- getOption('bmm.silent', 1)
