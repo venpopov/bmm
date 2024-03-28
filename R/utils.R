@@ -78,7 +78,7 @@ configure_options <- function(opts, env = parent.frame()) {
       chains <- 4
     }
   } else {
-    cores = opts$cores
+    cores = opts$cores %||% getOption('mc.cores', 1)
   }
   if (not_in_list('silent', opts)) {
     opts$silent <- getOption('bmm.silent', 1)
@@ -715,4 +715,14 @@ check_rds_file <- function(file) {
 
 `%||%` <- function(a, b) {
   if (!is.null(a)) a else b
+}
+
+#' @export
+#' @noRd
+#' @keywords internal
+vens_options <- function() {
+  op <- options(mc.cores = parallel::detectCores(),
+                bmm.sort_data = TRUE,
+                cmdstanr_write_stan_file_dir = "local/cmdstanr")
+  invisible(op)
 }

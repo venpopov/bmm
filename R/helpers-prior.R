@@ -34,15 +34,16 @@
 #' @export
 default_prior.bmmformula <- function(object, data, model, formula = object, ...) {
   withr::local_options(bmm.sort_data = FALSE)
+  dots <- list(...)
 
   formula <- object
   model <- check_model(model, data, formula)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
   config_args <- configure_model(model, data, formula)
-  prior <- configure_prior(model, data, config_args$formula, user_prior = NULL)
+  prior <- configure_prior(model, data, config_args$formula, user_prior = dots$prior)
+  dots$prior <- NULL
 
-  dots <- list(...)
   prior_args <- combine_args(nlist(config_args, dots, prior))
   prior_args$object <- prior_args$formula
   prior_args$formula <- NULL
@@ -272,4 +273,10 @@ summarise_default_prior <- function(prior_list) {
     }
   }
   prior_info
+}
+
+
+#' @export
+plot.brmsprior <- function(object, ...) {
+
 }
