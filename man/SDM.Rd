@@ -40,7 +40,7 @@ and how to use it. * \strong{Domain:} Visual working memory
 \itemize{
 \item Oberauer, K. (2023). Measurement models for visual working memory - A factorial model comparison. Psychological Review, 130(3), 841-852
 }
-\item \strong{Version:} Simple (no non-targets)
+\item \strong{Version:} simple
 \item \strong{Requirements:}
 \itemize{
 \item The response variable should be in radians and represent the angular error relative to the target

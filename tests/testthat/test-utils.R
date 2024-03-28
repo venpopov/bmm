@@ -52,3 +52,56 @@ test_that("bmm_options works", {
   options(op)
   expect_equal(getOption('bmm.sort_data'), TRUE)
 })
+
+
+test_that("check_rds_file works", {
+  good_files <- list('a.rds', 'abc/a.rds', 'a', 'abc/a', 'a.M')
+  bad_files <- list(1, mean, c('a','b'), TRUE)
+
+  for (f in good_files) {
+    expect_silent(res <- check_rds_file(f))
+    expect_equal(fs::path_ext(res), 'rds')
+  }
+
+  for (f in bad_files) {
+    expect_error(check_rds_file(f))
+  }
+
+  expect_null(check_rds_file(NULL))
+})
+
+test_that("read_bmmfit works", {
+  mock_fit <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
+                  backend = "mock", mock_fit = 1, rename = F)
+  file <- tempfile()
+  mock_fit$file <- paste0(file, '.rds')
+  saveRDS(mock_fit, paste0(file, '.rds'))
+  expect_equal(read_bmmfit(file, FALSE), mock_fit, ignore_function_env = TRUE,
+               ignore_formula_env = TRUE)
+
+  x = 1
+  saveRDS(x, paste0(file, '.rds'))
+  expect_error(read_bmmfit(file, FALSE), "not of class 'bmmfit'")
+})
+
+test_that("save_bmmfit works", {
+  file <- tempfile()
+  mock_fit <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
+                  backend = "mock", mock_fit = 1, rename = F,
+                  file = file)
+  rds_file <- paste0(file, '.rds')
+  expect_true(file.exists(rds_file))
+  expect_equal(readRDS(rds_file), mock_fit, ignore_function_env = TRUE,
+               ignore_formula_env = TRUE)
+
+  mock_fit2 <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
+                  backend = "mock", mock_fit = 2, rename = F,
+                  file = file)
+  expect_equal(mock_fit, mock_fit2)
+
+  # they should not be the same if file_refit = TRUE
+  mock_fit3 <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
+                  backend = "mock", mock_fit = 3, rename = F,
+                  file = file, file_refit = TRUE)
+  expect_error(expect_equal(mock_fit, mock_fit3))
+})

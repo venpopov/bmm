@@ -456,6 +456,8 @@ identical.formula <- function(x, y, ...) {
 #'  printed in color. **Default: TRUE**
 #' @param reset_options logical. If TRUE, the options will be reset to their
 #'   default values **Default: FALSE**
+#' @param file_refit logical. If TRUE, bmm() will refit the model even if the
+#'  file argument is specified. **Default: FALSE**
 #' @details The `bmm_options` function is used to view or change the current bmm
 #'   options. If no arguments are provided, the function will return the current
 #'   options. If arguments are provided, the function will change the options
@@ -493,7 +495,7 @@ identical.formula <- function(x, y, ...) {
 #'
 #' @export
 bmm_options <- function(sort_data, parallel, default_priors, silent,
-                        color_summary, reset_options = FALSE) {
+                        color_summary, file_refit, reset_options = FALSE) {
   opts <- ls()
   stopif(!missing(sort_data) && sort_data != "check" && !is.logical(sort_data),
          "sort_data must be one of TRUE, FALSE, or 'check'")
@@ -505,6 +507,8 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
          "silent must be one of 0, 1, or 2")
   stopif(!missing(color_summary) && !is.logical(color_summary),
          "color_summary must be a logical value")
+  stopif(!missing(file_refit) && !is.logical(file_refit),
+         "file_refit must be a logical value")
 
   # set default options if function is called for the first time or if reset_options is TRUE
   if (reset_options) {
@@ -512,7 +516,8 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
             bmm.parallel = FALSE,
             bmm.default_priors = TRUE,
             bmm.silent = 1,
-            bmm.color_summary = TRUE)
+            bmm.color_summary = TRUE,
+            bmm.file_refit = FALSE)
   }
 
   # change options if arguments are provided. get argument name and loop over non-missing arguments
@@ -529,6 +534,7 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
                                  "\n  parallel = ", getOption("bmm.parallel"),
                                  "\n  default_priors = ", getOption("bmm.default_priors"),
                                  "\n  silent = ", getOption("bmm.silent"),
+                                 "\n  file_refit = ", getOption("bmm.file_refit"),
                                  "\n  color_summary = ", getOption("bmm.color_summary"), "\n")),
            "For more information on these options or how to change them, see help(bmm_options).\n")
   invisible(old_op)
@@ -661,6 +667,50 @@ deprecated_args <- function(...) {
   warnif("parallel" %in% names(dots),
          'The "parallel" argument is deprecated. Please use cores instead.
          See `help("brm")` for more information.')
+}
+
+
+read_bmmfit <- function(file, file_refit) {
+  file <- check_rds_file(file)
+  if (is.null(file) || file_refit) {
+    return(NULL)
+  }
+  dir <- dirname(file)
+  dir <- try(fs::dir_create(dir))
+  stopif(is_try_error(dir), "Cannot create directory for file.")
+
+  out <- suppressWarnings(try(readRDS(file), silent = TRUE))
+  if (!is_try_error(out)) {
+    if (!is_bmmfit(out)) {
+      stop2("Object loaded via 'file' is not of class 'bmmfit'.")
+    }
+    out$file <- file
+  } else {
+    out <- NULL
+  }
+  out
+}
+
+save_bmmfit <- function(x, file, compress) {
+  file <- check_rds_file(file)
+  x$file <- file
+  if (!is.null(file)) {
+    saveRDS(x, file, compress = compress)
+  }
+  x
+}
+
+check_rds_file <- function(file) {
+  if (is.null(file)) {
+    return(NULL)
+  }
+  stopif(!is.character(file), "'file' must be a character string.")
+  stopif(length(file) > 1, "'file' must be a single character string.")
+  ext <- fs::path_ext(file)
+  if (ext != "rds") {
+    file <- paste0(file, ".rds")
+  }
+  file
 }
 
 `%||%` <- function(a, b) {
