@@ -1,0 +1,199 @@
+---
+title: "The Memory Measurement Model (M3)"
+output: bookdown::html_document2
+author: 
+  - Gidon Frischkorn
+  - Chenyu Li
+  - Isabel Courage
+bibliography: REFERENCES.bib
+header-includes:
+  - \usepackage{amsmath}
+vignette: >
+  %\VignetteIndexEntry{The Memory Measurement Model (M3)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+pkgdown:
+  as_is: true
+---
+
+<style type="text/css">
+div.main-container {
+max-width: 800px !important;
+}
+
+p {
+margin-top: 1.5em ;
+margin-bottom: 1.5em ;
+}
+.author{
+    display: none;
+}
+</style>
+
+```{r, include = FALSE}
+options(crayon.enabled = TRUE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  dev = "jpeg",
+  dpi = 100,
+  fig.asp = 0.8,
+  fig.width = 5,
+  out.width = "80%",
+  fig.align = "center"
+)
+fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
+```
+
+# Introduction to the model
+
+The memory measurement model (M3) is a computational measurement model for working memory tasks with discrete responses. Such materials include letters, words, objects, and digits. The only prerequiste for using the M3 is that the responses can be divided into seperate categories. For each of this category the model predicts the frequency of selecting one item of a category as a function of continuous activation strength. Most commonly the M3 distinguishes two different activation dimensions:
+
+1. Memory strength of individual elements or items, often labelled item memory
+2. Memory strength of relations, relying on temporary bindings, often labelled binding or source memory
+
+In addition, the M3 allows to include additional hypothetical processes that might increase or diminishing these activation strength due to experimental manipulations, such as manipulating encoding time or distraction.
+
+## Basic assumptions of the M3
+
+The M3 builds on two general assumptions:
+
+1. Memory recall represents a competitive selection from a set of response candidates
+2. Selection from the candidate set is a function of the relative activation of each candidate representation at test
+
+The set of response candidates can either a) follow naturally from the stimulus material, for example all digits from 1 to 9 or all letters from the alphabet, b) be given in the experimental proceduring implementing recall as the selection from `n` response alternatives (n-AFC), or c) be contructed by the individual performing the task. Generally, we recommend focussing on the first and the second use case, as these provide the simpler implementations of the M3.
+
+To simplify the use of the M3, typically we do not model the activation of each response candidate, but we group the response candidates into categories that all share the same activation. For example, consider a simple short term memory task in which subjects are asked to remember digits in their serial order and then cued with a random serial position to retrieve the respective digit. In this task, participants can either recall the correct digit that was associated with the cued position, often labelled the item-in-position. But they could also recall any of the other digits they had to remember, often labelled items from other list positions. Finally, they could also recall a digit that was not part of the memory set at all, usually labelled not-presented items or lures. Thus, we have three categories of responses in this task: correct responses or items-in position (labelled $correct$), other list items (labelled $other$), and not presented items (labelled $npi$).
+
+After, we have decided on the relevant response categories. We need to specify which activation sources contribute towards each category. For the above simple short term memory tasks, these would most reasonably be:
+
+$$
+\begin{align} 
+correct & = b + a + c\\
+other & = b + a\\
+npi & = b
+\end{align}
+$$
+
+In this case, $b$ is the baseline activation, that can be understood as the activation of all digist, because participants now that they have to remember digits in general. The parameter $a$ is the memory strength for items, or general activation, for all items that need to be remembered in the current trial. And parameter $c$ is the memory strength for relations, or context activation, that arises from the context cue of retrieving the cued serial position.
+
+## Choice Rules in the M3
+
+The activation for each category is then translated into probabilities of recalling one item from each category with a normalization function as a choice rule. In `bmm` we have implemented two choice rules: 
+
+1. Luce's choice rule 
+
+This choice rule normalizes the absolute activation over the sum of the activation of all items:
+
+$$
+p_i = \frac{n_i \cdot A_i}{\sum^n_{j = 1} n_j \cdot A_j}
+$$
+
+In this normalization the probability $p_i$ of recalling an item from the category $i$ results from the number of candidates in the category $n_i$ times the activation of the category $A_i$ as specified in the activation formulas above. This total activation of the category $i$ then gets divided by the sum of all categories $n$ and their activation that arises as the product of the number of items in the categoty $n_j$ times the activation of that category $A_j$
+
+2. Softmax
+
+The `softmax` choice rule normalizes the exponentiated activation of each category over the sum of all exponentiated activations:
+
+$$
+p_i = \frac{n_i \cdot e^{A_i}}{\sum^n_{j = 1} n_j \cdot e^{A_j}}
+$$
+
+This choice rule can be interpreted as an n-alternative SDT model over the different response candidates with a Gumbel (or double-exponential) noise distribution.
+
+After having normalized the activations into probabilities the model than links the response frequencies of each response categories $Y$ to the probabilities assuming a multinomial distributions with the total number of $trials$ and the derived probabilities $p$:
+
+$$
+Y \sim multinomial(p)
+$$
+
+# Parametization of the M3 in `bmm`
+
+There are three versions of the M3 implemented in `bmm`: the M3 for simple span task (`version = "ss"`), the M3 for complex span task (`version = "cs"`), and a fully custom M3 that can be adapted to any kind of task with categorical responses (`version = "custom"`). 
+
+## M3 for simple and complex span tasks
+
+The simple and complex span versions of the M3 implement the activation functions outlined in Formula 1 (simple span, see also the activation formulas above) and Formula 3 (complex span) in @oberauerSimpleMeasurementModels2019. In addition to the three response categories of the simple span task, the complex span model distinguished two additional response categories: distractors in or close to the cued position ($dist_{close}$), and distractors from other or far away positions ($dist_{far}$). Thus, the M3 for complex span tasks requires that you use distractors that could be potentially recalled.[^1] 
+
+[^1]: Traditional complex span tasks, such as the operation span or reading span task are thus not suited for the M3, as the distractors are different from the to-be-remembered items. For example, in the operation span task, participants are instructed to-remember a set of letters in order while judging math equations to be correct or incorrect in-between the letters. As it is unlikely, that participants would recall digits that are part of the math equations instead of letters, such tasks are not suited to distinguish processes related to the distractor processing. You could still fit the M3 for simple span tasks to these data, this model would however not provide any insight on the way distractors are encoded and processed in working memory.
+
+The activation equation for the M3 for complex span tasks are as follows:
+
+$$
+\begin{align}
+corr & = b + a + c \\
+other & = b + a \\
+dist_{close} & = b + f \cdot a + f \cdot c \\
+dist_{far} & = b + f \cdot a \\
+npi & = b
+\end{align}
+$$
+
+## Custom M3 for tasks with categorical responses
+
+# The data
+
+We begin by loading the `bmm` package.
+
+```{r setup, warning = FALSE, message = FALSE}
+library(bmm)
+```
+
+For this example, we will be using the data from the first experiment from @oberauerSimpleMeasurementModels2019. This data set is part of the `bmm` package as `oberauer_lewandowsky_2019_e1`
+
+```{r}
+data <- OberauerLewandowsky_2019_E1
+head(data)
+```
+
+The data contains the following variables:
+
+- `ID`: an integer uniquely identifying each participant in the experiment
+- `cond`: a factor dinstinguishing three experimental conditions that varied the type of distractors
+- `corr`, `other`, `dist`, and `npl`: The frequencies of responding with one item of the respective response categories
+- `nCorr`, `nOther`, `nDist`, and `nNPL`: The number of response candidates in each response categories for each experimental condition
+
+This data set already contains all the information required to fit the M3 model. But if you have a data set that is in long format and contains which `response_category` the `response` in each trial belongs to, then you can use the `aggregate_data` function from the `bmm` package together with the `bmmformula` you want to use and the `bmmodel` you fit to the data, to prepare your data for fitting the M3 model.
+
+# Fitting the M3 in `bmm`
+
+To fit the M3 to the above loaded data, we need to perform the same three steps as for all models fitted in `bmm`. First, we need to specify the activation functions for each response category, and then provide linear model formulas for prediciting the different parameters with the experimental conditions we are interested in. The model proposed by @oberauerSimpleMeasurementModels2019 for this data set would be specified like this:
+
+```{r}
+my_formula <- bmf(
+  corr ~ b + a + c,
+  other ~ b + a,
+  dist ~ b + d,
+  npl ~ b,
+  c ~ 1 + cond + (1 + cond | ID),
+  a ~ 1 + cond + (1 + cond | ID),
+  d ~ 1 + (1 | ID),
+  b ~ 1
+)
+```
+
+For the `version = "custom"` of the M3 you need to first provide the activation functions for each category. This is done by using the label of each response category and predicting it by the activation function that you want to use for this category. The activation function can be any linear combination of different activation sources or non-linear function of activation sources or model parmaeters and other variables in the data, as exemplified in the more complex models in @oberauerSimpleMeasurementModels2019:
+
+```r
+cat_label ~ activation_function
+```
+
+How you label the parameters in the activation function is entirely up to you, with _one_ exception: The parameter `b` is reserved for the baseline activation and also required to be part of the activation function of each response category. In addition, we recommend that you always include the `npl` response category and use only `b` as the activation sources for this category. This way you can easily identify the scaling of the M3 by fixing `b`. In fact, `bmm` will take care of that internally, except if you explicitly overwrite the linear model formula for `b` and provide your own `user_priors` for the `b` parameter.
+
+After you have provided the activation functions for each response category, you can then specify linear model formulas to predict each M3 parameter by experimental conditions. In these formulas you are free to also include non-linear formulas.
+
+Then, we set up the `bmmodel` object and provide the relevant information to tell `bmm` which variable names in the data contain the relevant data for fitting the model. In our case, this would look like this:
+
+```{r}
+my_model <- m3(resp_cats = c("corr","other","dist","npl"),
+               num_options = c("nCorr","nOther","nDist","nNPL"),
+               choice_rule = "Luce",
+               links = NULL)
+```
+
+
+
+
+# References
+
+
