@@ -116,7 +116,7 @@ psdm <- function(q, mu = 0, c = 3, kappa = 3.5, lower.tail = TRUE, log.p = FALSE
 
   pi <- base::pi
   pi2 <- 2 * pi
-  q <- (q + pi) %% pi2
+  q <- ifelse(q == pi, pi2, (q + pi) %% pi2)
   mu <- (mu + pi) %% pi2
   lower.bound <- (lower.bound + pi) %% pi2
 
@@ -147,7 +147,16 @@ psdm <- function(q, mu = 0, c = 3, kappa = 3.5, lower.tail = TRUE, log.p = FALSE
 #' @rdname SDMdist
 #' @export
 qsdm <- function(p, mu=0, c=3, kappa=3.5, parametrization = "sqrtexp") {
-  .NotYetImplemented()
+ p <- ifelse(near(p,1), p-1e-7, p)
+
+ .qsdm <- function(p, mu, c, kappa, parametrization) {
+   uniroot(function(x) psdm(x, mu = mu, c = c, kappa = kappa,
+                             lower.tail = TRUE, log.p = FALSE,
+                             lower.bound = -pi, parametrization = parametrization) - p,
+            interval = c(-pi, pi))$root
+ }
+ .qsdm_v <- Vectorize(.qsdm)
+ .qsdm_v(p, mu, c, kappa, parametrization)
 }
 
 #' @rdname SDMdist

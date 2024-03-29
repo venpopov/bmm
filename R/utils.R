@@ -717,7 +717,10 @@ check_rds_file <- function(file) {
   if (!is.null(a)) a else b
 }
 
+#' Some default settings I liked
+#'
 #' @export
+#' @return previous options
 #' @noRd
 #' @keywords internal
 vens_options <- function() {
@@ -725,4 +728,10 @@ vens_options <- function() {
                 bmm.sort_data = TRUE,
                 cmdstanr_write_stan_file_dir = "local/cmdstanr")
   invisible(op)
+}
+
+
+# test vectors for near equality
+near <- function(x, y, tol = sqrt(.Machine$double.eps)) {
+  abs(x - y) < tol
 }
