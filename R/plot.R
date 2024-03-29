@@ -1,12 +1,21 @@
 
 
 #' @import ggplot2
+#' @rdname plot-distribution
 #' @export
-plot.brmsprior <- function(x, ..., packages = c("brms","extraDistr","bmm")) {
+plot.brmsprior <- function(x, ..., type = 'pdf', facets = TRUE,
+                           stat_slab_control = list(),
+                           packages = c("brms","extraDistr","bmm")) {
   prior <- prep_brmsprior(x)
-
-
-
+  prior <- ggdist::parse_dist(prior, package = pkg_search_env(packages))
+  prior$labels <- glue("{prior$resp}_{prior$class}_{prior$par}_{prior$coef}_{prior$group}")
+  prior$labels <- gsub("_+", "_", prior$labels)
+  prior$labels <- gsub("(^_|_$)", "", prior$labels)
+  prior$labels <- paste0(prior$labels, " ~ ", format(prior$.dist_obj))
+  prior <- prior[order(prior$par, prior$class),]
+  prior$labels <- factor(prior$labels, levels = unique(prior$labels))
+  plot(prior$.dist_obj, type = type, facets = facets, labels = prior$labels,
+       stat_slab_control = stat_slab_control)
 }
 
 # preprocess a brmsprior object for plotting
@@ -25,8 +34,11 @@ prep_brmsprior <- function(x) {
   priors$prior <- gsub("logistic", "logis", priors$prior)
   priors$prior <- gsub("inv_gamma", "invgamma", priors$prior)
 
+  # get the parameter name regardless of type
   priors$par <- ifelse(priors$nlpar != "", priors$nlpar, priors$dpar)
-  priors
+
+  # remove corr parameters as it's too complicated to visualize them
+  priors[priors$class != "cor",]
 }
 
 
@@ -39,16 +51,21 @@ prep_brmsprior <- function(x) {
 #'
 #' @name plot-distribution
 #'
-#' @param x An object of class `distribution` from the `distributional` package
-#' or a character vector of distribution names that can be parsed by
+#' @param x Several options. One of:
+#' - An object of class `distribution` from the `distributional` package
+#' - A character vector of distribution names that can be parsed by
 #' `ggdist::parse_dist()` of the type `distname(param1 = value1, param2 = value2)`
+#' - A `brmsprior` object produced by [brms::set_prior], [brms::default_prior] or
+#' [brms::prior_summary()]
 #' @param ... additional distribution objects to plot.
 #' @param type The type of plot. One of "pdf" or "cdf".
+#' @param labels A character vector of labels for the distributions. If `NULL`,
+#' the labels are automatically generated from the distribution objects. If a
+#' character vector is provided, it must be the same length as the number of
+#' distributions being plotted. Default is `NULL`.
 #' @param facets Logical. If `TRUE`, the distributions are plotted in separate
 #' facets. If `FALSE`, all distributions are plotted in the same plot. Default is
 #' `FALSE`.
-#' @param par_names Logical. If `TRUE`, the parameter names are included in the
-#'  legend.
 #' @param stat_slab_control A list of additional arguments passed to `ggdist::stat_slab()`
 #' @param packages A character vector of package names to search for distributions
 #'
@@ -65,9 +82,11 @@ prep_brmsprior <- function(x) {
 #'
 #' plot('normal(0, 1)', 'normal(0, 2)', type = 'cdf')
 #' plot(c('normal(0, 1)', 'student_t(3,0,2.5))', facets = T)
+#'
+#' plot(dist_beta(1:10, 1)) + theme(legend.position = 'right')
 #' @keywords plot
 #' @export
-plot.distribution <- function(x, ..., type = 'pdf', facets = FALSE, par_names = FALSE,
+plot.distribution <- function(x, ..., type = 'pdf', labels = NULL, facets = FALSE,
                               stat_slab_control = list()) {
   dots <- list(...)
   if (length(dots) > 0) {
@@ -77,8 +96,9 @@ plot.distribution <- function(x, ..., type = 'pdf', facets = FALSE, par_names = 
     x <- c(x, additional)
   }
 
-  labels <- sapply(x, dist2string, par_names = par_names)
+  labels <- labels %||% format(x)
   labels <- factor(labels, levels = unique(labels))
+
 
   df <- data.frame(x = x, labels = labels)
   out <- ggplot(df) +
@@ -112,14 +132,15 @@ plot.distribution <- function(x, ..., type = 'pdf', facets = FALSE, par_names = 
 
 #' @rdname plot-distribution
 #' @export
-plot.character <- function(x, ..., type = 'pdf', facets = FALSE, par_names = FALSE,
-                           stat_slab_control = list(), packages = c("brms","extraDistr","bmm")) {
+plot.character <- function(x, ..., type = 'pdf', labels = NULL, facets = FALSE,
+                           stat_slab_control = list(),
+                           packages = c("ggdist","brms","extraDistr","bmm")) {
   search_env <- pkg_search_env(packages)
   dots <- list(...)
   dists <- unlist(c(x, dots))
   stopifnot(all(is.character(dists)))
   dists <- ggdist::parse_dist(dists, package = search_env)
-  plot(dists$.dist_obj, type = type, facets = facets, par_names = par_names,
+  plot(dists$.dist_obj, type = type, labels = labels, facets = facets,
        stat_slab_control = stat_slab_control)
 }
 
