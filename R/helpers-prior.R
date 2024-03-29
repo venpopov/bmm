@@ -275,8 +275,3 @@ summarise_default_prior <- function(prior_list) {
   prior_info
 }
 
-
-#' @export
-plot.brmsprior <- function(object, ...) {
-
-}

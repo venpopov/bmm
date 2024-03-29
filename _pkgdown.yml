@@ -58,6 +58,10 @@ reference:
    desc: "Available datasets for fitting the models"
  - contents:
    - has_keyword("dataset")
+ - title: "Plotting"
+   desc: "Misc functions for plotting"
+ - contents:
+   - has_keyword("plot")
  - title: "Developers' corner"
    desc: "Functions to assist in developing new models"
  - contents:

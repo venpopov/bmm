@@ -721,7 +721,6 @@ check_rds_file <- function(file) {
 #'
 #' @export
 #' @return previous options
-#' @noRd
 #' @keywords internal
 vens_options <- function() {
   op <- options(mc.cores = parallel::detectCores(),
