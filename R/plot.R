@@ -2,7 +2,7 @@
 
 #' @import ggplot2
 #' @export
-plot.brmsprior <- function(x, ...) {
+plot.brmsprior <- function(x, ..., packages = c("brms","extraDistr","bmm")) {
   prior <- prep_brmsprior(x)
 
 
@@ -20,6 +20,10 @@ prep_brmsprior <- function(x) {
 
   # remove constant priors
   priors <- priors[!grepl("constant", priors$prior),]
+
+  # rename priors to match distribution functions
+  priors$prior <- gsub("logistic", "logis", priors$prior)
+  priors$prior <- gsub("inv_gamma", "invgamma", priors$prior)
 
   priors$par <- ifelse(priors$nlpar != "", priors$nlpar, priors$dpar)
   priors
@@ -46,6 +50,7 @@ prep_brmsprior <- function(x) {
 #' @param par_names Logical. If `TRUE`, the parameter names are included in the
 #'  legend.
 #' @param stat_slab_control A list of additional arguments passed to `ggdist::stat_slab()`
+#' @param packages A character vector of package names to search for distributions
 #'
 #' @details By default all distributions are plotted as different lines in the
 #' same plot. If you want to plot them in separate facets, set `facets = TRUE`.
@@ -71,6 +76,7 @@ plot.distribution <- function(x, ..., type = 'pdf', facets = FALSE, par_names = 
     additional <- do.call(c, dots)
     x <- c(x, additional)
   }
+
   labels <- sapply(x, dist2string, par_names = par_names)
   labels <- factor(labels, levels = unique(labels))
 
@@ -106,12 +112,24 @@ plot.distribution <- function(x, ..., type = 'pdf', facets = FALSE, par_names = 
 
 #' @rdname plot-distribution
 #' @export
-plot.character <- function(x, ..., type = 'pdf', facets = FALSE, par_names = FALSE) {
+plot.character <- function(x, ..., type = 'pdf', facets = FALSE, par_names = FALSE,
+                           stat_slab_control = list(), packages = c("brms","extraDistr","bmm")) {
+  search_env <- pkg_search_env(packages)
   dots <- list(...)
   dists <- unlist(c(x, dots))
   stopifnot(all(is.character(dists)))
-  dists <- ggdist::parse_dist(dists)
-  plot(dists$.dist_obj, type = type, facets = facets, par_names = par_names)
+  dists <- ggdist::parse_dist(dists, package = search_env)
+  plot(dists$.dist_obj, type = type, facets = facets, par_names = par_names,
+       stat_slab_control = stat_slab_control)
+}
+
+pkg_search_env <- function(packages) {
+  stopif(any(!is.character(packages)))
+  search_env <- lapply(packages, function(x) asNamespace(x))
+  search_env <- c(search_env, globalenv())
+  search_env <- c(search_env, rlang::search_envs())
+  search_env <- unname(search_env)
+  as.environment(do.call(c, lapply(search_env, as.list)))
 }
 
 
