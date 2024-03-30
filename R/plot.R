@@ -3,10 +3,10 @@
 #' @import ggplot2
 #' @rdname plot-distribution
 #' @export
-plot.brmsprior <- function(x, ..., type = 'pdf', facets = TRUE,
+plot.brmsprior <- function(x, formula = NULL, type = 'pdf', facets = TRUE,
                            stat_slab_control = list(),
-                           packages = c("brms","extraDistr","bmm")) {
-  prior <- prep_brmsprior(x)
+                           packages = c("brms","extraDistr","bmm"), ...) {
+  prior <- prep_brmsprior(x, formula = formula)
   prior <- ggdist::parse_dist(prior, package = pkg_search_env(packages))
   prior$labels <- glue("{prior$resp}_{prior$class}_{prior$par}_{prior$coef}_{prior$group}")
   prior$labels <- gsub("_+", "_", prior$labels)
@@ -16,29 +16,6 @@ plot.brmsprior <- function(x, ..., type = 'pdf', facets = TRUE,
   prior$labels <- factor(prior$labels, levels = unique(prior$labels))
   plot(prior$.dist_obj, type = type, facets = facets, labels = prior$labels,
        stat_slab_control = stat_slab_control)
-}
-
-# preprocess a brmsprior object for plotting
-prep_brmsprior <- function(x) {
-  stopif(!brms::is.brmsprior(x), "x must be a brmsprior object")
-  # remove empty priors
-  priors <- x[x$prior != "",]
-
-  # add mu to dpar if dpar is empty
-  priors$dpar <- ifelse(priors$dpar == "" & priors$nlpar == "", "mu", priors$dpar)
-
-  # remove constant priors
-  priors <- priors[!grepl("constant", priors$prior),]
-
-  # rename priors to match distribution functions
-  priors$prior <- gsub("logistic", "logis", priors$prior)
-  priors$prior <- gsub("inv_gamma", "invgamma", priors$prior)
-
-  # get the parameter name regardless of type
-  priors$par <- ifelse(priors$nlpar != "", priors$nlpar, priors$dpar)
-
-  # remove corr parameters as it's too complicated to visualize them
-  priors[priors$class != "cor",]
 }
 
 
@@ -58,6 +35,9 @@ prep_brmsprior <- function(x) {
 #' - A `brmsprior` object produced by [brms::set_prior], [brms::default_prior] or
 #' [brms::prior_summary()]
 #' @param ... additional distribution objects to plot.
+#' @param formula A `brmsformula` object. Only needed for plotting `brmsprior`
+#'  objects if transformation of the priors is wanted via the specified links in
+#'  the `brmsfamily`. The `brmsformula` must contain the `brmsfamily`
 #' @param type The type of plot. One of "pdf" or "cdf".
 #' @param labels A character vector of labels for the distributions. If `NULL`,
 #' the labels are automatically generated from the distribution objects. If a

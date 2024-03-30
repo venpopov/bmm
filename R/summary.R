@@ -17,7 +17,7 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
     return(out)
   }
 
-  out <- rename_mu_smry(out, get_mu_pars(object))
+  out <- add_mu(out, get_mu_pars(object))
 
   # get the bmm specific information
   bmmodel <- object$bmm$model
@@ -126,15 +126,6 @@ print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary
   }
   cat("\n")
   invisible(x)
-}
-
-rename_mu_smry <- function(x, mu_pars) {
-  for (i in seq_along(x)) {
-    if (is.data.frame(x[[i]])) {
-      rownames(x[[i]])[rownames(x[[i]]) %in% mu_pars] <- paste0("mu_", mu_pars)
-    }
-  }
-  x
 }
 
 select_pars <- function(x) {

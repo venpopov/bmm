@@ -1,3 +1,6 @@
+# Functions in this file are copies of `brms` internal functions that we are
+# not allowed to import. All copyrights belong to the original author
+
 # check if x is a try-error resulting from try()
 is_try_error <- function(x) {
   inherits(x, "try-error")
@@ -332,4 +335,25 @@ inv_link <- function(x, link) {
          softit = inv_softit(x),
          stop2("Link '", link, "' is not supported.")
   )
+}
+
+
+conv_cats_dpars <- function (family) {
+  is_categorical(family) || is_multinomial(family) || is_simplex(family)
+}
+
+is_categorical <- function(family) {
+  'categorical' %in% family$specials
+}
+
+is_multinomial <- function(family) {
+  'multinomial' %in% family$specials
+}
+
+is_simplex <- function(family) {
+  'simplex' %in% family$specials
+}
+
+ulapply <- function (X, FUN, ..., recursive = TRUE, use.names = TRUE) {
+  unlist(lapply(X, FUN, ...), recursive, use.names)
 }

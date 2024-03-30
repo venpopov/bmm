@@ -92,23 +92,6 @@ restructure_version.bmm <- function(x) {
   out
 }
 
-add_links <- function(x) {
-  UseMethod("add_links")
-}
-
-#' @export
-add_links.bmmfit <- function(x) {
-  x$bmm$model <- add_links(x$bmm$model)
-  x
-}
-
-#' @export
-add_links.bmmodel <- function(x) {
-  model_name <- class(x)[length(class(x))]
-  new_model <- get_model(model_name)()
-  x$links <- new_model$links
-  x
-}
 
 add_bmm_info <- function(x) {
   env <- x$family$env

@@ -734,3 +734,106 @@ vens_options <- function() {
 near <- function(x, y, tol = sqrt(.Machine$double.eps)) {
   abs(x - y) < tol
 }
+
+
+add_links <- function(x, ...) {
+  UseMethod("add_links")
+}
+
+#' @export
+add_links.bmmfit <- function(x, ...) {
+  x$bmm$model <- add_links(x$bmm$model)
+  x
+}
+
+#' @export
+add_links.bmmodel <- function(x, ...) {
+  model_name <- class(x)[length(class(x))]
+  new_model <- get_model(model_name)()
+  x$links <- new_model$links
+  x
+}
+
+# object - either a brmsformula or a bmmodel
+#' @export
+add_links.brmsprior <- function(x, object, family, ...) {
+  # preprocess the links to an appropriate format
+  links <- get_links(object, family)
+  links <- unlist(links)
+  info <- strsplit(names(links), ".", fixed = TRUE)
+  if (is(formula, 'mvbrmsformula')) {
+    resp <- ulapply(info, function(x) x[1])
+    dpar <- ulapply(info, function(x) x[2])
+  } else {
+    resp <- rep("", length(info))
+    dpar <- ulapply(info, function(x) x[1])
+  }
+  links_df <- data.frame(resp = resp, dpar = dpar, link = unname(links))
+
+  x <- add_mu(x)
+
+  # some parameters in brms are not in dpar, but in "class" if they are not predicted
+  in_class <- x$class %in% dpar & x$dpar == ""
+  dpar_old <- x$dpar
+  x$dpar <- ifelse(in_class, x$class, x$dpar)
+  x <- suppressMessages(dplyr::left_join(x, links_df))
+  x$dpar <- dpar_old
+  x$link[is.na(x$link)] <- "identity"
+
+  x
+}
+
+# extract links from an object
+get_links <- function(x, ...) {
+  UseMethod("get_links")
+}
+
+#' @export
+get_links.brmsformula <- function(x, ...) {
+  dots <- list(...)
+  if (!is.null(dots$family)) {
+    x <- brmsformula(x, family = dots$family)
+  }
+  x <- brms::brmsterms(x)
+  dpars <- x$family$dpars
+  links <- setNames(rep("identity", length(dpars)), dpars)
+  links <- as.list(links)
+  links_pred <- lapply(x$dpars, function(x) x$family$link)
+  links[names(links_pred)] <- links_pred
+  if (conv_cats_dpars(x)) {
+    links[grepl("^mu", names(links))] <- x$family$link
+  }
+  links
+}
+
+#' @export
+get_links.mvbrmsformula <- function(x, ...) {
+  lapply(x$forms, get_links, ...)
+}
+
+#' @export
+get_links.bmmodel <- function(x, ...) {
+  x$links
+}
+
+
+# add the missing mu paramereter from various brms objects
+add_mu <- function(x, ...) {
+  UseMethod("add_mu")
+}
+
+#' @export
+add_mu.brmssummary <- function(x, mu_pars,...) {
+  for (i in seq_along(x)) {
+    if (is.data.frame(x[[i]])) {
+      rownames(x[[i]])[rownames(x[[i]]) %in% mu_pars] <- paste0("mu_", mu_pars)
+    }
+  }
+  x
+}
+
+#' @export
+add_mu.brmsprior <- function(x, ...) {
+  x$dpar <- ifelse(x$dpar == "" & x$nlpar == "" & (x$class %in% c("b", "Intercept")), "mu", x$dpar)
+  x
+}

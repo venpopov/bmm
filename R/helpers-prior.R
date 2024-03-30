@@ -50,7 +50,8 @@ default_prior.bmmformula <- function(object, data, model, formula = object, ...)
 
   brms_priors <- brms::do_call(brms::default_prior, prior_args)
 
-  combine_prior(brms_priors, prior_args$prior)
+  prior <- combine_prior(brms_priors, prior_args$prior)
+  add_links(prior, model)
 }
 
 
@@ -275,3 +276,26 @@ summarise_default_prior <- function(prior_list) {
   prior_info
 }
 
+
+# preprocess a brmsprior object for plotting
+prep_brmsprior <- function(x, formula = NULL) {
+  stopif(!brms::is.brmsprior(x), "x must be a brmsprior object")
+  # remove empty priors
+  priors <- x[x$prior != "",]
+
+  # add mu to dpar if dpar is empty
+  priors <- add_mu(priors)
+
+  # remove constant priors
+  priors <- priors[!grepl("constant", priors$prior),]
+
+  # rename priors to match distribution functions
+  priors$prior <- gsub("logistic", "logis", priors$prior)
+  priors$prior <- gsub("inv_gamma", "invgamma", priors$prior)
+
+  # get the parameter name regardless of type
+  priors$par <- ifelse(priors$nlpar != "", priors$nlpar, priors$dpar)
+
+  # remove corr parameters as it's too complicated to visualize them
+  priors[priors$class != "cor",]
+}
