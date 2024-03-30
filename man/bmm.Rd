@@ -13,6 +13,9 @@ bmm(
   sort_data = getOption("bmm.sort_data", "check"),
   silent = getOption("bmm.silent", 1),
   backend = getOption("brms.backend", NULL),
+  file = NULL,
+  file_compress = TRUE,
+  file_refit = getOption("bmm.file_refit", FALSE),
   ...
 )
 
@@ -64,6 +67,21 @@ additional progress bars.}
 "rstan" or "cmdstanr". If NULL (the default), "cmdstanr" will be used if
 the cmdstanr package is installed, otherwise "rstan" will be used. You can
 set the default backend using global \code{options(brms.backend = "rstan"/"cmdstanr")}}
+
+\item{file}{Either \code{NULL} or a character string. If a string, the fitted
+model object is saved via \link{saveRDS} in a file named after the string. The
+\verb{.rds extension is added automatically. If the file already exists, }bmm\verb{will load and return the saved model object. Unless you specify the}file_refit\verb{argument as well, the existing files won't be overwritten, you have to manually remove the file in order to refit and save the model under an existing file name. The file name is stored in the}bmmfit` object for
+later usage. If the directory of the file does not exist, it will be created.}
+
+\item{file_compress}{Logical or a character string, specifying one of the
+compression algorithms supported by \link{saveRDS} when saving
+the fitted model object.}
+
+\item{file_refit}{Logical. Modifies when the fit stored via the \code{file} argument is
+re-used. Can be set globally for the current \R session via the
+\code{"bmm.file_refit"} option (see \link{options}). If \code{TRUE} (the default), the
+model is re-used if the file exists. If \code{FALSE}, the model is re-fitted. Note
+that unlike \code{brms}, there is no "on_change" option}
 
 \item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See the
 description of \code{\link[brms:brm]{brms::brm()}} for more details}
