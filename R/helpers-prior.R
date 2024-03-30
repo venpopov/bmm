@@ -72,12 +72,11 @@ default_prior.bmmformula <- function(object, data, model, formula = object, ...)
 #'   class="Intercept", dpar=parameter_name) for all fixed parameters in the
 #'   model
 #' @noRd
-fixed_pars_priors <- function(model, formula, additional_pars = list()) {
+fixed_pars_priors <- function(model, data, formula, additional_pars = list()) {
   fix_pars <- model$fixed_parameters
   if (length(fix_pars) == 0) {
     return(brms::empty_prior())
   }
-
 
   # construct parameter names and prior values
   par_list <- c(model$fixed_parameters, additional_pars)
@@ -243,22 +242,13 @@ configure_prior.default <- function(model, data, formula, user_prior, ...) {
 
 #' @export
 configure_prior.bmmodel <- function(model, data, formula, user_prior = NULL, ...) {
-  if ("m3" %in% class(model)) {
-    if (model$other_vars$choice_rule == "softmax") {
-      prior <- brms::prior("constant(0)", class = "b", nlpar = "b")
-    } else {
-      prior <- brms::prior("constant(0.1)", class = "b", nlpar = "b")
-    }
-  } else {
-    prior <- fixed_pars_priors(model, formula)
-    default_prior <- set_default_prior(model, data, formula)
-    prior <- combine_prior(default_prior, prior)
-  }
+  prior <- fixed_pars_priors(model, data, formula)
+  default_prior <- set_default_prior(model, data, formula)
+  prior <- combine_prior(default_prior, prior)
   prior <- combine_prior(prior, user_prior)
   additional_prior <- NextMethod("configure_prior")
   combine_prior(prior, additional_prior)
 }
-
 
 
 # internal function to combine two priors (e.g. the default prior with the user

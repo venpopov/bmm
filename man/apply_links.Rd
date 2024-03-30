@@ -24,7 +24,7 @@ This function applies the specified link functions in the list of \code{links} t
 }
 \examples{
 # specify a bmmformula
-form <- bmf(c ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
+form <- bmf(x ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
 links <- list(a = "log", c = "logit")
 
 apply_links(form, links)

@@ -244,29 +244,21 @@ bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
 }
 
+
 # default method for all bmmodels with 1 response variable
 #' @export
 bmf2bf.bmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE
   resp <- model$resp_vars
-  constants <- model$fixed_parameters
 
-  if (length(resp) > 1) {
-    brms_formula <- NextMethod("bmf2bf")
-    return(formula)
-  } else if ("m3" %in% class(model)) {
+  # not ideal but required to not break other models
+  if ("m3" %in% class(model)) {
     brms_formula <- NextMethod("bmf2bf")
   } else {
     resp <- resp[[1]]
 
     # set base brms formula based on response
     brms_formula <- brms::bf(paste0(resp, "~ 1"))
-  }
-
-
-  if ("m3_custom" %in% class(model)) {
-    formula <- apply_links(formula, model$links)
-    formula <- assign_nl(formula)
   }
 
   # for each dependent parameter, check if it is used as a non-linear predictor of
@@ -280,8 +272,6 @@ bmf2bf.bmmodel <- function(model, formula) {
   }
   brms_formula
 }
-
-
 
 add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
   formula_pars <- names(formula)
@@ -443,7 +433,7 @@ is_constant.default <- function(x) {
 #'
 #' @examples
 #' # specify a bmmformula
-#' form <- bmf(c ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
+#' form <- bmf(x ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
 #' links <- list(a = "log", c = "logit")
 #'
 #' apply_links(form, links)
