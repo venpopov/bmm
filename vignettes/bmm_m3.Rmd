@@ -231,8 +231,8 @@ Based on the parameter labels that we used in these activation functions, we can
 
 ```{r}
 par_formulas <- bmf(
-  c ~ 1 + cond + (1 + cond | ID),
-  a ~ 1 + cond + (1 + cond | ID),
+  c ~ 0 + cond + (0 + cond | ID),
+  a ~ 0 + cond + (0 + cond | ID),
   d ~ 1 + (1 | ID)
 )
 ```
@@ -248,9 +248,9 @@ full_formula <- bmf(
   other ~ b + a,
   dist ~ b + d,
   npl ~ b,
-  c ~ 1 + cond + (1 + cond | ID),
-  a ~ 1 + cond + (1 + cond | ID),
-  d ~ 1 + (1 | ID)
+  c ~ 0 + cond + (0 + cond || ID),
+  a ~ 0 + cond + (0 + cond || ID),
+  d ~ 1 + (1 || ID)
 )
 ```
 
@@ -315,6 +315,48 @@ Running this model takes about 20 to 40 seconds (depending on the speed of your 
 ```{r}
 fit <- bmm:::bmmfit_m3_vignette
 ```
+
+Using this `fit` object we can have a quick look at the summary of the fitted model:
+
+```{r, comment=NA}
+summary(fit)
+```
+
+First, we can have a look at the estimated regression coefficients. The first thing we should check is if the sampling converged, this is indicated by all `Rhat` values being close to one. If you want to do more inspection of the sampling, you can check out the functionality implemented in `brms`to do this.
+
+The parameter estimates for `c`, `a`, and `d` are estimated using a `log` link function, so we have to transform these back to the native scale using the `exp` function:
+
+```{r}
+fixedFX <- brms::fixef(fit)
+
+# print posterior means for the c parameter
+exp(fixedFX[startsWith(rownames(fixedFX),"c_"),])
+
+# print posterior means for the a parameter
+exp(fixedFX[startsWith(rownames(fixedFX),"a_"),])
+
+# print posterior means for the d parameter
+exp(fixedFX[startsWith(rownames(fixedFX),"d_"),])
+```
+
+These estimates differ from the estimates reported by @oberauerSimpleMeasurementModels2019, becasue we used a `log` link function, whereas in the original publication an `identity` link was used. This was done with adding truncation arguments to the priors, to ensure that all activations are positive. In principle, this is possible in `bmm` to. However, such an estimation is less numerically stable and efficient. Therefore, we recommend using `log` links for activation parameters.
+
+When comparing the differences between the different conditions, the results from `bmm` converge with those in @oberauerSimpleMeasurementModels2019. The goal of this first experiment was to show a selective influence of different conditions on the `c` and `a` parameter. This replicated using the `bmm` implementation of the proposed `m3`. To evaluate the posterior differences between the conditions, we can use the `hypothesis` function from `brms`:
+
+```{r}
+post_diff <- c(
+  c_newVoldR = "exp(c_condnewdistractors) = exp(c_condoldreordered)",
+  c_newVoldS = "exp(c_condnewdistractors) = exp(c_condoldsame)",
+  c_oldRVolds = "exp(c_condoldreordered) = exp(c_condoldsame)",
+  a_newVoldR = "exp(a_condnewdistractors) = exp(a_condoldreordered)",
+  a_newVoldS = "exp(a_condnewdistractors) = exp(a_condoldsame)",
+  a_oldRVolds = "exp(a_condoldreordered) = exp(a_condoldsame)"
+)
+
+hypothesis(fit, post_diff)
+```
+
+These hypothesis will compute the difference between the specified parameters. To ease interpretability, we have transformed them back to the native scale using the `exp` function in defining the comparisons. You can see that the `c` parameter in the condition `oldsame` differs from both the `new` and `oldreorderd` although the 95% credibility interval (CI) includes zero.  In contrast the `a` parameter in the condition `oldreordered` differs from both the `new` and the `oldsame` condition. For these differences the 95% CI does not include zero as indicated by the `*` at the end of the line. 
 
 # References
 
