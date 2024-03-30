@@ -356,7 +356,9 @@ post_diff <- c(
 hypothesis(fit, post_diff)
 ```
 
-These hypothesis will compute the difference between the specified parameters. To ease interpretability, we have transformed them back to the native scale using the `exp` function in defining the comparisons. You can see that the `c` parameter in the condition `oldsame` differs from both the `new` and `oldreorderd` although the 95% credibility interval (CI) includes zero.  In contrast the `a` parameter in the condition `oldreordered` differs from both the `new` and the `oldsame` condition. For these differences the 95% CI does not include zero as indicated by the `*` at the end of the line. 
+These hypothesis will compute the difference between the specified parameters. To ease interpretability, we have transformed them back to the native scale using the `exp` function in defining the comparisons. You can see that the `c` parameter in the condition `oldsame` differs from both the `new` and `oldreorderd` although the 95% credibility interval (CI) includes zero.  In contrast the `a` parameter in the condition `oldreordered` differs from both the `new` and the `oldsame` condition. For these differences the 95% CI does not include zero as indicated by the `*` at the end of the line.
+
+Had we included a statement to also sample the priors using the `sample_prior = TRUE` option from `brms` when running the `bmm`, the `Evid.Ratio` and `Post.Prob` column would have given us the Bayes Factor in favor of the hypothesis and the posterior probability for the hypothesis being true relative to the specified priors.
 
 # References
 
