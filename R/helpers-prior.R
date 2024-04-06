@@ -278,15 +278,21 @@ summarise_default_prior <- function(prior_list) {
 
 
 # preprocess a brmsprior object for plotting
-prep_brmsprior <- function(x, formula = NULL) {
+prep_brmsprior <- function(x, formula = NULL, links = NULL) {
   stopif(!brms::is.brmsprior(x), "x must be a brmsprior object")
-  # remove empty priors
+  if (!is.null(formula)) {
+    stopif(!is.null(links), "Either formula or links should be provided")
+    stopif(!is_brmsformula(formula), "formula must be a brmsformula object")
+    stopif(is.null(formula$family), "formula must contain a brmsfamily object")
+    link_source <- formula
+  } else {
+    stopif(!is.null(links) && (!is.list(links) || is.null(names(links))),
+           "links must be a named list")
+    link_source <- links
+  }
+
   priors <- x[x$prior != "",]
-
-  # add mu to dpar if dpar is empty
   priors <- add_mu(priors)
-
-  # remove constant priors
   priors <- priors[!grepl("constant", priors$prior),]
 
   # rename priors to match distribution functions
@@ -297,5 +303,11 @@ prep_brmsprior <- function(x, formula = NULL) {
   priors$par <- ifelse(priors$nlpar != "", priors$nlpar, priors$dpar)
 
   # remove corr parameters as it's too complicated to visualize them
-  priors[priors$class != "cor",]
+  priors <- priors[priors$class != "cor",]
+
+  # add a column with the corresponding parameter link
+  if (!("link" %in% names(x))) {
+    priors <- add_links(priors, object = link_source)
+  }
+  priors
 }

@@ -90,26 +90,26 @@ probability mass is below the mean of the response distribution.
 \examples{
 # plot the density of the SDM distribution
 x <- seq(-pi,pi,length.out=10000)
-plot(x,dsdm(x,0,2,3),type="l", xlim=c(-pi,pi),ylim=c(0,1),
-     xlab="Angle error (radians)",
-     ylab="density",
-     main="SDM density")
-lines(x,dsdm(x,0,9,1),col="red")
-lines(x,dsdm(x,0,2,8),col="green")
-legend("topright",c("c=2, kappa=3.0, mu=0",
-                    "c=9, kappa=1.0, mu=0",
-                    "c=2, kappa=8, mu=1"),
-       col=c("black","red","green"),lty=1, cex=0.8)
+plot(x, dsdm(x,0,2,3), type="l", xlim = c(-pi,pi), ylim = c(0,1),
+     xlab = "Angle error (radians)",
+     ylab = "density",
+     main = "SDM density")
+lines(x, dsdm(x,0,9,1), col="red")
+lines(x, dsdm(x,0,2,8), col="green")
+legend("topright", c("c=2, kappa=3.0, mu=0",
+                     "c=9, kappa=1.0, mu=0",
+                     "c=2, kappa=8, mu=1"),
+       col=c("black","red","green"), lty = 1, cex = 0.8)
 
 # plot the cumulative distribution function of the SDM distribution
 p <- psdm(x, mu = 0, c = 3.1, kappa = 5)
-plot(x,p,type="l")
+plot(x, p, type = "l")
 
 # generate random deviates from the SDM distribution and overlay the density
 r <- rsdm(10000, mu = 0, c = 3.1, kappa = 5)
 d <- dsdm(x, mu = 0, c = 3.1, kappa = 5)
-hist(r, breaks=60, freq=FALSE)
-lines(x,d,type="l", col="red")
+hist(r, breaks = 60, freq = FALSE)
+lines(x, d, type = "l", col = "red")
 
 }
 \references{

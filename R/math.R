@@ -3,7 +3,7 @@ logit <- function(p) {
 }
 
 inv_logit <- function(x) {
-  exp(x) / (1 + exp(x))
+  1 / (1 + exp(-1*x))
 }
 
 cloglog <- function (x) {
@@ -11,7 +11,7 @@ cloglog <- function (x) {
 }
 
 inv_cloglog <- function(x) {
-  1 - exp(-exp(x))
+  1 - exp(-1*exp(x))
 }
 
 log_expm1 <- function (x) {
@@ -29,11 +29,11 @@ log1p_exp_custom <- function(x, mu = 0, a = 0, b = 1) {
   ifelse(out < Inf, out, x)
 }
 
-softfit <- function(x) {
+softit <- function(x) {
   log_expm1(x/(1-x))
 }
 
-inv_softfit <- function(x) {
+inv_softit <- function(x) {
   y <- log1p_exp(x)
   y/(1 + y)
 }

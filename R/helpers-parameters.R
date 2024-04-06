@@ -18,8 +18,8 @@
 #' SDs_degress <- SDs * 180 / pi
 #'
 #' # plot the relationship between kappa and circular SD
-#' plot(kappas,SDs)
-#' plot(kappas,SDs_degress)
+#' plot(kappas, SDs)
+#' plot(kappas, SDs_degress)
 #'
 k2sd <- function(K) {
   S <- matrix(0, 1, length(K))

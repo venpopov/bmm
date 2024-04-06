@@ -761,7 +761,7 @@ add_links.brmsprior <- function(x, object, family, ...) {
   links <- get_links(object, family)
   links <- unlist(links)
   info <- strsplit(names(links), ".", fixed = TRUE)
-  if (is(formula, 'mvbrmsformula')) {
+  if (length(info[[1]]) == 2) {
     resp <- ulapply(info, function(x) x[1])
     dpar <- ulapply(info, function(x) x[2])
   } else {
@@ -776,6 +776,8 @@ add_links.brmsprior <- function(x, object, family, ...) {
   in_class <- x$class %in% dpar & x$dpar == ""
   dpar_old <- x$dpar
   x$dpar <- ifelse(in_class, x$class, x$dpar)
+  #
+
   x <- suppressMessages(dplyr::left_join(x, links_df))
   x$dpar <- dpar_old
   x$link[is.na(x$link)] <- "identity"
@@ -789,10 +791,15 @@ get_links <- function(x, ...) {
 }
 
 #' @export
+get_links.default <- function(x, ...) {
+  x
+}
+
+#' @export
 get_links.brmsformula <- function(x, ...) {
   dots <- list(...)
   if (!is.null(dots$family)) {
-    x <- brmsformula(x, family = dots$family)
+    x <- brms::brmsformula(x, family = dots$family)
   }
   x <- brms::brmsterms(x)
   dpars <- x$family$dpars
