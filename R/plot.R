@@ -207,20 +207,25 @@ theme_dist <- function() {
 }
 
 
-#' ggdist::stat_slab() with nice defaults
+# TODO: add this after ggdist next release
+#' #' ggdist::stat_slab() with nice defaults
+#' #'
+#' #' A wrapper for ggdist::stat_slab() that sets default subguides and scales to
+#' #' display the density on the y axis.
+#' #' @param ... Additional arguments passed to ggdist::stat_slab()
+#' #' @inheritParams ggdist::geom_slab
+#' #' @return a stat_slab() object
+#' #' @keywords plot
+#' #' @export
+#' stat_slab2 <- function(...,
+#'                        subguide = ggdist::subguide_outside(title = "density"),
+#'                        subscale = if (packageVersion('ggdist') > "3.3.2") {
+#'                          ggdist::subscale_thickness(expand = expansion(c(0, 0.05)))
+#'                          } else {
+#'                            NULL
+#'                          },
+#'                        normalize = 'groups') {
 #'
-#' A wrapper for ggdist::stat_slab() that sets default subguides and scales to
-#' display the density on the y axis.
-#' @param ... Additional arguments passed to ggdist::stat_slab()
-#' @inheritParams ggdist::geom_slab
-#' @return a stat_slab() object
-#' @keywords plot
-#' @export
-stat_slab2 <- function(...,
-                       subguide = ggdist::subguide_outside(title = "density"),
-                       subscale = ggdist::subscale_thickness(expand = expansion(c(0, 0.05))),
-                       normalize = 'groups') {
-
-  ggdist::stat_slab(..., subguide = subguide, subscale = subscale, normalize = normalize)
-}
+#'   suppressWarnings(ggdist::stat_slab(..., subguide = subguide, subscale = subscale, normalize = normalize))
+#' }
 
