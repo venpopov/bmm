@@ -206,3 +206,21 @@ theme_dist <- function() {
         axis.title.y = element_blank())
 }
 
+
+#' ggdist::stat_slab() with nice defaults
+#'
+#' A wrapper for ggdist::stat_slab() that sets default subguides and scales to
+#' display the density on the y axis.
+#' @param ... Additional arguments passed to ggdist::stat_slab()
+#' @inheritParams ggdist::geom_slab
+#' @return a stat_slab() object
+#' @keywords plot
+#' @export
+stat_slab2 <- function(...,
+                       subguide = subguide_outside(title = "density"),
+                       subscale = subscale_thickness(expand = expansion(c(0, 0.05))),
+                       normalize = 'groups') {
+
+  stat_slab(..., subguide = subguide, subscale = subscale, normalize = normalize)
+}
+

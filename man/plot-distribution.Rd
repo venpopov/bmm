@@ -116,6 +116,6 @@ plot(x2)
 plot('normal(0, 1)', 'normal(0, 2)', type = 'cdf')
 plot(c('normal(0, 1)', 'student_t(3,0,2.5)'), facets = T)
 
-plot(dist_beta(1:10, 1)) + theme(legend.position = 'right')
+plot(distributional::dist_beta(1:10, 1)) + theme(legend.position = 'right')
 }
 \keyword{plot}
