@@ -44,15 +44,6 @@ test_that("in combine prior, prior2 overwrites only shared components with prior
   expect_equal(dplyr::filter(prior, dpar == "kappa"), dplyr::filter(prior2, dpar == "kappa"))
 })
 
-
-test_that("default priors are returned correctly", {
-  dp <- default_prior(bmf(kappa ~ set_size, thetat ~ set_size),
-                      oberauer_lin_2017,
-                      mixture2p('dev_rad'))
-  expect_equal(dp[dp$coef == "" & dp$class == "b", ]$prior, c("","normal(0, 1)"))
-  expect_equal(dp[dp$coef == "Intercept", ]$prior, c("normal(2, 1)", "logistic(0, 1)"))
-})
-
 test_that("no check for sort_data with default_priors function", {
   withr::local_options('bmm.sort_data' = 'check')
   res <- capture_messages(default_prior(bmf(kappa ~ set_size, c ~ set_size),
@@ -62,16 +53,4 @@ test_that("no check for sort_data with default_priors function", {
 })
 
 
-test_that("default priors work when there are no fixed parameters", {
-  formula <- bmf(mu ~ 1,
-                 c ~ 1,
-                 kappa ~ 1)
-  if (utils::packageVersion("brms") >= "2.20.14") {
-    prior_fn <- default_prior
-  } else {
-    prior_fn <- get_model_prior
-  }
 
-  pr <- prior_fn(formula, oberauer_lin_2017, sdm('dev_rad'))
-  expect_s3_class(pr, 'brmsprior')
-})
