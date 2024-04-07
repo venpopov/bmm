@@ -47,6 +47,10 @@ visual working memory research:
 - Three-parameter mixture model by Bays et al (2009).
 - Signal Discrimination Model (SDM) by Oberauer (2023)
 
+**Working Memory (categorical)**
+
+- The Memory Measurement Model by Oberauer & Lewandowsky (2019)
+
 However, the setup of the bmm package provides the foundation for the
 implementation of a broad range of cognitive measurement models. In
 fact, we are already working on implementing additional models, such as:
@@ -68,6 +72,7 @@ bmm::supported_models()
 #> The following models are supported:
 #> 
 #> -  imm(resp_error, nt_features, nt_distances, set_size, regex, links, version) 
+#> -  m3(resp_cats, num_options, links, choice_rule, version) 
 #> -  mixture2p(resp_error, links) 
 #> -  mixture3p(resp_error, nt_features, set_size, regex, links) 
 #> -  sdm(resp_error, links, version) 
@@ -301,6 +306,8 @@ This process is illustrated in the Figure below:
 
 Should be interested in contributing a model to the `bmm` package, you
 should first look into the [Developer
-Notes](https://venpopov.github.io/bmm/dev/dev-notes/index.html). These
-give a more in depth description of the package architecture and the
-steps necessary to add your own model to the package.
+Notes](https://venpopov.github.io/bmm/dev/dev-notes/index.html) as well
+as the [Contributor
+Guidelines](https://github.com/venpopov/bmm/tree/develop/.github/CONTRIBUTOR.md).
+These give a more in depth description of the package architecture and
+the steps necessary to add your own model to the package.
