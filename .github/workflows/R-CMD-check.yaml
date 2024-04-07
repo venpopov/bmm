@@ -70,6 +70,7 @@ jobs:
             remotes
             waldo
             fansi
+            extraDistr
 
       - name: Build Cmdstan
         run: |

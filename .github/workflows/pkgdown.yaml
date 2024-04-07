@@ -52,6 +52,7 @@ jobs:
             remotes
             waldo
             fansi
+            extraDistr
             any::pkgdown
             local::.
 
