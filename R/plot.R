@@ -217,10 +217,10 @@ theme_dist <- function() {
 #' @keywords plot
 #' @export
 stat_slab2 <- function(...,
-                       subguide = subguide_outside(title = "density"),
-                       subscale = subscale_thickness(expand = expansion(c(0, 0.05))),
+                       subguide = ggdist::subguide_outside(title = "density"),
+                       subscale = ggdist::subscale_thickness(expand = expansion(c(0, 0.05))),
                        normalize = 'groups') {
 
-  stat_slab(..., subguide = subguide, subscale = subscale, normalize = normalize)
+  ggdist::stat_slab(..., subguide = subguide, subscale = subscale, normalize = normalize)
 }
 
