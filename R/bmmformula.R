@@ -335,8 +335,17 @@ rhs_vars.bmmformula <- function(formula, collapse = TRUE, ...) {
 
 #' @export
 rhs_vars.formula <- function(formula, ...) {
-  all_vars <- all.vars(formula)
-  all_vars[-1]
+  all.vars(f_rhs(formula))
+}
+
+
+f_rhs <- function(formula) {
+  stopifnot(is_formula(formula))
+  if (length(formula) == 3) {
+    formula[[3]]
+  } else {
+    formula[[2]]
+  }
 }
 
 # adds an attribute nl to each component of the the formula indicating if the
