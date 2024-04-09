@@ -335,16 +335,36 @@ configure_model.imm_abc <- function(model, data, formula) {
 #' @export
 configure_prior.imm_abc <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
+  prior <- empty_prior()
   set_size_var <- model$other_vars$set_size
+  prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
+
   a_preds <- rhs_vars(formula$pforms$a)
-  prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
-      set_size_var %in% a_preds) {
-    prior <- brms::prior_("constant(0)",
+  if (prior_cond && set_size_var %in% a_preds) {
+    prior <- prior + brms::prior_("constant(0)",
                           class = "b",
                           coef = paste0(set_size_var, 1),
                           nlpar = "a")
   }
+
+  # check if there is a random effect on theetant that include set_size as predictor
+  bterms <- brms::brmsterms(formula$pforms$a)
+  re_terms <- bterms$dpars$mu$re
+  if (!is.null(re_terms)) {
+    for (i in 1:nrow(re_terms)) {
+      group <- re_terms$group[[i]]
+      form <- re_terms$form[[i]]
+      a_preds <- rhs_vars(form)
+      if (prior_cond && set_size_var %in% a_preds) {
+        prior <- prior + brms::prior_("constant(1e-8)",
+                                      class = "sd",
+                                      coef = paste0(set_size_var, 1),
+                                      group = group,
+                                      nlpar = "a")
+      }
+    }
+  }
+
   prior
 }
 
@@ -391,16 +411,35 @@ configure_model.imm_bsc <- function(model, data, formula) {
 #' @export
 configure_prior.imm_bsc <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
+  prior <- brms::empty_prior()
   set_size_var <- model$other_vars$set_size
+  prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
   s_preds <- rhs_vars(formula$pforms$s)
-  prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
-      set_size_var %in% s_preds) {
-    prior <- brms::prior_("constant(0)",
-                          class = "b",
-                          coef = paste0(set_size_var, 1),
-                          nlpar = "s")
+  if (prior_cond && set_size_var %in% s_preds) {
+    prior <- prior + brms::prior_("constant(0)",
+                                  class = "b",
+                                  coef = paste0(set_size_var, 1),
+                                  nlpar = "s")
   }
+
+  # check if there is a random effect on theetant that include set_size as predictor
+  bterms <- brms::brmsterms(formula$pforms$s)
+  re_terms <- bterms$dpars$mu$re
+  if (!is.null(re_terms)) {
+    for (i in 1:nrow(re_terms)) {
+      group <- re_terms$group[[i]]
+      form <- re_terms$form[[i]]
+      s_preds <- rhs_vars(form)
+      if (prior_cond && set_size_var %in% s_preds) {
+        prior <- prior + brms::prior_("constant(1e-8)",
+                                      class = "sd",
+                                      coef = paste0(set_size_var, 1),
+                                      group = group,
+                                      nlpar = "s")
+      }
+    }
+  }
+
   prior
 }
 
@@ -448,22 +487,58 @@ configure_model.imm_full <- function(model, data, formula) {
 configure_prior.imm_full <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
   set_size_var <- model$other_vars$set_size
+  prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
   s_preds <- rhs_vars(formula$pforms$s)
   a_preds <- rhs_vars(formula$pforms$a)
   prior <- brms::empty_prior()
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
-      set_size_var %in% a_preds) {
-    prior <- brms::prior_("constant(0)",
-                          class = "b",
-                          coef = paste0(set_size_var, 1),
-                          nlpar = "a")
+  if (prior_cond && set_size_var %in% a_preds) {
+    prior <- prior + brms::prior_("constant(0)",
+                                  class = "b",
+                                  coef = paste0(set_size_var, 1),
+                                  nlpar = "a")
   }
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
-      set_size_var %in% s_preds) {
+  if (prior_cond && set_size_var %in% s_preds) {
     prior <- prior + brms::prior_("constant(0)",
                                   class = "b",
                                   coef = paste0(set_size_var, 1),
                                   nlpar = "s")
   }
+
+  # check if there is a random effect on theetant that include set_size as predictor
+  bterms <- brms::brmsterms(formula$pforms$a)
+  re_terms <- bterms$dpars$mu$re
+  if (!is.null(re_terms)) {
+    for (i in 1:nrow(re_terms)) {
+      group <- re_terms$group[[i]]
+      form <- re_terms$form[[i]]
+      a_preds <- rhs_vars(form)
+      if (prior_cond && set_size_var %in% a_preds) {
+        prior <- prior + brms::prior_("constant(1e-8)",
+                                      class = "sd",
+                                      coef = paste0(set_size_var, 1),
+                                      group = group,
+                                      nlpar = "a")
+      }
+    }
+  }
+
+  # check if there is a random effect on theetant that include set_size as predictor
+  bterms <- brms::brmsterms(formula$pforms$s)
+  re_terms <- bterms$dpars$mu$re
+  if (!is.null(re_terms)) {
+    for (i in 1:nrow(re_terms)) {
+      group <- re_terms$group[[i]]
+      form <- re_terms$form[[i]]
+      s_preds <- rhs_vars(form)
+      if (prior_cond && set_size_var %in% s_preds) {
+        prior <- prior + brms::prior_("constant(1e-8)",
+                                      class = "sd",
+                                      coef = paste0(set_size_var, 1),
+                                      group = group,
+                                      nlpar = "s")
+      }
+    }
+  }
+
   prior
 }

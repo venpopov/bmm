@@ -184,15 +184,36 @@ configure_model.mixture3p <- function(model, data, formula) {
 #' @export
 configure_prior.mixture3p <- function(model, data, formula, user_prior, ...) {
   # if there is set_size 1 in the data, set constant prior over thetant for set_size1
+  prior <- brms::empty_prior()
   set_size_var <- model$other_vars$set_size
+  prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
+
   thetant_preds <- rhs_vars(formula$pforms$thetant)
-  prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
-      set_size_var %in% thetant_preds) {
-    prior <- brms::prior_("constant(-100)",
-                          class = "b",
-                          coef = paste0(set_size_var, 1),
-                          nlpar = "thetant")
+
+  if (prior_cond && set_size_var %in% thetant_preds) {
+    prior <- prior + brms::prior_("constant(-100)",
+                                  class = "b",
+                                  coef = paste0(set_size_var, 1),
+                                  nlpar = "thetant")
   }
+
+  # check if there is a random effect on theetant that include set_size as predictor
+  bterms <- brms::brmsterms(formula$pforms$thetant)
+  re_terms <- bterms$dpars$mu$re
+  if (!is.null(re_terms)) {
+    for (i in 1:nrow(re_terms)) {
+      group <- re_terms$group[[i]]
+      form <- re_terms$form[[i]]
+      thetant_preds <- rhs_vars(form)
+      if (prior_cond && set_size_var %in% thetant_preds) {
+        prior <- prior + brms::prior_("constant(1e-8)",
+                                      class = "sd",
+                                      coef = paste0(set_size_var, 1),
+                                      group = group,
+                                      nlpar = "thetant")
+      }
+    }
+  }
+
   prior
 }
