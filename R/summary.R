@@ -76,7 +76,9 @@ print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary
     for (i in seq_along(x$random)) {
       g <- names(x$random)[i]
       cat(paste0("~", g, " (Number of levels: ", x$ngrps[[g]], ") \n"))
-      print_format(x$random[[g]], digits)
+      re <- x$random[[g]]
+      re <- re[!is.na(re$Rhat),]
+      print_format(re, digits)
       cat("\n")
     }
   }

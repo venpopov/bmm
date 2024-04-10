@@ -127,30 +127,30 @@ set_default_prior <- function(model, data, formula) {
 
   prior <- brms::empty_prior()
   bterms <- brms::brmsterms(formula)
-  dpars <- names(bterms$dpars)
+  bterms$allpars <- c(bterms$dpars, bterms$nlpars)
   nlpars <- names(bterms$nlpars)
-  pars <- c(dpars, nlpars)
+  pars <- names(bterms$allpars)
 
   pars_key <- names(default_priors)
   pars <- pars[pars %in% pars_key]
 
   for (par in pars) {
-    bform <- formula$pforms[[par]]
+    bform <- bterms$allpars[[par]]$fe
     terms <- stats::terms(bform)
     prior_desc <- default_priors[[par]]
     has_effects_prior <- !is.null(prior_desc$effects)
 
-    all_rhs_names <- rhs_vars(bform)
+
     all_rhs_terms <- attr(terms, "term.labels")
-    fixef <- all_rhs_terms[all_rhs_terms %in% all_rhs_names]
-    inter <- all_rhs_terms[attr(bterms, "order") > 1]
+    fixef <- all_rhs_terms[attr(terms, "order") == 1]
+    inter <- all_rhs_terms[attr(terms, "order") > 1]
     nfixef <- length(fixef)
     ninter <- length(inter)
     interaction_only <- nfixef == 0 && ninter > 0
 
     # if the user has specified a non-linear predictor on a model parameter, do
     # not set prior
-    if (any(all_rhs_names %in% pars)) {
+    if (any(all_rhs_terms %in% pars)) {
       next
     }
 
