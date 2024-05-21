@@ -2,9 +2,10 @@
 % Please edit documentation in R/helpers-prior.R
 \name{default_prior.bmmformula}
 \alias{default_prior.bmmformula}
+\alias{default_prior}
 \title{Get Default priors for Measurement Models specified in BMM}
 \usage{
-\method{default_prior}{bmmformula}(object, data, model, formula = object, ...)
+default_prior.bmmformula(object, data, model, formula = object, ...)
 }
 \arguments{
 \item{object}{A \code{bmmformula} object}

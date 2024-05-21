@@ -222,6 +222,7 @@ rad2deg <- function(rad){
 #'   `brms`
 #'
 #' @inheritParams bmm
+#' @aliases standata
 #' @param object A `bmmformula` object
 #' @param ... Further arguments passed to [brms::standata()]. See the
 #'   description of [brms::standata()] for more details
@@ -231,8 +232,6 @@ rad2deg <- function(rad){
 #'
 #' @seealso [supported_models()], [brms::standata()]
 #'
-#' @export
-#'
 #' @keywords extract_info
 #'
 #' @examples
@@ -240,7 +239,6 @@ rad2deg <- function(rad){
 #'                    data = oberauer_lin_2017,
 #'                    model = sdm(resp_error = "dev_rad"))
 #' str(sdata1)
-#' @importFrom brms standata
 #' @export
 standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # check model, formula and data, and transform data if necessary
@@ -262,6 +260,11 @@ standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   fit_args$object <- fit_args$formula
   fit_args$formula <- NULL
   brms::do_call(brms::standata, fit_args)
+}
+
+#' @export
+standata <- function(object, ...) {
+  brms::standata(object, ...)
 }
 
 # check if the data is sorted by the predictors

@@ -12,6 +12,7 @@
 #'   priors in `brms`, as we use domain knowledge to specify the priors.
 #'
 #' @inheritParams bmm
+#' @aliases default_prior
 #' @param object A `bmmformula` object
 #' @param ... Further arguments passed to [brms::default_prior()]
 #'
@@ -24,13 +25,10 @@
 #'
 #' @keywords extract_info
 #'
-#' @export
-#'
 #' @examples
 #' default_prior(bmf(c ~ 1, kappa ~ 1),
 #'               data = oberauer_lin_2017,
 #'               model = sdm(resp_error = 'dev_rad'))
-#' @importFrom brms default_prior
 #' @export
 default_prior.bmmformula <- function(object, data, model, formula = object, ...) {
   withr::local_options(bmm.sort_data = FALSE)
@@ -50,6 +48,11 @@ default_prior.bmmformula <- function(object, data, model, formula = object, ...)
   brms_priors <- brms::do_call(brms::default_prior, prior_args)
 
   combine_prior(brms_priors, prior_args$prior)
+}
+
+#' @export
+default_prior <- function(object, ...) {
+  brms::default_prior(object, ...)
 }
 
 

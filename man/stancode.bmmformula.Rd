@@ -2,9 +2,10 @@
 % Please edit documentation in R/helpers-model.R
 \name{stancode.bmmformula}
 \alias{stancode.bmmformula}
+\alias{stancode}
 \title{Generate Stan code for bmm models}
 \usage{
-\method{stancode}{bmmformula}(object, data, model, prior = NULL, ...)
+stancode.bmmformula(object, data, model, prior = NULL, ...)
 }
 \arguments{
 \item{object}{A \code{bmmformula} object}

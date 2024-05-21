@@ -11,6 +11,9 @@
 ### Deprecated functions and arguments
 * BREAKING CHANGE: the arguments for the distribution functions of the  **mixture2p** and **mixture3p** model have been change to match the snake_case coding scheme. Instead of *pMem* and **pNT** these are now **p_mem** and **p_nt**. The old names are deprecated and are no longer supported
 
+### Other changes
+* improve package loading speed
+
 # bmm 0.5.1
 
 ### Bug fixes
