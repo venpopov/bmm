@@ -609,6 +609,7 @@ use_model_template <- function(model_name,
 #'   `brms`
 #'
 #' @inheritParams bmm
+#' @aliases stancode
 #' @param object A `bmmformula` object
 #' @param ... Further arguments passed to [brms::stancode()]. See the
 #'   description of [brms::stancode()] for more details
@@ -623,7 +624,6 @@ use_model_template <- function(model_name,
 #'                    data = oberauer_lin_2017,
 #'                    model = sdm(resp_error = "dev_rad"))
 #' cat(scode1)
-#' @importFrom brms stancode
 #' @export
 stancode.bmmformula <- function(object, data, model, prior = NULL, ...) {
   withr::local_options(bmm.sort_data = FALSE)
@@ -647,6 +647,11 @@ stancode.bmmformula <- function(object, data, model, prior = NULL, ...) {
   fit_args$formula <- NULL
   code <- brms::do_call(brms::stancode, fit_args)
   add_bmm_version_to_stancode(code)
+}
+
+#' @export
+stancode <- function(object, ...) {
+  brms::stancode(object, ...)
 }
 
 

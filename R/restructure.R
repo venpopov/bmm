@@ -4,6 +4,8 @@
 #' the latest \pkg{bmm} version. This function is called
 #' internally when applying post-processing methods.
 #'
+#' @aliases restructure
+#' 
 #' @param x An object of class \code{bmmfit}.
 #' @param ... Currently ignored.
 #'
@@ -12,7 +14,6 @@
 #' @keywords transform
 #' @export
 #' @importFrom utils packageVersion
-#' @importFrom brms restructure
 restructure.bmmfit <- function(x, ...) {
   version <- x$version$bmm
   if (is.null(version)) {
@@ -82,6 +83,11 @@ restructure.bmmfit <- function(x, ...) {
 
   x$version$bmm_restructure <- current_version
   NextMethod('restructure')
+}
+
+#' @export
+restructure <- function(object, ...) {
+  brms::restructure(object, ...)
 }
 
 restructure_version.bmm <- function(x) {

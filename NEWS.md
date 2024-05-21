@@ -6,6 +6,9 @@
 ### Bug fixes
 * fix incorrect specification of default priors when only an interaction is specified (#201)
 
+### Other changes
+* improve package loading speed
+
 # bmm 0.5.1
 
 ### Bug fixes

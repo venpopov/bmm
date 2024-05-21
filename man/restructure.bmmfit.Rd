@@ -2,9 +2,10 @@
 % Please edit documentation in R/restructure.R
 \name{restructure.bmmfit}
 \alias{restructure.bmmfit}
+\alias{restructure}
 \title{Restructure Old \code{bmmfit} Objects}
 \usage{
-\method{restructure}{bmmfit}(x, ...)
+restructure.bmmfit(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{bmmfit}.}

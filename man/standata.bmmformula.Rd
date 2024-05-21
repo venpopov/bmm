@@ -2,9 +2,10 @@
 % Please edit documentation in R/helpers-data.R
 \name{standata.bmmformula}
 \alias{standata.bmmformula}
+\alias{standata}
 \title{Stan data for \code{bmm} models}
 \usage{
-\method{standata}{bmmformula}(object, data, model, prior = NULL, ...)
+standata.bmmformula(object, data, model, prior = NULL, ...)
 }
 \arguments{
 \item{object}{A \code{bmmformula} object}

@@ -335,7 +335,7 @@ configure_model.imm_abc <- function(model, data, formula) {
 #' @export
 configure_prior.imm_abc <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
-  prior <- empty_prior()
+  prior <- brms::empty_prior()
   set_size_var <- model$other_vars$set_size
   prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
 
