@@ -502,7 +502,7 @@ qimm <- function(p, mu=c(0,2,-1.5), dist = c(0,0.5,2),
 #' @rdname IMMdist
 #' @export
 rimm <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
-                 c=1, a = 0.2, b = 0, s = 2, kappa=5) {
+                 c=1, a = 0.2, b = 1, s = 2, kappa=5) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(length(mu) != length(dist),
          "The number of items does not match the distances provided from the cued location.")

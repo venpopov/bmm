@@ -80,7 +80,7 @@ generate_bmm_examples <- function(seed = 123) {
                     mu = item_location,
                     dist = item_distance,
                     c = Cs[i], a = As[i],
-                    b = 0, s = Ss[i], kappa = kappas[i])
+                    b = 1, s = Ss[i], kappa = kappas[i])
     condData <- data.frame(
       resp_error = genData,
       trialID = 1:nTrials,
@@ -117,7 +117,6 @@ generate_bmm_examples <- function(seed = 123) {
     save_warmup = FALSE
   )
   bmmfit_imm_vignette$bmm$fit_args$data <- NULL
-
 
   usethis::use_data(bmmfit_example1, bmmfit_sdm_vignette, bmmfit_mixture2p_vignette, bmmfit_imm_vignette, internal = TRUE, overwrite = TRUE)
 
