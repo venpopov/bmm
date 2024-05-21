@@ -38,8 +38,8 @@
         links = list(
           mu1 = "tan_half",
           kappa = "log",
-          a = "identity",
-          c = "identity",
+          a = "log",
+          c = "log",
           s = "log"
         ),
         fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
@@ -307,7 +307,7 @@ configure_model.imm_abc <- function(model, data, formula) {
   formula <- bmf2bf(model, formula) +
     brms::lf(kappa2 ~ 1) +
     brms::lf(mu2 ~ 1) +
-    brms::nlf(theta1 ~ c + a) +
+    brms::nlf(theta1 ~ log(exp(c) + exp(a))) +
     brms::nlf(kappa1 ~ kappa)
 
   # additional internal terms for the mixture model formula
@@ -335,7 +335,7 @@ configure_model.imm_abc <- function(model, data, formula) {
 #' @export
 configure_prior.imm_abc <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
-  prior <- empty_prior()
+  prior <- brms::empty_prior()
   set_size_var <- model$other_vars$set_size
   prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
 
@@ -394,8 +394,8 @@ configure_model.imm_bsc <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * exp(-expS*{nt_distances[i]})",
-               " * c + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (-expS*{nt_distances[i]} + c)",
+               " + (1 - {lure_idx[i]}) * (-100)") +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
@@ -456,7 +456,7 @@ configure_model.imm_full <- function(model, data, formula) {
   formula <- bmf2bf(model, formula) +
     brms::lf(kappa2 ~ 1) +
     brms::lf(mu2 ~ 1) +
-    brms::nlf(theta1 ~ c + a) +
+    brms::nlf(theta1 ~ log(exp(c) + exp(a))) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
 
@@ -468,8 +468,8 @@ configure_model.imm_full <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (exp(-expS*{nt_distances[i]})",
-               " * c + a) + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * log(exp(c-expS*{nt_distances[i]}) + exp(a))",
+               "+ (1 - {lure_idx[i]}) * (-100)") +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
