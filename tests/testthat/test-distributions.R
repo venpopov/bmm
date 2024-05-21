@@ -60,7 +60,7 @@ test_that("dmixture2p integrates to 1", {
   expect_equal(integrate(dmixture2p, -pi, pi,
     mu = runif(1, min = -pi, pi),
     kappa = runif(1, min = 1, max = 20),
-    pMem = runif(1, min = 0, max = 1)
+    p_mem = runif(1, min = 0, max = 1)
   )$value, 1)
 })
 
@@ -68,8 +68,8 @@ test_that("dmixture3p integrates to 1", {
   expect_equal(integrate(dmixture3p, -pi, pi,
     mu = runif(3, min = -pi, pi),
     kappa = runif(1, min = 1, max = 20),
-    pMem = runif(1, min = 0, max = 0.6),
-    pNT = runif(1, min = 0, max = 0.3)
+    p_mem = runif(1, min = 0, max = 0.6),
+    p_nt = runif(1, min = 0, max = 0.3)
   )$value, 1)
 })
 
@@ -89,7 +89,7 @@ test_that("rmixture2p returns values between -pi and pi", {
   res <- rmixture2p(500,
     mu = runif(1, min = -pi, pi),
     kappa = runif(1, min = 1, max = 20),
-    pMem = runif(1, min = 0, max = 1)
+    p_mem = runif(1, min = 0, max = 1)
   )
   expect_true(all(res >= -pi) && all(res <= pi))
 })
@@ -98,8 +98,8 @@ test_that("rmixture3p returns values between -pi and pi", {
   res <- rmixture3p(500,
     mu = runif(3, min = -pi, pi),
     kappa = runif(1, min = 1, max = 20),
-    pMem = runif(1, min = 0, max = 0.6),
-    pNT = runif(1, min = 0, max = 0.3)
+    p_mem = runif(1, min = 0, max = 0.6),
+    p_nt = runif(1, min = 0, max = 0.3)
   )
   expect_true(all(res >= -pi) && all(res <= pi))
 })

@@ -12,16 +12,16 @@ dmixture3p(
   x,
   mu = c(0, 2, -1.5),
   kappa = 5,
-  pMem = 0.6,
-  pNT = 0.2,
+  p_mem = 0.6,
+  p_nt = 0.2,
   log = FALSE
 )
 
-pmixture3p(q, mu = c(0, 2, -1.5), kappa = 5, pMem = 0.6, pNT = 0.2)
+pmixture3p(q, mu = c(0, 2, -1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2)
 
-qmixture3p(p, mu = c(0, 2, -1.5), kappa = 5, pMem = 0.6, pNT = 0.2)
+qmixture3p(p, mu = c(0, 2, -1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2)
 
-rmixture3p(n, mu = c(0, 2, -1.5), kappa = 5, pMem = 0.6, pNT = 0.2)
+rmixture3p(n, mu = c(0, 2, -1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2)
 }
 \arguments{
 \item{x}{Vector of observed responses}
@@ -32,9 +32,9 @@ items.}
 
 \item{kappa}{Vector of precision values}
 
-\item{pMem}{Vector of probabilities for memory recall}
+\item{p_mem}{Vector of probabilities for memory recall}
 
-\item{pNT}{Vector of probabilities for swap errors}
+\item{p_nt}{Vector of probabilities for swap errors}
 
 \item{log}{Logical; if \code{TRUE}, values are returned on the log scale.}
 
@@ -55,7 +55,7 @@ generation function for the two-parameter mixture model.
 Density, distribution, and random generation functions for the
 three-parameter mixture model with the location of \code{mu}, precision of
 memory representations \code{kappa}, probability of recalling items from memory
-\code{pMem}, and probability of recalling non-targets \code{pNT}.
+\code{p_mem}, and probability of recalling non-targets \code{p_nt}.
 }
 \examples{
 # example code

@@ -226,7 +226,7 @@ kappa <- fixedEff[grepl("kappa_",rownames(fixedEff)),]
 # transform parameters because brms uses special link functions
 kappa <- exp(kappa)
 sd <- k2sd(kappa[,1]) 
-pmem <- exp(thetat)/(exp(thetat)+1)
+p_mem <- exp(thetat)/(exp(thetat)+1)
 pg <- exp(0)/(exp(thetat)+1)
 ```
 
@@ -246,8 +246,8 @@ round(sd,3)
 Probability that responses comes from memory:
 
 ```{r}
-rownames(pmem) <- paste0("Set size ", c(1,2,4,6))
-round(pmem,3)
+rownames(p_mem) <- paste0("Set size ", c(1,2,4,6))
+round(p_mem,3)
 ```
 
 It is even better to visualize the entire posterior distribution of the parameters. 

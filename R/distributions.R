@@ -216,7 +216,7 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 #' @description Density, distribution, and random generation functions for the
 #'   two-parameter mixture model with the location of `mu`, precision of memory
 #'   representations `kappa` and probability of recalling items from memory
-#'   `pMem`.
+#'   `p_mem`.
 #'
 #' @name mixture2p_dist
 #'
@@ -226,7 +226,7 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 #' @param n Number of observations to generate data for
 #' @param mu Vector of locations
 #' @param kappa Vector of precision values
-#' @param pMem Vector of probabilities for memory recall
+#' @param p_mem Vector of probabilities for memory recall
 #' @param log Logical; if `TRUE`, values are returned on the log scale.
 #'
 #' @keywords distribution
@@ -245,15 +245,15 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 #' @examples
 #' # example code
 #'
-dmixture2p <- function(x, mu=0, kappa=5, pMem = 0.6, log = FALSE) {
+dmixture2p <- function(x, mu=0, kappa=5, p_mem = 0.6, log = FALSE) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(isTRUE(any(pMem < 0)), "pMem must be larger than zero.")
-  stopif(isTRUE(any(pMem > 1)), "pMem must be smaller than one.")
+  stopif(isTRUE(any(p_mem < 0)), "p_mem must be larger than zero.")
+  stopif(isTRUE(any(p_mem > 1)), "p_mem must be smaller than one.")
 
   density <- matrix(data = NaN, nrow = length(x), ncol = 2)
 
-  density[,1] <- log(pMem) + brms::dvon_mises(x = x,mu = mu , kappa = kappa, log = T)
-  density[,2] <- log(1 - pMem) + brms::dvon_mises(x = x,mu = 0 , kappa = 0, log = T)
+  density[,1] <- log(p_mem) + brms::dvon_mises(x = x,mu = mu , kappa = kappa, log = T)
+  density[,2] <- log(1 - p_mem) + brms::dvon_mises(x = x,mu = 0 , kappa = 0, log = T)
 
   density <- matrixStats::rowLogSumExps(density)
 
@@ -266,40 +266,40 @@ dmixture2p <- function(x, mu=0, kappa=5, pMem = 0.6, log = FALSE) {
 
 #' @rdname mixture2p_dist
 #' @export
-pmixture2p <- function(q, mu=0, kappa=7, pMem = 0.8) {
+pmixture2p <- function(q, mu=0, kappa=7, p_mem = 0.8) {
   .NotYetImplemented()
 }
 
 #' @rdname mixture2p_dist
 #' @export
-qmixture2p <- function(p, mu=0, kappa=5, pMem = 0.6) {
+qmixture2p <- function(p, mu=0, kappa=5, p_mem = 0.6) {
   .NotYetImplemented()
 }
 
 #' @rdname mixture2p_dist
 #' @export
-rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
+rmixture2p <- function(n, mu=0, kappa=5, p_mem = 0.6) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(isTRUE(any(pMem < 0)), "pMem must be larger than zero.")
-  stopif(isTRUE(any(pMem > 1)), "pMem must be smaller than one.")
+  stopif(isTRUE(any(p_mem < 0)), "p_mem must be larger than zero.")
+  stopif(isTRUE(any(p_mem > 1)), "p_mem must be smaller than one.")
 
-  maxy <- dmixture2p(0, 0, kappa, pMem)
+  maxy <- dmixture2p(0, 0, kappa, p_mem)
   xa <- c()
 
-  .rmixture2p_inner <- function(n, mu, c, kappa, pMem, xa) {
+  .rmixture2p_inner <- function(n, mu, c, kappa, p_mem, xa) {
     x <- stats::runif(n, -pi, pi)
     y <- stats::runif(n, 0, 1) * maxy
-    accept <- y < dmixture2p(x, mu, kappa, pMem)
+    accept <- y < dmixture2p(x, mu, kappa, p_mem)
     xa <- c(xa, x[accept])
 
     if (length(xa) < n) {
-      return(.rmixture2p_inner(n, mu, c, kappa, pMem, xa))
+      return(.rmixture2p_inner(n, mu, c, kappa, p_mem, xa))
     }
 
     xa[1:n]
   }
 
-  .rmixture2p_inner(n, mu, c, kappa, pMem, xa)
+  .rmixture2p_inner(n, mu, c, kappa, p_mem, xa)
 }
 
 
@@ -308,7 +308,7 @@ rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
 #' @description Density, distribution, and random generation functions for the
 #'   three-parameter mixture model with the location of `mu`, precision of
 #'   memory representations `kappa`, probability of recalling items from memory
-#'   `pMem`, and probability of recalling non-targets `pNT`.
+#'   `p_mem`, and probability of recalling non-targets `p_nt`.
 #'
 #' @name mixture3p_dist
 #'
@@ -320,8 +320,8 @@ rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
 #'   target item and any additional values indicate the location of non-target
 #'   items.
 #' @param kappa Vector of precision values
-#' @param pMem Vector of probabilities for memory recall
-#' @param pNT Vector of probabilities for swap errors
+#' @param p_mem Vector of probabilities for memory recall
+#' @param p_nt Vector of probabilities for swap errors
 #' @param log Logical; if `TRUE`, values are returned on the log scale.
 #'
 #' @keywords distribution
@@ -341,16 +341,16 @@ rmixture2p <- function(n, mu=0, kappa=5, pMem = 0.6) {
 #' @examples
 #' # example code
 #'
-dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2, log = FALSE) {
+dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2, log = FALSE) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(isTRUE(any(pMem < 0)), "pMem must be larger than zero.")
-  stopif(isTRUE(any(pNT < 0)), "pNT must be larger than zero.")
-  stopif(isTRUE(any(pMem + pNT > 1)), "The sum of pMem and pNT must be smaller than one.")
+  stopif(isTRUE(any(p_mem < 0)), "p_mem must be larger than zero.")
+  stopif(isTRUE(any(p_nt < 0)), "p_nt must be larger than zero.")
+  stopif(isTRUE(any(p_mem + p_nt > 1)), "The sum of p_mem and p_nt must be smaller than one.")
 
   density <- matrix(data = NaN, nrow = length(x), ncol = length(mu) + 1)
-  probs <- c(pMem,
-             rep(pNT/(length(mu) - 1), each = length(mu) - 1),
-             (1 - pMem - pNT))
+  probs <- c(p_mem,
+             rep(p_nt/(length(mu) - 1), each = length(mu) - 1),
+             (1 - p_mem - p_nt))
 
   for (i in 1:(length(mu))) {
     density[,i] <- log(probs[i]) +
@@ -371,41 +371,42 @@ dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2, log 
 
 #' @rdname mixture3p_dist
 #' @export
-pmixture3p <- function(q, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
+pmixture3p <- function(q, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
   .NotYetImplemented()
 }
 
 #' @rdname mixture3p_dist
 #' @export
-qmixture3p <- function(p, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
+qmixture3p <- function(p, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
   .NotYetImplemented()
 }
 
 #' @rdname mixture3p_dist
 #' @export
-rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, pMem = 0.6, pNT = 0.2) {
+rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(isTRUE(any(pMem < 0)), "pMem must be larger than zero.")
-  stopif(isTRUE(any(pNT < 0)), "pNT must be larger than zero.")
-  stopif(isTRUE(any(pMem + pNT > 1)), "The sum of pMem and pNT must be smaller than one.")
+  stopif(isTRUE(any(p_mem < 0)), "p_mem must be larger than zero.")
+  stopif(isTRUE(any(p_nt < 0)), "p_nt must be larger than zero.")
+  stopif(isTRUE(any(p_mem + p_nt > 1)), "The sum of p_mem and p_nt must be smaller than one.")
 
-  maxy <- dmixture3p(mu[1], mu, kappa, pMem, pNT)
+  x <- seq(-pi,pi,length.out = 361)
+  maxy <- max(dmixture3p(x, mu, kappa, p_mem, p_nt))
   xa <- c()
 
-  .rmixture3p_inner <- function(n, mu, c, kappa, pMem, pNT, xa) {
+  .rmixture3p_inner <- function(n, mu, c, kappa, p_mem, p_nt, xa) {
     x <- stats::runif(n, -pi, pi)
     y <- stats::runif(n, 0, 1) * maxy
-    accept <- y < dmixture3p(x, mu, kappa, pMem, pNT)
+    accept <- y < dmixture3p(x, mu, kappa, p_mem, p_nt)
     xa <- c(xa, x[accept])
 
     if (length(xa) < n) {
-      return(.rmixture3p_inner(n, mu, c, kappa, pMem, pNT, xa))
+      return(.rmixture3p_inner(n, mu, c, kappa, p_mem, p_nt, xa))
     }
 
     xa[1:n]
   }
 
-  .rmixture3p_inner(n, mu, c, kappa, pMem, pNT, xa)
+  .rmixture3p_inner(n, mu, c, kappa, p_mem, p_nt, xa)
 }
 
 #' @title The Interference Measurement Model (IMM)
@@ -457,13 +458,13 @@ dimm <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
   stopif(isTRUE(any(dist < 0)), "all distances have to be positive.")
 
   # compute activation for all items
-  acts <- rep(c, length(mu)) * exp(-s*dist) + rep(a, length(mu))
+  weights <- rep(c, length(mu)) * exp(-s*dist) + rep(a, length(mu))
 
   # add activation of background noise
-  acts <- c(acts,b)
+  weights <- c(weights,b)
 
   # compute probability for responding stemming from each distribution
-  probs <- exp(acts)/sum(exp(acts))
+  probs <- weights/sum(weights)
 
   density <- matrix(data = NaN, nrow = length(x), ncol = length(mu) + 1)
 
@@ -501,14 +502,15 @@ qimm <- function(p, mu=c(0,2,-1.5), dist = c(0,0.5,2),
 #' @rdname IMMdist
 #' @export
 rimm <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
-                 c=1, a = 0.2, b = 0, s = 2, kappa=5) {
+                 c=1, a = 0.2, b = 1, s = 2, kappa=5) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(length(mu) != length(dist),
          "The number of items does not match the distances provided from the cued location.")
   stopif(isTRUE(any(s < 0)), "s must be non-negative")
   stopif(isTRUE(any(dist < 0)), "all distances have to be positive.")
 
-  maxy <- dimm(mu[1], mu, dist, c, a, b, s, kappa)
+  x <-  seq(-pi,pi,length.out = 361)
+  maxy <- max(dimm(x, mu, dist, c, a, b, s, kappa))
   xa <- c()
 
   .rimm_inner <- function(n, mu, dist, c, a, b, s, kappa, xa) {
