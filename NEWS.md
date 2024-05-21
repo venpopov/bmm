@@ -5,6 +5,7 @@
 
 ### Bug fixes
 * fix incorrect specification of default priors when only an interaction is specified (#201)
+* the random generation function for the **mixture3p** and **imm** returned incorrect samples for very rare parmaeter combinations, this has now been fixed, so that the functions now return correct samples for all parameter combinations.
 
 ### Deprecated functions and arguments
 * BREAKING CHANGE: the arguments for the distribution functions of the  **mixture2p** and **mixture3p** model have been change to match the snake_case coding scheme. Instead of *pMem* and **pNT** these are now **p_mem** and **p_nt**. The old names are deprecated and are no longer supported
