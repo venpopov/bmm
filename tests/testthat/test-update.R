@@ -1,3 +1,5 @@
+save_pars <- brms::save_pars
+
 test_that("update.bmmfit works", {
   skip_on_cran()
   fit1 <- restructure(bmmfit_example1)
