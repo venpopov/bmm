@@ -11,17 +11,17 @@ generate_bmm_examples <- function(seed = 123) {
     mutate(ID = as.factor(ID),
            set_size = as.factor(set_size)) %>%
     dplyr::filter(ID %in% c(1,2,3,4,5,6,7,8,9,10),
-           set_size %in% c(1,2,3,4)) %>%
+                  set_size %in% c(1,2,3,4)) %>%
     arrange(set_size, ID)
   formula <- bmf(c ~ 0 + set_size, kappa ~ 1)
   model <- sdm('dev_rad')
   bmmfit_example1 <- bmm(formula, data, model,
-                               iter = 100,
-                               refresh = 0,
-                               init = 1,
-                               chains = 1,
-                               backend = 'rstan',
-                               save_warmup = FALSE)
+                         iter = 100,
+                         refresh = 0,
+                         init = 1,
+                         chains = 1,
+                         backend = 'rstan',
+                         save_warmup = FALSE)
   bmmfit_example1$bmm$fit_args$data <- NULL
 
 
@@ -36,7 +36,7 @@ generate_bmm_examples <- function(seed = 123) {
   formula <- bmf(c ~ 0 + cond, kappa ~ 0 + cond)
   model <- sdm('y')
   bmmfit_sdm_vignette <- bmm(formula, dat, model, init = 0.5, iter = 2000,
-                                   chains = 4, save_pars = save_pars(group = FALSE))
+                             chains = 4, save_pars = save_pars(group = FALSE))
   bmmfit_sdm_vignette$bmm$fit_args$data <- NULL
 
 
@@ -80,7 +80,7 @@ generate_bmm_examples <- function(seed = 123) {
                     mu = item_location,
                     dist = item_distance,
                     c = Cs[i], a = As[i],
-                    b = 0, s = Ss[i], kappa = kappas[i])
+                    b = 1, s = Ss[i], kappa = kappas[i])
     condData <- data.frame(
       resp_error = genData,
       trialID = 1:nTrials,

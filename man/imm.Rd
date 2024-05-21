@@ -118,7 +118,7 @@ Please use \code{imm(version = 'full')}, \code{imm(version = 'bsc')}, or \code{i
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item mu1 = tan_half; kappa = log; a = identity; c = identity; s = log
+\item mu1 = tan_half; kappa = log; a = log; c = log; s = log
 }
 \item \strong{Default priors:}
 \itemize{
@@ -176,7 +176,7 @@ Please use \code{imm(version = 'full')}, \code{imm(version = 'bsc')}, or \code{i
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item mu1 = tan_half; kappa = log; c = identity; s = log
+\item mu1 = tan_half; kappa = log; c = log; s = log
 }
 \item \strong{Default priors:}
 \itemize{
@@ -229,7 +229,7 @@ Please use \code{imm(version = 'full')}, \code{imm(version = 'bsc')}, or \code{i
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item mu1 = tan_half; kappa = log; a = identity; c = identity
+\item mu1 = tan_half; kappa = log; a = log; c = log
 }
 \item \strong{Default priors:}
 \itemize{

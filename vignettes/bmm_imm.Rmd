@@ -84,23 +84,15 @@ $$
 P(\hat{x}|L_\theta) = \frac{A(\hat{x}|L_\theta)}{\sum^N_{j=1}A(j|L_\theta)}
 $$
 
-In the `bmm` package, we decided to implement an alternative normalization using the `softmax` normalization:
-
-$$
-P(\hat{x}|L_\theta) = \frac{e^{A(\hat{x}|L_\theta)}}{\sum^N_{j=1}e^{A(j|L_\theta)}}
-$$
-
-A comparison between these different normalization function in the context of activation based models of working memory can be found in the appendix of @oberauerSimpleMeasurementModels2019. Additionally, a more recent factorial comparison of different models for visual working memory [@Oberauer_2023] indicated that the `softmax` normalization generally captures the observed data better than Luce's choice rule in the context of continuous reproduction tasks.
+The `bmm` package uses the same parameterization, except that it uses a `log` Link function for all activation parameters to ensure that these parameters are positive.
 
 In sum, the IMM assumes that responses in continuous reproduction tasks are the results of cue-based retrieval and cue-independent activation of all features corrupted by background noise.
 
 # Parametrization in the `bmm` package
 
-For identification, one of the weighting parameters has to be fixed. In the original publication the strength of cue-dependent activation $c$ was fixed to one. The default setup of `brms` however currently only allows to fix the strength of the background noise $b$ to zero. Therefore, in all implementations of the IMM in the `bmm` package, the strength of cue-dependent and cue-independent activation, $c$ and $a$, can be estimated and predicted by independent variables.
+For identification, one of the weighting parameters has to be fixed. In the original publication the strength of cue-dependent activation $c$ was fixed to one. The default setup of `brms` however currently only allows to fix the strength of the background noise $b$ to one Therefore, in all implementations of the IMM in the `bmm` package, the strength of cue-dependent and cue-independent activation, $c$ and $a$, can be estimated and predicted by independent variables.
 
 Apart from that, both the precision of memory representations $\kappa$ and the generalization gradient $s$ are parameterized the same way as in the original publication. Please also note, that the scaling of the generalization gradient `s` is dependent on the scaling of the distance `D` between the target location and the  locations of the non-targets. In previous studies estimating the IMM [@oberauerHierarchicalBayesianMeasurement2017] these distances were scaled in radians, as all items were placed on a imaginary circle around the center of the screen. However, other studies might position the color patches randomly inside a frame of a certain width and height and thus might use euclidean distances. Also changing the radius of the imaginary circles that color patches are placed on, will change the absolute distance between items. This will affect the absolute size of the generalization gradient `s`. Thus, differences in the generalization gradient `s` between different studies should not be interpreted strongly, especially if the studies used different distance measures or different experimental settings with respect to the placement of the items. For now, we recommend that only differences in the generalization gradient `s` between conditions of a single experiment should be taken as robust results.
-
-Additionally, because we use the `softmax` normalization for translating activation into probabilities, the estimates for the strength of cue-dependent and -independent activation, $c$ and $a$ have to be interpreted relatively to the strength of the baseline activation $b$ that is fixed to zero. Thus, it is possible that the strength of cue-dependent and cue-independent activation, $c$ and $a$, become negative. This does not reflect an absolute negative activation but rather an activation that is relatively smaller than the baseline activation. 
 
 # Fitting the model with `bmm`
 
@@ -123,7 +115,7 @@ Cs <- c(4,4,2,2)
 As <- c(0.5,1,0.5,0.5)
 Ss <- c(10,10,5,5)
 kappas <- c(15,10,15,10)
-nTrials = 1000
+nTrials = 2000
 set_size = 5
 
 simData <- data.frame()
@@ -139,7 +131,7 @@ for (i in 1:length(Cs)) {
                   mu = item_location,
                   dist = item_distance,
                   c = Cs[i], a = As[i],
-                  b = 0, s = Ss[i], kappa = kappas[i])
+                  b = 1, s = Ss[i], kappa = kappas[i])
   
   condData <- data.frame(
     resp_error = genData,
