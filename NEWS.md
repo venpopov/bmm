@@ -6,6 +6,9 @@
 ### Bug fixes
 * fix incorrect specification of default priors when only an interaction is specified (#201)
 
+### Deprecated functions and arguments
+* BREAKING CHANGE: the arguments for the distribution functions of the  **mixture2p** and **mixture3p** model have been change to match the snake_case coding scheme. Instead of *pMem* and **pNT** these are now **p_mem** and **p_nt**. The old names are deprecated and are no longer supported
+
 # bmm 0.5.1
 
 ### Bug fixes
