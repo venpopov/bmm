@@ -458,13 +458,13 @@ dimm <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
   stopif(isTRUE(any(dist < 0)), "all distances have to be positive.")
 
   # compute activation for all items
-  acts <- rep(c, length(mu)) * exp(-s*dist) + rep(a, length(mu))
+  weights <- rep(c, length(mu)) * exp(-s*dist) + rep(a, length(mu))
 
   # add activation of background noise
-  acts <- c(acts,b)
+  weights <- c(weights,b)
 
   # compute probability for responding stemming from each distribution
-  probs <- exp(acts)/sum(exp(acts))
+  probs <- weights/sum(weights)
 
   density <- matrix(data = NaN, nrow = length(x), ncol = length(mu) + 1)
 
