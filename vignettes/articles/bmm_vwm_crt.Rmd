@@ -3,7 +3,7 @@ title: "Continuous reproduction tasks (CRT)"
 output: 
   bookdown::html_document2:
     keep_md: true
-bibliography: ../REFERENCES.bib
+bibliography: REFERENCES.bib
 pkgdown:
   as_is: true
 ---
@@ -34,7 +34,7 @@ In research on visual working memory participants are often asked to remember an
 Most often the features used in these tasks are colors sampled from a color wheel [@Wilken_Ma_2004] or continuous orientations of a bar or a triangle [@Bays_Gorgoraptis_Wee_Marshall_Husain_2011]. The set of to-be-remembered objects typically consists of one up to eight objects spatially distributed over the screen. Thus, participants must associate the to-be-remembered features (e.g. color or orientation) with the spatial locations they are presented at. The precision of the representation of an object’s feature in visual working memory is measured as the angular deviation from the true feature presented at encoding.
 
 ```{r vwmcrt, echo=F, fig.cap="A typical continuous reproduction task", out.width=450}
-knitr::include_graphics("vwm-crt.png")
+knitr::include_graphics("assets/vwm-crt.png")
 ```
 
 # The role of measurement models

@@ -1,6 +1,6 @@
 test_that("update.bmmfit works", {
-  skip_on_cran()
-  fit1 <- restructure(bmmfit_example1)
+  skip_if_not(interactive())
+  fit1 <- restructure(readRDS(test_path("assets/bmmfit_example1.rds")))
   data <- fit1$data
 
   # formula is replaced
