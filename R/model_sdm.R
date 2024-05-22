@@ -57,8 +57,6 @@
 #'   response error. The response error should code the response relative to the
 #'   to-be-recalled target in radians. You can transform the response error in
 #'   degrees to radians using the `deg2rad` function.
-#' @param links A list of links for the parameters. *Currently does not affect
-#'   the model fits, but it will in the future.*
 #' @param version Character. The version of the model to use. Currently only
 #'   "simple" is supported.
 #' @param ... used internally for testing, ignore it
@@ -95,19 +93,19 @@
 #' lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
 #'               kappa=coef['kappa_Intercept']), col='red')
 #' }
-sdm <- function(resp_error, links = NULL, version = "simple", ...) {
+sdm <- function(resp_error, version = "simple", ...) {
   call <- match.call()
   stop_missing_args()
-  .model_sdm(resp_error = resp_error, links = links, version = version, call = call, ...)
+  .model_sdm(resp_error = resp_error, version = version, call = call, ...)
 }
 
 #' @rdname SDM
 #' @export
-sdmSimple <- function(resp_error, links = NULL, version = "simple", ...) {
+sdmSimple <- function(resp_error, version = "simple", ...) {
   warning("The function `sdmSimple()` is deprecated. Please use `sdm()` instead.")
   call <- match.call()
   stop_missing_args()
-  .model_sdm(resp_error = resp_error, links = links, version = version, call = call, ...)
+  .model_sdm(resp_error = resp_error, version = version, call = call, ...)
 }
 
 #############################################################################!
