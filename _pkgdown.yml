@@ -28,7 +28,6 @@ reference:
  - title: "About bmm"
    desc: "These pages provide a summary of the functionality available in bmm"
  - contents:
-   - "bmm"
    - "supported_models"
    - "bmm_options"
  - title: "Fitting models"
