@@ -72,12 +72,15 @@ bmm::supported_models()
 
 ## How to install bmm
 
-Currently, we are working on getting the package ready to be submitted
-to CRAN. Until then, you can install the latest version of the package
-from GitHub.
+You can install the latest version of the `bmm` package from CRAN:
 
-Because `bmm` is based on `brms` and `stan` it requires a working C++
-compiler. If you have not used `brms` before, you will need to first install the dependencies. If you are already using `brms`, you can skip this step.
+``` r
+install.packages("bmm")
+```
+
+Because `bmm` is based on `brms` and `stan` it requires a working C++ 
+compiler. If you have not used `brms` before, you will need to first 
+install the dependencies. If you are already using `brms`, you can skip this step.
 
 <details><summary><b>    Install dependencies</b></summary>
 
@@ -91,28 +94,11 @@ compiler. If you have not used `brms` before, you will need to first install the
     [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
     recommend using `cmdstanr`.
 -   Install [brms](https://paul-buerkner.github.io/brms/#installation)
--   Install `bmm` as described next
 
 </details>
-
-If you are already using `brms`, you are good to go and can
-install the package as described in one of the options below:
-
-<details open>
-<summary><b>Install the latest beta release of bmm</b></summary>
 
 </br>
-
-``` r
-install.packages('bmm', repos = c('https://popov-lab.r-universe.dev'))
-```
-
-This does not install the vignettes, which take a long time to build,
-but they are all available on the [bmm
-website](https://venpopov.github.io/bmm/).
-
-</details>
-
+Alternatively, you can install the development version of the package or a specific version of the package from GitHub:
 
 <details>
 <summary><b>Install the latest development version of bmm</b></summary>

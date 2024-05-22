@@ -67,19 +67,21 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, links, version) 
-#> -  mixture2p(resp_error, links) 
-#> -  mixture3p(resp_error, nt_features, set_size, regex, links) 
-#> -  sdm(resp_error, links, version) 
+#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, version) 
+#> -  mixture2p(resp_error) 
+#> -  mixture3p(resp_error, nt_features, set_size, regex) 
+#> -  sdm(resp_error, version) 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?imm
 ```
 
 ## How to install bmm
 
-Currently, we are working on getting the package ready to be submitted
-to CRAN. Until then, you can install the latest version of the package
-from GitHub.
+You can install the latest version of the `bmm` package from CRAN:
+
+``` r
+install.packages("bmm")
+```
 
 Because `bmm` is based on `brms` and `stan` it requires a working C++
 compiler. If you have not used `brms` before, you will need to first
@@ -101,29 +103,12 @@ this step.
   [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
   recommend using `cmdstanr`.
 - Install [brms](https://paul-buerkner.github.io/brms/#installation)
-- Install `bmm` as described next
 
 </details>
 
-If you are already using `brms`, you are good to go and can install the
-package as described in one of the options below:
+</br> Alternatively, you can install the development version of the
+package or a specific version of the package from GitHub:
 
-<details open>
-<summary>
-<b>Install the latest beta release of bmm</b>
-</summary>
-
-</br>
-
-``` r
-install.packages('bmm', repos = c('https://popov-lab.r-universe.dev'))
-```
-
-This does not install the vignettes, which take a long time to build,
-but they are all available on the [bmm
-website](https://venpopov.github.io/bmm/).
-
-</details>
 <details>
 <summary>
 <b>Install the latest development version of bmm</b>
