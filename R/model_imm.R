@@ -5,7 +5,7 @@
 
 .model_imm <-
   function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
-           set_size = NULL, regex = FALSE, links = NULL, version = "full",
+           set_size = NULL, regex = FALSE, version = "full", links = NULL,
            call = NULL, ...) {
     out <- structure(
       list(
@@ -116,8 +116,6 @@
 #' @param regex Logical. If TRUE, the `nt_features` and `nt_distances` arguments
 #'   are interpreted as a regular expression to match the non-target feature
 #'   columns in the dataset.
-#' @param links A list of links for the parameters. *Currently does not affect
-#'   the model fits, but it will in the future.*
 #' @param version Character. The version of the IMM model to use. Can be one of
 #'  `full`, `bsc`, or `abc`. The default is `full`.
 #' @param ... used internally for testing, ignore it
@@ -178,8 +176,7 @@
 #'            backend = 'cmdstanr')
 #'}
 #' @export
-imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
-                links = NULL, version = "full", ...) {
+imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, version = "full", ...) {
   call <- match.call()
   dots <- list(...)
   if ("setsize" %in% names(dots)) {
@@ -192,7 +189,7 @@ imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
   stop_missing_args()
   .model_imm(resp_error = resp_error, nt_features = nt_features,
              nt_distances = nt_distances, set_size = set_size, regex = regex,
-             links = links, version = version, call = call, ...)
+             version = version, call = call, ...)
 }
 
 
@@ -201,8 +198,7 @@ imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
 #' @rdname imm
 #' @keywords bmmodel
 #' @export
-IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
-                    links = NULL, ...) {
+IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...) {
   call <- match.call()
   dots <- list(...)
   warning("The function `IMMfull()` is deprecated. Please use `imm(version = 'full')` instead.")
@@ -213,15 +209,14 @@ IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FAL
   stop_missing_args()
   .model_imm(resp_error = resp_error, nt_features = nt_features,
              nt_distances = nt_distances, set_size = set_size, regex = regex,
-             links = links, version = "full", call = call, ...)
+             version = "full", call = call, ...)
 }
 
 
 #' @rdname imm
 #' @keywords bmmodel
 #' @export
-IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
-                   links = NULL, ...) {
+IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...) {
   call <- match.call()
   dots <- list(...)
   warning("The function `IMMbsc()` is deprecated. Please use `imm(version = 'bsc')` instead.")
@@ -232,14 +227,13 @@ IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALS
   stop_missing_args()
   .model_imm(resp_error = resp_error, nt_features = nt_features,
              nt_distances = nt_distances, set_size = set_size, regex = regex,
-             links = links, version = "bsc", call = call, ...)
+             version = "bsc", call = call, ...)
 }
 
 #' @rdname imm
 #' @keywords bmmodel
 #' @export
-IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, links = NULL,
-                   ...) {
+IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, ...) {
   call <- match.call()
   dots <- list(...)
   warning("The function `IMMabc()` is deprecated. Please use `imm(version = 'abc')` instead.")
@@ -248,9 +242,10 @@ IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, links = NUL
     warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
   }
   stop_missing_args()
-  .model_imm(resp_error = resp_error, nt_features = nt_features,
-             set_size = set_size, regex = regex, links = links,
-             version = "abc", call = call, ...)
+  .model_imm(
+    resp_error = resp_error, nt_features = nt_features, set_size = set_size,
+    regex = regex, version = "abc", call = call, ...
+  )
 }
 
 #############################################################################!

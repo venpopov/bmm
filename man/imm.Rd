@@ -13,32 +13,15 @@ imm(
   nt_distances,
   set_size,
   regex = FALSE,
-  links = NULL,
   version = "full",
   ...
 )
 
-IMMfull(
-  resp_error,
-  nt_features,
-  nt_distances,
-  set_size,
-  regex = FALSE,
-  links = NULL,
-  ...
-)
+IMMfull(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...)
 
-IMMbsc(
-  resp_error,
-  nt_features,
-  nt_distances,
-  set_size,
-  regex = FALSE,
-  links = NULL,
-  ...
-)
+IMMbsc(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...)
 
-IMMabc(resp_error, nt_features, set_size, regex = FALSE, links = NULL, ...)
+IMMabc(resp_error, nt_features, set_size, regex = FALSE, ...)
 }
 \arguments{
 \item{resp_error}{The name of the variable in the provided dataset containing
@@ -64,9 +47,6 @@ fixed.}
 \item{regex}{Logical. If TRUE, the \code{nt_features} and \code{nt_distances} arguments
 are interpreted as a regular expression to match the non-target feature
 columns in the dataset.}
-
-\item{links}{A list of links for the parameters. \emph{Currently does not affect
-the model fits, but it will in the future.}}
 
 \item{version}{Character. The version of the IMM model to use. Can be one of
 \code{full}, \code{bsc}, or \code{abc}. The default is \code{full}.}

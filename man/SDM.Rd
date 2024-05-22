@@ -6,18 +6,15 @@
 \alias{sdmSimple}
 \title{Signal Discrimination Model (SDM) by Oberauer (2023)}
 \usage{
-sdm(resp_error, links = NULL, version = "simple", ...)
+sdm(resp_error, version = "simple", ...)
 
-sdmSimple(resp_error, links = NULL, version = "simple", ...)
+sdmSimple(resp_error, version = "simple", ...)
 }
 \arguments{
 \item{resp_error}{The name of the variable in the dataset containing the
 response error. The response error should code the response relative to the
 to-be-recalled target in radians. You can transform the response error in
 degrees to radians using the \code{deg2rad} function.}
-
-\item{links}{A list of links for the parameters. \emph{Currently does not affect
-the model fits, but it will in the future.}}
 
 \item{version}{Character. The version of the model to use. Currently only
 "simple" is supported.}
