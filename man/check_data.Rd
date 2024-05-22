@@ -30,7 +30,7 @@ they are listed. Thus, any operations that are common to a group of models
 should be defined in the appropriate check_data.* function, where \*
 corresponds to the shared class. For example, for the .model_imm_abc model,
 this corresponds to the following order of check_data.* functions:
-check_data() -> check_data.vwm(), check_data.non_targets() the output of the
+check_data() -> check_data.circular(), check_data.non_targets() the output of the
 final function is returned to bmm().
 }
 \keyword{developer}

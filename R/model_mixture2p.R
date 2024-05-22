@@ -40,7 +40,7 @@
       ),
       void_mu = FALSE
     ),
-    class = c("bmmodel", "vwm", "mixture2p"),
+    class = c("bmmodel", "circular", "mixture2p"),
     call = call
   )
   out$links[names(links)] <- links

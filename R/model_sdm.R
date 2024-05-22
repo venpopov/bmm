@@ -38,7 +38,7 @@
       ),
       void_mu = FALSE
     ),
-    class = c('bmmodel', 'vwm', 'sdm', paste0("sdm_", version)),
+    class = c('bmmodel', 'circular', 'sdm', paste0("sdm_", version)),
     call = call
   )
   out$links[names(links)] <- links

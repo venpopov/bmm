@@ -55,7 +55,7 @@
       # attributes
       regex = regex,
       regex_vars = c('nt_features', 'nt_distances'),
-      class = c("bmmodel", "vwm", "non_targets", "imm", paste0('imm_',version)),
+      class = c("bmmodel", "circular", "non_targets", "imm", paste0('imm_',version)),
       call = call
     )
 

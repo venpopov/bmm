@@ -129,7 +129,7 @@ my_model <- sdm(resp_error = "error")
 my_model$fixed_parameters
 ```
 
-Fixed parameters that can be freely estimated are also listed in the `parameters` of a model, that you can access using `my_model$parameters`. Parameters that are only listed in the `fixed_parameters` but not part of the `parameters` need to be fixed for identification purposes and thus cannot be estimated freely. For example in the `mixture_vwm` models, the location `mu2` and precision `kappa2` of the guessing distributions needs to be fixed for model identification. These parameters are listed in the `fixed_parameters` but not in the `parameters` and therefore cannot be estimated. Only, the internally fixed location of the target responses `mu1` can be estimated freely if needed.
+Fixed parameters that can be freely estimated are also listed in the `parameters` of a model, that you can access using `my_model$parameters`. Parameters that are only listed in the `fixed_parameters` but not part of the `parameters` need to be fixed for identification purposes and thus cannot be estimated freely. For example in the `mixture` models for visual working memory, the location `mu2` and precision `kappa2` of the guessing distributions needs to be fixed for model identification. These parameters are listed in the `fixed_parameters` but not in the `parameters` and therefore cannot be estimated. Only, the internally fixed location of the target responses `mu1` can be estimated freely if needed.
 
 ```{r}
 my_model <- mixture2p(resp_error = "error")

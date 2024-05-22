@@ -12,7 +12,7 @@
 #'   should be defined in the appropriate check_data.* function, where \*
 #'   corresponds to the shared class. For example, for the .model_imm_abc model,
 #'   this corresponds to the following order of check_data.* functions:
-#'   check_data() -> check_data.vwm(), check_data.non_targets() the output of the
+#'   check_data() -> check_data.circular(), check_data.non_targets() the output of the
 #'   final function is returned to bmm().
 #' @param model A model list object returned from check_model()
 #' @param data The user supplied data.frame containing the data to be checked
@@ -48,7 +48,7 @@ check_data.bmmodel <- function(model, data, formula) {
 
 
 #' @export
-check_data.vwm <- function(model, data, formula) {
+check_data.circular <- function(model, data, formula) {
   resp_name <- model$resp_vars[[1]]
   stopif(not_in(resp_name, colnames(data)),
          "The response variable '{resp_name}' is not present in the data.")
