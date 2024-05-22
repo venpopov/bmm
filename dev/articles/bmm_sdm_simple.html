@@ -75,7 +75,7 @@
                         <h4 data-toc-skip class="author">Gidon Frischkorn</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/vignettes/bmm_sdm_simple.Rmd" class="external-link"><code>vignettes/bmm_sdm_simple.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/vignettes/articles/bmm_sdm_simple.Rmd" class="external-link"><code>vignettes/articles/bmm_sdm_simple.Rmd</code></a></small>
       <div class="d-none name"><code>bmm_sdm_simple.Rmd</code></div>
     </div>
 
@@ -267,13 +267,14 @@ with <code>cmdstanr</code>:</p>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  init <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  backend <span class="op">=</span> <span class="st">'cmdstanr'</span></span>
+<span>  backend <span class="op">=</span> <span class="st">'cmdstanr'</span>,</span>
+<span>  file <span class="op">=</span> <span class="st">"assets/bmmfit_sdm_vignette.rds"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The model takes about 30 seconds to fit after it is compiled.</p>
 <p>We can now inspect the results of the model fit:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
-<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">sdm_simple</span>(resp_err = "y") 
+<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">sdm</span>(resp_error = "y") 
 <span style="color: #AF5FFF;">  Links: </span>mu = tan_half; c = log; kappa = log 
 <span style="color: #AF5FFF;">Formula: </span>mu = 0
          c ~ 0 + cond
@@ -284,18 +285,18 @@ with <code>cmdstanr</code>:</p>
 
 <span style="color: #00BB00;">Regression Coefficients:
 </span>            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-c_condA         0.70      0.10     0.49     0.89 1.00     1940     2253
-c_condB         2.44      0.21     2.08     2.89 1.00     1672     1747
-c_condC         0.57      0.07     0.44     0.70 1.00     2249     2381
-kappa_condA     1.09      0.16     0.77     1.40 1.00     1898     2126
-kappa_condB    -0.29      0.19    -0.70     0.06 1.00     1664     1594
-kappa_condC     2.05      0.12     1.80     2.29 1.00     2208     2275
+c_condA         0.69      0.11     0.49     0.90 1.00     2049     1910
+c_condB         2.45      0.21     2.09     2.93 1.00     1870     1957
+c_condC         0.57      0.07     0.44     0.71 1.00     2142     2109
+kappa_condA     1.10      0.17     0.76     1.43 1.00     2150     2032
+kappa_condB    -0.30      0.20    -0.73     0.05 1.00     1859     2018
+kappa_condC     2.04      0.12     1.79     2.28 1.00     2188     2110
 
 <span style="color: #00BB00;">Constant Parameters:
 </span>                 Value
 mu_Intercept      0.00
 
-Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).
 </code></pre>
@@ -307,7 +308,7 @@ estimated parameters:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     c_condA     c_condB     c_condC kappa_condA kappa_condB kappa_condC </span></span>
-<span><span class="co">#&gt;   2.0039408  11.5301826   1.7710286   2.9742544   0.7468866   7.7552172</span></span></code></pre></div>
+<span><span class="co">#&gt;   1.9954823  11.5761748   1.7743522   2.9970034   0.7443611   7.7180565</span></span></code></pre></div>
 <p>which are close to the true values we used to simulate the data:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par_labels</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>

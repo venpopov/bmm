@@ -75,7 +75,7 @@
                         <h4 data-toc-skip class="author">Gidon Frischkorn</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/vignettes/bmm_mixture_models.Rmd" class="external-link"><code>vignettes/bmm_mixture_models.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/venpopov/bmm/blob/HEAD/vignettes/articles/bmm_mixture_models.Rmd" class="external-link"><code>vignettes/articles/bmm_mixture_models.Rmd</code></a></small>
       <div class="d-none name"><code>bmm_mixture_models.Rmd</code></div>
     </div>
 
@@ -98,7 +98,7 @@ margin-bottom: 1.5em ;
 <h2 id="introduction-to-the-models">
 <span class="header-section-number">1</span> Introduction to the models<a class="anchor" aria-label="anchor" href="#introduction-to-the-models"></a>
 </h2>
-<p>The two-parameter mixture model <span class="citation">(Zhang and Luck 2008)</span> and the three-parameter mixture model <span class="citation">(Bays, Catalao, and Husain 2009)</span> are measurement models for continuous reproduction tasks in the visual working memory domain (for details on the task, see <code>vignette('vwm-crt')</code>). As other measurement models for continuous reproduction tasks, their goal is to model the distribution of angular response errors.</p>
+<p>The two-parameter mixture model <span class="citation">(Zhang and Luck 2008)</span> and the three-parameter mixture model <span class="citation">(Bays, Catalao, and Husain 2009)</span> are measurement models for continuous reproduction tasks in the visual working memory domain (for details on the task, see <a href="https://venpopov.github.io/bmm/articles/bmm_vwm_crt.html">the online article</a>. As other measurement models for continuous reproduction tasks, their goal is to model the distribution of angular response errors.</p>
 <p>The <em>two-parameter mixture model</em> (<code><a href="../reference/mixture2p.html">?mixture2p</a></code>) distinguishes two memory states that lead to responses with a mixture of two different distributions of angular errors. The two states are:</p>
 <ol style="list-style-type: decimal">
 <li><p>having a representation of the cued object with a certain precision of its feature in visual working memory (solid blue distribution in Figure <a href="#fig:mixture-models">1.1</a>)</p></li>
@@ -106,7 +106,7 @@ margin-bottom: 1.5em ;
 </ol>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:mixture-models"></span>
-<img src="mixture_models_illustration.jpg" alt="Mixtures of response distributions" width="450"><p class="caption">
+<img src="assets/mixture_models_illustration.jpg" alt="Mixtures of response distributions" width="450"><p class="caption">
 Figure 1.1: Mixtures of response distributions
 </p>
 </div>
@@ -325,7 +325,8 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  refresh <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  backend <span class="op">=</span> <span class="st">'cmdstanr'</span></span>
+<span>  backend <span class="op">=</span> <span class="st">'cmdstanr'</span>,</span>
+<span>  file <span class="op">=</span> <span class="st">"assets/bmmfit_mixture2p_vignette"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2" number="4">
@@ -333,9 +334,9 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <span class="header-section-number">4</span> Results of the 2-parameter mixture model<a class="anchor" aria-label="anchor" href="#results-of-the-2-parameter-mixture-model"></a>
 </h2>
 <p>We can now inspect the model fit:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
-<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">mixture2p</span>(resp_err = "error") 
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>Warning<span class="sc">:</span> There were <span class="dv">1</span> divergent transitions after warmup. Increasing adapt_delta above <span class="fl">0.8</span> may help. See http<span class="sc">:</span><span class="er">//</span>mc<span class="sc">-</span>stan.org<span class="sc">/</span>misc<span class="sc">/</span>warnings.html<span class="co">#divergent-transitions-after-warmup</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">mixture2p</span>(resp_error = "error") 
 <span style="color: #AF5FFF;">  Links: </span>mu1 = tan_half; kappa = log; thetat = identity 
 <span style="color: #AF5FFF;">Formula: </span>mu1 = 0
          kappa ~ 0 + set_size + (0 + set_size || id)
@@ -347,31 +348,31 @@ the <code>brms</code> package to fit the model, so you can pass to it any argume
 <span style="color: #00BB00;">Multilevel Hyperparameters:
 </span>~id (Number of levels: 12) 
                      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sd(kappa_set_size1)      0.36      0.10     0.22     0.61 1.00     1437     1992
-sd(kappa_set_size2)      0.21      0.08     0.09     0.39 1.00     1677     2111
-sd(kappa_set_size4)      0.34      0.11     0.18     0.60 1.00     1900     2986
-sd(kappa_set_size6)      0.43      0.15     0.19     0.78 1.00     1774     2241
-sd(thetat_set_size1)     0.57      0.46     0.03     1.69 1.00     1506     2270
-sd(thetat_set_size2)     0.92      0.29     0.49     1.64 1.00     1622     2536
-sd(thetat_set_size4)     0.95      0.28     0.55     1.62 1.00     1436     2468
-sd(thetat_set_size6)     0.67      0.20     0.38     1.15 1.00     1648     2245
+sd(kappa_set_size1)      0.36      0.10     0.22     0.60 1.00     1267     2370
+sd(kappa_set_size2)      0.21      0.08     0.08     0.39 1.00     1302     1020
+sd(kappa_set_size4)      0.34      0.11     0.18     0.60 1.00     1924     2711
+sd(kappa_set_size6)      0.43      0.15     0.21     0.79 1.00     1779     2444
+sd(thetat_set_size1)     0.57      0.45     0.03     1.73 1.00     1265     1452
+sd(thetat_set_size2)     0.93      0.29     0.51     1.64 1.00     1747     2568
+sd(thetat_set_size4)     0.95      0.27     0.55     1.63 1.00     1412     2109
+sd(thetat_set_size6)     0.67      0.20     0.39     1.15 1.00     1643     2310
 
 <span style="color: #00BB00;">Regression Coefficients:
 </span>                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-kappa_set_size1      2.89      0.11     2.66     3.10 1.00     1428     2089
-kappa_set_size2      2.40      0.08     2.24     2.56 1.00     2667     2568
-kappa_set_size4      2.07      0.12     1.83     2.32 1.00     2217     2489
-kappa_set_size6      1.94      0.16     1.64     2.25 1.00     2069     2383
-thetat_set_size1     4.51      0.37     3.86     5.33 1.00     3805     2257
-thetat_set_size2     2.55      0.30     1.96     3.19 1.00     1866     2466
-thetat_set_size4     1.08      0.29     0.51     1.65 1.01      942     1424
-thetat_set_size6     0.31      0.21    -0.11     0.73 1.00     1523     2163
+kappa_set_size1      2.89      0.12     2.66     3.12 1.00     1406     1716
+kappa_set_size2      2.40      0.08     2.24     2.56 1.00     2632     2527
+kappa_set_size4      2.08      0.12     1.84     2.32 1.00     2426     2690
+kappa_set_size6      1.94      0.15     1.65     2.25 1.00     2517     2627
+thetat_set_size1     4.53      0.40     3.89     5.43 1.00     2316     1088
+thetat_set_size2     2.56      0.31     1.94     3.17 1.00     1658     1999
+thetat_set_size4     1.08      0.29     0.50     1.67 1.00     1312     1735
+thetat_set_size6     0.32      0.21    -0.08     0.75 1.00     1502     2120
 
 <span style="color: #00BB00;">Constant Parameters:
 </span>                  Value
 mu1_Intercept      0.00
 
-Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).
 </code></pre>
@@ -398,26 +399,26 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <p>Our estimates for kappa over set_size are:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">kappa</span></span>
-<span><span class="co">#&gt;                  Estimate Est.Error      Q2.5     Q97.5</span></span>
-<span><span class="co">#&gt; kappa_set_size1 17.921766  1.120462 14.259064 22.304350</span></span>
-<span><span class="co">#&gt; kappa_set_size2 11.054412  1.080469  9.438613 12.892406</span></span>
-<span><span class="co">#&gt; kappa_set_size4  7.954371  1.129631  6.208657 10.164588</span></span>
-<span><span class="co">#&gt; kappa_set_size6  6.973503  1.171006  5.143574  9.519355</span></span></code></pre></div>
+<span><span class="co">#&gt;                  Estimate Est.Error      Q2.5    Q97.5</span></span>
+<span><span class="co">#&gt; kappa_set_size1 17.974163  1.126196 14.314425 22.69904</span></span>
+<span><span class="co">#&gt; kappa_set_size2 11.069807  1.079969  9.431975 12.87640</span></span>
+<span><span class="co">#&gt; kappa_set_size4  7.981807  1.126819  6.305204 10.17838</span></span>
+<span><span class="co">#&gt; kappa_set_size6  6.979520  1.162236  5.189384  9.47424</span></span></code></pre></div>
 <p>Standard deviation:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sd</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Set size "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sd</span>,<span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Set size 1 Set size 2 Set size 4 Set size 6 </span></span>
-<span><span class="co">#&gt;      0.240      0.308      0.367      0.394</span></span></code></pre></div>
+<span><span class="co">#&gt;      0.239      0.308      0.366      0.394</span></span></code></pre></div>
 <p>Probability that responses comes from memory:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">p_mem</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Set size "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">p_mem</span>,<span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt;            Estimate Est.Error  Q2.5 Q97.5</span></span>
-<span><span class="co">#&gt; Set size 1    0.989     0.591 0.979 0.995</span></span>
-<span><span class="co">#&gt; Set size 2    0.928     0.575 0.877 0.960</span></span>
-<span><span class="co">#&gt; Set size 4    0.746     0.572 0.624 0.839</span></span>
-<span><span class="co">#&gt; Set size 6    0.577     0.553 0.472 0.675</span></span></code></pre></div>
+<span><span class="co">#&gt; Set size 1    0.989     0.598 0.980 0.996</span></span>
+<span><span class="co">#&gt; Set size 2    0.928     0.577 0.874 0.960</span></span>
+<span><span class="co">#&gt; Set size 4    0.746     0.571 0.623 0.841</span></span>
+<span><span class="co">#&gt; Set size 6    0.579     0.553 0.480 0.680</span></span></code></pre></div>
 <p>It is even better to visualize the entire posterior distribution of the parameters.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mjskay.github.io/tidybayes/" class="external-link">tidybayes</a></span><span class="op">)</span></span>
