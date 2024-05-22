@@ -25,7 +25,7 @@ bessel parametrization.
 Convert between parametrizations of the c parameter of the SDM distribution
 }
 \details{
-See \code{vignette("bmm_sdm_simple")} for details on the
+See \href{https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html}{the online article} for details on the
 parameterization. The sqrtexp parametrization is the default in the
 \code{bmm} package.
 }
