@@ -85,8 +85,7 @@
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # generate artificial data from the Signal Discrimination Model
 #' dat <- data.frame(y = rsdm(2000))
 #'
@@ -99,7 +98,6 @@
 #'            model = sdm(resp_error = "y"),
 #'            cores = 4,
 #'            backend = 'cmdstanr')
-#' }
 #'
 bmm <- function(formula, data, model,
                 prior = NULL,
