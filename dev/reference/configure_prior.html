@@ -114,12 +114,54 @@ bmm()</p></dd>
 
 </dl></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># isTRUE(Sys.getenv("BMM_EXAMPLES"))</span></span></span>
+<span class="r-in"><span><span class="va">configure_prior.mixture3p</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">model</span>, <span class="va">data</span>, <span class="va">formula</span>, <span class="va">user_prior</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># if there is set_size 1 in the data, set constant prior over thetant for set_size1</span></span></span>
+<span class="r-in"><span>  <span class="va">prior</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">empty_prior</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">set_size_var</span> <span class="op">&lt;-</span> <span class="va">model</span><span class="op">$</span><span class="va">other_vars</span><span class="op">$</span><span class="va">set_size</span></span></span>
+<span class="r-in"><span>  <span class="va">prior_cond</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">ss_numeric</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">set_size_var</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">thetant_preds</span> <span class="op">&lt;-</span> <span class="fu">rhs_vars</span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">pforms</span><span class="op">$</span><span class="va">thetant</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="va">prior_cond</span> <span class="op">&amp;&amp;</span> <span class="va">set_size_var</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">thetant_preds</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">prior</span> <span class="op">&lt;-</span> <span class="va">prior</span> <span class="op">+</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior_</a></span><span class="op">(</span><span class="st">"constant(-100)"</span>,</span></span>
+<span class="r-in"><span>      class <span class="op">=</span> <span class="st">"b"</span>,</span></span>
+<span class="r-in"><span>      coef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">set_size_var</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      nlpar <span class="op">=</span> <span class="st">"thetant"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="co"># check if there is a random effect on theetant that include set_size as predictor</span></span></span>
+<span class="r-in"><span>  <span class="va">bterms</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsterms.html" class="external-link">brmsterms</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">pforms</span><span class="op">$</span><span class="va">thetant</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">re_terms</span> <span class="op">&lt;-</span> <span class="va">bterms</span><span class="op">$</span><span class="va">dpars</span><span class="op">$</span><span class="va">mu</span><span class="op">$</span><span class="va">re</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">re_terms</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">re_terms</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>      <span class="va">group</span> <span class="op">&lt;-</span> <span class="va">re_terms</span><span class="op">$</span><span class="va">group</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span>      <span class="va">form</span> <span class="op">&lt;-</span> <span class="va">re_terms</span><span class="op">$</span><span class="va">form</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span>      <span class="va">thetant_preds</span> <span class="op">&lt;-</span> <span class="fu">rhs_vars</span><span class="op">(</span><span class="va">form</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>      <span class="kw">if</span> <span class="op">(</span><span class="va">prior_cond</span> <span class="op">&amp;&amp;</span> <span class="va">set_size_var</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">thetant_preds</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>        <span class="va">prior</span> <span class="op">&lt;-</span> <span class="va">prior</span> <span class="op">+</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior_</a></span><span class="op">(</span><span class="st">"constant(1e-8)"</span>,</span></span>
+<span class="r-in"><span>          class <span class="op">=</span> <span class="st">"sd"</span>,</span></span>
+<span class="r-in"><span>          coef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">set_size_var</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>          group <span class="op">=</span> <span class="va">group</span>,</span></span>
+<span class="r-in"><span>          nlpar <span class="op">=</span> <span class="st">"thetant"</span></span></span>
+<span class="r-in"><span>        <span class="op">)</span></span></span>
+<span class="r-in"><span>      <span class="op">}</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">prior</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Vencislav Popov, Gidon Frischkorn.</p>
+  <p>Developed by Vencislav Popov, Gidon T. Frischkorn.</p>
 </div>
 
 <div class="pkgdown-footer-right">

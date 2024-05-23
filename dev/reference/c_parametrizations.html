@@ -76,24 +76,32 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p><code>c_bessel2sqrtexp</code> converts the memory strength parameter (c)
-from the bessel parametrization to the sqrtexp parametrization,
-<code>c_sqrtexp2bessel</code> converts from the sqrtexp parametrization to the
-bessel parametrization.</p>
+<p>A numeric vector of the same length as <code>c</code> and <code>kappa</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>See <a href="https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html">the online article</a> for details on the
+    <p><code>c_bessel2sqrtexp</code> converts the memory strength parameter (c)
+from the bessel parametrization to the sqrtexp parametrization,
+<code>c_sqrtexp2bessel</code> converts from the sqrtexp parametrization to the
+bessel parametrization.</p>
+<p>See <a href="https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html">the online article</a> for details on the
 parameterization. The sqrtexp parametrization is the default in the
 <code>bmm</code> package.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">c_bessel</span> <span class="op">&lt;-</span> <span class="fu">c_sqrtexp2bessel</span><span class="op">(</span>c <span class="op">=</span> <span class="fl">4</span>, kappa <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">c_sqrtexp</span> <span class="op">&lt;-</span> <span class="fu">c_bessel2sqrtexp</span><span class="op">(</span>c <span class="op">=</span> <span class="va">c_bessel</span>, kappa <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Vencislav Popov, Gidon Frischkorn.</p>
+  <p>Developed by Vencislav Popov, Gidon T. Frischkorn.</p>
 </div>
 
 <div class="pkgdown-footer-right">

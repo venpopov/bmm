@@ -122,16 +122,18 @@ running</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span> <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://usethis.r-lib.org" class="external-link">usethis</a></span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># isTRUE(Sys.getenv("BMM_EXAMPLES"))</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://usethis.r-lib.org" class="external-link">usethis</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span> <span class="co"># create a new model file without a brms::custom_family, and open the file</span></span></span>
-<span class="r-in"><span> <span class="fu">use_model_template</span><span class="op">(</span><span class="st">"newmodel"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># create a new model file without a brms::custom_family, and open the file</span></span></span>
+<span class="r-in"><span><span class="fu">use_model_template</span><span class="op">(</span><span class="st">"newmodel"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span> <span class="co"># create a new model file with a brms::custom_family, three .stan files in</span></span></span>
-<span class="r-in"><span> <span class="co"># inst/stan_chunks/ and open the files</span></span></span>
-<span class="r-in"><span> <span class="fu">use_model_template</span><span class="op">(</span><span class="st">'abc'</span>,custom_family <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>                    stanvar_blocks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'functions'</span>,<span class="st">'likelihood'</span>,<span class="st">'tdata'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># create a new model file with a brms::custom_family, three .stan files in</span></span></span>
+<span class="r-in"><span><span class="co"># inst/stan_chunks/ and open the files</span></span></span>
+<span class="r-in"><span><span class="fu">use_model_template</span><span class="op">(</span><span class="st">"abc"</span>,</span></span>
+<span class="r-in"><span>  custom_family <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  stanvar_blocks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"functions"</span>, <span class="st">"likelihood"</span>, <span class="st">"tdata"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
@@ -140,7 +142,7 @@ running</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Vencislav Popov, Gidon Frischkorn.</p>
+  <p>Developed by Vencislav Popov, Gidon T. Frischkorn.</p>
 </div>
 
 <div class="pkgdown-footer-right">

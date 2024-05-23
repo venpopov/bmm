@@ -252,10 +252,10 @@ parameters vary over conditions. In this case, we want them to vary over the
 <code>cond</code> variable, so we use <code>c ~ 0 + cond</code> and <code>kappa ~ 0 + cond</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ff</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bmmformula.html">bmf</a></span><span class="op">(</span><span class="va">c</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span>, <span class="va">kappa</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cond</span><span class="op">)</span></span></code></pre></div>
-<p>Then we specify the model, which in this case is just <code><a href="../reference/SDM.html">sdmSimple()</a></code>, and we
+<p>Then we specify the model, which in this case is just <code><a href="../reference/sdm.html">sdmSimple()</a></code>, and we
 provide the name of the response error variable in the dataset:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SDM.html">sdm</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sdm.html">sdm</a></span><span class="op">(</span>resp_error <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, we can fit the model. We strongly recommend using <code>cmdstanr</code> as a
 backend for fitting the SDM model, as it is much faster and more stable than the
 default <code>rstan</code> backend for this particular model. Here’s how to fit the model
@@ -411,7 +411,7 @@ Oberauer, Klaus. 2023. <span>“Measurement Models for Visual Working Memory—a
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Vencislav Popov, Gidon Frischkorn.</p>
+  <p>Developed by Vencislav Popov, Gidon T. Frischkorn.</p>
 </div>
 
 <div class="pkgdown-footer-right">

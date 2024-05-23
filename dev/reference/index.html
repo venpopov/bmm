@@ -62,6 +62,11 @@
 
       <dl><dt>
           
+          <code><a href="bmm-package.html">bmm-package</a></code> 
+        </dt>
+        <dd>Easy and Accesible Bayesian Measurement Models Using 'brms'</dd>
+      </dl><dl><dt>
+          
           <code><a href="supported_models.html">supported_models()</a></code> 
         </dt>
         <dd>Measurement models available in <code>bmm</code></dd>
@@ -114,7 +119,7 @@
 
       <dl><dt>
           
-          <code><a href="default_prior.bmmformula.html">default_prior.bmmformula()</a></code> 
+          <code><a href="default_prior.bmmformula.html">default_prior(<i>&lt;bmmformula&gt;</i>)</a></code> 
         </dt>
         <dd>Get Default priors for Measurement Models specified in BMM</dd>
       </dl><dl><dt>
@@ -124,12 +129,12 @@
         <dd>Extract information from a brmsfit object</dd>
       </dl><dl><dt>
           
-          <code><a href="stancode.bmmformula.html">stancode.bmmformula()</a></code> 
+          <code><a href="stancode.bmmformula.html">stancode(<i>&lt;bmmformula&gt;</i>)</a></code> 
         </dt>
         <dd>Generate Stan code for bmm models</dd>
       </dl><dl><dt>
           
-          <code><a href="standata.bmmformula.html">standata.bmmformula()</a></code> 
+          <code><a href="standata.bmmformula.html">standata(<i>&lt;bmmformula&gt;</i>)</a></code> 
         </dt>
         <dd>Stan data for <code>bmm</code> models</dd>
       </dl></div><div class="section level2">
@@ -145,11 +150,6 @@
 
       <dl><dt>
           
-          <code><a href="SDM.html">sdm()</a></code> <code><a href="SDM.html">sdmSimple()</a></code> 
-        </dt>
-        <dd>Signal Discrimination Model (SDM) by Oberauer (2023)</dd>
-      </dl><dl><dt>
-          
           <code><a href="imm.html">imm()</a></code> <code><a href="imm.html">IMMfull()</a></code> <code><a href="imm.html">IMMbsc()</a></code> <code><a href="imm.html">IMMabc()</a></code> 
         </dt>
         <dd>Interference measurement model by Oberauer and Lin (2017).</dd>
@@ -163,6 +163,11 @@
           <code><a href="mixture3p.html">mixture3p()</a></code> 
         </dt>
         <dd>Three-parameter mixture model by Bays et al (2009).</dd>
+      </dl><dl><dt>
+          
+          <code><a href="sdm.html">sdm()</a></code> <code><a href="sdm.html">sdmSimple()</a></code> 
+        </dt>
+        <dd>Signal Discrimination Model (SDM) by Oberauer (2023)</dd>
       </dl></div><div class="section level2">
       <h2 id="distributions">Distributions<a class="anchor" aria-label="anchor" href="#distributions"></a></h2>
       
@@ -178,22 +183,22 @@
           
           <code><a href="IMMdist.html">dimm()</a></code> <code><a href="IMMdist.html">pimm()</a></code> <code><a href="IMMdist.html">qimm()</a></code> <code><a href="IMMdist.html">rimm()</a></code> 
         </dt>
-        <dd>The Interference Measurement Model (IMM)</dd>
+        <dd>Distribution functions for the Interference Measurement Model (IMM)</dd>
       </dl><dl><dt>
           
           <code><a href="SDMdist.html">dsdm()</a></code> <code><a href="SDMdist.html">psdm()</a></code> <code><a href="SDMdist.html">qsdm()</a></code> <code><a href="SDMdist.html">rsdm()</a></code> 
         </dt>
-        <dd>The Signal Discrimination Model (SDM) Distribution</dd>
+        <dd>Distribution functions for the Signal Discrimination Model (SDM)</dd>
       </dl><dl><dt>
           
           <code><a href="mixture2p_dist.html">dmixture2p()</a></code> <code><a href="mixture2p_dist.html">pmixture2p()</a></code> <code><a href="mixture2p_dist.html">qmixture2p()</a></code> <code><a href="mixture2p_dist.html">rmixture2p()</a></code> 
         </dt>
-        <dd>The two-parameter mixture model (mixture2p)</dd>
+        <dd>Distribution functions for the two-parameter mixture model (mixture2p)</dd>
       </dl><dl><dt>
           
           <code><a href="mixture3p_dist.html">dmixture3p()</a></code> <code><a href="mixture3p_dist.html">pmixture3p()</a></code> <code><a href="mixture3p_dist.html">qmixture3p()</a></code> <code><a href="mixture3p_dist.html">rmixture3p()</a></code> 
         </dt>
-        <dd>The three-parameter mixture model (mixture3p)</dd>
+        <dd>Distribution functions for the three-parameter mixture model (mixture3p)</dd>
       </dl></div><div class="section level2">
       <h2 id="data-model-and-parameter-transformations">Data, model and parameter transformations<a class="anchor" aria-label="anchor" href="#data-model-and-parameter-transformations"></a></h2>
       
@@ -227,7 +232,7 @@
         <dd>Transform kappa of the von Mises distribution to the circular standard deviation</dd>
       </dl><dl><dt>
           
-          <code><a href="restructure.bmmfit.html">restructure.bmmfit()</a></code> 
+          <code><a href="restructure.bmmfit.html">restructure(<i>&lt;bmmfit&gt;</i>)</a></code> 
         </dt>
         <dd>Restructure Old <code>bmmfit</code> Objects</dd>
       </dl><dl><dt>
@@ -286,12 +291,12 @@
           
           <code><a href="check_formula.html">check_formula()</a></code> 
         </dt>
-        <dd>checks if the formula is valid for the specified model</dd>
+        <dd>Generic S3 method for checking if the formula is valid for the specified model</dd>
       </dl><dl><dt>
           
           <code><a href="check_model.html">check_model()</a></code> 
         </dt>
-        <dd>Checks if the model is supported, and returns the model function</dd>
+        <dd>Generic S3 method for checking if the model is supported and model preprocessing</dd>
       </dl><dl><dt>
           
           <code><a href="configure_model.html">configure_model()</a></code> 
@@ -317,13 +322,39 @@
           <code><a href="use_model_template.html">use_model_template()</a></code> 
         </dt>
         <dd>Create a file with a template for adding a new model (for developers)</dd>
+      </dl></div><div class="section level2">
+      <h2 id="deprecated">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated"></a></h2>
+      
+      <div class="section-desc"><p>Deprecated functions (will be removed in future versions)</p></div>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="bmm.html">bmm()</a></code> <code><a href="bmm.html">fit_model()</a></code> 
+        </dt>
+        <dd>Fit Bayesian Measurement Models</dd>
+      </dl><dl><dt>
+          
+          <code><a href="imm.html">imm()</a></code> <code><a href="imm.html">IMMfull()</a></code> <code><a href="imm.html">IMMbsc()</a></code> <code><a href="imm.html">IMMabc()</a></code> 
+        </dt>
+        <dd>Interference measurement model by Oberauer and Lin (2017).</dd>
+      </dl><dl><dt>
+          
+          <code><a href="sdm.html">sdm()</a></code> <code><a href="sdm.html">sdmSimple()</a></code> 
+        </dt>
+        <dd>Signal Discrimination Model (SDM) by Oberauer (2023)</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Vencislav Popov, Gidon Frischkorn.</p>
+  <p>Developed by Vencislav Popov, Gidon T. Frischkorn.</p>
 </div>
 
 <div class="pkgdown-footer-right">
