@@ -67,10 +67,10 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, links, version) 
-#> -  mixture2p(resp_error, links) 
-#> -  mixture3p(resp_error, nt_features, set_size, regex, links) 
-#> -  sdm(resp_error, links, version) 
+#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, version) 
+#> -  mixture2p(resp_error) 
+#> -  mixture3p(resp_error, nt_features, set_size, regex) 
+#> -  sdm(resp_error, version) 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?imm
 ```
