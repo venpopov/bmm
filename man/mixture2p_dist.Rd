@@ -47,7 +47,12 @@ representations \code{kappa} and probability of recalling items from memory
 \code{p_mem}.
 }
 \examples{
-# example code
+# generate random samples from the mixture2p model and overlay the density
+r <- rmixture2p(10000, mu = 0, kappa = 4, p_mem = 0.8)
+x <- seq(-pi,pi,length.out=10000)
+d <- dmixture2p(x, mu = 0, kappa = 4, p_mem = 0.8)
+hist(r, breaks=60, freq=FALSE)
+lines(x,d,type="l", col="red")
 
 }
 \references{

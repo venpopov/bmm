@@ -30,5 +30,11 @@ in the brms custom family. If your model requires no postprocessing, you can
 skip this method, and the default method will be used (which returns the same
 brmsfit object that was passed to it).
 }
+\examples{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+fit <- readRDS("my_saved_fit.rds")
+postprocessed_fit <- prostprocess_brm(fit)
+\dontshow{\}) # examplesIf}
+}
 \keyword{developer}
 \keyword{internal,}

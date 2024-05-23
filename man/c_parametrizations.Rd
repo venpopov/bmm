@@ -31,4 +31,9 @@ See \href{https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html}{the onlin
 parameterization. The sqrtexp parametrization is the default in the
 \code{bmm} package.
 }
+\examples{
+c_bessel <- c_sqrtexp2bessel(c = 4, kappa = 3)
+c_sqrtexp <- c_bessel2sqrtexp(c = c_bessel, kappa = 3)
+
+}
 \keyword{transform}

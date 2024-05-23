@@ -56,7 +56,7 @@ A bare bones configure_model.* method should look like this:
 }\if{html}{\out{</div>}}
 }
 \examples{
-\dontrun{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 configure_model.mixture3p <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_set_size <- attr(data, "max_set_size")
@@ -91,8 +91,7 @@ configure_model.mixture3p <- function(model, data, formula) {
 
   nlist(formula, data)
 }
-}
-
+\dontshow{\}) # examplesIf}
 }
 \keyword{developer}
 \keyword{internal,}

@@ -16,6 +16,11 @@
 #' @param ... Additional arguments passed to the method
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export
+#'
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' fit <- readRDS("my_saved_fit.rds")
+#' postprocessed_fit <- prostprocess_brm(fit)
+#'
 #' @keywords internal, developer
 postprocess_brm <- function(model, fit, ...) {
   UseMethod('postprocess_brm')
@@ -72,6 +77,12 @@ get_mu_pars <- function(object) {
 #' @param ... Additional arguments passed to the method
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export
+#'
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' fit <- readRDS("my_saved_fit.rds")
+#' postprocessed_fit <- prostprocess_brm(fit)
+#' reverted_fit <- revert_postprocess_brm(postprocessed_fit)
+#'
 #' @keywords internal, developer
 revert_postprocess_brm <- function(model, fit, ...) {
   UseMethod('revert_postprocess_brm')

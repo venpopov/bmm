@@ -12,9 +12,9 @@ dimm(
   x,
   mu = c(0, 2, -1.5),
   dist = c(0, 0.5, 2),
-  c = 1,
-  a = 0.2,
-  b = 0,
+  c = 5,
+  a = 2,
+  b = 1,
   s = 2,
   kappa = 5,
   log = FALSE
@@ -93,7 +93,14 @@ generalization gradient \code{s}, and the precision of memory representations
 \code{kappa}.
 }
 \examples{
-# example code
+# generate random samples from the imm and overlay the density
+r <- rimm(10000, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+          c = 5, a = 2, s = 2, b = 1, kappa = 4)
+x <- seq(-pi,pi,length.out=10000)
+d <- dimm(x, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+          c = 5, a = 2, s = 2, b = 1, kappa = 4)
+hist(r, breaks=60, freq=FALSE)
+lines(x,d,type="l", col="red")
 
 }
 \references{

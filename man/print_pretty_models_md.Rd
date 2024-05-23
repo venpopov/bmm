@@ -14,4 +14,8 @@ in \code{bmm}
 Used internally to automatically populate information in the
 README file
 }
+\examples{
+print_pretty_models_md()
+
+}
 \keyword{internal}

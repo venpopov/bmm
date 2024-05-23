@@ -39,8 +39,7 @@
 #'     nlist(formula, data, family, prior)
 #'  }
 #'  ```
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' configure_model.mixture3p <- function(model, data, formula) {
 #'   # retrieve arguments from the data check
 #'   max_set_size <- attr(data, "max_set_size")
@@ -75,7 +74,6 @@
 #'
 #'   nlist(formula, data)
 #' }
-#' }
 #'
 #' @export
 #' @keywords internal, developer
@@ -94,8 +92,11 @@ configure_model <- function(model, data, formula) {
 #' @param model the model argument supplied by the user
 #' @param data the data argument supplied by the user
 #' @param formula the formula argument supplied by the user
+#'
 #' @return An object of type 'bmmodel'
+#'
 #' @keywords internal, developer
+#'
 check_model <- function(model, data = NULL, formula = NULL) {
   UseMethod("check_model")
 }
@@ -228,6 +229,10 @@ supported_models <- function(print_call = TRUE) {
 #' @return Markdown code for printing the list of measurement models available
 #'   in `bmm`
 #' @export
+#'
+#' @examples
+#' print_pretty_models_md()
+#'
 #' @keywords internal
 print_pretty_models_md <- function() {
   ok_models <- supported_models(print_call = FALSE)
@@ -362,8 +367,7 @@ get_model2 <- function(model) {
 #'@keywords internal, developer
 #'@export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #'  library(usethis)
 #'
 #'  # create a new model file without a brms::custom_family, and open the file
@@ -373,7 +377,7 @@ get_model2 <- function(model) {
 #'  # inst/stan_chunks/ and open the files
 #'  use_model_template('abc',custom_family = TRUE,
 #'                     stanvar_blocks = c('functions','likelihood','tdata'))
-#'}
+#'
 use_model_template <- function(model_name,
                                custom_family = FALSE,
                                stanvar_blocks = c('data','tdata','parameters',

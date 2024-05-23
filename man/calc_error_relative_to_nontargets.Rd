@@ -25,4 +25,10 @@ which contains the transformed response error relative to the non-targets
 Given a vector of responses, and the values of non-targets, this
 function computes the error relative to each of the non-targets.
 }
+\examples{
+data <- oberauer_lin_2017
+data <- calc_error_relative_to_nontargets(data, 'dev_rad', paste0('col_nt',1:7))
+hist(data$y_nt, breaks = 100)
+
+}
 \keyword{transform}

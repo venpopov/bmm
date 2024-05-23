@@ -49,6 +49,11 @@ k2sd <- function(K) {
 #'   parameterization. The sqrtexp parametrization is the default in the
 #'   `bmm` package.
 #' @export
+#'
+#' @examples
+#' c_bessel <- c_sqrtexp2bessel(c = 4, kappa = 3)
+#' c_sqrtexp <- c_bessel2sqrtexp(c = c_bessel, kappa = 3)
+#'
 c_sqrtexp2bessel <- function(c, kappa) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(c < 0)), "c must be non-negative")
