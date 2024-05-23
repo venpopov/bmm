@@ -5,7 +5,7 @@
 \alias{default_prior}
 \title{Get Default priors for Measurement Models specified in BMM}
 \usage{
-default_prior.bmmformula(object, data, model, formula = object, ...)
+\method{default_prior}{bmmformula}(object, data, model, formula = object, ...)
 }
 \arguments{
 \item{object}{A \code{bmmformula} object}

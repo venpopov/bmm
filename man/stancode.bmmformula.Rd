@@ -5,7 +5,7 @@
 \alias{stancode}
 \title{Generate Stan code for bmm models}
 \usage{
-stancode.bmmformula(object, data, model, prior = NULL, ...)
+\method{stancode}{bmmformula}(object, data, model, prior = NULL, ...)
 }
 \arguments{
 \item{object}{A \code{bmmformula} object}

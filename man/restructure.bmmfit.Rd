@@ -5,7 +5,7 @@
 \alias{restructure}
 \title{Restructure Old \code{bmmfit} Objects}
 \usage{
-restructure.bmmfit(x, ...)
+\method{restructure}{bmmfit}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{bmmfit}.}

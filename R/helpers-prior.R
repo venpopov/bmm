@@ -50,11 +50,6 @@ default_prior.bmmformula <- function(object, data, model, formula = object, ...)
   combine_prior(brms_priors, prior_args$prior)
 }
 
-#' @export
-default_prior <- function(object, ...) {
-  brms::default_prior(object, ...)
-}
-
 
 #' @title construct constant priors to fix fixed model parameters
 #' @param model a `bmmodel` object

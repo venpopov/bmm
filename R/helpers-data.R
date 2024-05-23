@@ -239,6 +239,7 @@ rad2deg <- function(rad){
 #'                    data = oberauer_lin_2017,
 #'                    model = sdm(resp_error = "dev_rad"))
 #' str(sdata1)
+#' @importFrom brms standata
 #' @export
 standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # check model, formula and data, and transform data if necessary
@@ -260,11 +261,6 @@ standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   fit_args$object <- fit_args$formula
   fit_args$formula <- NULL
   brms::do_call(brms::standata, fit_args)
-}
-
-#' @export
-standata <- function(object, ...) {
-  brms::standata(object, ...)
 }
 
 # check if the data is sorted by the predictors

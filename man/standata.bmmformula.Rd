@@ -5,7 +5,7 @@
 \alias{standata}
 \title{Stan data for \code{bmm} models}
 \usage{
-standata.bmmformula(object, data, model, prior = NULL, ...)
+\method{standata}{bmmformula}(object, data, model, prior = NULL, ...)
 }
 \arguments{
 \item{object}{A \code{bmmformula} object}

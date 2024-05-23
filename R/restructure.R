@@ -13,6 +13,7 @@
 #'   of \pkg{bmm} and \pkg{brms}.
 #' @keywords transform
 #' @export
+#' @importFrom brms restructure
 #' @importFrom utils packageVersion
 restructure.bmmfit <- function(x, ...) {
   version <- x$version$bmm
@@ -83,11 +84,6 @@ restructure.bmmfit <- function(x, ...) {
 
   x$version$bmm_restructure <- current_version
   NextMethod('restructure')
-}
-
-#' @export
-restructure <- function(object, ...) {
-  brms::restructure(object, ...)
 }
 
 restructure_version.bmm <- function(x) {
