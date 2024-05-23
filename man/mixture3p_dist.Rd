@@ -6,7 +6,7 @@
 \alias{pmixture3p}
 \alias{qmixture3p}
 \alias{rmixture3p}
-\title{The three-parameter mixture model (mixture3p)}
+\title{Distribution functions for the three-parameter mixture model (mixture3p)}
 \usage{
 dmixture3p(
   x,

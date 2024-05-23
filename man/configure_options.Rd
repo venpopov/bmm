@@ -22,4 +22,5 @@ Currently it serves to set local options for parallel processing
 and update number of chains if the number of chains is greater than the
 number of cores.
 }
+\keyword{developer}
 \keyword{internal}

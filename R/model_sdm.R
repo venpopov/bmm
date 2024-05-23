@@ -50,7 +50,7 @@
 # automatically based on the information in the .model_sdm_simple(NA)$info
 
 #' @title `r .model_sdm()$name`
-#' @name SDM
+#' @name sdm
 #' @details see [the online article](https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html) for a detailed description of the model
 #'   and how to use it. `r model_info(.model_sdm())`
 #' @param resp_error The name of the variable in the dataset containing the
@@ -99,7 +99,7 @@ sdm <- function(resp_error, version = "simple", ...) {
   .model_sdm(resp_error = resp_error, version = version, call = call, ...)
 }
 
-#' @rdname SDM
+#' @rdname sdm
 #' @export
 sdmSimple <- function(resp_error, version = "simple", ...) {
   warning("The function `sdmSimple()` is deprecated. Please use `sdm()` instead.")

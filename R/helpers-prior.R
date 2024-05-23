@@ -16,7 +16,7 @@
 #' @param object A `bmmformula` object
 #' @param ... Further arguments passed to [brms::default_prior()]
 #'
-#' @returns A data.frame with columns specifying the `prior`, the `class`, the
+#' @return A data.frame with columns specifying the `prior`, the `class`, the
 #'   `coef` and `group` for each of the priors specified. Separate rows contain
 #'   the information on the parameters (or parameter classes) for which priors
 #'   can be specified.

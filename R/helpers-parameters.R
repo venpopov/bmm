@@ -38,7 +38,9 @@ k2sd <- function(K) {
 #'
 #' @name c_parametrizations
 #' @inheritParams SDMdist
-#' @return `c_bessel2sqrtexp` converts the memory strength parameter (c)
+#' @return A numeric vector of the same length as `c` and `kappa`.
+#' @details
+#' `c_bessel2sqrtexp` converts the memory strength parameter (c)
 #'   from the bessel parametrization to the sqrtexp parametrization,
 #'   `c_sqrtexp2bessel` converts from the sqrtexp parametrization to the
 #'   bessel parametrization.

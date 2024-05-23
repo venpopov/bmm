@@ -6,7 +6,7 @@
 \alias{pimm}
 \alias{qimm}
 \alias{rimm}
-\title{The Interference Measurement Model (IMM)}
+\title{Distribution functions for the Interference Measurement Model (IMM)}
 \usage{
 dimm(
   x,

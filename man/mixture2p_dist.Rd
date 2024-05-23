@@ -6,7 +6,7 @@
 \alias{pmixture2p}
 \alias{qmixture2p}
 \alias{rmixture2p}
-\title{The two-parameter mixture model (mixture2p)}
+\title{Distribution functions for the two-parameter mixture model (mixture2p)}
 \usage{
 dmixture2p(x, mu = 0, kappa = 5, p_mem = 0.6, log = FALSE)
 

@@ -6,7 +6,7 @@
 \alias{psdm}
 \alias{qsdm}
 \alias{rsdm}
-\title{The Signal Discrimination Model (SDM) Distribution}
+\title{Distribution functions for the Signal Discrimination Model (SDM)}
 \usage{
 dsdm(x, mu = 0, c = 3, kappa = 3.5, log = FALSE, parametrization = "sqrtexp")
 

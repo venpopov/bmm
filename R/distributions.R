@@ -1,4 +1,4 @@
-#' @title The Signal Discrimination Model (SDM) Distribution
+#' @title Distribution functions for the Signal Discrimination Model (SDM)
 #'
 #' @description Density, distribution function, and random generation for the
 #'   Signal Discrimination Model (SDM) Distribution with location `mu`,
@@ -211,7 +211,7 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 
 
 
-#' @title The two-parameter mixture model (mixture2p)
+#' @title Distribution functions for the two-parameter mixture model (mixture2p)
 #'
 #' @description Density, distribution, and random generation functions for the
 #'   two-parameter mixture model with the location of `mu`, precision of memory
@@ -303,7 +303,7 @@ rmixture2p <- function(n, mu=0, kappa=5, p_mem = 0.6) {
 }
 
 
-#' @title The three-parameter mixture model (mixture3p)
+#' @title Distribution functions for the three-parameter mixture model (mixture3p)
 #'
 #' @description Density, distribution, and random generation functions for the
 #'   three-parameter mixture model with the location of `mu`, precision of
@@ -409,7 +409,7 @@ rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
   .rmixture3p_inner(n, mu, c, kappa, p_mem, p_nt, xa)
 }
 
-#' @title The Interference Measurement Model (IMM)
+#' @title Distribution functions for the Interference Measurement Model (IMM)
 #'
 #' @description Density, distribution, and random generation functions for the
 #'   interference measurement model with the location of `mu`, strength of cue-

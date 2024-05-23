@@ -227,7 +227,7 @@ rad2deg <- function(rad){
 #' @param ... Further arguments passed to [brms::standata()]. See the
 #'   description of [brms::standata()] for more details
 #'
-#' @returns A named list of objects containing the required data to fit a bmm
+#' @return A named list of objects containing the required data to fit a bmm
 #'   model with Stan.
 #'
 #' @seealso [supported_models()], [brms::standata()]
