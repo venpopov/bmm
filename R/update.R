@@ -19,6 +19,24 @@
 #'
 #'   For more information and examples, see [brms::update.brmsfit()]
 #' @export
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' # generate artificial data from the Signal Discrimination Model
+#' # generate artificial data from the Signal Discrimination Model
+#' dat <- data.frame(y = rsdm(2000))
+#'
+#' # define formula
+#' ff <- bmf(c ~ 1, kappa ~ 1)
+#'
+#' # fit the model
+#' fit <- bmm(formula = ff,
+#'            data = dat,
+#'            model = sdm(resp_error = "y"),
+#'            cores = 4,
+#'            backend = 'cmdstanr')
+#' 
+#' # update the model
+#' fit <- update(fit, newdata = data.frame(y = rsdm(2000, kappa = 5))
+#' 
 update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ...) {
   dots <- list(...)
 

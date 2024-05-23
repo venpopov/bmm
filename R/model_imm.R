@@ -121,8 +121,7 @@
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
 #' @keywords bmmodel
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # load data
 #' data <- oberauer_lin_2017
 #'
@@ -174,7 +173,6 @@
 #'            model = model3,
 #'            cores = 4,
 #'            backend = 'cmdstanr')
-#'}
 #' @export
 imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, version = "full", ...) {
   call <- match.call()
@@ -196,7 +194,7 @@ imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, 
 # deprecated calls for specific versions
 
 #' @rdname imm
-#' @keywords bmmodel
+#' @keywords bmmodel, internal
 #' @export
 IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...) {
   call <- match.call()
@@ -214,7 +212,7 @@ IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FAL
 
 
 #' @rdname imm
-#' @keywords bmmodel
+#' @keywords bmmodel, internal
 #' @export
 IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...) {
   call <- match.call()
@@ -231,7 +229,7 @@ IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALS
 }
 
 #' @rdname imm
-#' @keywords bmmodel
+#' @keywords deprecated
 #' @export
 IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, ...) {
   call <- match.call()

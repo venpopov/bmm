@@ -68,8 +68,8 @@ softmaxinv <- function(p, lambda = 1) {
 #'   parent.frame() the changes would apply to the environment of the function
 #'   that called it. In our case, this is the environment of the bmm()
 #'   function. Changes will not be propagated to the user environment.
-#' @keywords internal  developer
-#' @export
+#' @keywords internal developer
+#' @noRd
 #' @return A list of options to pass to brm()
 configure_options <- function(opts, env = parent.frame()) {
   if (isTRUE(opts$parallel)) {

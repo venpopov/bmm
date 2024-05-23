@@ -13,7 +13,10 @@
 #'   of \pkg{bmm} and \pkg{brms}.
 #' @keywords transform
 #' @export
-#' @importFrom brms restructure
+#' @examplesIf file.exists("bmmfit_old.rds")
+#' # Load an old bmmfit object
+#' old_fit <- readRDS("bmmfit_old.rds")
+#' new_fit <- restructure(old_fit)
 #' @importFrom utils packageVersion
 restructure.bmmfit <- function(x, ...) {
   version <- x$version$bmm

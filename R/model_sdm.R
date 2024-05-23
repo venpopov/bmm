@@ -63,8 +63,7 @@
 #' @return An object of class `bmmodel`
 #' @export
 #' @keywords bmmodel
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # simulate data from the model
 #' library(bmm)
 #' library(brms)
@@ -92,7 +91,6 @@
 #' x <- seq(-pi,pi,0.01)
 #' lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
 #'               kappa=coef['kappa_Intercept']), col='red')
-#' }
 sdm <- function(resp_error, version = "simple", ...) {
   call <- match.call()
   stop_missing_args()
@@ -100,6 +98,7 @@ sdm <- function(resp_error, version = "simple", ...) {
 }
 
 #' @rdname sdm
+#' @keywords deprecated
 #' @export
 sdmSimple <- function(resp_error, version = "simple", ...) {
   warning("The function `sdmSimple()` is deprecated. Please use `sdm()` instead.")

@@ -74,35 +74,5 @@ and how to use it. * \strong{Domain:} Visual working memory
 }
 }
 }
-\examples{
-\dontrun{
-# simulate data from the model
-library(bmm)
-library(brms)
-dat <- data.frame(y = rsdm(n = 1000, c = 4, kappa = 3))
-
-# specify formula
-ff <- bmf(c ~ 1,
-          kappa ~ 1)
-
-# specify prior
-prior <- prior(normal(1,2), class='Intercept', dpar='c')+
-   prior(normal(1,2), class='Intercept', dpar='kappa')
-
-# specify the model
-fit <- bmm(formula = ff,
-           data = dat,
-           model = sdm(resp_error = 'y'),
-           prior = prior,
-           cores = 4,
-           backend = 'cmdstanr')
-
-# extract coefficients and plot fit
-coef <- exp(brms::fixef(fit)[2:3,1])
-hist(dat$y, breaks=60, freq=F)
-x <- seq(-pi,pi,0.01)
-lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
-              kappa=coef['kappa_Intercept']), col='red')
-}
-}
 \keyword{bmmodel}
+\keyword{internal}

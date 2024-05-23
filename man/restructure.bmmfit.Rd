@@ -21,4 +21,11 @@ Restructure old \code{bmmfit} objects to work with
 the latest \pkg{bmm} version. This function is called
 internally when applying post-processing methods.
 }
+\examples{
+\dontshow{if (file.exists("bmmfit_old.rds")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Load an old bmmfit object
+old_fit <- readRDS("bmmfit_old.rds")
+new_fit <- restructure(old_fit)
+\dontshow{\}) # examplesIf}
+}
 \keyword{transform}

@@ -80,8 +80,7 @@
 #' @return An object of class `bmmodel`
 #' @keywords bmmodel
 #' @export
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # generate artificial data from the Bays et al (2009) 3-parameter mixture model
 #' dat <- data.frame(
 #'   y = rmixture3p(n=2000, mu = c(0,1,-1.5,2)),
@@ -119,7 +118,6 @@
 #'            cores = 4,
 #'            iter = 500,
 #'            backend = 'cmdstanr')
-#' }
 mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE, ...) {
   call <- match.call()
   dots <- list(...)
