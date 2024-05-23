@@ -2,7 +2,7 @@
 % Please edit documentation in R/bmmformula.R
 \name{check_formula}
 \alias{check_formula}
-\title{checks if the formula is valid for the specified model}
+\title{Generic S3 method for checking if the formula is valid for the specified model}
 \usage{
 check_formula(model, data, formula)
 }
@@ -17,7 +17,7 @@ check_formula(model, data, formula)
 the formula object
 }
 \description{
-checks if the formula is valid for the specified model
+Generic S3 method for checking if the formula is valid for the specified model
 }
 \keyword{developer}
 \keyword{internal,}
