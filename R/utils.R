@@ -68,8 +68,9 @@ softmaxinv <- function(p, lambda = 1) {
 #'   parent.frame() the changes would apply to the environment of the function
 #'   that called it. In our case, this is the environment of the bmm()
 #'   function. Changes will not be propagated to the user environment.
-#' @keywords internal
-#' @returns A list of options to pass to brm()
+#' @keywords internal developer
+#' @noRd
+#' @return A list of options to pass to brm()
 configure_options <- function(opts, env = parent.frame()) {
   if (isTRUE(opts$parallel)) {
     cores <- parallel::detectCores()
@@ -208,7 +209,7 @@ install_and_load_bmm_version <- function(version) {
   }
   path <- paste0(.libPaths()[1], "/bmm-", version)
   if (!dir.exists(path) || length(list.files(path)) == 0 ||
-      length(list.files(paste0(path, "/bmm"))) == 0) {
+    length(list.files(paste0(path, "/bmm"))) == 0) {
     dir.create(path)
     remotes::install_github(paste0("venpopov/bmm@", version), lib = path)
   }
@@ -228,6 +229,14 @@ install_and_load_bmm_version <- function(version) {
 #'  - "time_mean": A named numeric vector with the mean sampling time
 #' @keywords extract_info
 #' @export
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' fit <- bmm(
+#'   formula = bmmformula(c ~ 1, kappa ~ 1),
+#'   data = data.frame(y = rsdm(1000)),
+#'   model = sdm(resp_error = "y")
+#' )
+#'
+#' fit_info(fit, "time")
 fit_info <- function(fit, what) {
   UseMethod("fit_info")
 }
@@ -493,6 +502,7 @@ identical.formula <- function(x, y, ...) {
 #' old_op <- bmm_options(sort_data = TRUE, parallel = TRUE)
 #' on.exit(bmm_options(old_op))
 #'
+#' bmm_options(reset_options = TRUE)
 #' @export
 bmm_options <- function(sort_data, parallel, default_priors, silent,
                         color_summary, file_refit, reset_options = FALSE) {

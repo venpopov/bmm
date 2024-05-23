@@ -16,7 +16,7 @@
 #' @param object A `bmmformula` object
 #' @param ... Further arguments passed to [brms::default_prior()]
 #'
-#' @returns A data.frame with columns specifying the `prior`, the `class`, the
+#' @return A data.frame with columns specifying the `prior`, the `class`, the
 #'   `coef` and `group` for each of the priors specified. Separate rows contain
 #'   the information on the parameters (or parameter classes) for which priors
 #'   can be specified.
@@ -27,8 +27,9 @@
 #'
 #' @examples
 #' default_prior(bmf(c ~ 1, kappa ~ 1),
-#'               data = oberauer_lin_2017,
-#'               model = sdm(resp_error = 'dev_rad'))
+#'   data = oberauer_lin_2017,
+#'   model = sdm(resp_error = "dev_rad")
+#' )
 #' @export
 default_prior.bmmformula <- function(object, data, model, formula = object, ...) {
   withr::local_options(bmm.sort_data = FALSE)
@@ -48,11 +49,6 @@ default_prior.bmmformula <- function(object, data, model, formula = object, ...)
   brms_priors <- brms::do_call(brms::default_prior, prior_args)
 
   combine_prior(brms_priors, prior_args$prior)
-}
-
-#' @export
-default_prior <- function(object, ...) {
-  brms::default_prior(object, ...)
 }
 
 
@@ -114,15 +110,17 @@ fixed_pars_priors <- function(model, formula, additional_pars = list()) {
 #' @param formula A `brmsformula` object
 #' @param data A data.frame containing the data used in the model
 #' @noRd
-#' @keywords internal, developer
+#' @keywords internal developer
 set_default_prior <- function(model, data, formula) {
   if (isFALSE(getOption("bmm.default_priors", TRUE))) {
     return(NULL)
   }
 
   default_priors <- model$default_priors
-  stopif(!is.list(default_priors) || !all(sapply(default_priors, is.list)),
-         "The default_priors should be a list of lists")
+  stopif(
+    !is.list(default_priors) || !all(sapply(default_priors, is.list)),
+    "The default_priors should be a list of lists"
+  )
 
   prior <- brms::empty_prior()
   bterms <- brms::brmsterms(formula)
@@ -167,8 +165,10 @@ set_default_prior <- function(model, data, formula) {
     # check if intercept is present and set prior_desc[[1]] on the intercept
     if (attr(terms, "intercept")) {
       if (par %in% nlpars) {
-        prior2 <- brms::prior_(prior_desc$main, class = "b",
-                               coef = "Intercept", nlpar = par)
+        prior2 <- brms::prior_(prior_desc$main,
+          class = "b",
+          coef = "Intercept", nlpar = par
+        )
       } else {
         prior2 <- brms::prior_(prior_desc$main, class = "Intercept", dpar = par)
       }
@@ -227,7 +227,46 @@ set_default_prior <- function(model, data, formula) {
 #'  bmm()
 #' @param ... Additional arguments passed to the method
 #' @export
-#' @keywords internal, developer
+#'
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' configure_prior.mixture3p <- function(model, data, formula, user_prior, ...) {
+#'   # if there is set_size 1 in the data, set constant prior over thetant for set_size1
+#'   prior <- brms::empty_prior()
+#'   set_size_var <- model$other_vars$set_size
+#'   prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
+#'
+#'   thetant_preds <- rhs_vars(formula$pforms$thetant)
+#'   if (prior_cond && set_size_var %in% thetant_preds) {
+#'     prior <- prior + brms::prior_("constant(-100)",
+#'       class = "b",
+#'       coef = paste0(set_size_var, 1),
+#'       nlpar = "thetant"
+#'     )
+#'   }
+#'   # check if there is a random effect on theetant that include set_size as predictor
+#'   bterms <- brms::brmsterms(formula$pforms$thetant)
+#'   re_terms <- bterms$dpars$mu$re
+#'   if (!is.null(re_terms)) {
+#'     for (i in 1:nrow(re_terms)) {
+#'       group <- re_terms$group[[i]]
+#'       form <- re_terms$form[[i]]
+#'       thetant_preds <- rhs_vars(form)
+#'
+#'       if (prior_cond && set_size_var %in% thetant_preds) {
+#'         prior <- prior + brms::prior_("constant(1e-8)",
+#'           class = "sd",
+#'           coef = paste0(set_size_var, 1),
+#'           group = group,
+#'           nlpar = "thetant"
+#'         )
+#'       }
+#'     }
+#'   }
+#'
+#'   prior
+#' }
+#'
+#' @keywords internal developer
 configure_prior <- function(model, data, formula, user_prior, ...) {
   UseMethod("configure_prior")
 }
@@ -254,7 +293,8 @@ configure_prior.bmmodel <- function(model, data, formula, user_prior, ...) {
 combine_prior <- function(prior1, prior2) {
   if (!is.null(prior2)) {
     combined_prior <- dplyr::anti_join(prior1, prior2,
-       by = c('class', 'dpar','nlpar','coef','group','resp'))
+      by = c("class", "dpar", "nlpar", "coef", "group", "resp")
+    )
     prior <- combined_prior + prior2
   } else {
     prior <- prior1
@@ -267,11 +307,11 @@ summarise_default_prior <- function(prior_list) {
   pars <- names(prior_list)
   prior_info <- ""
   for (par in pars) {
-    prior_info  <- paste0(prior_info, "   - `", par, "`:\n")
+    prior_info <- paste0(prior_info, "   - `", par, "`:\n")
     types <- names(prior_list[[par]])
     for (type in types) {
       prior <- prior_list[[par]][[type]]
-      prior_info  <- paste0(prior_info, "      - `", type, "`: ", prior, "\n")
+      prior_info <- paste0(prior_info, "      - `", type, "`: ", prior, "\n")
     }
   }
   prior_info

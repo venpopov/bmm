@@ -9,6 +9,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+set.seed(1152)
 ```
 # bmm   <!-- badges: start -->
 [![bmm status badge](https://popov-lab.r-universe.dev/badges/bmm)](https://popov-lab.r-universe.dev/bmm)
@@ -72,12 +73,15 @@ bmm::supported_models()
 
 ## How to install bmm
 
-Currently, we are working on getting the package ready to be submitted
-to CRAN. Until then, you can install the latest version of the package
-from GitHub.
+You can install the latest version of the `bmm` package from CRAN:
 
-Because `bmm` is based on `brms` and `stan` it requires a working C++
-compiler. If you have not used `brms` before, you will need to first install the dependencies. If you are already using `brms`, you can skip this step.
+``` r
+install.packages("bmm")
+```
+
+Because `bmm` is based on `brms` and `stan` it requires a working C++ 
+compiler. If you have not used `brms` before, you will need to first 
+install the dependencies. If you are already using `brms`, you can skip this step.
 
 <details><summary><b>    Install dependencies</b></summary>
 
@@ -91,28 +95,11 @@ compiler. If you have not used `brms` before, you will need to first install the
     [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
     recommend using `cmdstanr`.
 -   Install [brms](https://paul-buerkner.github.io/brms/#installation)
--   Install `bmm` as described next
 
 </details>
-
-If you are already using `brms`, you are good to go and can
-install the package as described in one of the options below:
-
-<details open>
-<summary><b>Install the latest beta release of bmm</b></summary>
 
 </br>
-
-``` r
-install.packages('bmm', repos = c('https://popov-lab.r-universe.dev'))
-```
-
-This does not install the vignettes, which take a long time to build,
-but they are all available on the [bmm
-website](https://venpopov.github.io/bmm/).
-
-</details>
-
+Alternatively, you can install the development version of the package or a specific version of the package from GitHub:
 
 <details>
 <summary><b>Install the latest development version of bmm</b></summary>
@@ -219,26 +206,30 @@ density function of the data for the Interference Measurement model using the
 `dimm` function. In similar fashion the random generation function included for
 each model, generates random data based on a set of data generating parameters.
 For the IMM, you can use `rimm` to generate data given a set of parameters.
-Plotting the random data against the density illustrates that the data follows
-the theoretically implied density.
+Here is an example of how to use these functions. We are ploting a histogram of 
+randomly generated data from the IMM with a setsize of four, and overlaying the 
+probability density function of the model:
 
 ```{r message=FALSE, warning=FALSE, out.width=400}
+library(bmm)
 library(ggplot2)
 
-simData <- data.frame(
-  x = bmm::rimm(n = 500,
-                mu = c(0,-1.5,2.5,1),
-                dist = c(0, 2, 0.3, 1),
-                c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)
+resp <- rimm(
+  n = 1000,
+  mu = c(0, -1.5, 2.5, 1),
+  dist = c(0, 2, 0.3, 1),
+  c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10
 )
 
-ggplot(data = simData, aes(x = x)) +
-  geom_histogram(aes(y = after_stat(density))) +
-  geom_function(fun = bmm::dimm,
-                args = list(mu = c(0,-1.5,2.5,1),
-                            dist = c(0, 2, 0.3, 1),
-                            c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)) +
-  scale_x_continuous(limits = c(-pi,pi))
+hist(resp, freq = FALSE, breaks = 60)
+curve(
+  dimm(x,
+    mu = c(0, -1.5, 2.5, 1), 
+    dist = c(0, 2, 0.3, 1), 
+    c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10
+  ),
+  from = -pi, to = pi, add = TRUE
+)
 ```
 
 ## The general structure of the bmm package
@@ -284,7 +275,7 @@ knitr::include_graphics("man/figures/README-fitModel_process.png")
 
 Should be interested in contributing a model to the `bmm` package, you should
 first look into the [Developer
-Notes](https://venpopov.github.io/bmm/dev/dev-notes/index.html) as well as the [Contributor Guidelines](https://github.com/venpopov/bmm/tree/develop/.github/CONTRIBUTING.md). These give a
+Notes](https://venpopov.github.io/bmm/dev/dev-notes/index.html) as well as the [Contributor Guidelines](https://github.com/venpopov/bmm/blob/develop/.github/CONTRIBUTING.md). These give a
 more in depth description of the package architecture, the steps necessary to
 add your own model to the package, and how contributions will be acknowledged.
 

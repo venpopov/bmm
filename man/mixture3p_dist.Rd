@@ -6,7 +6,7 @@
 \alias{pmixture3p}
 \alias{qmixture3p}
 \alias{rmixture3p}
-\title{The three-parameter mixture model (mixture3p)}
+\title{Distribution functions for the three-parameter mixture model (mixture3p)}
 \usage{
 dmixture3p(
   x,
@@ -58,7 +58,12 @@ memory representations \code{kappa}, probability of recalling items from memory
 \code{p_mem}, and probability of recalling non-targets \code{p_nt}.
 }
 \examples{
-# example code
+# generate random samples from the mixture3p model and overlay the density
+r <- rmixture3p(10000, mu = c(0, 2, -1.5), kappa = 4, p_mem = 0.6, p_nt = 0.2)
+x <- seq(-pi,pi,length.out=10000)
+d <- dmixture3p(x, mu = c(0, 2, -1.5), kappa = 4, p_mem = 0.6, p_nt = 0.2)
+hist(r, breaks=60, freq=FALSE)
+lines(x,d,type="l", col="red")
 
 }
 \references{

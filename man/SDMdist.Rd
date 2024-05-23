@@ -6,7 +6,7 @@
 \alias{psdm}
 \alias{qsdm}
 \alias{rsdm}
-\title{The Signal Discrimination Model (SDM) Distribution}
+\title{Distribution functions for the Signal Discrimination Model (SDM)}
 \usage{
 dsdm(x, mu = 0, c = 3, kappa = 3.5, log = FALSE, parametrization = "sqrtexp")
 
@@ -110,7 +110,6 @@ r <- rsdm(10000, mu = 0, c = 3.1, kappa = 5)
 d <- dsdm(x, mu = 0, c = 3.1, kappa = 5)
 hist(r, breaks=60, freq=FALSE)
 lines(x,d,type="l", col="red")
-
 }
 \references{
 Oberauer, K. (2023). Measurement models for visual working

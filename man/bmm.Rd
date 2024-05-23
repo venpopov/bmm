@@ -123,7 +123,7 @@ Type \code{help(package=bmm)} for a full list of available help topics.
 }
 
 \examples{
-\dontrun{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # generate artificial data from the Signal Discrimination Model
 dat <- data.frame(y = rsdm(2000))
 
@@ -136,8 +136,7 @@ fit <- bmm(formula = ff,
            model = sdm(resp_error = "y"),
            cores = 4,
            backend = 'cmdstanr')
-}
-
+\dontshow{\}) # examplesIf}
 }
 \references{
 Frischkorn, G. T., & Popov, V. (2023). A tutorial for estimating
@@ -148,3 +147,4 @@ https://doi.org/10.31234/osf.io/umt57
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[brms:brm]{brms::brm()}}, \link[=default_prior.bmmformula]{default_prior()}, \code{\link[=bmmformula]{bmmformula()}}, \link[=stancode.bmmformula]{stancode()}, \link[=standata.bmmformula]{standata()}
 }
+\keyword{deprecated}

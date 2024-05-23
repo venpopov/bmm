@@ -1,4 +1,4 @@
-#' @title The Signal Discrimination Model (SDM) Distribution
+#' @title Distribution functions for the Signal Discrimination Model (SDM)
 #'
 #' @description Density, distribution function, and random generation for the
 #'   Signal Discrimination Model (SDM) Distribution with location `mu`,
@@ -78,7 +78,6 @@
 #' d <- dsdm(x, mu = 0, c = 3.1, kappa = 5)
 #' hist(r, breaks=60, freq=FALSE)
 #' lines(x,d,type="l", col="red")
-#'
 dsdm <- function(x, mu = 0, c = 3, kappa = 3.5, log = FALSE,
                  parametrization = "sqrtexp") {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
@@ -211,7 +210,7 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 
 
 
-#' @title The two-parameter mixture model (mixture2p)
+#' @title Distribution functions for the two-parameter mixture model (mixture2p)
 #'
 #' @description Density, distribution, and random generation functions for the
 #'   two-parameter mixture model with the location of `mu`, precision of memory
@@ -243,7 +242,12 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 #' @export
 #'
 #' @examples
-#' # example code
+#' # generate random samples from the mixture2p model and overlay the density
+#' r <- rmixture2p(10000, mu = 0, kappa = 4, p_mem = 0.8)
+#' x <- seq(-pi,pi,length.out=10000)
+#' d <- dmixture2p(x, mu = 0, kappa = 4, p_mem = 0.8)
+#' hist(r, breaks=60, freq=FALSE)
+#' lines(x,d,type="l", col="red")
 #'
 dmixture2p <- function(x, mu=0, kappa=5, p_mem = 0.6, log = FALSE) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
@@ -303,7 +307,7 @@ rmixture2p <- function(n, mu=0, kappa=5, p_mem = 0.6) {
 }
 
 
-#' @title The three-parameter mixture model (mixture3p)
+#' @title Distribution functions for the three-parameter mixture model (mixture3p)
 #'
 #' @description Density, distribution, and random generation functions for the
 #'   three-parameter mixture model with the location of `mu`, precision of
@@ -339,7 +343,12 @@ rmixture2p <- function(n, mu=0, kappa=5, p_mem = 0.6) {
 #' @export
 #'
 #' @examples
-#' # example code
+#' # generate random samples from the mixture3p model and overlay the density
+#' r <- rmixture3p(10000, mu = c(0, 2, -1.5), kappa = 4, p_mem = 0.6, p_nt = 0.2)
+#' x <- seq(-pi,pi,length.out=10000)
+#' d <- dmixture3p(x, mu = c(0, 2, -1.5), kappa = 4, p_mem = 0.6, p_nt = 0.2)
+#' hist(r, breaks=60, freq=FALSE)
+#' lines(x,d,type="l", col="red")
 #'
 dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2, log = FALSE) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
@@ -409,7 +418,7 @@ rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
   .rmixture3p_inner(n, mu, c, kappa, p_mem, p_nt, xa)
 }
 
-#' @title The Interference Measurement Model (IMM)
+#' @title Distribution functions for the Interference Measurement Model (IMM)
 #'
 #' @description Density, distribution, and random generation functions for the
 #'   interference measurement model with the location of `mu`, strength of cue-
@@ -447,10 +456,17 @@ rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
 #' @export
 #'
 #' @examples
-#' # example code
+#' # generate random samples from the imm and overlay the density
+#' r <- rimm(10000, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+#'           c = 5, a = 2, s = 2, b = 1, kappa = 4)
+#' x <- seq(-pi,pi,length.out=10000)
+#' d <- dimm(x, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+#'           c = 5, a = 2, s = 2, b = 1, kappa = 4)
+#' hist(r, breaks=60, freq=FALSE)
+#' lines(x,d,type="l", col="red")
 #'
 dimm <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
-                 c=1, a = 0.2, b = 0, s = 2, kappa=5, log = FALSE) {
+                 c=5, a = 2, b = 1, s = 2, kappa=5, log = FALSE) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(length(mu) != length(dist),
          "The number of items does not match the distances provided from the cued location.")

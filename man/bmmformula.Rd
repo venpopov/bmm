@@ -79,6 +79,4 @@ imm_formula2 <- bmf(
   kappa ~ 0 + set_size + (0 + set_size | id)
 )
 identical(imm_formula, imm_formula2)
-
-
 }

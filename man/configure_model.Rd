@@ -56,7 +56,7 @@ A bare bones configure_model.* method should look like this:
 }\if{html}{\out{</div>}}
 }
 \examples{
-\dontrun{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 configure_model.mixture3p <- function(model, data, formula) {
   # retrieve arguments from the data check
   max_set_size <- attr(data, "max_set_size")
@@ -79,8 +79,10 @@ configure_model.mixture3p <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (thetant + log(inv_ss)) + ",
-               "(1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf(
+        "{theta_nts[i]} ~ {lure_idx[i]} * (thetant + log(inv_ss)) + ",
+        "(1 - {lure_idx[i]}) * (-100)"
+      ) +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
@@ -91,8 +93,7 @@ configure_model.mixture3p <- function(model, data, formula) {
 
   nlist(formula, data)
 }
-}
-
+\dontshow{\}) # examplesIf}
 }
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

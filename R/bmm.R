@@ -72,7 +72,7 @@
 #'
 #'   **fit_model()** is a deprecated alias for **bmm()**.
 #'
-#' @returns An object of class brmsfit which contains the posterior draws along
+#' @return An object of class brmsfit which contains the posterior draws along
 #'   with many other useful information about the model. Use methods(class =
 #'   "brmsfit") for an overview on available methods.
 #'
@@ -85,8 +85,7 @@
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # generate artificial data from the Signal Discrimination Model
 #' dat <- data.frame(y = rsdm(2000))
 #'
@@ -99,8 +98,6 @@
 #'            model = sdm(resp_error = "y"),
 #'            cores = 4,
 #'            backend = 'cmdstanr')
-#' }
-#'
 bmm <- function(formula, data, model,
                 prior = NULL,
                 sort_data = getOption('bmm.sort_data', "check"),
@@ -146,6 +143,7 @@ bmm <- function(formula, data, model,
 
 
 #' @rdname bmm
+#' @keywords deprecated
 #' @export
 fit_model <- function(formula, data, model,
                       prior = NULL,

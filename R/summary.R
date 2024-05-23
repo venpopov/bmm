@@ -7,6 +7,24 @@
 #' @note You can turn off the color output by setting the option
 #' options(bmm.color_summary = FALSE) or bmm_options(color_summary = FALSE)
 #' @export
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' # generate artificial data from the Signal Discrimination Model
+#' dat <- data.frame(y = rsdm(2000))
+#'
+#' # define formula
+#' ff <- bmmformula(c ~ 1, kappa ~ 1)
+#'
+#' # fit the model
+#' fit <- bmm(
+#'   formula = ff,
+#'   data = dat,
+#'   model = sdm(resp_error = "y"),
+#'   cores = 4,
+#'   backend = "cmdstanr"
+#' )
+#'
+#' # summary of the model
+#' summary(fit)
 summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE,  mc_se = FALSE, ..., backend = 'bmm') {
   object <- restructure(object)
   backend <- match.arg(backend, c('bmm', 'brms'))

@@ -58,8 +58,7 @@
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
 #' @keywords bmmodel
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # generate artificial data
 #' dat <- data.frame(y = rmixture2p(n=2000))
 #'
@@ -75,7 +74,6 @@
 #'            cores = 4,
 #'            iter = 500,
 #'            backend = 'cmdstanr')
-#' }
 #' @export
 mixture2p <- function(resp_error, ...) {
   call <- match.call()

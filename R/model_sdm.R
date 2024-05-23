@@ -50,7 +50,7 @@
 # automatically based on the information in the .model_sdm_simple(NA)$info
 
 #' @title `r .model_sdm()$name`
-#' @name SDM
+#' @name sdm
 #' @details see [the online article](https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html) for a detailed description of the model
 #'   and how to use it. `r model_info(.model_sdm())`
 #' @param resp_error The name of the variable in the dataset containing the
@@ -63,43 +63,28 @@
 #' @return An object of class `bmmodel`
 #' @export
 #' @keywords bmmodel
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # simulate data from the model
-#' library(bmm)
-#' library(brms)
 #' dat <- data.frame(y = rsdm(n = 1000, c = 4, kappa = 3))
 #'
 #' # specify formula
 #' ff <- bmf(c ~ 1,
 #'           kappa ~ 1)
 #'
-#' # specify prior
-#' prior <- prior(normal(1,2), class='Intercept', dpar='c')+
-#'    prior(normal(1,2), class='Intercept', dpar='kappa')
-#'
 #' # specify the model
 #' fit <- bmm(formula = ff,
 #'            data = dat,
 #'            model = sdm(resp_error = 'y'),
-#'            prior = prior,
 #'            cores = 4,
 #'            backend = 'cmdstanr')
-#'
-#' # extract coefficients and plot fit
-#' coef <- exp(brms::fixef(fit)[2:3,1])
-#' hist(dat$y, breaks=60, freq=F)
-#' x <- seq(-pi,pi,0.01)
-#' lines(x, dsdm(x, mu=0, c=coef['c_Intercept'],
-#'               kappa=coef['kappa_Intercept']), col='red')
-#' }
 sdm <- function(resp_error, version = "simple", ...) {
   call <- match.call()
   stop_missing_args()
   .model_sdm(resp_error = resp_error, version = version, call = call, ...)
 }
 
-#' @rdname SDM
+#' @rdname sdm
+#' @keywords deprecated
 #' @export
 sdmSimple <- function(resp_error, version = "simple", ...) {
   warning("The function `sdmSimple()` is deprecated. Please use `sdm()` instead.")
