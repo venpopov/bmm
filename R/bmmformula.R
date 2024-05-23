@@ -72,8 +72,6 @@
 #'   kappa ~ 0 + set_size + (0 + set_size | id)
 #' )
 #' identical(imm_formula, imm_formula2)
-#'
-#'
 bmmformula <- function(...){
   dots <- list(...)
   formula <- list()
@@ -169,7 +167,7 @@ bmf <- function(...) {
 #' @param data user supplied data
 #' @param formula user supplied formula
 #' @return the formula object
-#' @keywords internal, developer
+#' @keywords internal developer
 check_formula <- function(model, data, formula) {
   UseMethod('check_formula')
 }
@@ -220,7 +218,7 @@ check_formula.non_targets <- function(model, data, formula) {
 #' @param formula The `bmmformula` that should be converted to a `brmsformula`
 #' @return A `brmsformula` defining the response variables and the additional parameter
 #'   formulas for the specified `bmmodel`
-#' @keywords internal, developer
+#' @keywords internal developer
 #' @examples
 #'   model <- mixture2p(resp_error = "error")
 #'

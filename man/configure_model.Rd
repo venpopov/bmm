@@ -79,8 +79,10 @@ configure_model.mixture3p <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (thetant + log(inv_ss)) + ",
-               "(1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf(
+        "{theta_nts[i]} ~ {lure_idx[i]} * (thetant + log(inv_ss)) + ",
+        "(1 - {lure_idx[i]}) * (-100)"
+      ) +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
@@ -94,4 +96,4 @@ configure_model.mixture3p <- function(model, data, formula) {
 \dontshow{\}) # examplesIf}
 }
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

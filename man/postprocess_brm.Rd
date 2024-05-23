@@ -37,4 +37,4 @@ postprocessed_fit <- prostprocess_brm(fit)
 \dontshow{\}) # examplesIf}
 }
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

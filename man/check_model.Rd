@@ -21,4 +21,4 @@ In addition for validating the model, specific methods might add information
 to the model object based on the provided data and formula
 }
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

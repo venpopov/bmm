@@ -194,7 +194,7 @@ imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, 
 # deprecated calls for specific versions
 
 #' @rdname imm
-#' @keywords bmmodel, internal
+#' @keywords bmmodel internal
 #' @export
 IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...) {
   call <- match.call()
@@ -212,7 +212,7 @@ IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FAL
 
 
 #' @rdname imm
-#' @keywords bmmodel, internal
+#' @keywords bmmodel internal
 #' @export
 IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...) {
   call <- match.call()

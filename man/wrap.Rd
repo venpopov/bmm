@@ -26,9 +26,9 @@ function wraps such values, so that they occur in the circle
 \examples{
 x <- runif(1000, -pi, pi)
 y <- runif(1000, -pi, pi)
-diff <- x-y
+diff <- x - y
 hist(diff)
-wrapped_diff <- wrap(x-y)
+wrapped_diff <- wrap(x - y)
 hist(wrapped_diff)
 
 }

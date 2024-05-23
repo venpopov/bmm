@@ -98,7 +98,6 @@
 #'            model = sdm(resp_error = "y"),
 #'            cores = 4,
 #'            backend = 'cmdstanr')
-#'
 bmm <- function(formula, data, model,
                 prior = NULL,
                 sort_data = getOption('bmm.sort_data', "check"),

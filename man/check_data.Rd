@@ -33,12 +33,5 @@ this corresponds to the following order of check_data.* functions:
 check_data() -> check_data.circular(), check_data.non_targets() the output of the
 final function is returned to bmm().
 }
-\examples{
-data <- oberauer_lin_2017
-model <- sdmSimple(resp_error = "dev_rad")
-formula <- bmf(c ~ 1, kappa ~ 1)
-checked_data <- check_data(model, data, formula)
-
-}
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

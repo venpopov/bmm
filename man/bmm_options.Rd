@@ -84,4 +84,5 @@ bmm_options(reset_options = TRUE)
 old_op <- bmm_options(sort_data = TRUE, parallel = TRUE)
 on.exit(bmm_options(old_op))
 
+bmm_options(reset_options = TRUE)
 }

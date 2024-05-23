@@ -110,7 +110,6 @@ r <- rsdm(10000, mu = 0, c = 3.1, kappa = 5)
 d <- dsdm(x, mu = 0, c = 3.1, kappa = 5)
 hist(r, breaks=60, freq=FALSE)
 lines(x,d,type="l", col="red")
-
 }
 \references{
 Oberauer, K. (2023). Measurement models for visual working

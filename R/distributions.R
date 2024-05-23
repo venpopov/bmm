@@ -78,7 +78,6 @@
 #' d <- dsdm(x, mu = 0, c = 3.1, kappa = 5)
 #' hist(r, breaks=60, freq=FALSE)
 #' lines(x,d,type="l", col="red")
-#'
 dsdm <- function(x, mu = 0, c = 3, kappa = 3.5, log = FALSE,
                  parametrization = "sqrtexp") {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")

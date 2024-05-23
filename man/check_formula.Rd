@@ -20,4 +20,4 @@ the formula object
 Generic S3 method for checking if the formula is valid for the specified model
 }
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

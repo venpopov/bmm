@@ -244,7 +244,7 @@ included in the model formula. The parameter is:
 }
 }
 \examples{
-\dontrun{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # load data
 data <- oberauer_lin_2017
 
@@ -296,6 +296,8 @@ fit <- bmm(formula = ff,
            model = model3,
            cores = 4,
            backend = 'cmdstanr')
-}
+\dontshow{\}) # examplesIf}
 }
 \keyword{bmmodel}
+\keyword{deprecated}
+\keyword{internal}

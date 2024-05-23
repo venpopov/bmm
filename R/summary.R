@@ -8,7 +8,7 @@
 #' options(bmm.color_summary = FALSE) or bmm_options(color_summary = FALSE)
 #' @export
 #' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
-#' #' # generate artificial data from the Signal Discrimination Model
+#' # generate artificial data from the Signal Discrimination Model
 #' dat <- data.frame(y = rsdm(2000))
 #'
 #' # define formula
@@ -25,7 +25,6 @@
 #'
 #' # summary of the model
 #' summary(fit)
-#'
 summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE,  mc_se = FALSE, ..., backend = 'bmm') {
   object <- restructure(object)
   backend <- match.arg(backend, c('bmm', 'brms'))

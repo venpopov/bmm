@@ -44,7 +44,8 @@ configure_prior.mixture3p <- function(model, data, formula, user_prior, ...) {
     prior <- prior + brms::prior_("constant(-100)",
       class = "b",
       coef = paste0(set_size_var, 1),
-      nlpar = "thetant")
+      nlpar = "thetant"
+    )
   }
   # check if there is a random effect on theetant that include set_size as predictor
   bterms <- brms::brmsterms(formula$pforms$thetant)
@@ -60,15 +61,15 @@ configure_prior.mixture3p <- function(model, data, formula, user_prior, ...) {
           class = "sd",
           coef = paste0(set_size_var, 1),
           group = group,
-          nlpar = "thetant")
+          nlpar = "thetant"
+        )
       }
     }
   }
 
   prior
 }
-
 \dontshow{\}) # examplesIf}
 }
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}
