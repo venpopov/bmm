@@ -25,7 +25,7 @@
 #'   attr() function.
 #' @export
 #'
-#' @keywords internal, developer
+#' @keywords internal developer
 #'
 #' @examples
 #' data <- oberauer_lin_2017

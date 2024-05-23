@@ -52,6 +52,6 @@ fit <- bmm(formula = ff,
            backend = 'cmdstanr')
 
 # update the model
-fit <- update(fit, newdata = data.frame(y = rsdm(2000, kappa = 5))
+fit <- update(fit, newdata = data.frame(y = rsdm(2000, kappa = 5)))
 \dontshow{\}) # examplesIf}
 }

@@ -147,3 +147,4 @@ https://doi.org/10.31234/osf.io/umt57
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[brms:brm]{brms::brm()}}, \link[=default_prior.bmmformula]{default_prior()}, \code{\link[=bmmformula]{bmmformula()}}, \link[=stancode.bmmformula]{stancode()}, \link[=standata.bmmformula]{standata()}
 }
+\keyword{deprecated}

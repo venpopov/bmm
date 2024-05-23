@@ -143,6 +143,7 @@ bmm <- function(formula, data, model,
 
 
 #' @rdname bmm
+#' @keywords deprecated
 #' @export
 fit_model <- function(formula, data, model,
                       prior = NULL,

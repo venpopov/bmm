@@ -35,7 +35,7 @@
 #'            backend = 'cmdstanr')
 #' 
 #' # update the model
-#' fit <- update(fit, newdata = data.frame(y = rsdm(2000, kappa = 5))
+#' fit <- update(fit, newdata = data.frame(y = rsdm(2000, kappa = 5)))
 #' 
 update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ...) {
   dots <- list(...)

@@ -300,4 +300,3 @@ fit <- bmm(formula = ff,
 }
 \keyword{bmmodel}
 \keyword{deprecated}
-\keyword{internal}
