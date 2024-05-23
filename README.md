@@ -67,10 +67,10 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, version) 
-#> -  mixture2p(resp_error) 
-#> -  mixture3p(resp_error, nt_features, set_size, regex) 
-#> -  sdm(resp_error, version) 
+#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, links, version) 
+#> -  mixture2p(resp_error, links) 
+#> -  mixture3p(resp_error, nt_features, set_size, regex, links) 
+#> -  sdm(resp_error, links, version) 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?imm
 ```
@@ -293,7 +293,7 @@ Should be interested in contributing a model to the `bmm` package, you
 should first look into the [Developer
 Notes](https://venpopov.github.io/bmm/dev/dev-notes/index.html) as well
 as the [Contributor
-Guidelines](https://github.com/venpopov/bmm/tree/develop/.github/CONTRIBUTING.md).
+Guidelines](https://github.com/venpopov/bmm/blob/develop/.github/CONTRIBUTING.md).
 These give a more in depth description of the package architecture, the
 steps necessary to add your own model to the package, and how
 contributions will be acknowledged.
