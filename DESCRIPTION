@@ -10,7 +10,7 @@ Authors@R: c(
            comment = "Creator of 'brms', code portions of which are used in 'bmm'.")
   )
 Description: Fit computational and measurement models using full Bayesian
-    inference.  The package provides a simple and accessible interface by
+    inference. The package provides a simple and accessible interface by
     translating complex domain-specific models into 'brms' syntax, a
     powerful and flexible framework for fitting Bayesian regression models
     using 'Stan'. The package is designed so that users can easily apply
