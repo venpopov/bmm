@@ -1,6 +1,6 @@
 Package: bmm
 Title: Easy and Accessible Bayesian Measurement Models Using 'brms'
-Version: 0.5.3.9000
+Version: 1.0.0
 Authors@R: c(
     person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-8073-4199")),
@@ -50,7 +50,7 @@ Suggests:
     tidybayes,
     usethis,
     waldo
-Additional_repositories:https://mc-stan.org/r-packages/
+Additional_repositories: https://mc-stan.org/r-packages/
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
