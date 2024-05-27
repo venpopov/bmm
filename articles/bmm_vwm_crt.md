@@ -3,7 +3,7 @@ title: "Continuous reproduction tasks (CRT)"
 output: 
   bookdown::html_document2:
     keep_md: true
-bibliography: ../REFERENCES.bib
+bibliography: REFERENCES.bib
 pkgdown:
   as_is: true
 ---
@@ -29,7 +29,7 @@ In research on visual working memory participants are often asked to remember an
 Most often the features used in these tasks are colors sampled from a color wheel [@Wilken_Ma_2004] or continuous orientations of a bar or a triangle [@Bays_Gorgoraptis_Wee_Marshall_Husain_2011]. The set of to-be-remembered objects typically consists of one up to eight objects spatially distributed over the screen. Thus, participants must associate the to-be-remembered features (e.g. color or orientation) with the spatial locations they are presented at. The precision of the representation of an object’s feature in visual working memory is measured as the angular deviation from the true feature presented at encoding.
 
 <div class="figure">
-<img src="vwm-crt.png" alt="A typical continuous reproduction task" width="450" />
+<img src="assets/vwm-crt.png" alt="A typical continuous reproduction task" width="450" />
 <p class="caption">(\#fig:vwmcrt)A typical continuous reproduction task</p>
 </div>
 
@@ -47,19 +47,19 @@ The `bmm` package implements several measurement models for analyzing continuous
 
 #### The two-parameter mixture model [@Zhang_Luck_2008] {.unnumbered}
 
-  - see `?mixture2p` and `vignette("bmm_mixture_models")`
+  - see `?mixture2p` and [the mixture models article](https://venpopov.github.io/bmm/articles/bmm_mixture_models.html)
 
 #### The three-parameter mixture model [@Bays_Catalao_Husain_2009] {.unnumbered}
 
-  - see `?mixture3p` and `vignette("bmm_mixture_models")`
+  - see `?mixture3p` and [the mixture models article](https://venpopov.github.io/bmm/articles/bmm_mixture_models.html)
  
 #### The Interference Measurement Model [@Oberauer_Lin_2017]  {.unnumbered}
 
-  - see `?imm` and `vignette("bmm_imm")`
+  - see `?imm` and [the IMM article](https://venpopov.github.io/bmm/articles/bmm_imm.html)
  
 #### The Signal Discrimination Model (SDM) by [@Oberauer_2023]  {.unnumbered}
 
-  - see `?sdm` and `vignette("bmm_sdm_simple")`
+  - see `?sdm` and [the SDM article](https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html)
     
     
 # References

@@ -4,6 +4,9 @@
     <loc>https://venpopov.github.io/bmm/404.html</loc>
   </url>
   <url>
+    <loc>https://venpopov.github.io/bmm/CONTRIBUTING.html</loc>
+  </url>
+  <url>
     <loc>https://venpopov.github.io/bmm/LICENSE.html</loc>
   </url>
   <url>
@@ -37,13 +40,7 @@
     <loc>https://venpopov.github.io/bmm/news/index.html</loc>
   </url>
   <url>
-    <loc>https://venpopov.github.io/bmm/pull_request_template.html</loc>
-  </url>
-  <url>
     <loc>https://venpopov.github.io/bmm/reference/IMMdist.html</loc>
-  </url>
-  <url>
-    <loc>https://venpopov.github.io/bmm/reference/SDM.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/SDMdist.html</loc>
@@ -83,9 +80,6 @@
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/configure_model.html</loc>
-  </url>
-  <url>
-    <loc>https://venpopov.github.io/bmm/reference/configure_options.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/configure_prior.html</loc>
@@ -134,6 +128,9 @@
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/revert_postprocess_brm.html</loc>
+  </url>
+  <url>
+    <loc>https://venpopov.github.io/bmm/reference/sdm.html</loc>
   </url>
   <url>
     <loc>https://venpopov.github.io/bmm/reference/softmax.html</loc>
