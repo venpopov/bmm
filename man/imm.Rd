@@ -13,32 +13,15 @@ imm(
   nt_distances,
   set_size,
   regex = FALSE,
-  links = NULL,
   version = "full",
   ...
 )
 
-IMMfull(
-  resp_error,
-  nt_features,
-  nt_distances,
-  set_size,
-  regex = FALSE,
-  links = NULL,
-  ...
-)
+IMMfull(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...)
 
-IMMbsc(
-  resp_error,
-  nt_features,
-  nt_distances,
-  set_size,
-  regex = FALSE,
-  links = NULL,
-  ...
-)
+IMMbsc(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...)
 
-IMMabc(resp_error, nt_features, set_size, regex = FALSE, links = NULL, ...)
+IMMabc(resp_error, nt_features, set_size, regex = FALSE, ...)
 }
 \arguments{
 \item{resp_error}{The name of the variable in the provided dataset containing
@@ -64,9 +47,6 @@ fixed.}
 \item{regex}{Logical. If TRUE, the \code{nt_features} and \code{nt_distances} arguments
 are interpreted as a regular expression to match the non-target feature
 columns in the dataset.}
-
-\item{links}{A list of links for the parameters. \emph{Currently does not affect
-the model fits, but it will in the future.}}
 
 \item{version}{Character. The version of the IMM model to use. Can be one of
 \code{full}, \code{bsc}, or \code{abc}. The default is \code{full}.}
@@ -118,7 +98,7 @@ Please use \code{imm(version = 'full')}, \code{imm(version = 'bsc')}, or \code{i
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item mu1 = tan_half; kappa = log; a = identity; c = identity; s = log
+\item mu1 = tan_half; kappa = log; a = log; c = log; s = log
 }
 \item \strong{Default priors:}
 \itemize{
@@ -176,7 +156,7 @@ Please use \code{imm(version = 'full')}, \code{imm(version = 'bsc')}, or \code{i
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item mu1 = tan_half; kappa = log; c = identity; s = log
+\item mu1 = tan_half; kappa = log; c = log; s = log
 }
 \item \strong{Default priors:}
 \itemize{
@@ -229,7 +209,7 @@ Please use \code{imm(version = 'full')}, \code{imm(version = 'bsc')}, or \code{i
 }
 \item \strong{Default parameter links:}
 \itemize{
-\item mu1 = tan_half; kappa = log; a = identity; c = identity
+\item mu1 = tan_half; kappa = log; a = log; c = log
 }
 \item \strong{Default priors:}
 \itemize{
@@ -264,7 +244,7 @@ included in the model formula. The parameter is:
 }
 }
 \examples{
-\dontrun{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # load data
 data <- oberauer_lin_2017
 
@@ -316,6 +296,7 @@ fit <- bmm(formula = ff,
            model = model3,
            cores = 4,
            backend = 'cmdstanr')
-}
+\dontshow{\}) # examplesIf}
 }
 \keyword{bmmodel}
+\keyword{deprecated}

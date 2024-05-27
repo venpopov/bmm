@@ -28,7 +28,7 @@ reference:
  - title: "About bmm"
    desc: "These pages provide a summary of the functionality available in bmm"
  - contents:
-   - "bmm"
+   - "bmm-package"
    - "supported_models"
    - "bmm_options"
  - title: "Fitting models"
@@ -62,6 +62,10 @@ reference:
    desc: "Functions to assist in developing new models"
  - contents:
    - has_keyword("developer")
+ - title: "Deprecated"
+   desc: "Deprecated functions (will be removed in future versions)"
+ - contents:
+   - has_keyword("deprecated")
 
 
 articles:
@@ -69,13 +73,13 @@ articles:
    desc: Fitting models to continuous reproduction tasks
    contents:
     - articles/bmm_vwm_crt
-    - bmm_mixture_models
-    - bmm_imm
-    - bmm_sdm_simple
+    - articles/bmm_mixture_models
+    - articles/bmm_imm
+    - articles/bmm_sdm_simple
 
  - title: Using the bmm package
    desc: >
       Guides to using various features of the **bmm** package
    contents:
-    - bmm_bmmformula
-    - bmm_extract_info
+    - articles/bmm_bmmformula
+    - articles/bmm_extract_info

@@ -68,8 +68,9 @@ softmaxinv <- function(p, lambda = 1) {
 #'   parent.frame() the changes would apply to the environment of the function
 #'   that called it. In our case, this is the environment of the bmm()
 #'   function. Changes will not be propagated to the user environment.
-#' @keywords internal
-#' @returns A list of options to pass to brm()
+#' @keywords internal developer
+#' @noRd
+#' @return A list of options to pass to brm()
 configure_options <- function(opts, env = parent.frame()) {
   if (isTRUE(opts$parallel)) {
     cores <- parallel::detectCores()
@@ -78,7 +79,7 @@ configure_options <- function(opts, env = parent.frame()) {
       chains <- 4
     }
   } else {
-    cores = opts$cores
+    cores = opts$cores %||% getOption('mc.cores', 1)
   }
   if (not_in_list('silent', opts)) {
     opts$silent <- getOption('bmm.silent', 1)
@@ -92,7 +93,7 @@ configure_options <- function(opts, env = parent.frame()) {
     list(
       mc.cores = cores,
       bmm.silent = opts$silent,
-      bmm.sort_data = opts$sort_data
+      bmm.sort_data = opts$sort_data %||% getOption('bmm.sort_data', 'check')
     ),
     .local_envir = env)
 
@@ -202,13 +203,14 @@ read_lines2 <- function(con) {
 
 
 # for testing purposes
-install_and_load_bmm_version <- function(version) {
+install_and_load_bmm_version <- function(version, path) {
+  stopif(missing(path))
   if ("package:bmm" %in% search()) {
     detach("package:bmm", unload = TRUE)
   }
-  path <- paste0(.libPaths()[1], "/bmm-", version)
+  path <- file.path(path, paste0("bmm-", version))
   if (!dir.exists(path) || length(list.files(path)) == 0 ||
-      length(list.files(paste0(path, "/bmm"))) == 0) {
+    length(list.files(file.path(path, "bmm"))) == 0) {
     dir.create(path)
     remotes::install_github(paste0("venpopov/bmm@", version), lib = path)
   }
@@ -228,6 +230,14 @@ install_and_load_bmm_version <- function(version) {
 #'  - "time_mean": A named numeric vector with the mean sampling time
 #' @keywords extract_info
 #' @export
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' fit <- bmm(
+#'   formula = bmmformula(c ~ 1, kappa ~ 1),
+#'   data = data.frame(y = rsdm(1000)),
+#'   model = sdm(resp_error = "y")
+#' )
+#'
+#' fit_info(fit, "time")
 fit_info <- function(fit, what) {
   UseMethod("fit_info")
 }
@@ -456,6 +466,8 @@ identical.formula <- function(x, y, ...) {
 #'  printed in color. **Default: TRUE**
 #' @param reset_options logical. If TRUE, the options will be reset to their
 #'   default values **Default: FALSE**
+#' @param file_refit logical. If TRUE, bmm() will refit the model even if the
+#'  file argument is specified. **Default: FALSE**
 #' @details The `bmm_options` function is used to view or change the current bmm
 #'   options. If no arguments are provided, the function will return the current
 #'   options. If arguments are provided, the function will change the options
@@ -491,9 +503,10 @@ identical.formula <- function(x, y, ...) {
 #' old_op <- bmm_options(sort_data = TRUE, parallel = TRUE)
 #' on.exit(bmm_options(old_op))
 #'
+#' bmm_options(reset_options = TRUE)
 #' @export
 bmm_options <- function(sort_data, parallel, default_priors, silent,
-                        color_summary, reset_options = FALSE) {
+                        color_summary, file_refit, reset_options = FALSE) {
   opts <- ls()
   stopif(!missing(sort_data) && sort_data != "check" && !is.logical(sort_data),
          "sort_data must be one of TRUE, FALSE, or 'check'")
@@ -505,6 +518,8 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
          "silent must be one of 0, 1, or 2")
   stopif(!missing(color_summary) && !is.logical(color_summary),
          "color_summary must be a logical value")
+  stopif(!missing(file_refit) && !is.logical(file_refit),
+         "file_refit must be a logical value")
 
   # set default options if function is called for the first time or if reset_options is TRUE
   if (reset_options) {
@@ -512,7 +527,8 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
             bmm.parallel = FALSE,
             bmm.default_priors = TRUE,
             bmm.silent = 1,
-            bmm.color_summary = TRUE)
+            bmm.color_summary = TRUE,
+            bmm.file_refit = FALSE)
   }
 
   # change options if arguments are provided. get argument name and loop over non-missing arguments
@@ -529,6 +545,7 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
                                  "\n  parallel = ", getOption("bmm.parallel"),
                                  "\n  default_priors = ", getOption("bmm.default_priors"),
                                  "\n  silent = ", getOption("bmm.silent"),
+                                 "\n  file_refit = ", getOption("bmm.file_refit"),
                                  "\n  color_summary = ", getOption("bmm.color_summary"), "\n")),
            "For more information on these options or how to change them, see help(bmm_options).\n")
   invisible(old_op)
@@ -661,4 +678,52 @@ deprecated_args <- function(...) {
   warnif("parallel" %in% names(dots),
          'The "parallel" argument is deprecated. Please use cores instead.
          See `help("brm")` for more information.')
+}
+
+
+read_bmmfit <- function(file, file_refit) {
+  file <- check_rds_file(file)
+  if (is.null(file) || file_refit) {
+    return(NULL)
+  }
+  dir <- dirname(file)
+  dir <- try(fs::dir_create(dir))
+  stopif(is_try_error(dir), "Cannot create directory for file.")
+
+  out <- suppressWarnings(try(readRDS(file), silent = TRUE))
+  if (!is_try_error(out)) {
+    if (!is_bmmfit(out)) {
+      stop2("Object loaded via 'file' is not of class 'bmmfit'.")
+    }
+    out$file <- file
+  } else {
+    out <- NULL
+  }
+  out
+}
+
+save_bmmfit <- function(x, file, compress) {
+  file <- check_rds_file(file)
+  x$file <- file
+  if (!is.null(file)) {
+    saveRDS(x, file, compress = compress)
+  }
+  x
+}
+
+check_rds_file <- function(file) {
+  if (is.null(file)) {
+    return(NULL)
+  }
+  stopif(!is.character(file), "'file' must be a character string.")
+  stopif(length(file) > 1, "'file' must be a single character string.")
+  ext <- fs::path_ext(file)
+  if (ext != "rds") {
+    file <- paste0(file, ".rds")
+  }
+  file
+}
+
+`%||%` <- function(a, b) {
+  if (!is.null(a)) a else b
 }

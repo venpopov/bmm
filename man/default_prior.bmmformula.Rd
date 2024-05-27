@@ -2,6 +2,7 @@
 % Please edit documentation in R/helpers-prior.R
 \name{default_prior.bmmformula}
 \alias{default_prior.bmmformula}
+\alias{default_prior}
 \title{Get Default priors for Measurement Models specified in BMM}
 \usage{
 \method{default_prior}{bmmformula}(object, data, model, formula = object, ...)
@@ -45,8 +46,9 @@ priors in \code{brms}, as we use domain knowledge to specify the priors.
 }
 \examples{
 default_prior(bmf(c ~ 1, kappa ~ 1),
-              data = oberauer_lin_2017,
-              model = sdm(resp_error = 'dev_rad'))
+  data = oberauer_lin_2017,
+  model = sdm(resp_error = "dev_rad")
+)
 }
 \seealso{
 \code{\link[=supported_models]{supported_models()}}, \code{\link[brms:default_prior]{brms::default_prior()}}

@@ -72,8 +72,6 @@
 #'   kappa ~ 0 + set_size + (0 + set_size | id)
 #' )
 #' identical(imm_formula, imm_formula2)
-#'
-#'
 bmmformula <- function(...){
   dots <- list(...)
   formula <- list()
@@ -164,12 +162,12 @@ bmf <- function(...) {
 }
 
 
-#' checks if the formula is valid for the specified model
+#' Generic S3 method for checking if the formula is valid for the specified model
 #' @param model a model list object returned from check_model()
 #' @param data user supplied data
 #' @param formula user supplied formula
 #' @return the formula object
-#' @keywords internal, developer
+#' @keywords internal developer
 check_formula <- function(model, data, formula) {
   UseMethod('check_formula')
 }
@@ -218,9 +216,9 @@ check_formula.non_targets <- function(model, data, formula) {
 #'  appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
 #' @param model The model object defining one of the supported `bmmodels``
 #' @param formula The `bmmformula` that should be converted to a `brmsformula`
-#' @returns A `brmsformula` defining the response variables and the additional parameter
+#' @return A `brmsformula` defining the response variables and the additional parameter
 #'   formulas for the specified `bmmodel`
-#' @keywords internal, developer
+#' @keywords internal developer
 #' @examples
 #'   model <- mixture2p(resp_error = "error")
 #'
@@ -335,8 +333,17 @@ rhs_vars.bmmformula <- function(formula, collapse = TRUE, ...) {
 
 #' @export
 rhs_vars.formula <- function(formula, ...) {
-  all_vars <- all.vars(formula)
-  all_vars[-1]
+  all.vars(f_rhs(formula))
+}
+
+
+f_rhs <- function(formula) {
+  stopifnot(is_formula(formula))
+  if (length(formula) == 3) {
+    formula[[3]]
+  } else {
+    formula[[2]]
+  }
 }
 
 # adds an attribute nl to each component of the the formula indicating if the

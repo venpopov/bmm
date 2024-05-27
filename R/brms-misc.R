@@ -1,3 +1,7 @@
+# All code in this file was written by Paul-Christian Bürkner
+# for the 'brms' package and is licensed under the GPL-2 license
+# Copyright: Paul-Christian Bürkner
+
 # check if x is a try-error resulting from try()
 is_try_error <- function(x) {
   inherits(x, "try-error")

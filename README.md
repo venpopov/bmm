@@ -67,19 +67,21 @@ view the latest list of supported models by running:
 bmm::supported_models()
 #> The following models are supported:
 #> 
-#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, links, version) 
-#> -  mixture2p(resp_error, links) 
-#> -  mixture3p(resp_error, nt_features, set_size, regex, links) 
-#> -  sdm(resp_error, links, version) 
+#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, version) 
+#> -  mixture2p(resp_error) 
+#> -  mixture3p(resp_error, nt_features, set_size, regex) 
+#> -  sdm(resp_error, version) 
 #> 
 #> Type  ?modelname  to get information about a specific model, e.g.  ?imm
 ```
 
 ## How to install bmm
 
-Currently, we are working on getting the package ready to be submitted
-to CRAN. Until then, you can install the latest version of the package
-from GitHub.
+You can install the latest version of the `bmm` package from CRAN:
+
+``` r
+install.packages("bmm")
+```
 
 Because `bmm` is based on `brms` and `stan` it requires a working C++
 compiler. If you have not used `brms` before, you will need to first
@@ -101,29 +103,12 @@ this step.
   [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
   recommend using `cmdstanr`.
 - Install [brms](https://paul-buerkner.github.io/brms/#installation)
-- Install `bmm` as described next
 
 </details>
 
-If you are already using `brms`, you are good to go and can install the
-package as described in one of the options below:
+</br> Alternatively, you can install the development version of the
+package or a specific version of the package from GitHub:
 
-<details open>
-<summary>
-<b>Install the latest beta release of bmm</b>
-</summary>
-
-</br>
-
-``` r
-install.packages('bmm', repos = c('https://popov-lab.r-universe.dev'))
-```
-
-This does not install the vignettes, which take a long time to build,
-but they are all available on the [bmm
-website](https://venpopov.github.io/bmm/).
-
-</details>
 <details>
 <summary>
 <b>Install the latest development version of bmm</b>
@@ -187,7 +172,8 @@ example, we are using the `oberauer_lin_2017` data that is provided with
 the package and we will show how to fit the Interference Measurement
 Model to this data. If you want a detailed description of this model and
 and in depth explanation of the parameters estimated in the model,
-please have a look at `vignette("bmm_imm")`.
+please have a look at [the IMM
+article](https://venpopov.github.io/bmm/articles/bmm_imm.html).
 
 ``` r
 library(bmm)
@@ -237,27 +223,31 @@ probability density function of the data for the Interference
 Measurement model using the `dimm` function. In similar fashion the
 random generation function included for each model, generates random
 data based on a set of data generating parameters. For the IMM, you can
-use `rimm` to generate data given a set of parameters. Plotting the
-random data against the density illustrates that the data follows the
-theoretically implied density.
+use `rimm` to generate data given a set of parameters. Here is an
+example of how to use these functions. We are ploting a histogram of
+randomly generated data from the IMM with a setsize of four, and
+overlaying the probability density function of the model:
 
 ``` r
+library(bmm)
 library(ggplot2)
 
-simData <- data.frame(
-  x = bmm::rimm(n = 500,
-                mu = c(0,-1.5,2.5,1),
-                dist = c(0, 2, 0.3, 1),
-                c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)
+resp <- rimm(
+  n = 1000,
+  mu = c(0, -1.5, 2.5, 1),
+  dist = c(0, 2, 0.3, 1),
+  c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10
 )
 
-ggplot(data = simData, aes(x = x)) +
-  geom_histogram(aes(y = after_stat(density))) +
-  geom_function(fun = bmm::dimm,
-                args = list(mu = c(0,-1.5,2.5,1),
-                            dist = c(0, 2, 0.3, 1),
-                            c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10)) +
-  scale_x_continuous(limits = c(-pi,pi))
+hist(resp, freq = FALSE, breaks = 60)
+curve(
+  dimm(x,
+    mu = c(0, -1.5, 2.5, 1), 
+    dist = c(0, 2, 0.3, 1), 
+    c = 1.5, a = 0.3, b = 0, s = 2, kappa = 10
+  ),
+  from = -pi, to = pi, add = TRUE
+)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="400" />
@@ -301,6 +291,9 @@ This process is illustrated in the Figure below:
 
 Should be interested in contributing a model to the `bmm` package, you
 should first look into the [Developer
-Notes](https://venpopov.github.io/bmm/dev/dev-notes/index.html). These
-give a more in depth description of the package architecture and the
-steps necessary to add your own model to the package.
+Notes](https://venpopov.github.io/bmm/dev/dev-notes/index.html) as well
+as the [Contributor
+Guidelines](https://github.com/venpopov/bmm/blob/develop/.github/CONTRIBUTING.md).
+These give a more in depth description of the package architecture, the
+steps necessary to add your own model to the package, and how
+contributions will be acknowledged.

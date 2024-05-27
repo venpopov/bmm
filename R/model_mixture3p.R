@@ -7,7 +7,7 @@
 
   out <- structure(
     list(
-      resp_vars = nlist(resp_error),
+      resp_vars = nlist(resp_error), 
       other_vars = nlist(nt_features, set_size),
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -51,7 +51,7 @@
     # attributes
     regex = regex,
     regex_vars = c('nt_features'),
-    class =  c("bmmodel", "vwm", "non_targets", "mixture3p"),
+    class =  c("bmmodel", "circular", "non_targets", "mixture3p"),
     call = call
   )
   out$links[names(links)] <- links
@@ -76,14 +76,11 @@
 #'   fixed.
 #' @param regex Logical. If TRUE, the `nt_features` argument is interpreted as
 #'  a regular expression to match the non-target feature columns in the dataset.
-#' @param links A list of links for the parameters. *Currently does not affect
-#'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
 #' @keywords bmmodel
 #' @export
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # generate artificial data from the Bays et al (2009) 3-parameter mixture model
 #' dat <- data.frame(
 #'   y = rmixture3p(n=2000, mu = c(0,1,-1.5,2)),
@@ -121,9 +118,7 @@
 #'            cores = 4,
 #'            iter = 500,
 #'            backend = 'cmdstanr')
-#' }
-mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE,
-                      links = NULL, ...) {
+mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE, ...) {
   call <- match.call()
   dots <- list(...)
   if ("setsize" %in% names(dots)) {
@@ -132,8 +127,7 @@ mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE,
   }
   stop_missing_args()
   .model_mixture3p(resp_error = resp_error, nt_features = nt_features,
-                   set_size = set_size, regex = regex, links = links,
-                   call = call, ...)
+                   set_size = set_size, regex = regex, call = call, ...)
 }
 
 #############################################################################!
@@ -184,15 +178,36 @@ configure_model.mixture3p <- function(model, data, formula) {
 #' @export
 configure_prior.mixture3p <- function(model, data, formula, user_prior, ...) {
   # if there is set_size 1 in the data, set constant prior over thetant for set_size1
+  prior <- brms::empty_prior()
   set_size_var <- model$other_vars$set_size
+  prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
+
   thetant_preds <- rhs_vars(formula$pforms$thetant)
-  prior <- NULL
-  if (any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]]) &&
-      set_size_var %in% thetant_preds) {
-    prior <- brms::prior_("constant(-100)",
-                          class = "b",
-                          coef = paste0(set_size_var, 1),
-                          nlpar = "thetant")
+
+  if (prior_cond && set_size_var %in% thetant_preds) {
+    prior <- prior + brms::prior_("constant(-100)",
+                                  class = "b",
+                                  coef = paste0(set_size_var, 1),
+                                  nlpar = "thetant")
   }
+
+  # check if there is a random effect on theetant that include set_size as predictor
+  bterms <- brms::brmsterms(formula$pforms$thetant)
+  re_terms <- bterms$dpars$mu$re
+  if (!is.null(re_terms)) {
+    for (i in 1:nrow(re_terms)) {
+      group <- re_terms$group[[i]]
+      form <- re_terms$form[[i]]
+      thetant_preds <- rhs_vars(form)
+      if (prior_cond && set_size_var %in% thetant_preds) {
+        prior <- prior + brms::prior_("constant(1e-8)",
+                                      class = "sd",
+                                      coef = paste0(set_size_var, 1),
+                                      group = group,
+                                      nlpar = "thetant")
+      }
+    }
+  }
+
   prior
 }
