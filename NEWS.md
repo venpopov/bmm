@@ -1,3 +1,5 @@
+# bmm (development version)
+
 # bmm 1.0.0
 
 First version of the package on published on CRAN!
