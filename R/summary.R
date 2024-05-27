@@ -6,6 +6,10 @@
 #' @seealso \code{\link{summary.brmsfit}}
 #' @note You can turn off the color output by setting the option
 #' options(bmm.color_summary = FALSE) or bmm_options(color_summary = FALSE)
+#'
+#' @return A list of class \code{bmmsummary} containing the summary of the model's
+#'  parameters, the model formula, the model, and the data used to fit the model.
+#'
 #' @export
 #' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # generate artificial data from the Signal Discrimination Model

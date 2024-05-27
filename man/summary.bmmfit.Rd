@@ -37,6 +37,10 @@ caused by the MCMC sampling should be shown in the summary. Defaults to
 \item{backend}{Choose whether to display the \emph{bmm} summary method (default),
 or to display the \emph{brms} summary method.}
 }
+\value{
+A list of class \code{bmmsummary} containing the summary of the model's
+parameters, the model formula, the model, and the data used to fit the model.
+}
 \description{
 Create a summary of a fitted model represented by a \code{bmmfit} object
 }

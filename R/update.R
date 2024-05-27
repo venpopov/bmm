@@ -11,6 +11,7 @@
 #'   is necessary. Setting it to FALSE will cause all Stan code changing
 #'   arguments to be ignored.
 #' @param ... Further arguments passed to [brms::update.brmsfit()]
+#' @return An updated `bmmfit` object refit to the new data and/or formula
 #' @details When updating a brmsfit created with the cmdstanr backend in a
 #'   different R session, a recompilation will be triggered because by default,
 #'   cmdstanr writes the model executable to a temporary directory. To avoid

@@ -1,6 +1,6 @@
 Package: bmm
 Title: Easy and Accessible Bayesian Measurement Models Using 'brms'
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-8073-4199")),
@@ -16,6 +16,7 @@ Description: Fit computational and measurement models using full Bayesian
     using 'Stan'. The package is designed so that users can easily apply
     state-of-the-art models in various research fields, and so that
     researchers can use it as a new model development framework.
+    References: Frischkorn and Popov (2023) <doi:10.31234/osf.io/umt57>.
 License: GPL-2
 URL: https://github.com/venpopov/bmm, https://venpopov.github.io/bmm/
 BugReports: https://github.com/venpopov/bmm/issues
