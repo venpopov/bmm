@@ -226,6 +226,9 @@ set_default_prior <- function(model, data, formula) {
 #' @param user_prior A `brmsprior` object given by the user as an argument to
 #'  bmm()
 #' @param ... Additional arguments passed to the method
+#'
+#' @return A `brmsprior` object containing the default priors for the model
+#'
 #' @export
 #'
 #' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))

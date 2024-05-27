@@ -203,13 +203,14 @@ read_lines2 <- function(con) {
 
 
 # for testing purposes
-install_and_load_bmm_version <- function(version) {
+install_and_load_bmm_version <- function(version, path) {
+  stopif(missing(path))
   if ("package:bmm" %in% search()) {
     detach("package:bmm", unload = TRUE)
   }
-  path <- paste0(.libPaths()[1], "/bmm-", version)
+  path <- file.path(path, paste0("bmm-", version))
   if (!dir.exists(path) || length(list.files(path)) == 0 ||
-    length(list.files(paste0(path, "/bmm"))) == 0) {
+    length(list.files(file.path(path, "bmm"))) == 0) {
     dir.create(path)
     remotes::install_github(paste0("venpopov/bmm@", version), lib = path)
   }

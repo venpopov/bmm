@@ -21,6 +21,9 @@ arguments to be ignored.}
 
 \item{...}{Further arguments passed to \code{\link[brms:update.brmsfit]{brms::update.brmsfit()}}}
 }
+\value{
+An updated \code{bmmfit} object refit to the new data and/or formula
+}
 \description{
 Update an existing bmm mode. This function calls
 \code{\link[brms:update.brmsfit]{brms::update.brmsfit()}}, but it applies the necessary bmm postprocessing

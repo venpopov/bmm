@@ -18,6 +18,9 @@ bmm()}
 
 \item{...}{Additional arguments passed to the method}
 }
+\value{
+A \code{brmsprior} object containing the default priors for the model
+}
 \description{
 Called by bmm() to automatically construct the priors for a given
 model, data and formula, and combine it with the prior given by the user. The
