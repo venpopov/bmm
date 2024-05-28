@@ -3,10 +3,13 @@
 
 # bmm <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/bmm)](https://CRAN.R-project.org/package=bmm)
 [![bmm status
 badge](https://popov-lab.r-universe.dev/badges/bmm)](https://popov-lab.r-universe.dev/bmm)
 [![R-CMD-check](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/venpopov/bmm/actions/workflows/test-coverage.yaml)
+[![downloads](https://cranlogs.r-pkg.org/badges/bmm)](https://cran.r-project.org/package=bmm)
 <!-- badges: end -->
 
 ## Overview
