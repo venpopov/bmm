@@ -1,7 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# bmm <!-- badges: start -->
+# bmm
+
+<!-- badges: start -->
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/bmm)](https://CRAN.R-project.org/package=bmm)
