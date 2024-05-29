@@ -77,6 +77,7 @@ bmmformula <- function(...) {
   dots <- list(...)
   formula <- list()
   for (i in seq_along(dots)) {
+    if(length(dots[[i]]) == 0) next
     arg <- dots[[i]]
     if (is_formula(arg)) {
       par <- all.vars(arg)[1]
