@@ -86,7 +86,7 @@
          cs_default_priors <- list(
             a = list(main = "normal(1,0.5)", effects = "normal(0,.5)"),
             c = list(main = "normal(1.5,0.5)", effects = "normal(0,.5)"),
-            f = list(main = "normal(0,1)", effects = "normal(0,1)")
+            f = list(main = "logistic(0,1)", effects = "normal(0,1)")
          )
       } else {
          cs_links <- list(
@@ -97,7 +97,7 @@
          cs_default_priors <- list(
             a = list(main = "normal(1.5,0.5)", effects = "normal(0,0.5)"),
             c = list(main = "normal(10,3)", effects = "normal(0,2)"),
-            f = list(main = "normal(0,1)", effects = "normal(0,1)")
+            f = list(main = "logisitic(0,1)", effects = "normal(0,1)")
          )
       }
 

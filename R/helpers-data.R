@@ -237,8 +237,6 @@ check_data.m3 <- function(model, data, formula) {
 }
 
 
-
-
 ############################################################################# !
 # HELPER FUNCTIONS                                                       ####
 ############################################################################# !
@@ -399,4 +397,57 @@ has_nonconsecutive_duplicates <- function(vec) {
     cond <- cond & all(diff(positions) == 1)
   }
   !cond
+}
+
+
+#' @title Aggregate data for `bmmodels`
+#'
+#' @description
+#' If the passed `bmmodel` can be estimated on aggregated data, this function will aggregate
+#' the data according to the provided `bmmformula`. This is done to speed up model estimation.
+#' If the `bmmodel` requires trial wise data, the `aggregate_data` function will return the
+#' `data` passed to the function and print a message informing you the data has not been
+#' aggregated
+#'
+#' @param model. `bmmodel` The model object for which the data should be aggregated
+#' @param data. The data frame that should be aggregated
+#' @param formula. The `bmmformula` for which the data should be aggregated
+#'
+#' @keywords transform
+#'
+#' @return A data frame containing the aggregated data required for fitting the specified `bmmodel`
+#' @export
+aggregate_data <- function(model, data, formula, ...) {
+  UseMethod("aggregate_data")
+}
+
+#' @export
+aggregate_data.default <- function(model, data, formula, ...) {
+  return(data)
+}
+
+aggregate_data.m3 <- function(model, data, formula, resp_var, ...) {
+  model <- check_model(model, data = data, formula = formula)
+  vars <- rhs_vars(formula)
+
+  vars <- vars[!vars %in% names(model$parameters)]
+
+  data_vars <- dplyr::syms(vars[vars %in% names(data)])
+
+  # Add response column to group
+  new_group = c(data_vars, "response")
+
+  # Aggregate responses
+  data_output <- .data %>%
+    select(all_of(resp_var), all_of(group)) %>%
+    pivot_longer(cols = all_of(resp_var), names_to = "response", values_to = "value") %>%
+    summarise(
+      Resp = sum(value, na.rm = TRUE),
+      .by = all_of(new_group)) %>%
+    mutate(
+      {{nDV_name}} := sum(Resp, na.rm = TRUE),
+      .by = all_of(group)) %>%
+    pivot_wider(names_from = response, values_from = Resp)
+
+  return(data_output)
 }
