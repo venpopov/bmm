@@ -1,5 +1,7 @@
 test_that("summary has reasonable outputs", {
-  summary1 <- suppressWarnings(summary(bmmfit_example1))
+  skip_if_not(interactive())
+  fit <- readRDS(test_path("assets/bmmfit_example1.rds"))
+  summary1 <- suppressWarnings(summary(fit))
   expect_true(is.data.frame(summary1$fixed))
   expect_equal(rownames(summary1$fixed),
                c("mu_Intercept", "kappa_Intercept", "c_set_size1", "c_set_size2",

@@ -11,7 +11,7 @@
 #'   should be defined in the appropriate check_data.* function, where \*
 #'   corresponds to the shared class. For example, for the .model_imm_abc model,
 #'   this corresponds to the following order of check_data.* functions:
-#'   check_data() -> check_data.vwm(), check_data.non_targets() the output of the
+#'   check_data() -> check_data.circular(), check_data.non_targets() the output of the
 #'   final function is returned to bmm().
 #' @param model A model list object returned from check_model()
 #' @param data The user supplied data.frame containing the data to be checked
@@ -23,7 +23,14 @@
 #'   stages (e.g. in configure_model()), you can store and access them using the
 #'   attr() function.
 #' @export
-#' @keywords internal, developer
+#'
+#' @keywords internal developer
+#'
+#' @examples
+#' data <- oberauer_lin_2017
+#' model <- sdmSimple(resp_error = "dev_rad")
+#' formula <- bmf(c ~ 1, kappa ~ 1)
+#' checked_data <- check_data(model, data, formula)
 check_data <- function(model, data, formula) {
   UseMethod("check_data")
 }
@@ -47,7 +54,7 @@ check_data.bmmodel <- function(model, data, formula) {
 
 
 #' @export
-check_data.vwm <- function(model, data, formula) {
+check_data.circular <- function(model, data, formula) {
   resp_name <- model$resp_vars[[1]]
   stopif(
     not_in(resp_name, colnames(data)),
@@ -236,7 +243,6 @@ check_data.m3 <- function(model, data, formula) {
   NextMethod("check_data")
 }
 
-
 ############################################################################# !
 # HELPER FUNCTIONS                                                       ####
 ############################################################################# !
@@ -257,6 +263,11 @@ check_data.m3 <- function(model, data, formula) {
 #'   which contains the transformed response error relative to the non-targets
 #'
 #' @export
+#'
+#' @examples
+#' data <- oberauer_lin_2017
+#' data <- calc_error_relative_to_nontargets(data, "dev_rad", paste0("col_nt", 1:7))
+#' hist(data$y_nt, breaks = 100)
 #'
 calc_error_relative_to_nontargets <- function(data, response, nt_features) {
   y <- y_nt <- non_target_name <- non_target_value <- NULL
@@ -327,16 +338,15 @@ rad2deg <- function(rad) {
 #'   `brms`
 #'
 #' @inheritParams bmm
+#' @aliases standata
 #' @param object A `bmmformula` object
 #' @param ... Further arguments passed to [brms::standata()]. See the
 #'   description of [brms::standata()] for more details
 #'
-#' @returns A named list of objects containing the required data to fit a bmm
+#' @return A named list of objects containing the required data to fit a bmm
 #'   model with Stan.
 #'
 #' @seealso [supported_models()], [brms::standata()]
-#'
-#' @export
 #'
 #' @keywords extract_info
 #'
@@ -435,7 +445,7 @@ aggregate_data.m3 <- function(model, data, formula, resp_var, ...) {
   data_vars <- dplyr::syms(vars[vars %in% names(data)])
 
   # Add response column to group
-  new_group = c(data_vars, "response")
+  new_group <- c(data_vars, "response")
 
   # Aggregate responses
   data_output <- .data %>%
@@ -443,10 +453,12 @@ aggregate_data.m3 <- function(model, data, formula, resp_var, ...) {
     pivot_longer(cols = all_of(resp_var), names_to = "response", values_to = "value") %>%
     summarise(
       Resp = sum(value, na.rm = TRUE),
-      .by = all_of(new_group)) %>%
+      .by = all_of(new_group)
+    ) %>%
     mutate(
-      {{nDV_name}} := sum(Resp, na.rm = TRUE),
-      .by = all_of(group)) %>%
+      {{ nDV_name }} := sum(Resp, na.rm = TRUE),
+      .by = all_of(group)
+    ) %>%
     pivot_wider(names_from = response, values_from = Resp)
 
   return(data_output)

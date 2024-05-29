@@ -4,16 +4,13 @@
 \alias{mixture2p}
 \title{Two-parameter mixture model by Zhang and Luck (2008).}
 \usage{
-mixture2p(resp_error, links = NULL, ...)
+mixture2p(resp_error, ...)
 }
 \arguments{
 \item{resp_error}{The name of the variable in the provided dataset containing
 the response error. The response Error should code the response relative to
 the to-be-recalled target in radians. You can transform the response error
 in degrees to radian using the \code{deg2rad} function.}
-
-\item{links}{A list of links for the parameters. \emph{Currently does not affect
-the model fits, but it will in the future.}}
 
 \item{...}{used internally for testing, ignore it}
 }
@@ -71,7 +68,7 @@ Two-parameter mixture model by Zhang and Luck (2008).
 }
 }
 \examples{
-\dontrun{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # generate artificial data
 dat <- data.frame(y = rmixture2p(n=2000))
 
@@ -87,6 +84,6 @@ fit <- bmm(formula = ff,
            cores = 4,
            iter = 500,
            backend = 'cmdstanr')
-}
+\dontshow{\}) # examplesIf}
 }
 \keyword{bmmodel}

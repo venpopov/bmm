@@ -4,6 +4,8 @@
 #' the latest \pkg{bmm} version. This function is called
 #' internally when applying post-processing methods.
 #'
+#' @aliases restructure
+#' 
 #' @param x An object of class \code{bmmfit}.
 #' @param ... Currently ignored.
 #'
@@ -11,8 +13,11 @@
 #'   of \pkg{bmm} and \pkg{brms}.
 #' @keywords transform
 #' @export
+#' @examplesIf file.exists("bmmfit_old.rds")
+#' # Load an old bmmfit object
+#' old_fit <- readRDS("bmmfit_old.rds")
+#' new_fit <- restructure(old_fit)
 #' @importFrom utils packageVersion
-#' @importFrom brms restructure
 restructure.bmmfit <- function(x, ...) {
   version <- x$version$bmm
   if (is.null(version)) {

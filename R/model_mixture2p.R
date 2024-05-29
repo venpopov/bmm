@@ -40,7 +40,7 @@
       ),
       void_mu = FALSE
     ),
-    class = c("bmmodel", "vwm", "mixture2p"),
+    class = c("bmmodel", "circular", "mixture2p"),
     call = call
   )
   out$links[names(links)] <- links
@@ -55,13 +55,10 @@
 #'   the response error. The response Error should code the response relative to
 #'   the to-be-recalled target in radians. You can transform the response error
 #'   in degrees to radian using the `deg2rad` function.
-#' @param links A list of links for the parameters. *Currently does not affect
-#'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
 #' @keywords bmmodel
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # generate artificial data
 #' dat <- data.frame(y = rmixture2p(n=2000))
 #'
@@ -77,12 +74,11 @@
 #'            cores = 4,
 #'            iter = 500,
 #'            backend = 'cmdstanr')
-#' }
 #' @export
-mixture2p <- function(resp_error, links = NULL, ...) {
+mixture2p <- function(resp_error, ...) {
   call <- match.call()
   stop_missing_args()
-  .model_mixture2p(resp_error = resp_error, links = links, call = call, ...)
+  .model_mixture2p(resp_error = resp_error, call = call, ...)
 }
 
 #############################################################################!

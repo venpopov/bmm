@@ -1,4 +1,5 @@
-#' @keywords internal
+#' Easy and Accesible Bayesian Measurement Models Using 'brms'
+#' @docType package
 "_PACKAGE"
 
 ## usethis namespace: start

@@ -30,8 +30,14 @@ they are listed. Thus, any operations that are common to a group of models
 should be defined in the appropriate check_data.* function, where \*
 corresponds to the shared class. For example, for the .model_imm_abc model,
 this corresponds to the following order of check_data.* functions:
-check_data() -> check_data.vwm(), check_data.non_targets() the output of the
+check_data() -> check_data.circular(), check_data.non_targets() the output of the
 final function is returned to bmm().
 }
+\examples{
+data <- oberauer_lin_2017
+model <- sdmSimple(resp_error = "dev_rad")
+formula <- bmf(c ~ 1, kappa ~ 1)
+checked_data <- check_data(model, data, formula)
+}
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

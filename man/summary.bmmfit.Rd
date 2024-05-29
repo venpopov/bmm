@@ -37,12 +37,37 @@ caused by the MCMC sampling should be shown in the summary. Defaults to
 \item{backend}{Choose whether to display the \emph{bmm} summary method (default),
 or to display the \emph{brms} summary method.}
 }
+\value{
+A list of class \code{bmmsummary} containing the summary of the model's
+parameters, the model formula, the model, and the data used to fit the model.
+}
 \description{
 Create a summary of a fitted model represented by a \code{bmmfit} object
 }
 \note{
 You can turn off the color output by setting the option
 options(bmm.color_summary = FALSE) or bmm_options(color_summary = FALSE)
+}
+\examples{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# generate artificial data from the Signal Discrimination Model
+dat <- data.frame(y = rsdm(2000))
+
+# define formula
+ff <- bmmformula(c ~ 1, kappa ~ 1)
+
+# fit the model
+fit <- bmm(
+  formula = ff,
+  data = dat,
+  model = sdm(resp_error = "y"),
+  cores = 4,
+  backend = "cmdstanr"
+)
+
+# summary of the model
+summary(fit)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link{summary.brmsfit}}

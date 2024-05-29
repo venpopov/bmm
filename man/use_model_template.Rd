@@ -57,7 +57,7 @@ dang::checkPackageAsciiCode(dir = ".")
 usually rewriting the numbers (issue, page numbers) manually fixes it
 }
 \examples{
-\dontrun{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(usethis)
 
 # create a new model file without a brms::custom_family, and open the file
@@ -69,7 +69,8 @@ use_model_template("abc",
   custom_family = TRUE,
   stanvar_blocks = c("functions", "likelihood", "tdata")
 )
-}
+
+\dontshow{\}) # examplesIf}
 }
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

@@ -16,24 +16,31 @@
 #' @param ... Additional arguments passed to the method
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export
-#' @keywords internal, developer
+#'
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' fit <- readRDS("my_saved_fit.rds")
+#' postprocessed_fit <- prostprocess_brm(fit)
+#'
+#' @keywords internal developer
 postprocess_brm <- function(model, fit, ...) {
-  UseMethod('postprocess_brm')
+  UseMethod("postprocess_brm")
 }
 
 #' @export
 postprocess_brm.bmmodel <- function(model, fit, ...) {
   dots <- list(...)
-  class(fit) <- c('bmmfit','brmsfit')
-  fit$version$bmm <- utils::packageVersion('bmm')
-  fit$bmm <- nlist(model, user_formula = dots$user_formula,
-                   configure_opts = dots$configure_opts)
-  attr(fit$data, 'data_name') <- attr(dots$fit_args$data, 'data_name')
+  class(fit) <- c("bmmfit", "brmsfit")
+  fit$version$bmm <- utils::packageVersion("bmm")
+  fit$bmm <- nlist(model,
+    user_formula = dots$user_formula,
+    configure_opts = dots$configure_opts
+  )
+  attr(fit$data, "data_name") <- attr(dots$fit_args$data, "data_name")
 
   # add bmm version to the stancode
   fit$model <- add_bmm_version_to_stancode(fit$model)
 
-  fit <- NextMethod('postprocess_brm')
+  fit <- NextMethod("postprocess_brm")
 
   # clean up environments stored in the fit object
   reset_env(fit)
@@ -72,9 +79,15 @@ get_mu_pars <- function(object) {
 #' @param ... Additional arguments passed to the method
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export
-#' @keywords internal, developer
+#'
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' fit <- readRDS("my_saved_fit.rds")
+#' postprocessed_fit <- prostprocess_brm(fit)
+#' reverted_fit <- revert_postprocess_brm(postprocessed_fit)
+#'
+#' @keywords internal developer
 revert_postprocess_brm <- function(model, fit, ...) {
-  UseMethod('revert_postprocess_brm')
+  UseMethod("revert_postprocess_brm")
 }
 
 #' @export
