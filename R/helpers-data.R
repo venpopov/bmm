@@ -193,15 +193,18 @@ calc_error_relative_to_nontargets <- function(data, response, nt_features) {
 }
 
 #' @title Wrap angles that extend beyond (-pi;pi)
-#' @description On the circular space, angles can be only in the range (-pi;pi
-#'   or -180;180). When subtracting angles, this can result in values outside of
+#' @description On the circular space, the distances between two values can be only in the range (-pi;pi
+#'   or -180;180). When subtracting two values in the circular space, this can result in values outside of
 #'   this range. For example, when calculating the difference between a value of
 #'   10 degrees minus 340 degrees, this results in a difference of 330 degrees.
 #'   However, the true difference between these two values is -30 degrees. This
-#'   function wraps such values, so that they occur in the circle
-#' @param x A numeric vector, matrix or data.frame of angles to be wrapped. In
-#'   radians (default) or degrees.
-#' @param radians Logical. Is x in radians (default=TRUE) or degrees (FALSE)
+#'   function wraps such values, so that they represent the appropriate distance on the circular space.
+#' @param x A numeric vector, matrix or data.frame of values to be wrapped. In
+#'   radians (default), degrees, or the scale of the circumference of the circular space.
+#' @param radians Logical. Is x in radians (default=TRUE) or not (FALSE)
+#' @param scale numeric. The scale of the circular space, if the input is not in radians.
+#'   The default is 360 as for degrees, but any scale for the circumference of the circular
+#'   space can be specified. For example, 180 degrees for bar orientations without a direction.
 #' @return An object of the same type as x
 #' @keywords transform
 #' @export
@@ -213,22 +216,24 @@ calc_error_relative_to_nontargets <- function(data, response, nt_features) {
 #' wrapped_diff <- wrap(x - y)
 #' hist(wrapped_diff)
 #'
-wrap <- function(x, radians = TRUE) {
+wrap <- function(x, radians = TRUE, scale = 360) {
   stopifnot(is.logical(radians))
   if (radians) {
     return(((x + pi) %% (2 * pi)) - pi)
   }
-  ((x + 180) %% (2 * 180)) - 180
+  ((x + (scale/2)) %% (2 * (scale/2))) - (scale/2)
 }
 
-#' @title Convert degrees to radians or radians to degrees.
+#' @title Convert degrees or distances in a circular space to radians or radians to degrees.
 #' @description The helper functions `deg2rad` and `rad2deg` should add
 #' convenience in transforming data from degrees to radians and from radians to
 #' degrees.
 #'
 #' @name circle_transform
-#' @param deg A numeric vector of values in degrees.
+#' @param deg A numeric vector of values in degrees or distances in a circular space.
 #' @param rad A numeric vector of values in radians.
+#' @param scale A numeric value specifying the scale of the circular space. The default is
+#'   360 as for degrees, but you would change this to 180 for bar orientations without a direction.
 #' @return A numeric vector of the same length as `deg` or `rad`.
 #' @keywords transform
 #' @export
@@ -236,14 +241,14 @@ wrap <- function(x, radians = TRUE) {
 #' degrees <- runif(100, min = 0, max = 360)
 #' radians <- deg2rad(degrees)
 #' degrees_again <- rad2deg(radians)
-deg2rad <- function(deg) {
-  deg * pi / 180
+deg2rad <- function(deg, scale = 360) {
+  deg * pi / (scale / 2)
 }
 
 #' @rdname circle_transform
 #' @export
-rad2deg <- function(rad) {
-  rad * 180 / pi
+rad2deg <- function(rad, scale = 360) {
+  rad * (scale/2) / pi
 }
 
 #' @title Stan data for `bmm` models

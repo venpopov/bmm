@@ -4,24 +4,28 @@
 \alias{wrap}
 \title{Wrap angles that extend beyond (-pi;pi)}
 \usage{
-wrap(x, radians = TRUE)
+wrap(x, radians = TRUE, scale = 360)
 }
 \arguments{
-\item{x}{A numeric vector, matrix or data.frame of angles to be wrapped. In
-radians (default) or degrees.}
+\item{x}{A numeric vector, matrix or data.frame of values to be wrapped. In
+radians (default), degrees, or the scale of the circumference of the circular space.}
 
-\item{radians}{Logical. Is x in radians (default=TRUE) or degrees (FALSE)}
+\item{radians}{Logical. Is x in radians (default=TRUE) or not (FALSE)}
+
+\item{scale}{numeric. The scale of the circular space, if the input is not in radians.
+The default is 360 as for degrees, but any scale for the circumference of the circular
+space can be specified. For example, 180 degrees for bar orientations without a direction.}
 }
 \value{
 An object of the same type as x
 }
 \description{
-On the circular space, angles can be only in the range (-pi;pi
-or -180;180). When subtracting angles, this can result in values outside of
+On the circular space, the distances between two values can be only in the range (-pi;pi
+or -180;180). When subtracting two values in the circular space, this can result in values outside of
 this range. For example, when calculating the difference between a value of
 10 degrees minus 340 degrees, this results in a difference of 330 degrees.
 However, the true difference between these two values is -30 degrees. This
-function wraps such values, so that they occur in the circle
+function wraps such values, so that they represent the appropriate distance on the circular space.
 }
 \examples{
 x <- runif(1000, -pi, pi)

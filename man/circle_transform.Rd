@@ -4,14 +4,17 @@
 \alias{circle_transform}
 \alias{deg2rad}
 \alias{rad2deg}
-\title{Convert degrees to radians or radians to degrees.}
+\title{Convert degrees or distances in a circular space to radians or radians to degrees.}
 \usage{
-deg2rad(deg)
+deg2rad(deg, scale = 360)
 
-rad2deg(rad)
+rad2deg(rad, scale = 360)
 }
 \arguments{
-\item{deg}{A numeric vector of values in degrees.}
+\item{deg}{A numeric vector of values in degrees or distances in a circular space.}
+
+\item{scale}{A numeric value specifying the scale of the circular space. The default is
+360 as for degrees, but you would change this to 180 for bar orientations without a direction.}
 
 \item{rad}{A numeric vector of values in radians.}
 }
