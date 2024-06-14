@@ -38,7 +38,8 @@
         kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
         thetat = list(main = "logistic(0, 1)")
       ),
-      void_mu = FALSE
+      void_mu = FALSE,
+      custom_bmf2bf = FALSE
     ),
     class = c("bmmodel", "circular", "mixture2p"),
     call = call

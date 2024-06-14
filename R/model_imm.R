@@ -2,7 +2,6 @@
 # MODELS                                                                 ####
 #############################################################################!
 
-
 .model_imm <-
   function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
            set_size = NULL, regex = FALSE, version = "full", links = NULL,
@@ -50,7 +49,8 @@
           c = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
           s = list(main = "normal(0, 1)", effects = "normal(0, 1)")
         ),
-        void_mu = FALSE
+        void_mu = FALSE,
+        custom_bmf2bf = FALSE
       ),
       # attributes
       regex = regex,
@@ -335,9 +335,9 @@ configure_prior.imm_abc <- function(model, data, formula, user_prior, ...) {
   a_preds <- rhs_vars(formula$pforms$a)
   if (prior_cond && set_size_var %in% a_preds) {
     prior <- prior + brms::prior_("constant(0)",
-                          class = "b",
-                          coef = paste0(set_size_var, 1),
-                          nlpar = "a")
+                                  class = "b",
+                                  coef = paste0(set_size_var, 1),
+                                  nlpar = "a")
   }
 
   # check if there is a random effect on theetant that include set_size as predictor

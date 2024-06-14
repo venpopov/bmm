@@ -1,38 +1,41 @@
 #############################################################################!
 # MODELS                                                                 ####
 #############################################################################!
-.model_SDT <- function(response = NULL, stimulus = NULL, nTrials = NULL, dist_noise = "normal", ...) {
+.model_sdt <- function(response = NULL, stimulus = NULL, nTrials = NULL, dist_noise = "normal", ...) {
    out <- list(
       resp_vars = nlist(response),
       other_vars = nlist(stimulus, nTrials, dist_noise, ...),
-      info = list(
-         domain = 'Perception & Recognition',
-         task = 'Signal/Noise or Old/New Recognition tasks',
-         name = 'Signal Detection Theory for Old/New Recognition',
-         citation = 'DeCarlo, L. T. (1998). Signal detection theory and generalized linear models. Psychological Methods, 3(2), 186-205.',
-         version = '',
-         requirements = paste('- provide the number of signal or old responses for the different stimulus types presented (signal/noise or old/new)',
-         '  - provide the stimulus type either signal/noise or old/new, this can be a factor with dummy coding with 0 = noise/new, and 1 = signal/old, or a numeric vector with equal coding',
-         '  - provide the number of total trial for each stimulus type in each condition',
-         '  - additionally, you can select different noise distributions for the Signal Decetion Theory model. For details please see the provided reference.', sep = "\n"),
-         parameters = list(
-            dprime = "The level of signal from a perceptual or memory stimulus to be recognized",
-            crit = "The criterion of activation to be reached for a stimulus to be recognized. This is parmaeterized as the bias relative to the optimal criterion at dprime/2"
-         ),
-         fixed_parameters = list()
+      domain = 'Perception & Recognition',
+      task = 'Signal/Noise or Old/New Recognition tasks',
+      name = 'Signal Detection Theory for Old/New Recognition',
+      citation = 'DeCarlo, L. T. (1998). Signal detection theory and generalized linear models. Psychological Methods, 3(2), 186-205.',
+      version = '',
+      requirements = paste('- provide the number of signal or old responses for the different stimulus types presented (signal/noise or old/new)',
+                           '  - provide the stimulus type either signal/noise or old/new, this can be a factor with dummy coding with 0 = noise/new, and 1 = signal/old, or a numeric vector with equal coding',
+                           '  - provide the number of total trial for each stimulus type in each condition',
+                           '  - additionally, you can select different noise distributions for the Signal Decetion Theory model. For details please see the provided reference.', sep = "\n"),
+      parameters = list(
+        dprime = "The level of signal from a perceptual or memory stimulus to be recognized",
+        crit = "The criterion of activation to be reached for a stimulus to be recognized. This is parmaeterized as the bias relative to the optimal criterion at dprime/2"
       ),
-      void_mu = FALSE
+      fixed_parameters = list(),
+      default_priors = list(
+        dprime = list(main = "logistic(0, 1)", effects = "logistic(0, 0.5)"),
+        crit = list(main = "logistic(0, 1)", effects = "logistic(0, 0.5)")
+      ),
+      void_mu = FALSE,
+      custom_bmf2bf = TRUE
    )
-   class(out) <- c('bmmmodel', 'SDT')
+   class(out) <- c('bmmodel', 'sdt')
    out
 }
 
 # user facing alias
 # information in the title and details sections will be filled in
 # automatically based on the information in the .model_SDT()$info
-#' @title `r .model_SDT()$info$name`
+#' @title `r .model_sdt()$name`
 #' @name SDT
-#' @details `r model_info(.model_SDT())`
+#' @details `r model_info(.model_sdt())`
 #' @param response The variable name of the response variable in the data set.
 #'   The response given when a stimulus appears. Either these can be integers
 #'   indicating that noise/new information was detected `0` or a signal/old information was
@@ -56,9 +59,9 @@
 #' \dontrun{
 #' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)
 #' }
-SDT <- function(response, stimulus, nTrials = NULL, dist_noise = "normal", ...) {
+sdt <- function(response, stimulus, nTrials = NULL, dist_noise = "normal", ...) {
   stop_missing_args()
-  .model_SDT(response = response, stimulus = stimulus, nTrials = nTrials,
+  .model_sdt(response = response, stimulus = stimulus, nTrials = nTrials,
              dist_noise = dist_noise, ...)
 }
 
@@ -72,7 +75,7 @@ SDT <- function(response, stimulus, nTrials = NULL, dist_noise = "normal", ...) 
 # (YOU CAN DELETE THIS SECTION IF YOU DO NOT REQUIRE ADDITIONAL DATA CHECKS)
 
 #' @export
-check_data.SDT <- function(model, data, formula) {
+check_data.sdt <- function(model, data, formula) {
    # retrieve required arguments
    resp_names <- unlist(model$resp_vars)
    stimulus <- model$other_vars$stimulus
@@ -104,13 +107,13 @@ check_data.SDT <- function(model, data, formula) {
 # (YOU CAN DELETE THIS SECTION IF YOUR MODEL USES A STANDARD FORMULA WITH 1 RESPONSE VARIABLE)
 
 #' @export
-bmf2bf.SDT <- function(model, formula) {
+bmf2bf.sdt <- function(model, formula) {
    # retrieve required response arguments
    response <- model$resp_vars$response
    stimulus <- model$other_vars$stimulus
 
    # set the base brmsformula given the variable names
-   if (!is.null(model$resp_vars$nTrials)) {
+   if (!is.null(model$other_vars$nTrials)) {
       nTrials <- model$other_vars$nTrials
       brms_formula <- brms::bf(paste0(response," | ", "trials(",nTrials,")", " ~ dprime*",stimulus," - crit" ), nl = TRUE)
    } else {
@@ -129,7 +132,7 @@ bmf2bf.SDT <- function(model, formula) {
 # ?configure_model for more information.
 
 #' @export
-configure_model.SDT <- function(model, data, formula) {
+configure_model.sdt <- function(model, data, formula) {
    # retrieve required arguments
    dist_noise <- model$other_vars$dist_noise
 
@@ -152,10 +155,10 @@ configure_model.SDT <- function(model, data, formula) {
            \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
    }
 
-   if (!is.null(model$resp_vars$nTrials)) {
-      family <- stats::binomial(link = link_fun)
+   if (!is.null(model$other_vars$nTrials)) {
+      formula$family <- stats::binomial(link = link_fun)
    } else {
-      family <- brms::bernoulli(link = link_fun)
+      formula$family <- brms::bernoulli(link = link_fun)
    }
 
    # no default priors required

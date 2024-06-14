@@ -240,7 +240,7 @@ bmf2bf.bmmodel <- function(model, formula) {
   resp <- model$resp_vars
   constants <- model$fixed_parameters
 
-  if (length(resp) > 1) {
+  if (model$custom_bmf2bf) {
     brms_formula <- NextMethod("bmf2bf")
   } else {
     resp <- resp[[1]]
