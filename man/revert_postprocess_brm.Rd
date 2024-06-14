@@ -21,7 +21,7 @@ Called by update.bmmfit() to automatically revert some of the postprocessing
 depending on the model type. It will call the appropriate revert_postprocess_brm.*
 methods based on the list of classes defined in the .model_* functions. For
 models with several classes listed, it will call the functions in the order
-they are listed. For example, for the sdmSimple model, the
+they are listed. For example, for the sdm model, the
 postprocessing involves setting the link function for the c parameter to "log",
 because it was coded manually in the stan code, but it was specified as "identity"
 in the brms custom family. However, during the update process, the link function
@@ -29,5 +29,12 @@ should be set back to "identity". Only use this if you have a specific reason to
 revert the postprocessing (if otherwise the update method would produce incorrect
 results).
 }
+\examples{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+fit <- readRDS("my_saved_fit.rds")
+postprocessed_fit <- prostprocess_brm(fit)
+reverted_fit <- revert_postprocess_brm(postprocessed_fit)
+\dontshow{\}) # examplesIf}
+}
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

@@ -15,15 +15,15 @@ use_model_template(
 }
 \arguments{
 \item{model_name}{A string with the name of the model. The file will be named
-\code{bmm_model_model_name.R} and all necessary functions will be created with
+\code{model_model_name.R} and all necessary functions will be created with
 the appropriate names and structure. The file will be saved in the \verb{R/}
 directory}
 
 \item{custom_family}{Logical; Do you plan to define a brms::custom_family()?
 If TRUE the function will add a section for the custom family, placeholders
 for the stan_vars and corresponding empty .stan files in
-\verb{inst/stan_chunks/}, that you can fill For an example, see the sdmSimple
-model in \verb{/R/bmm_model_sdmSimple.R}. If FALSE (default) the function will
+\verb{inst/stan_chunks/}, that you can fill For an example, see the sdm
+model in \verb{/R/model_sdm.R}. If FALSE (default) the function will
 not add the custom family section nor stan files.}
 
 \item{stanvar_blocks}{A character vector with the names of the blocks that
@@ -57,17 +57,19 @@ dang::checkPackageAsciiCode(dir = ".")
 usually rewriting the numbers (issue, page numbers) manually fixes it
 }
 \examples{
-\dontrun{
- library(usethis)
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+library(usethis)
 
- # create a new model file without a brms::custom_family, and open the file
- use_model_template("newmodel")
+# create a new model file without a brms::custom_family, and open the file
+use_model_template("newmodel")
 
- # create a new model file with a brms::custom_family, three .stan files in
- # inst/stan_chunks/ and open the files
- use_model_template('abc',custom_family = TRUE,
-                    stanvar_blocks = c('functions','likelihood','tdata'))
-}
+# create a new model file with a brms::custom_family, three .stan files in
+# inst/stan_chunks/ and open the files
+use_model_template("abc",
+  custom_family = TRUE,
+  stanvar_blocks = c("functions", "likelihood", "tdata")
+)
+\dontshow{\}) # examplesIf}
 }
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

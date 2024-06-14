@@ -28,15 +28,16 @@ reference:
  - title: "About bmm"
    desc: "These pages provide a summary of the functionality available in bmm"
  - contents:
-   - "bmm"
+   - "bmm-package"
    - "supported_models"
    - "bmm_options"
  - title: "Fitting models"
    desc: "Main functions for model fitting"
  - contents:
-   - "fit_model"
+   - "bmm"
    - "bmmformula"
    - "update.bmmfit"
+   - "summary.bmmfit"
  - title: "Extract model information"
    desc: "Utility functions for extracting default priors, generate stan code, stan data, etc."
  - contents:
@@ -44,22 +45,41 @@ reference:
  - title: "Specifying models"
    desc: "Functions for specifying which model to fit"
  - contents:
-   - has_keyword("bmmmodel")
+   - has_keyword("bmmodel")
  - title: "Distributions"
    desc: "Functions for special distributions"
  - contents:
    - has_keyword("distribution")
- - title: "Data and parameter transformations"
+ - title: "Data, model and parameter transformations"
    desc: "Utility functions for transforming data and parameters"
  - contents:
    - has_keyword("transform")
  - title: "Datasets"
    desc: "Available datasets for fitting the models"
  - contents:
-   - "OberauerLin_2017"
-   - "ZhangLuck_2008"
+   - has_keyword("dataset")
  - title: "Developers' corner"
    desc: "Functions to assist in developing new models"
  - contents:
    - has_keyword("developer")
+ - title: "Deprecated"
+   desc: "Deprecated functions (will be removed in future versions)"
+ - contents:
+   - has_keyword("deprecated")
 
+
+articles:
+ - title: Continuous reproduction tasks
+   desc: Fitting models to continuous reproduction tasks
+   contents:
+    - articles/bmm_vwm_crt
+    - articles/bmm_mixture_models
+    - articles/bmm_imm
+    - articles/bmm_sdm_simple
+
+ - title: Using the bmm package
+   desc: >
+      Guides to using various features of the **bmm** package
+   contents:
+    - articles/bmm_bmmformula
+    - articles/bmm_extract_info

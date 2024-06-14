@@ -16,17 +16,24 @@ c_bessel2sqrtexp(c, kappa)
 \item{kappa}{Vector of precision values}
 }
 \value{
-\code{c_bessel2sqrtexp} converts the memory strength parameter (c)
-from the bessel parametrization to the sqrtexp parametrization,
-\code{c_sqrtexp2bessel} converts from the sqrtexp parametrization to the
-bessel parametrization.
+A numeric vector of the same length as \code{c} and \code{kappa}.
 }
 \description{
 Convert between parametrizations of the c parameter of the SDM distribution
 }
 \details{
-See \code{vignette("sdm-simple")} for details on the
+\code{c_bessel2sqrtexp} converts the memory strength parameter (c)
+from the bessel parametrization to the sqrtexp parametrization,
+\code{c_sqrtexp2bessel} converts from the sqrtexp parametrization to the
+bessel parametrization.
+
+See \href{https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html}{the online article} for details on the
 parameterization. The sqrtexp parametrization is the default in the
 \code{bmm} package.
+}
+\examples{
+c_bessel <- c_sqrtexp2bessel(c = 4, kappa = 3)
+c_sqrtexp <- c_bessel2sqrtexp(c = c_bessel, kappa = 3)
+
 }
 \keyword{transform}

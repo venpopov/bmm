@@ -7,9 +7,15 @@
 print_pretty_models_md()
 }
 \value{
-Markdown code for printing the list of measurement models available in \code{bmm}
+Markdown code for printing the list of measurement models available
+in \code{bmm}
 }
 \description{
-Used internally to automatically populate information in the README file
+Used internally to automatically populate information in the
+README file
+}
+\examples{
+print_pretty_models_md()
+
 }
 \keyword{internal}

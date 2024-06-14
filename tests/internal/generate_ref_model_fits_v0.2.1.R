@@ -15,11 +15,11 @@ install_and_load_bmm_version <- function(version) {
   library(bmm, lib.loc=path)
 }
 
-# Load data for vwm models (Participant 1-10, SetSize 1-4, from OberauerLin_2017)
+# Load data for circular models (Participant 1-10, SetSize 1-4, from oberauer_lin_2017)
 # TODO: generalize in the future to allow for different datasets for different models
 ref_data <- function() {
   withr::local_package('dplyr')
-  dat <- OberauerLin_2017
+  dat <- oberauer_lin_2017
   dat <- dat %>%
     mutate(ID = as.factor(ID),
            SetSize = as.factor(SetSize)) %>%
@@ -47,9 +47,7 @@ run_sdmSimple <- function(...) {
                       kappa ~ 1)
   model <- sdmSimple()
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
-                   iter = 2000,
+                   cores = parallel::detectCores(),
                    refresh = 500,
                    init = 1,
                    silent = 1,
@@ -76,10 +74,9 @@ run_mixture3p <- function(...) {
                       thetant ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
   model <- mixture3p(non_targets = paste0("Item", 2:4,"_Col_rad"),
-                     setsize = "SetSize")
+                     set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
+                   cores = parallel::detectCores(),
                    iter = 1000,
                    refresh = 500,
                    init = 1,
@@ -107,8 +104,7 @@ run_mixture2p <- function(...) {
                       kappa ~ 0 + SetSize)
   model <- mixture2p()
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
+                   cores = parallel::detectCores(),
                    iter = 1000,
                    refresh = 500,
                    init = 1,
@@ -136,10 +132,9 @@ run_IMMabc <- function(...) {
                       c ~ 0 + SetSize,
                       kappa ~ 0 + SetSize)
   model <- IMMabc(non_targets = paste0("Item", 2:4,"_Col_rad"),
-                  setsize = "SetSize")
+                  set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
+                   cores = parallel::detectCores(),
                    iter = 1000,
                    refresh = 500,
                    init = 1,
@@ -169,10 +164,9 @@ run_IMMbsc <- function(...) {
                       kappa ~ 0 + SetSize)
   model <- IMMbsc(non_targets = paste0("Item", 2:4,"_Col_rad"),
                   spaPos = paste0("Item", 2:4,"_Pos_rad"),
-                  setsize = "SetSize")
+                  set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
-                   chains = 4,
+                   cores = parallel::detectCores(),
                    iter = 1000,
                    refresh = 500,
                    init = 1,
@@ -202,9 +196,9 @@ run_IMMfull <- function(...) {
                       kappa ~ 0 + SetSize)
   model <- IMMfull(non_targets = paste0("Item", 2:4,"_Col_rad"),
                    spaPos = paste0("Item", 2:4,"_Pos_rad"),
-                   setsize = "SetSize")
+                   set_size = "SetSize")
   fit <- fit_model(formula, dat, model,
-                   parallel = TRUE,
+                   cores = parallel::detectCores(),
                    chains = 4,
                    iter = 1000,
                    refresh = 500,

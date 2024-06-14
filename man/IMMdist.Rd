@@ -2,25 +2,25 @@
 % Please edit documentation in R/distributions.R
 \name{IMMdist}
 \alias{IMMdist}
-\alias{dIMM}
-\alias{pIMM}
-\alias{qIMM}
-\alias{rIMM}
-\title{The Interference Measurement Model (IMM)}
+\alias{dimm}
+\alias{pimm}
+\alias{qimm}
+\alias{rimm}
+\title{Distribution functions for the Interference Measurement Model (IMM)}
 \usage{
-dIMM(
+dimm(
   x,
   mu = c(0, 2, -1.5),
   dist = c(0, 0.5, 2),
-  c = 1,
-  a = 0.2,
-  b = 0,
+  c = 5,
+  a = 2,
+  b = 1,
   s = 2,
   kappa = 5,
   log = FALSE
 )
 
-pIMM(
+pimm(
   q,
   mu = c(0, 2, -1.5),
   dist = c(0, 0.5, 2),
@@ -31,7 +31,7 @@ pIMM(
   kappa = 5
 )
 
-qIMM(
+qimm(
   p,
   mu = c(0, 2, -1.5),
   dist = c(0, 0.5, 2),
@@ -42,13 +42,13 @@ qIMM(
   kappa = 5
 )
 
-rIMM(
+rimm(
   n,
   mu = c(0, 2, -1.5),
   dist = c(0, 0.5, 2),
   c = 1,
   a = 0.2,
-  b = 0,
+  b = 1,
   s = 2,
   kappa = 5
 )
@@ -79,10 +79,11 @@ rIMM(
 \item{n}{Number of observations to generate data for}
 }
 \value{
-\code{dIMM} gives the density of the interference measurement model, \code{pIMM}
-gives the cumulative distribution function of the interference measurement model,
-\code{qIMM} gives the quantile function of the interference measurement model, and
-\code{rIMM} gives the random generation function for the interference measurement model.
+\code{dimm} gives the density of the interference measurement model,
+\code{pimm} gives the cumulative distribution function of the interference
+measurement model, \code{qimm} gives the quantile function of the interference
+measurement model, and \code{rimm} gives the random generation function for the
+interference measurement model.
 }
 \description{
 Density, distribution, and random generation functions for the
@@ -92,12 +93,19 @@ generalization gradient \code{s}, and the precision of memory representations
 \code{kappa}.
 }
 \examples{
-# example code
+# generate random samples from the imm and overlay the density
+r <- rimm(10000, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+          c = 5, a = 2, s = 2, b = 1, kappa = 4)
+x <- seq(-pi,pi,length.out=10000)
+d <- dimm(x, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+          c = 5, a = 2, s = 2, b = 1, kappa = 4)
+hist(r, breaks=60, freq=FALSE)
+lines(x,d,type="l", col="red")
 
 }
 \references{
 Oberauer, K., Stoneking, C., Wabersich, D., & Lin, H.-Y. (2017).
-Hierarchical Bayesian measurement models for continuous reproduction of visual
-features from working memory. Journal of Vision, 17(5), 11.
+Hierarchical Bayesian measurement models for continuous reproduction of
+visual features from working memory. Journal of Vision, 17(5), 11.
 }
 \keyword{distribution}

@@ -2,11 +2,10 @@
 % Please edit documentation in R/bmm-package.R
 \docType{package}
 \name{bmm-package}
-\alias{bmm}
 \alias{bmm-package}
-\title{bmm: Easy and Accesible Bayesian Measurement Models using 'brms'}
+\title{Easy and Accesible Bayesian Measurement Models Using 'brms'}
 \description{
-Implementations of computational measurement models using the 'brms' package. Currently implemented models can be listed using supported_models(). The package also provides functions to extract model informations such as priors, or the generated STAN code. For all implemented models there are also density and random generation functions to easily explore model predictions and evaluate parameter recovery. Finally, helper functions aid in pre- and post-processing data for efficient communication of results.
+Fit computational and measurement models using full Bayesian inference. The package provides a simple and accessible interface by translating complex domain-specific models into 'brms' syntax, a powerful and flexible framework for fitting Bayesian regression models using 'Stan'. The package is designed so that users can easily apply state-of-the-art models in various research fields, and so that researchers can use it as a new model development framework. References: Frischkorn and Popov (2023) \doi{10.31234/osf.io/umt57}.
 }
 \seealso{
 Useful links:
@@ -18,17 +17,16 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Vencislav Popov \email{vencislav.popov@gmail.com} [copyright holder]
+\strong{Maintainer}: Vencislav Popov \email{vencislav.popov@gmail.com} (\href{https://orcid.org/0000-0002-8073-4199}{ORCID}) [copyright holder]
 
 Authors:
 \itemize{
-  \item Gidon Frischkorn \email{gidon.frischkorn@psychologie.uzh.ch} [copyright holder]
+  \item Gidon T. Frischkorn \email{gidon.frischkorn@psychologie.uzh.ch} (\href{https://orcid.org/0000-0002-5055-9764}{ORCID}) [copyright holder]
 }
 
 Other contributors:
 \itemize{
-  \item Paul Bürkner \email{paul.buerkner@gmail.com} (Creator of brms, a package for Bayesian regression model that this package builds upon.) [copyright holder]
+  \item Paul-Christian Bürkner \email{paul.buerkner@gmail.com} (Creator of 'brms', code portions of which are used in 'bmm'.) [copyright holder]
 }
 
 }
-\keyword{internal}

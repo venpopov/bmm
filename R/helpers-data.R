@@ -1,19 +1,19 @@
-#############################################################################!
+############################################################################# !
 # CHECK_DATA METHODS                                                     ####
-#############################################################################!
+############################################################################# !
 
 
 #' @title Generic S3 method for checking data based on model type
-#' @description Called by fit_model() to automatically perform checks on the
+#' @description Called by [bmm()] to automatically perform checks on the
 #'   data depending on the model type. It will call the appropriate check_data
 #'   methods based on the list of classes defined in the .model_* functions. For
 #'   models with several classes listed, it will call the functions in the order
 #'   they are listed. Thus, any operations that are common to a group of models
 #'   should be defined in the appropriate check_data.* function, where \*
-#'   corresponds to the shared class. For example, for the .model_IMMabc model,
+#'   corresponds to the shared class. For example, for the .model_imm_abc model,
 #'   this corresponds to the following order of check_data.* functions:
-#'   check_data() -> check_data.vwm(), check_data.nontargets() the output of the
-#'   final function is returned to fit_model().
+#'   check_data() -> check_data.circular(), check_data.non_targets() the output of the
+#'   final function is returned to bmm().
 #' @param model A model list object returned from check_model()
 #' @param data The user supplied data.frame containing the data to be checked
 #' @param formula The user supplied formula
@@ -24,7 +24,14 @@
 #'   stages (e.g. in configure_model()), you can store and access them using the
 #'   attr() function.
 #' @export
-#' @keywords internal, developer
+#'
+#' @keywords internal developer
+#'
+#' @examples
+#' data <- oberauer_lin_2017
+#' model <- sdmSimple(resp_error = "dev_rad")
+#' formula <- bmf(c ~ 1, kappa ~ 1)
+#' checked_data <- check_data(model, data, formula)
 check_data <- function(model, data, formula) {
   UseMethod("check_data")
 }
@@ -35,114 +42,124 @@ check_data.default <- function(model, data, formula) {
 }
 
 #' @export
-check_data.bmmmodel <- function(model, data, formula) {
-  if (missing(data)) {
-    stop("Data must be specified using the 'data' argument.")
-  }
+check_data.bmmodel <- function(model, data, formula) {
+  stopif(missing(data), "Data must be specified using the 'data' argument.")
   data <- try(as.data.frame(data), silent = TRUE)
-  if (is_try_error(data)) {
-    stop("Argument 'data' must be coercible to a data.frame.")
-  }
-  if (!isTRUE(nrow(data) > 0L)) {
-    stop("Argument 'data' does not contain observations.")
-  }
+  stopif(is_try_error(data), "Argument 'data' must be coercible to a data.frame.")
+  stopif(!isTRUE(nrow(data) > 0L), "Argument 'data' does not contain observations.")
 
-  attr(data, 'data_name') <- substitute_name(data, envir = eval(parent.frame()))
-  attr(data, 'checked') <- TRUE
+  attr(data, "data_name") <- substitute_name(data, envir = eval(parent.frame()))
+  attr(data, "checked") <- TRUE
   NextMethod("check_data")
 }
 
 
 #' @export
-check_data.vwm <- function(model, data, formula) {
+check_data.circular <- function(model, data, formula) {
   resp_name <- model$resp_vars[[1]]
-  if (not_in(resp_name, colnames(data))) {
-    stop(paste0("The response variable '", resp_name, "' is not present in the data."))
-  }
-  if (max(abs(data[[resp_name]]), na.rm = T) > 2*pi) {
-    warning('It appears your response variable is in degrees.\n
-             The model requires the response variable to be in radians.\n
-             The model will continue to run, but the results may be compromised.')
-  }
+  stopif(
+    not_in(resp_name, colnames(data)),
+    "The response variable '{resp_name}' is not present in the data."
+  )
+  warnif(
+    max(abs(data[[resp_name]]), na.rm = T) > 2 * pi,
+    "It appears your response variable is in degrees.
+          The model requires the response variable to be in radians.
+          The model will continue to run, but the results may be compromised."
+  )
 
   NextMethod("check_data")
 }
 
 
 #' @export
-check_data.nontargets <- function(model, data, formula) {
+check_data.non_targets <- function(model, data, formula) {
   nt_features <- model$other_vars$nt_features
-  if (max(abs(data[,nt_features]), na.rm = T) > 2*pi) {
-    warning('It appears at least one of your non_target variables are in degrees.\n
-             The model requires these variable to be in radians.\n
-             The model will continue to run, but the results may be compromised.')
-  }
+  warnif(
+    max(abs(data[, nt_features]), na.rm = T) > 2 * pi,
+    "It appears at least one of your non_target variables are in degrees.
+          The model requires these variable to be in radians.
+          The model will continue to run, but the results may be compromised."
+  )
 
-  ss <- check_var_setsize(model$other_vars$setsize, data)
-  max_setsize <- ss$max_setsize
+  ss <- check_var_set_size(model$other_vars$set_size, data)
+  max_set_size <- ss$max_set_size
   ss_numeric <- ss$ss_numeric
 
-  if (!isTRUE(all.equal(length(nt_features), max_setsize - 1))) {
-    stop("The number of columns for non-target values in the argument ",
-         "'nt_features' should equal max(setsize)-1")
-  }
+  stopif(
+    !isTRUE(all.equal(length(nt_features), max_set_size - 1)),
+    "The number of columns for non-target values in the argument \\
+         'nt_features' should equal max(set_size)-1"
+  )
 
-
-  # create index variables for nt_features and correction variable for theta due to setsize
-  lure_idx_vars <- paste0('LureIdx',1:(max_setsize - 1))
-  for (i in 1:(max_setsize - 1)) {
+  # create index variables for nt_features and correction variable for theta due to set_size
+  lure_idx_vars <- paste0("LureIdx", 1:(max_set_size - 1))
+  for (i in 1:(max_set_size - 1)) {
     data[[lure_idx_vars[i]]] <- ifelse(ss_numeric >= (i + 1), 1, 0)
   }
   data$ss_numeric <- ss_numeric
-  data$inv_ss = 1/(ss_numeric - 1)
-  data$inv_ss = ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
-  data[,nt_features][is.na(data[,nt_features])] <- 0
+  data$inv_ss <- 1 / (ss_numeric - 1)
+  data$inv_ss <- ifelse(is.infinite(data$inv_ss), 1, data$inv_ss)
+  data[, nt_features][is.na(data[, nt_features])] <- 0
 
   # save some variables for later use
-  attr(data, 'max_setsize') <- max_setsize
-  attr(data, 'lure_idx_vars') <- lure_idx_vars
+  attr(data, "max_set_size") <- max_set_size
+  attr(data, "lure_idx_vars") <- lure_idx_vars
 
   NextMethod("check_data")
 }
 
 
-check_var_setsize <- function(setsize, data) {
-  if (length(setsize) > 1) {
-    stop2("The setsize variable '", setsize, "' must be a single numeric value or a single variable in your data",
-          " You provided a vector of length ", length(setsize))
-  }
-  # class check - is setsize a single numeric value or a variable in the data
+check_var_set_size <- function(set_size, data) {
+  stopif(
+    length(set_size) > 1,
+    "The set_size variable '{set_size}' must be a single numeric value or \\
+          a single variable in your data. You provided a vector of length \\
+          {length(set_size)}"
+  )
+
+  # class check - is set_size a single numeric value or a variable in the data
   # coericble to a numeric vector?
-  if (is_data_var(setsize, data)) {
-    ss_numeric <- try(as_numeric_vector(data[[setsize]]), silent=T)
-    if (is_try_error(ss_numeric)) {
-      stop2("The setsize variable '", setsize, "' must be coercible to a numeric vector.\n",
-            "Did you code your set size as a character vector?")
-    }
-    max_setsize <- max(ss_numeric, na.rm = T)
+  if (is_data_var(set_size, data)) {
+    ss_numeric <- try(as_numeric_vector(data[[set_size]]), silent = T)
+
+    stopif(
+      is_try_error(ss_numeric),
+      "The set_size variable '{set_size}' must be coercible to a numeric \\
+           vector. Did you code your set size as a character vector?"
+    )
+
+    max_set_size <- max(ss_numeric, na.rm = T)
   } else {
-    max_setsize <- try(as_one_integer(setsize), silent=T)
-    if (is_try_error(max_setsize) | is.logical(setsize)) {
-      stop2("The setsize variable '", setsize, "' must be either a variable in your data or ",
-            "a single numeric value")
-    }
-    ss_numeric <- rep(max_setsize, nrow(data))
-  }
-  # value check
-  if (any(ss_numeric < 1, na.rm = T)) {
-    stop2("Values of the setsize variable '", setsize, "' must be greater than 0")
-  }
-  if (any(ss_numeric %% 1 != 0, na.rm = T)) {
-    stop2("Values of the setsize variable '", setsize, "' must be whole numbers")
+    max_set_size <- try(as_one_integer(set_size), silent = T)
+
+    stopif(
+      is_try_error(max_set_size) | is.logical(set_size),
+      "The set_size variable '{set_size}' must be either a variable in your \\
+       data or a single numeric value"
+    )
+
+    ss_numeric <- rep(max_set_size, nrow(data))
   }
 
-  list(max_setsize = max_setsize, ss_numeric = ss_numeric)
+  # value check
+  stopif(
+    any(ss_numeric < 1, na.rm = T),
+    "Values of the set_size variable '{set_size}' must be greater than 0"
+  )
+
+  stopif(
+    any(ss_numeric %% 1 != 0, na.rm = T),
+    "Values of the set_size variable '{set_size}' must be whole numbers"
+  )
+
+  list(max_set_size = max_set_size, ss_numeric = ss_numeric)
 }
 
 
-#############################################################################!
+############################################################################# !
 # HELPER FUNCTIONS                                                       ####
-#############################################################################!
+############################################################################# !
 
 #' Calculate response error relative to non-target values
 #'
@@ -161,12 +178,17 @@ check_var_setsize <- function(setsize, data) {
 #'
 #' @export
 #'
+#' @examples
+#' data <- oberauer_lin_2017
+#' data <- calc_error_relative_to_nontargets(data, "dev_rad", paste0("col_nt", 1:7))
+#' hist(data$y_nt, breaks = 100)
+#'
 calc_error_relative_to_nontargets <- function(data, response, nt_features) {
   y <- y_nt <- non_target_name <- non_target_value <- NULL
   data <- data %>%
     tidyr::gather(non_target_name, non_target_value, eval(nt_features))
 
-  data$y_nt <- wrap(data[[response]]-data[["non_target_value"]])
+  data$y_nt <- wrap(data[[response]] - data[["non_target_value"]])
   data
 }
 
@@ -186,23 +208,23 @@ calc_error_relative_to_nontargets <- function(data, response, nt_features) {
 #' @examples
 #' x <- runif(1000, -pi, pi)
 #' y <- runif(1000, -pi, pi)
-#' diff <- x-y
+#' diff <- x - y
 #' hist(diff)
-#' wrapped_diff <- wrap(x-y)
+#' wrapped_diff <- wrap(x - y)
 #' hist(wrapped_diff)
 #'
-wrap <- function(x, radians=TRUE) {
+wrap <- function(x, radians = TRUE) {
   stopifnot(is.logical(radians))
   if (radians) {
-    return(((x+pi) %% (2*pi)) - pi)
+    return(((x + pi) %% (2 * pi)) - pi)
   }
-  ((x+180) %% (2*180)) - 180
+  ((x + 180) %% (2 * 180)) - 180
 }
 
 #' @title Convert degrees to radians or radians to degrees.
-#' @description
-#'   The helper functions `deg2rad` and `rad2deg` should add convenience in transforming
-#'   data from degrees to radians and from radians to degrees.
+#' @description The helper functions `deg2rad` and `rad2deg` should add
+#' convenience in transforming data from degrees to radians and from radians to
+#' degrees.
 #'
 #' @name circle_transform
 #' @param deg A numeric vector of values in degrees.
@@ -211,16 +233,16 @@ wrap <- function(x, radians=TRUE) {
 #' @keywords transform
 #' @export
 #' @examples
-#'   degrees <- runif(100, min = 0, max = 360)
-#'   radians <- deg2rad(degrees)
-#'   degrees_again <- rad2deg(radians)
-deg2rad <- function(deg){
+#' degrees <- runif(100, min = 0, max = 360)
+#' radians <- deg2rad(degrees)
+#' degrees_again <- rad2deg(radians)
+deg2rad <- function(deg) {
   deg * pi / 180
 }
 
 #' @rdname circle_transform
 #' @export
-rad2deg <- function(rad){
+rad2deg <- function(rad) {
   rad * 180 / pi
 }
 
@@ -229,66 +251,47 @@ rad2deg <- function(rad){
 #'   this function will return the combined stan data generated by `bmm` and
 #'   `brms`
 #'
-#' @details This function is deprecated. Please use `standata()` or `make_standata()` (if using
-#' `brms` >= 2.20.14) instead. In `brms` >= 2.20.14, `make_standata()` became an
-#' alias for `standata()`, and `standata()` is the recommended function to use.
-#'
-#' @inheritParams fit_model
+#' @inheritParams bmm
+#' @aliases standata
 #' @param object A `bmmformula` object
-#' @param formula Deprecated. Use `object` instead.
-#' @param ... Further arguments passed to [brms::make_standata()]. See the
-#'   description of [brms::make_standata()] for more details
+#' @param ... Further arguments passed to [brms::standata()]. See the
+#'   description of [brms::standata()] for more details
 #'
-#' @returns A named list of objects containing the required data to fit a bmm
+#' @return A named list of objects containing the required data to fit a bmm
 #'   model with Stan.
 #'
-#'
-#' @seealso [supported_models()], [brms::make_standata()], [brms::standata()]
-#'
-#' @export
+#' @seealso [supported_models()], [brms::standata()]
 #'
 #' @keywords extract_info
-#' @importFrom brms standata
 #'
 #' @examples
 #' sdata1 <- standata(bmf(c ~ 1, kappa ~ 1),
-#'                    data = OberauerLin_2017,
-#'                    model = sdmSimple(resp_err = "dev_rad"))
+#'   data = oberauer_lin_2017,
+#'   model = sdm(resp_error = "dev_rad")
+#' )
 #' str(sdata1)
+#' @importFrom brms standata
 #' @export
-get_standata <- function(object, data, model, prior=NULL, formula = object, ...) {
-  if (utils::packageVersion('brms') >= "2.20.14") {
-    message("get_standata is deprecated. Please use standata() or make_standata() instead.")
-  } else {
-    message("get_standata is deprecated. Please use standata() instead.")
-  }
-  if (missing(object) && !missing(formula)) {
-    warning2("The 'formula' argument is deprecated for consistency with brms (>= 2.20.14).",
-            " Please use 'object' instead.")
-  }
-  standata.bmmformula(object = formula, data = data,
-                      model = model, prior = prior, ...)
-}
-
-#' @export
-#' @rdname get_standata
 standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # check model, formula and data, and transform data if necessary
   formula <- object
-  model <- check_model(model, data)
+  configure_options(list(...))
+  model <- check_model(model, data, formula)
   data <- check_data(model, data, formula)
   formula <- check_formula(model, data, formula)
 
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
 
-  # combine the default prior plus user given prior
-  config_args$prior <- combine_prior(config_args$prior, prior)
+  # configure the default prior and combine with user-specified prior
+  prior <- configure_prior(model, data, config_args$formula, prior)
 
   # extract stan code
   dots <- list(...)
-  fit_args <- c(config_args, dots)
-  brms::do_call(brms::make_standata, fit_args)
+  fit_args <- combine_args(nlist(config_args, dots, prior))
+  fit_args$object <- fit_args$formula
+  fit_args$formula <- NULL
+  brms::do_call(brms::standata, fit_args)
 }
 
 # check if the data is sorted by the predictors
@@ -297,9 +300,9 @@ is_data_ordered <- function(data, formula) {
   predictors <- rhs_vars(formula)
   predictors <- predictors[not_in(predictors, dpars)]
   predictors <- predictors[predictors %in% colnames(data)]
-  data <- data[,predictors]
+  data <- data[, predictors]
   if (length(predictors) > 1) {
-    gr_idx <- do.call(paste, c(data, list(sep="_")))
+    gr_idx <- do.call(paste, c(data, list(sep = "_")))
   } else {
     gr_idx <- unlist(data)
   }
@@ -308,17 +311,14 @@ is_data_ordered <- function(data, formula) {
 }
 
 # checks if all repetitions of a given value are consecutive in a vector
-# by iterating over unique values and checking if all their positions are consecutive
+# by iterating over unique values and checking if all their positions are
+# consecutive
 has_nonconsecutive_duplicates <- function(vec) {
   unique_vals <- unique(vec)
   cond <- TRUE
-  for(val in unique_vals) {
+  for (val in unique_vals) {
     positions <- which(vec == val)
     cond <- cond & all(diff(positions) == 1)
   }
   !cond
 }
-
-
-
-

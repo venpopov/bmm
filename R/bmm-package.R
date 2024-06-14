@@ -1,7 +1,10 @@
-#' @keywords internal
+#' Easy and Accesible Bayesian Measurement Models Using 'brms'
+#' @docType package
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @importFrom brms save_pars
+#' @importFrom glue glue
+#' @import stats
+#'
 ## usethis namespace: end
 NULL

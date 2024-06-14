@@ -6,7 +6,7 @@
 \alias{psdm}
 \alias{qsdm}
 \alias{rsdm}
-\title{The Signal Discrimination Model (SDM) Distribution}
+\title{Distribution functions for the Signal Discrimination Model (SDM)}
 \usage{
 dsdm(x, mu = 0, c = 3, kappa = 3.5, log = FALSE, parametrization = "sqrtexp")
 
@@ -37,7 +37,7 @@ rsdm(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp")
 \item{log}{Logical; if \code{TRUE}, values are returned on the log scale.}
 
 \item{parametrization}{Character; either \code{"bessel"} or \code{"sqrtexp"}
-(default). See \code{vignette("sdm-simple")} for details on the
+(default). See \href{https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html}{the online article} for details on the
 parameterization.}
 
 \item{q}{Vector of quantiles}
@@ -70,7 +70,7 @@ single activation source is supported.
 \details{
 \strong{Parametrization}
 
-See \code{vignette("sdm-simple")} for details on the parameterization.
+See \href{https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html}{the online article} for details on the parameterization.
 Oberauer (2023) introduced the SDM with the bessel parametrization. The
 sqrtexp parametrization is the default in the \code{bmm} package for
 numerical stability and efficiency. The two parametrizations are related by
@@ -110,7 +110,6 @@ r <- rsdm(10000, mu = 0, c = 3.1, kappa = 5)
 d <- dsdm(x, mu = 0, c = 3.1, kappa = 5)
 hist(r, breaks=60, freq=FALSE)
 lines(x,d,type="l", col="red")
-
 }
 \references{
 Oberauer, K. (2023). Measurement models for visual working
