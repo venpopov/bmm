@@ -10,7 +10,6 @@ test_that('imm works when set_size is not predicted and there is set_size 1', {
   res <- try(fit <- bmm(formula, dat, model,
                    backend = 'mock', mock=1, rename = F))
   expect_false(is_try_error(res))
-
 })
 
 test_that('imm_abc works when set_size is not predicted and there is set_size 1', {
@@ -23,7 +22,6 @@ test_that('imm_abc works when set_size is not predicted and there is set_size 1'
   res <- try(fit <- bmm(formula, dat, model,
                         backend = 'mock', mock=1, rename = F))
   expect_false(is_try_error(res))
-
 })
 
 

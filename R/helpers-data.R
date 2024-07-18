@@ -449,17 +449,17 @@ aggregate_data.m3 <- function(model, data, formula, resp_var, ...) {
 
   # Aggregate responses
   data_output <- .data %>%
-    select(all_of(resp_var), all_of(group)) %>%
-    pivot_longer(cols = all_of(resp_var), names_to = "response", values_to = "value") %>%
-    summarise(
+    dplyr::select(dplyr::all_of(resp_var), all_of(group)) %>%
+    tidyr::pivot_longer(cols = dplyr::all_of(resp_var), names_to = "response", values_to = "value") %>%
+    dplyr::summarise(
       Resp = sum(value, na.rm = TRUE),
       .by = all_of(new_group)
     ) %>%
-    mutate(
+    dplyr::mutate(
       {{ nDV_name }} := sum(Resp, na.rm = TRUE),
       .by = all_of(group)
     ) %>%
-    pivot_wider(names_from = response, values_from = Resp)
+    tidyr::pivot_wider(names_from = response, values_from = Resp)
 
   return(data_output)
 }

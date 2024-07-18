@@ -13,7 +13,7 @@
    # save model information
    out <- list(
       resp_vars = nlist(resp_cats),
-      other_vars = nlist(num_options, choice_rule, ...),
+      other_vars = nlist(num_options, choice_rule),
       links = dots$links,
       domain = 'Working Memory (categorical)',
       task = 'n-AFC retrieval',
@@ -32,7 +32,8 @@
          b = ifelse(choice_rule == "softmax", 0, 0.1)
       ),
       default_priors = dots$default_priors,
-      void_mu = FALSE
+      void_mu = FALSE,
+      custom_bmf2bf = TRUE
    )
 
    # add version specific information
@@ -44,8 +45,8 @@
 
       if (tolower(out$choice_rule) == "luce") {
          ss_links <- list(
-            c = "exp",
-            a = "exp"
+            c = "log",
+            a = "log"
          )
          ss_default_priors <- list(
             a = list(main = "normal(1,0.5)", effects = "normal(0,0.5)"),
@@ -57,8 +58,8 @@
             a = "identity"
          )
          ss_default_priors <- list(
-            a = list(main = "normal(1.5,0.5)", effects = "normal(0,0.5)"),
-            c = list(main = "normal(10,1)", effects = "normal(0,2)")
+            a = list(main = "normal(2,1)", effects = "normal(0,0.5)"),
+            c = list(main = "normal(3,1)", effects = "normal(0,2)")
          )
       }
 
@@ -79,8 +80,8 @@
 
       if (tolower(out$choice_rule) == "luce") {
          cs_links <- list(
-            c = "exp",
-            a = "exp",
+            c = "log",
+            a = "log",
             f = "logit"
          )
          cs_default_priors <- list(
@@ -95,8 +96,8 @@
             f = "logit"
          )
          cs_default_priors <- list(
-            a = list(main = "normal(1.5,0.5)", effects = "normal(0,0.5)"),
-            c = list(main = "normal(10,3)", effects = "normal(0,2)"),
+            a = list(main = "normal(3,1)", effects = "normal(0,0.5)"),
+            c = list(main = "normal(3,1)", effects = "normal(0,2)"),
             f = list(main = "logisitic(0,1)", effects = "normal(0,1)")
          )
       }
@@ -285,6 +286,15 @@ bmf2bf.m3 <- function(model, formula) {
                   " + (1-",nOpt_idx_vars[resp_cats[i]],") *",zero_Opt,end_act)
    }
 
+   # add activation functions for simple and complex span versions
+   if ("m3_ss" %in% class(model)) {
+      # I leave that as an example here...
+      brms_formula <- brms_formula +
+         glue_nlf(resp_cats[1], " ~ b + a + c")
+   } else if("m3_cs" %in% class(model)) {
+
+   }
+
    brms_formula
 }
 
@@ -306,16 +316,6 @@ configure_model.m3 <- function(model, data, formula) {
 
    formula$family$cats <- model$resp_vars$resp_cats
    formula$family$dpars <- paste0("mu",model$resp_vars$resp_cats)
-
-   # construct the default prior
-   # prior <- fixed_pars_priors(model, formula)
-   # if (getOption("bmm.default_priors", TRUE)) {
-   #    prior <- prior +
-   #       set_default_prior(bmm_formula, data,
-   #                         prior_list=list(kappa =list(main = 'normal(2,1)',effects = 'normal(0,1)', nlpar = T),
-   #                                         c = list(main = 'normal(0,1)',effects = 'normal(0,1)', nlpar = T),
-   #                                         s = list(main = 'normal(0,1)',effects = 'normal(0,1)', nlpar = T)))
-   # }
 
    # return the list
    out <- nlist(formula, data)

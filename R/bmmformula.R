@@ -252,7 +252,7 @@ bmf2bf.bmmodel <- function(model, formula) {
   resp <- model$resp_vars
 
   # not ideal but required to not break other models
-  if ("m3" %in% class(model)) {
+  if (model$custom_bmf2bf) {
     brms_formula <- NextMethod("bmf2bf")
   } else {
     resp <- resp[[1]]

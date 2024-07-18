@@ -69,7 +69,6 @@ use_model_template("abc",
   custom_family = TRUE,
   stanvar_blocks = c("functions", "likelihood", "tdata")
 )
-
 \dontshow{\}) # examplesIf}
 }
 \keyword{developer}
