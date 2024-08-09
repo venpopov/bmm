@@ -236,19 +236,7 @@ bmf2bf <- function(model, formula) {
 # default method for all bmmodels with 1 response variable
 #' @export
 bmf2bf.bmmodel <- function(model, formula) {
-  # check if the model has only one response variable and extract if TRUE
-  resp <- model$resp_vars
-  constants <- model$fixed_parameters
-
-  if (model$custom_bmf2bf) {
-    brms_formula <- NextMethod("bmf2bf")
-  } else {
-    resp <- resp[[1]]
-
-    # set base brms formula based on response
-    brms_formula <- brms::bf(paste0(resp, "~ 1"))
-  }
-
+  brms_formula <- NextMethod("bmf2bf")
 
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function
@@ -260,6 +248,13 @@ bmf2bf.bmmodel <- function(model, formula) {
     }
   }
   brms_formula
+}
+
+bmf2bf.default <- function(model, formula) {
+  resp <- model$resp_vars[[1]]
+
+  # set base brms formula based on response
+  brms::bf(paste0(resp, "~ 1"))
 }
 
 
