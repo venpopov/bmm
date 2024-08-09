@@ -233,9 +233,12 @@ bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
 }
 
-# default method for all bmmodels with 1 response variable
+# S* method for all bmmodels that adds all formulas specified in the bmmformula and converts
+# them to brmsformula elements
 #' @export
 bmf2bf.bmmodel <- function(model, formula) {
+  # first we intiliaze the brms_formula. For this, we compile the first line of the
+  # brms_formula including the response variable
   brms_formula <- NextMethod("bmf2bf")
 
   # for each dependent parameter, check if it is used as a non-linear predictor of
@@ -250,6 +253,11 @@ bmf2bf.bmmodel <- function(model, formula) {
   brms_formula
 }
 
+# default method for compiling the first line of the brms_formula with a single response
+# variable. If a bmmodel has more then one response variable, or requires the specification
+# of any additional response terms, then please write a bmf2bf.bmmodelclass method to
+# adequately compile the
+#' @export
 bmf2bf.default <- function(model, formula) {
   resp <- model$resp_vars[[1]]
 
