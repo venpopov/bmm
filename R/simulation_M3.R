@@ -18,7 +18,7 @@ simulateM3 <- function(
     nPart = 50,
     pars,
     model,
-    nOpts,
+    nOpt,
     export = "response"
     ){
 
@@ -43,7 +43,7 @@ simulateM3 <- function(
 
   Data_pars <- as.data.frame(List_pars)
 
-  if (export=="parameter") return(Data_pars) break
+  if (export=="parameter") return(Data_pars)
 
   # This function is copied from the smartr package,
   # which add new columns to a data frame using formulas.
@@ -80,7 +80,7 @@ simulateM3 <- function(
   Data_acts <- mutate_form(Data_pars, formula) %>%
     dplyr::select(-names(pars))
 
-  if (export=="activation") return(Data_acts) break
+  if (export=="activation") return(Data_acts)
 
   # response name
   respNames <- colnames(Data_acts[,2:length(Data_acts)])
