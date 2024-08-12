@@ -1,14 +1,16 @@
-
 #' Simulate data based on the M3.
 #'
 #' @param nRet Number of responses for each participant.
 #' @param nPart Number of participants.
 #' @param pars A list of parameters, including the distribution function and parameters for the function.
 #' @param model A list of formulas and choice rules.
-#' @param nOpts A vector of the number of options for each response.
+#' @param nOpt A vector of the number of options for each response.
+#' @param group A vector of group variables.
+#' @param addData A data frame containing additional data.
 #' @param export A string indicating the type of data to export.
 #' `parameters`: the values of each parameter for each participant;
 #' `activation`: the activation level of each response category for each participant;
+#' `probability`: the choice probability of each response category for each participant;
 #' `response`: the number of response of each category for each participant.
 #'
 #' @return A data frame containing the simulated data.
@@ -19,13 +21,35 @@ simulateM3 <- function(
     pars,
     model,
     nOpt,
+    group = NULL,
+    addData = NULL,
     export = "response"
-    ){
+){
 
   # The following information is expected from the model parameter.
   # @Gidon, can you adjust it so that it can be retrieved from the BMM model?
   formula <- model$formula
   choiceRule <- model$choiceRule
+
+  # check if the group variables are in the addData
+  if (is.null(group)) {
+    next
+  } else {
+    if (is.null(addData)) {
+      stop("Some of the group variables may not be in the addData.")
+    } else {
+      if (!all(group %in% names(addData))) {
+        stop("Some of the group variables may not be in the addData.")
+      }
+    }
+  }
+
+  # check if "subj" is in the group
+  group <- c("subj", group)
+
+  # check if the addData is a data frame
+  if (is.list(addData)) addData <- data.frame(addData)
+  if (!is.data.frame(addData)) stop("addData must be either a list or a data frame.")
 
   # parameters
   List_pars <- list(subj = 1:nPart)
@@ -76,19 +100,35 @@ simulateM3 <- function(
 
   }
 
+  DVs <- c()
+  IVs <- c()
+  for (i in 1:length(formula)) {
+    DVs <- c(DVs, all.vars(formula[[i]])[1])
+    IVs <- c(IVs, all.vars(formula[[i]])[-1])
+  }
+  DVs <- unique(DVs)
+  IVs <- unique(IVs)
+
+  # response names
+  respNames <- setdiff(DVs, IVs)
+  DVparsNames <- intersect(DVs, IVs)
+  parNames <- setdiff(IVs, DVpars)
+
   # Compute the activation level of each option.
-  Data_acts <- mutate_form(Data_pars, formula) %>%
-    dplyr::select(-names(pars))
+  Data_acts <- Data_pars %>%
+    cross_join(addData) %>%
+    mutate_form(formula) %>%
+    dplyr::select(all_of(group), all_of(respNames))
 
   if (export=="activation") return(Data_acts)
 
-  # response name
-  respNames <- colnames(Data_acts[,2:length(Data_acts)])
+
+
   names(nOpt) <- respNames
 
   # Compute the choice probabilities.
   Data_probs <- Data_acts %>%
-    tidyr::pivot_longer(cols = -subj, names_to = "response") %>%
+    tidyr::pivot_longer(cols = all_of(respNames), names_to = "response") %>%
     dplyr::rowwise() %>%
     dplyr::mutate(
       nOpt = nOpt[response],
@@ -101,17 +141,19 @@ simulateM3 <- function(
     dplyr::ungroup() %>%
     dplyr::mutate(
       sumValue = sum(wValue),
-      .by = "subj"
+      .by = all_of(group)
     ) %>%
     dplyr::mutate(
       prob = wValue/sumValue
     ) %>%
-    dplyr::select(subj, response, prob)
+    dplyr::select(all_of(group), response, prob)
+
+  if (export=="probability") return(Data_probs)
 
   Data_Ret <- Data_probs %>%
     dplyr::mutate(
       nRet = unlist(rmultinom(1, nRet, prob = prob)[,1]),
-      .by = "subj"
+      .by = all_of(group)
     ) %>%
     dplyr::select(-prob) %>%
     tidyr::pivot_wider(names_from = response, values_from = nRet)
@@ -120,34 +162,7 @@ simulateM3 <- function(
 
 }
 
-###################################################################
 
-nPart = 100
-nRet = 100
-
-pars <- list(
-  a = list(fun = rnorm, pars = list(mean = 1, sd = 0.5)),
-  c = list(fun = rnorm, pars = list(mean = 2, sd = 0.5)),
-  r = list(fun = rnorm, pars = list(mean = brms::logit_scaled(0.3), sd = 0.5)),
-  b = 0
-)
-
-formula <- c(
-  correct ~ a + c + b,
-  trans ~ a + b,
-  dist ~  exp(r)/(1+exp(r)) * a + b,
-  NPL ~ b
-)
-
-choiceRule <- "softmax"
-
-
-model <- list(
-  formula = formula,
-  choiceRule = choiceRule
-)
-
-nOpt <- c(1, 5, 2, 8)
 
 
 
