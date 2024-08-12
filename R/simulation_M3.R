@@ -112,7 +112,7 @@ simulateM3 <- function(
   # response names
   respNames <- setdiff(DVs, IVs)
   DVparsNames <- intersect(DVs, IVs)
-  parNames <- setdiff(IVs, DVpars)
+  parNames <- setdiff(IVs, DVs)
 
   # Compute the activation level of each option.
   Data_acts <- Data_pars %>%
