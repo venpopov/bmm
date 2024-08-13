@@ -233,7 +233,7 @@ bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
 }
 
-# S* method for all bmmodels that adds all formulas specified in the bmmformula and converts
+# S3 method for all bmmodels that adds all formulas specified in the bmmformula and converts
 # them to brmsformula elements
 #' @export
 bmf2bf.bmmodel <- function(model, formula) {
@@ -259,10 +259,8 @@ bmf2bf.bmmodel <- function(model, formula) {
 # adequately compile the
 #' @export
 bmf2bf.default <- function(model, formula) {
-  resp <- model$resp_vars[[1]]
-
   # set base brms formula based on response
-  brms::bf(paste0(resp, "~ 1"))
+  brms::bf(paste0(model$resp_vars[[1]], "~ 1"))
 }
 
 
