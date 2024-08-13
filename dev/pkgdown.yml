@@ -1,15 +1,14 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
-  bmm_bmmformula: bmm_bmmformula.html
-  bmm_extract_info: bmm_extract_info.html
-  bmm_imm: bmm_imm.html
-  bmm_mixture_models: bmm_mixture_models.html
-  bmm_sdm_simple: bmm_sdm_simple.html
-  bmm_vwm_crt: bmm_vwm_crt.html
-last_built: 2024-05-28T15:45Z
+  articles/bmm_bmmformula: bmm_bmmformula.html
+  articles/bmm_extract_info: bmm_extract_info.html
+  articles/bmm_imm: bmm_imm.html
+  articles/bmm_mixture_models: bmm_mixture_models.html
+  articles/bmm_sdm_simple: bmm_sdm_simple.html
+  articles/bmm_vwm_crt: bmm_vwm_crt.html
+last_built: 2024-08-13T11:54Z
 urls:
   reference: https://venpopov.github.io/bmm/reference
   article: https://venpopov.github.io/bmm/articles
-
