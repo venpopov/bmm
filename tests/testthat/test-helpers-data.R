@@ -177,10 +177,10 @@ test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call = FALSE), get_model)
   for (ml in mls) {
     expect_s3_class(check_data(
-      ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z"),
-      data.frame(y = 1, x = 1, z = 2),
+      ml(resp_err = "y", nt_features = 'x', set_size = 2, nt_distances = 'z', response = "r", stimulus = "s"),
+      data.frame(y = 1, x = 1, z = 2, r = 1, s = 0),
       bmmformula(kappa ~ 1)
-    ), "data.frame")
+      ), "data.frame")
   }
 })
 

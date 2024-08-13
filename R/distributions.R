@@ -544,3 +544,198 @@ rimm <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
 
   .rimm_inner(n, mu, dist, c ,a ,b ,s ,kappa , xa)
 }
+
+#' @title Models of Signal Detection Theory (SDT)
+#' @description
+#'   Density, distribution, and random generation function for SDT models for binary (yes/no)
+#'   responses without confidence ratings. All functions use the parameters `dprime` for the
+#'   signal strength and `crit` for the criterium for saying "yes" or "old" to a stimulus.
+#'
+#'   This means they give the likelihood for a hit or correct response when a signal or old
+#'   stimulus is presented. and the likelihood for a false alarm when noise or a new stimulus
+#'   is presented. Likewise the random generation function returns the randomly generated
+#'   number of hits for signal or old trials, and the randomly generated number of false
+#'   alarms for noise or new trials.
+#'
+#' @name SDTdist
+#'
+#' @param x A vector of observed responses.
+#' @param p A vector of probabilities.
+#' @param q A vector of quantiles.
+#' @param n Number of observations to generate data for.
+#' @param size The number of trials used to collect the responses.
+#' @param dprime A vector of numerical values for the signal strength.
+#' @param crit A vector of numerical values for the decision criterion.
+#' @param stimulus A character vector ("signal"/"noise", "old"/"new") or
+#'   integer vector (1/0) coding which stimuli were shown alongside the observed responses,
+#'   or for which to generate data for.  If no information is provided for `rSDT` then we will
+#'   assume the first half of the to be generated trials as 1 and the second half as 0.
+#' @param dist_noise A string specifying which noise distribution is assumed for the
+#'   Signal-Detection Model. Available options are "normal", "gumbel", "cauchy", and "logistic".
+#'   The default is "normal".
+#' @param log logical. if `TRUE` , values are returned on the log scale.
+#' @param log.p logical. if `TRUE` , values are returned on the log scale.
+#' @param lower.tail logical. if `TRUE` (default), probabilities are P\[X < x\],
+#'   otherwise P\[X > x\].
+#'
+#' @keywords distribution
+#' @export
+#'
+#' @examples
+#' # example code
+#'
+#'
+dSDT <- function(x, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise = "normal", log = FALSE) {
+  if (is.character(stimulus)) {
+    if (any(!unique(stimulus) %in% c("signal","noise","old","new"))) {
+      stop("Please provide a stimulus variable containing only characters: \"signal\",
+           \"noise\", \"old\", or \"new\".")
+    }
+    stim_num <- ifelse(stimulus == "signal" | stimulus == "old", 1, 0)
+  } else {
+    if (any(!unique(stimulus) %in% c(0,1))) {
+      stop("Please provide a stimulus variable only containing zeros and ones")
+    }
+    stim_num <- stimulus
+  }
+
+  dist_noise_opts <- c("normal","cauchy","logistic","gumbel")
+  if(!dist_noise %in% dist_noise_opts){
+    stop("The selected noise distribution is not supported.\n",
+         "Please select one of the following noise distributions:
+           \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
+  }
+
+  acts <- dprime*stim_num - crit
+  if (tolower(dist_noise) == "normal") {
+    probs <- stats::pnorm(acts)
+  } else if (tolower(dist_noise) == "gumbel") {
+    probs <- evd::pgumbel(-acts, lower.tail = FALSE)
+  } else if (tolower(dist_noise) == "cauchy") {
+    probs <- stats::pcauchy(acts)
+  } else if (tolower(dist_noise) == "logistic") {
+    probs <- stats::plogis(acts)
+  }
+
+  density <- stats::dbinom(x, size = size, prob = probs, log = TRUE)
+
+  if (!log) {
+    return(exp(density))
+  }
+
+  density
+}
+
+#' @rdname SDTdist
+#' @export
+pSDT <- function(q, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise = "normal", lower.tail = TRUE, log.p = FALSE) {
+  if (is.character(stimulus)) {
+    if (any(!unique(stimulus) %in% c("signal","noise","old","new"))) {
+      stop("Please provide a stimulus variable containing only characters: \"signal\",
+           \"noise\", \"old\", or \"new\".")
+    }
+    stim_num <- ifelse(stimulus == "signal" | stimulus == "old", 1, 0)
+  } else {
+    if (any(!unique(stimulus) %in% c(0,1))) {
+      stop("Please provide a stimulus variable only containing zeros and ones")
+    }
+    stim_num <- stimulus
+  }
+
+  dist_noise_opts <- c("normal","cauchy","logistic","gumbel")
+  if (!dist_noise %in% dist_noise_opts) {
+    stop("The selected noise distribution is not supported.\n",
+         "Please select one of the following noise distributions:
+           \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
+  }
+
+  acts <- dprime*stim_num - crit
+  if (tolower(dist_noise) == "normal") {
+    probs <- stats::pnorm(acts)
+  } else if (tolower(dist_noise) == "gumbel") {
+    probs <- evd::pgumbel(-acts, lower.tail = FALSE)
+  } else if (tolower(dist_noise) == "cauchy") {
+    probs <- stats::pcauchy(acts)
+  } else if (tolower(dist_noise) == "logistic") {
+    probs <- stats::plogis(acts)
+  }
+
+  prob <- stats::pbinom(q = q, size = size, prob = probs, log.p = log.p)
+  prob
+}
+
+#' @rdname SDTdist
+#' @export
+qSDT <- function(p, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise = "normal", lower.tail = TRUE, log.p = FALSE) {
+  if (is.character(stimulus)) {
+    if (any(!unique(stimulus) %in% c("signal","noise","old","new"))) {
+      stop("Please provide a stimulus variable containing only characters: \"signal\",
+           \"noise\", \"old\", or \"new\".")
+    }
+    stim_num <- ifelse(stimulus == "signal" | stimulus == "old", 1, 0)
+  } else {
+    if (any(!unique(stimulus) %in% c(0,1))) {
+      stop("Please provide a stimulus variable only containing zeros and ones")
+    }
+    stim_num <- stimulus
+  }
+
+  dist_noise_opts <- c("normal","cauchy","logistic","gumbel")
+  if (!dist_noise %in% dist_noise_opts) {
+    stop("The selected noise distribution is not supported.\n",
+         "Please select one of the following noise distributions:
+           \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
+  }
+
+  acts <- dprime*stim_num - crit
+  if (tolower(dist_noise) == "normal") {
+    probs <- stats::pnorm(acts)
+  } else if (tolower(dist_noise) == "gumbel") {
+    probs <- evd::pgumbel(-acts, lower.tail = FALSE)
+  } else if (tolower(dist_noise) == "cauchy") {
+    probs <- stats::pcauchy(acts)
+  } else if (tolower(dist_noise) == "logistic") {
+    probs <- stats::plogis(acts)
+  }
+
+  quantile <- stats::qbinom(p = p, size = size, prob = probs, log.p = log.p)
+  quantile
+}
+
+#' @rdname SDTdist
+#' @export
+rSDT <- function(n, size, dprime = 1, crit = dprime/2, stimulus = 1, dist_noise = "normal") {
+  if (is.character(stimulus) | is.factor(stimulus)) {
+    if (any(!unique(stimulus) %in% c("signal","noise","old","new"))) {
+      stop("Please provide a stimulus variable containing only characters: \"signal\",
+           \"noise\", \"old\", or \"new\".")
+    }
+    stim_num <- ifelse(stimulus == "signal" | stimulus == "old", 1, 0)
+  } else {
+    if (any(!unique(stimulus) %in% c(0,1))) {
+      stop("Please provide a stimulus variable only containing zeros and ones")
+    }
+    stim_num <- stimulus
+  }
+
+  dist_noise_opts <- c("normal","cauchy","logistic","gumbel")
+  if (!dist_noise %in% dist_noise_opts) {
+    stop("The selected noise distribution is not supported.\n",
+         "Please select one of the following noise distributions:
+           \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
+  }
+
+  acts <- dprime*stim_num - crit
+  if (tolower(dist_noise) == "normal") {
+    probs <- stats::pnorm(acts)
+  } else if (tolower(dist_noise) == "gumbel") {
+    probs <- evd::pgumbel(-acts, lower.tail = FALSE)
+  } else if (tolower(dist_noise) == "cauchy") {
+    probs <- stats::pcauchy(acts)
+  } else if (tolower(dist_noise) == "logistic") {
+    probs <- stats::plogis(acts)
+  }
+
+  data <- stats::rbinom(n = n, size = size, prob = probs)
+  data
+}

@@ -7,7 +7,7 @@
 
   out <- structure(
     list(
-      resp_vars = nlist(resp_error), 
+      resp_vars = nlist(resp_error),
       other_vars = nlist(nt_features, set_size),
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -46,7 +46,8 @@
         thetat = list(main = "logistic(0, 1)"),
         thetant = list(main = "logistic(0, 1)")
       ),
-      void_mu = FALSE
+      void_mu = FALSE,
+      custom_bmf2bf = FALSE
     ),
     # attributes
     regex = regex,

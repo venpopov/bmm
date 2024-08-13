@@ -1,0 +1,170 @@
+#############################################################################!
+# MODELS                                                                 ####
+#############################################################################!
+.model_sdt <- function(response = NULL, stimulus = NULL, nTrials = NULL, dist_noise = "normal", ...) {
+   out <- list(
+      resp_vars = nlist(response),
+      other_vars = nlist(stimulus, nTrials, dist_noise, ...),
+      domain = 'Perception & Recognition',
+      task = 'Signal/Noise or Old/New Recognition tasks',
+      name = 'Signal Detection Theory for Old/New Recognition',
+      citation = 'DeCarlo, L. T. (1998). Signal detection theory and generalized linear models. Psychological Methods, 3(2), 186-205.',
+      version = '',
+      requirements = paste('- provide the number of signal or old responses for the different stimulus types presented (signal/noise or old/new)',
+                           '  - provide the stimulus type either signal/noise or old/new, this can be a factor with dummy coding with 0 = noise/new, and 1 = signal/old, or a numeric vector with equal coding',
+                           '  - provide the number of total trial for each stimulus type in each condition',
+                           '  - additionally, you can select different noise distributions for the Signal Decetion Theory model. For details please see the provided reference.', sep = "\n"),
+      parameters = list(
+        dprime = "The level of signal from a perceptual or memory stimulus to be recognized",
+        crit = "The criterion of activation to be reached for a stimulus to be recognized. This is parmaeterized as the bias relative to the optimal criterion at dprime/2"
+      ),
+      fixed_parameters = list(),
+      default_priors = list(
+        dprime = list(main = "logistic(0, 1)", effects = "logistic(0, 0.5)"),
+        crit = list(main = "logistic(0, 1)", effects = "logistic(0, 0.5)")
+      ),
+      void_mu = FALSE,
+      custom_bmf2bf = TRUE
+   )
+   class(out) <- c('bmmodel', 'sdt')
+   out
+}
+
+# user facing alias
+# information in the title and details sections will be filled in
+# automatically based on the information in the .model_SDT()$info
+#' @title `r .model_sdt()$name`
+#' @name SDT
+#' @details `r model_info(.model_sdt())`
+#' @param response The variable name of the response variable in the data set.
+#'   The response given when a stimulus appears. Either these can be integers
+#'   indicating that noise/new information was detected `0` or a signal/old information was
+#'   detected `1`. Or the sum of responses for signal/old information, when data is aggregated
+#' @param stimulus The variable name of the stimulus variable in the data set.
+#'   The type of stimulus that was presented. Either an integer value indicating
+#'   noise/new stimuli with `0` and signal/old stimuli with `1`, or a factor variable using
+#'   dummy coding with noise/new stimulus factors as the baseline level. If a factor variable
+#'   is used this factor should only have two levels: one for noise/new stimuli and another
+#'   for signal/old stimuli
+#' @param nTrials The variable name of the variable specifying the number of trials in the data set.
+#'   This argument only needs to be specified if aggregated data is provided in the response variable.
+#' @param dist_noise The noise distribution that should be assumed for the Signal Detection model.
+#'   Currently, the following noise distributions are supported: "normal", "gumbel",
+#'   "cauchy", and "logistic". The default is to assume normal noise around both the
+#'   signal and noise distribution in the SDT model.
+#' @param ... used internally for testing, ignore it
+#' @return An object of class `bmmmodel`
+#' @export
+#' @examples
+#' \dontrun{
+#' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)
+#' }
+sdt <- function(response, stimulus, nTrials = NULL, dist_noise = "normal", ...) {
+  stop_missing_args()
+  .model_sdt(response = response, stimulus = stimulus, nTrials = nTrials,
+             dist_noise = dist_noise, ...)
+}
+
+#############################################################################!
+# CHECK_DATA S3 methods                                                  ####
+#############################################################################!
+# A check_data.* function should be defined for each class of the model.
+# If a model shares methods with other models, the shared methods should be
+# defined in data-helpers.R. Put here only the methods that are specific to
+# the model. See ?check_data for details.
+# (YOU CAN DELETE THIS SECTION IF YOU DO NOT REQUIRE ADDITIONAL DATA CHECKS)
+
+#' @export
+check_data.sdt <- function(model, data, formula) {
+   # retrieve required arguments
+   resp_names <- unlist(model$resp_vars)
+   stimulus <- model$other_vars$stimulus
+   nTrials <- model$other_vars$nTrials
+
+   resp_vars <- c(resp_names,stimulus,nTrials)
+   # check the data (required)
+   if (any(!resp_vars %in% colnames(data))) {
+      missing_resp_name <- resp_vars[which(!resp_vars %in% colnames(data))]
+      if (length(missing_resp_name == 1)) {
+         stop(paste0("The response variable '", missing_resp_name, "' is not present in the data."))
+      } else {
+         stop(paste0("The response variables '", missing_resp_name, "' are not present in the data."))
+      }
+   }
+
+   data = NextMethod('check_data')
+   return(data)
+}
+
+
+#############################################################################!
+# Convert bmmformula to brmsformla methods                               ####
+#############################################################################!
+# A bmf2bf.* function should be defined if the default method for consructing
+# the brmsformula from the bmmformula does not apply
+# The shared method for all `bmmmodels` is defined in helpers-formula.R.
+# See ?bmf2bf for details.
+# (YOU CAN DELETE THIS SECTION IF YOUR MODEL USES A STANDARD FORMULA WITH 1 RESPONSE VARIABLE)
+
+#' @export
+bmf2bf.sdt <- function(model, formula) {
+   # retrieve required response arguments
+   response <- model$resp_vars$response
+   stimulus <- model$other_vars$stimulus
+
+   # set the base brmsformula given the variable names
+   if (!is.null(model$other_vars$nTrials)) {
+      nTrials <- model$other_vars$nTrials
+      brms_formula <- brms::bf(paste0(response," | ", "trials(",nTrials,")", " ~ dprime*",stimulus," - crit" ), nl = TRUE)
+   } else {
+      brms_formula <- brms::bf(paste0(response," ~ dprime*",stimulus," - crit"),nl = TRUE)
+   }
+
+   # return brms formula to add the rest of the bmmformula to it
+   return(brms_formula)
+}
+
+
+#############################################################################!
+# CONFIGURE_MODEL S3 METHODS                                             ####
+#############################################################################!
+# Each model should have a corresponding configure_model.* function. See
+# ?configure_model for more information.
+
+#' @export
+configure_model.sdt <- function(model, data, formula) {
+   # retrieve required arguments
+   dist_noise <- model$other_vars$dist_noise
+
+   # construct brms formula from the bmm formula
+   bmm_formula <- formula
+   formula <- bmf2bf(model, bmm_formula)
+
+   # construct the family
+   if (tolower(dist_noise) == "normal") {
+      link_fun <- "probit"
+   } else if (tolower(dist_noise) == "gumbel") {
+      link_fun <- "cloglog"
+   } else if (tolower(dist_noise) == "cauchy") {
+      link_fun <- "cauchit"
+   } else if (tolower(dist_noise) == "logistic") {
+      link_fun <- "logit"
+   } else {
+      stop("The selected noise distributionis not supported.\n",
+           "Please select one of the following noise distributions:
+           \"normal\", \"gumbel\". \"cauchy\". or \"logistic\".")
+   }
+
+   if (!is.null(model$other_vars$nTrials)) {
+      formula$family <- stats::binomial(link = link_fun)
+   } else {
+      formula$family <- brms::bernoulli(link = link_fun)
+   }
+
+   # no default priors required
+   prior <- NULL
+
+   # return the list
+   out <- nlist(formula, data, family, prior)
+   return(out)
+}

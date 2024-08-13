@@ -117,8 +117,8 @@ not_in_list <- function(key, list) {
 #' arguments
 #' @param ... string parts of the formula separated by commas
 #' @examples
-#' kappa_nts <- paste0('kappa_nt', 1:4)
-#' glue_nlf(kappa_nts[i], ' ~ kappa')  ## same as brms::nlf(kappa_nt1 ~ kappa)
+#' kappa_nts <- paste0("kappa_nt", 1:4)
+#' glue_nlf(kappa_nts[i], " ~ kappa") ## same as brms::nlf(kappa_nt1 ~ kappa)
 #' @noRd
 glue_nlf <- function(..., env.frame = -1) {
   brms::nlf(stats::as.formula(glue(..., .envir = sys.frame(env.frame))))
@@ -135,7 +135,7 @@ glue_lf <- function(..., env.frame = -1) {
 #' model configuration is correct. Avoids compiling and running the model
 #' @noRd
 call_brm <- function(fit_args) {
-  fit <- brms::do_call(brms::brm, fit_args)
+  brms::do_call(brms::brm, fit_args)
 }
 
 
@@ -152,7 +152,7 @@ combine_args <- function(args) {
     return(c(config_args, opts))
   }
   for (i in names(dots)) {
-    if (not_in(i, c('family'))) {
+    if (not_in(i, c("family"))) {
       config_args[[i]] <- dots[[i]]
     } else {
       stop2('You cannot provide a family argument to bmm(). \\
@@ -375,6 +375,32 @@ order_data_query <- function(model, data, formula) {
   data
 }
 
+
+#' @title Generic S3 Method to aggregate data for `bmmmodels`
+#' @description
+#'   Called by `check_data` if data should be aggregated to speed up model estimation. This
+#'   method will call the appropriate `check_data.bmmmodel` method to aggregate the data
+#'   according to requirements of the model and the predictors used in the formula.
+#' @param model The `bmmmodel` the method will be used with
+#' @param formula The `bmmformula` specified for the to-be-estimated model.
+#' @param data The data set the `bmmmodel` will be fit to
+#' @return An aggregated data set with the variables required for the specified `bmmmodel`.
+#' @export
+#' @keywords internal, developer
+aggregate_data <- function(model, formula, data) {
+  UseMethod("aggregate_data")
+}
+
+#' @export
+aggregate_data.bmmmodel <- function(model, formula, data) {
+  NextMethod("aggregate_data")
+}
+
+#' @export
+aggregate_data.default <- function(model, formula, data) {
+  data
+}
+
 # when called from another function, it will return a vector of arguments that are
 # missing from the call
 missing_args <- function(which = -1) {
@@ -438,7 +464,7 @@ identical.bmmformula <- function(x, y, ...) {
   res <- waldo::compare(x, y, ignore_formula_env = TRUE)
   length(res) == 0
 }
-
+                  
 #' @export
 identical.formula <- function(x, y, ...) {
   res <- waldo::compare(x, y, ignore_formula_env = TRUE)

@@ -36,7 +36,8 @@
         kappa = list(main = "student_t(5, 1.75, 0.75)", effects = "normal(0, 1)"),
         c = list(main = "student_t(5, 2, 0.75)", effects = "normal(0, 1)")
       ),
-      void_mu = FALSE
+      void_mu = FALSE,
+      custom_bmf2bf = FALSE
     ),
     class = c('bmmodel', 'circular', 'sdm', paste0("sdm_", version)),
     call = call
