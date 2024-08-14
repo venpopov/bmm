@@ -217,7 +217,14 @@ calc_error_relative_to_nontargets <- function(data, response, nt_features) {
 #' hist(wrapped_diff)
 #'
 wrap <- function(x, radians = TRUE, scale = 360) {
-  stopifnot(is.logical(radians))
+  stopif(
+    !is.logical(radians),
+    "The value passed to radians needs to be either TRUE or FALSE."
+  )
+  stopif(
+    !(is.numeric(scale) && length(scale) == 1),
+    "The value passed to scale needs to be a single numerical value."
+  )
   if (radians) {
     return(((x + pi) %% (2 * pi)) - pi)
   }
@@ -242,12 +249,20 @@ wrap <- function(x, radians = TRUE, scale = 360) {
 #' radians <- deg2rad(degrees)
 #' degrees_again <- rad2deg(radians)
 deg2rad <- function(deg, scale = 360) {
+  stopif(
+    !(is.numeric(scale) && length(scale) == 1),
+    "The value passed to scale needs to be a single numerical value."
+  )
   deg * pi / (scale / 2)
 }
 
 #' @rdname circle_transform
 #' @export
 rad2deg <- function(rad, scale = 360) {
+  stopif(
+    !(is.numeric(scale) && length(scale) == 1),
+    "The value passed to scale needs to be a single numerical value."
+  )
   rad * (scale/2) / pi
 }
 

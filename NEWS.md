@@ -4,6 +4,7 @@
 
 ### New features
 - Updates to the `bmf2bf` S3 methods to more flexibly accommodate the translation of `bmmformulas` into `brmsformulas`
+- you can now pass the **scale** to the **circle_transform** functions, so that these functions also work with circular spaces beyond 360 degrees
 
 # bmm 1.0.0
 

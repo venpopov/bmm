@@ -170,9 +170,6 @@ test_that("check_var_set_size rejects invalid input", {
 
 
 
-
-
-
 test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call = FALSE), get_model)
   for (ml in mls) {
@@ -217,17 +214,68 @@ test_that("wrap(x) returns the correct value for values between (3*pi,4*pi)", {
   expect_equal(wrap(rad2deg(x), radians = F), rad2deg(wrap(x)))
 })
 
-
-test_that("deg2rad returns the correct values for 0, 180, 360", {
-  x <- c(0,90,180)
-  expect_equal(round(deg2rad(x),2),c(0.00,1.57,3.14))
-  expect_equal(wrap(rad2deg(x), radians = F), rad2deg(wrap(x)))
+# Test the function with a custom scale (e.g., 400 degrees)
+test_that("wrap function handles custom scale correctly", {
+  expect_equal(wrap(0, radians = FALSE, scale = 400), 0)        # 200 on scale of 400 should wrap to 0
+  expect_equal(wrap(400, radians = FALSE, scale = 400), 0)        # 400 on scale of 400 should wrap to 0
+  expect_equal(wrap(-200, radians = FALSE, scale = 400), -200)       # -200 on scale of 400 should wrap to 0
+  expect_equal(wrap(440, radians = FALSE, scale = 400), 40)      # 600 on scale of 400 should wrap to 200
+  expect_equal(wrap(-600, radians = FALSE, scale = 400), -200)    # -600 on scale of 400 should wrap to -200
 })
 
-test_that("rad2deg returns the correct values for 0, pi/2, 2*pi", {
-  x <- c(0, pi/2, 2*pi)
-  expect_equal(round(rad2deg(x),2),c(0,90,360))
-  expect_equal(wrap(rad2deg(x), radians = F), rad2deg(wrap(x)))
+# Test that the function handles invalid inputs
+test_that("wrap function handles invalid inputs correctly", {
+  expect_error(wrap(1, radians = "not_logical"),
+               "The value passed to radians needs to be either TRUE or FALSE.")              # Non-logical radians
+  expect_error(wrap(1, radians = 1),
+               "The value passed to radians needs to be either TRUE or FALSE.")              # Non-logical radians
+  expect_error(wrap(1, scale = "cricle"),
+               "The value passed to scale needs to be a single numerical value.")              # Non-numeric scale
+  expect_error(wrap(1, scale = c(360,180)),
+               "The value passed to scale needs to be a single numerical value.")              # Non-logical radians
+})
+
+
+# Unit tests for the deg2rad function
+test_that("deg2rad function works correctly with default scale", {
+  expect_equal(deg2rad(0), 0)                           # 0 degrees should convert to 0 radians
+  expect_equal(deg2rad(180), pi)                        # 180 degrees should convert to pi radians
+  expect_equal(deg2rad(-180), -pi)                      # -180 degrees should convert to -pi radians
+  expect_equal(deg2rad(90), pi/2)                       # 90 degrees should convert to pi/2 radians
+  expect_equal(deg2rad(-90), -pi/2)                     # -90 degrees should convert to -pi/2 radians
+  expect_equal(deg2rad(360), 2*pi)                      # 360 degrees should convert to 2*pi radians
+  expect_equal(deg2rad(540), 3*pi)                      # 540 degrees should convert to 3*pi radians
+})
+
+test_that("deg2rad function works correctly with custom scale", {
+  expect_equal(deg2rad(0, scale = 400), 0)              # 0 degrees on scale of 400 should convert to 0 radians
+  expect_equal(deg2rad(200, scale = 400), pi)           # 200 degrees on scale of 400 should convert to pi radians
+  expect_equal(deg2rad(-200, scale = 400), -pi)         # -200 degrees on scale of 400 should convert to -pi radians
+  expect_equal(deg2rad(100, scale = 400), pi/2)         # 100 degrees on scale of 400 should convert to pi/2 radians
+  expect_equal(deg2rad(-100, scale = 400), -pi/2)       # -100 degrees on scale of 400 should convert to -pi/2 radians
+  expect_equal(deg2rad(400, scale = 400), 2*pi)         # 400 degrees on scale of 400 should convert to 2*pi radians
+  expect_equal(deg2rad(600, scale = 400), 3*pi)         # 600 degrees on scale of 400 should convert to 3*pi radians
+})
+
+# Unit tests for the rad2deg function
+test_that("rad2deg function works correctly with default scale", {
+  expect_equal(rad2deg(0), 0)                           # 0 radians should convert to 0 degrees
+  expect_equal(rad2deg(pi), 180)                        # pi radians should convert to 180 degrees
+  expect_equal(rad2deg(-pi), -180)                      # -pi radians should convert to -180 degrees
+  expect_equal(rad2deg(pi/2), 90)                       # pi/2 radians should convert to 90 degrees
+  expect_equal(rad2deg(-pi/2), -90)                     # -pi/2 radians should convert to -90 degrees
+  expect_equal(rad2deg(2*pi), 360)                      # 2*pi radians should convert to 360 degrees
+  expect_equal(rad2deg(3*pi), 540)                      # 3*pi radians should convert to 540 degrees
+})
+
+test_that("rad2deg function works correctly with custom scale", {
+  expect_equal(rad2deg(0, scale = 400), 0)              # 0 radians on scale of 400 should convert to 0 degrees
+  expect_equal(rad2deg(pi, scale = 400), 200)           # pi radians on scale of 400 should convert to 200 degrees
+  expect_equal(rad2deg(-pi, scale = 400), -200)         # -pi radians on scale of 400 should convert to -200 degrees
+  expect_equal(rad2deg(pi/2, scale = 400), 100)         # pi/2 radians on scale of 400 should convert to 100 degrees
+  expect_equal(rad2deg(-pi/2, scale = 400), -100)       # -pi/2 radians on scale of 400 should convert to -100 degrees
+  expect_equal(rad2deg(2*pi, scale = 400), 400)         # 2*pi radians on scale of 400 should convert to 400 degrees
+  expect_equal(rad2deg(3*pi, scale = 400), 600)         # 3*pi radians on scale of 400 should convert to 600 degrees
 })
 
 test_that("standata() works with brmsformula", {
