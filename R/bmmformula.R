@@ -445,7 +445,8 @@ is_constant.default <- function(x) {
 #'
 #' @export
 apply_links <- function(formula, links) {
-  dpars <- names(formula)
+  # extract dpars of non-linear formulas
+  nl_dpars <- names(formula)[which(is_nl(formula))]
 
   for (dpar in dpars) {
     pform <- formula[[dpar]]

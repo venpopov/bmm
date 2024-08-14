@@ -3,7 +3,11 @@
 # bmm 1.1.0
 
 ### New features
-- Updates to the `bmf2bf` S3 methods to more flexibly accommodate the translation of `bmmformulas` into `brmsformulas`
+* Updates to the `bmf2bf` S3 methods to more flexibly accommodate the translation of `bmmformulas` into `brmsformulas`
+* Add the Memory Measurement Model (Oberauer & Lewandwosky, 2019) as new model class **m3** to the package. This has three versions, a simple span versions **ss**, a complex span version **cs**, and a **custom** version that allows to provide custom activation functions, for all response categories
+* New functions **apply_links** will add link functions to all non-linear formulas in a **bmmformula** object.
+* A new example data set **Oberauer_Lewandowsky_2019_E1** was added to the package, so that users can explore applications of the newly implemented **m3** model with this data set.
+
 
 
 # bmm 1.0.0
