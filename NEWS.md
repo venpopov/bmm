@@ -1,5 +1,10 @@
 # bmm (development version)
 
+# bmm 1.1.0
+
+### New features
+- Updates to the `bmf2bf` S3 methods to more flexibly accommodate the translation of `bmmformulas` into `brmsformulas`
+
 
 # bmm 1.0.0
 
