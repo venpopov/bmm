@@ -216,7 +216,7 @@ calc_error_relative_to_nontargets <- function(data, response, nt_features) {
 #' wrapped_diff <- wrap(x - y)
 #' hist(wrapped_diff)
 #'
-wrap <- function(x, radians = TRUE, scale = 360) {
+wrap <- function(x, radians = TRUE, scale = 1) {
   stopif(
     !is.logical(radians),
     "The value passed to radians needs to be either TRUE or FALSE."
@@ -225,10 +225,8 @@ wrap <- function(x, radians = TRUE, scale = 360) {
     !(is.numeric(scale) && length(scale) == 1),
     "The value passed to scale needs to be a single numerical value."
   )
-  if (radians) {
-    return(((x + pi) %% (2 * pi)) - pi)
-  }
-  ((x + (scale/2)) %% (2 * (scale/2))) - (scale/2)
+  range <- ifelse(radians, scale*pi, rad2deg(scale*pi))
+  (x + range) %% (2*range) - range
 }
 
 #' @title Convert degrees or distances in a circular space to radians or radians to degrees.
@@ -240,7 +238,8 @@ wrap <- function(x, radians = TRUE, scale = 360) {
 #' @param deg A numeric vector of values in degrees or distances in a circular space.
 #' @param rad A numeric vector of values in radians.
 #' @param scale A numeric value specifying the scale of the circular space. The default is
-#'   360 as for degrees, but you would change this to 180 for bar orientations without a direction.
+#'   1 referring to a complete unit, but you would change this to 0.5 for bar orientations without a direction
+#'   covering only half the unit circle.
 #' @return A numeric vector of the same length as `deg` or `rad`.
 #' @keywords transform
 #' @export
@@ -248,22 +247,22 @@ wrap <- function(x, radians = TRUE, scale = 360) {
 #' degrees <- runif(100, min = 0, max = 360)
 #' radians <- deg2rad(degrees)
 #' degrees_again <- rad2deg(radians)
-deg2rad <- function(deg, scale = 360) {
+deg2rad <- function(deg, scale = 1) {
   stopif(
     !(is.numeric(scale) && length(scale) == 1),
     "The value passed to scale needs to be a single numerical value."
   )
-  deg * pi / (scale / 2)
+  deg * pi / (rad2deg(scale*pi) / 2)
 }
 
 #' @rdname circle_transform
 #' @export
-rad2deg <- function(rad, scale = 360) {
+rad2deg <- function(rad, scale = 1) {
   stopif(
     !(is.numeric(scale) && length(scale) == 1),
     "The value passed to scale needs to be a single numerical value."
   )
-  rad * (scale/2) / pi
+  rad * (rad2deg(scale*pi)/2) / pi
 }
 
 #' @title Stan data for `bmm` models
