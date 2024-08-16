@@ -127,7 +127,7 @@ check_model.default <- function(model, data = NULL, formula = NULL) {
 check_model.bmmodel <- function(model, data = NULL, formula = NULL) {
   model <- replace_regex_variables(model, data)
   model <- change_constants(model, formula)
-  model$default_priors <- model$default_priors[names(formula)[!is_nl(formula)]]
+  model$default_priors[names(formula)[is_nl(formula)]] <- NULL
   NextMethod("check_model")
 }
 

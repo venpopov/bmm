@@ -3,7 +3,6 @@
 #############################################################################!
 
 .model_sdm <- function(resp_error = NULL, links = NULL, version = "simple", call = NULL, ...) {
-  dots <- list(...)
   out <- structure(
     list(
       resp_vars = nlist(resp_error),
@@ -43,14 +42,6 @@
     call = call
   )
   out$links[names(links)] <- links
-
-  # add default_priors if passed to dots
-  if(!is.null(dots$default_priors)){
-    user_default_priors <- names(dots$default_priors)
-    bmm_default_priors <- names(out$default_priors)
-    out$default_priors <- c(out$default_priors[!(bmm_default_priors %in% user_default_priors)],dots$default_priors)
-  }
-
   out
 }
 
