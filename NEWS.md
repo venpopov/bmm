@@ -3,7 +3,10 @@
 # bmm 1.1.0
 
 ### New features
-- Updates to the `bmf2bf` S3 methods to more flexibly accommodate the translation of `bmmformulas` into `brmsformulas`
+* Updates to the `bmf2bf` S3 methods to more flexibly accommodate the translation of `bmmformulas` into `brmsformulas`
+
+### Bug fixes
+* Fix a conflict in setting default priors when model parameters were transformed in a non-linear formula
 
 # bmm 1.0.0
 
