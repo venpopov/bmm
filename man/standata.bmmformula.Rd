@@ -5,7 +5,7 @@
 \alias{standata}
 \title{Stan data for \code{bmm} models}
 \usage{
-\method{standata}{bmmformula}(object, data, model, prior = NULL, ...)
+\method{standata}{bmmformula}(object, data, model, ...)
 }
 \arguments{
 \item{object}{A \code{bmmformula} object}
@@ -19,11 +19,6 @@ passed to the \code{bmmodel} object for required argurments.}
 number of required arguments which need to be specified within the function
 call. Call \code{\link[=supported_models]{supported_models()}} to see the list of supported models and
 their required arguments}
-
-\item{prior}{One or more \code{brmsprior} objects created by \code{\link[brms:set_prior]{brms::set_prior()}}
-or related functions and combined using the c method or the + operator. See
-also \code{\link[=default_prior]{default_prior()}} for more help. Not necessary for the default model
-fitting, but you can provide prior constraints to model parameters}
 
 \item{...}{Further arguments passed to \code{\link[brms:standata]{brms::standata()}}. See the
 description of \code{\link[brms:standata]{brms::standata()}} for more details}
