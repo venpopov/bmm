@@ -76,6 +76,7 @@ articles:
     - articles/bmm_mixture_models
     - articles/bmm_imm
     - articles/bmm_sdm_simple
+    - articles/bmm_variable_precision
 
  - title: Using the bmm package
    desc: >

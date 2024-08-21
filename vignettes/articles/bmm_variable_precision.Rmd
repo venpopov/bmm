@@ -1,6 +1,8 @@
 ---
 title: "Implementing variable precision in the mixture models for visual working memory"
-output: bookdown::html_document2
+output: 
+  bookdown::html_document2:
+    number_sections: false
 author:
   - Ven Popov
 bibliography: REFERENCES.bib
@@ -48,7 +50,7 @@ ggplot2::theme_set(tidybayes::theme_tidybayes() + cowplot::panel_border())
 
 In the context of [visual working memory (VWM)](bmm_vwm_crt.html) research, the precision of memory representations is often assumed to be constant across all items in a display. However, there is evidence that the precision of memory representations can vary across items and trials. This can be implemented in formal models of VWM, such as those implemented in the bmm package, as variable precision - a model parameter that allows the precision of memory representations to vary across items or trials.
 
-Traditionally, variable precision models were considered to be a separate class of models (@ref), and estimating them required the development of specialized mathematical tools, such as deriving the likelihood function that results from a mixture of variable precision distributions. Fortunately, this is no longer the case, as the bmm package allows for the estimation of variable precision models using the same tools that are used to estimate constant precision models. In this article, we will demonstrate how to implement variable precision for any of the existing models in the bmm package.
+Traditionally, variable precision models were considered to be a separate class of models (@bergVariabilityEncodingPrecision2012), and estimating them required the development of specialized mathematical tools, such as deriving the likelihood function that results from a mixture of variable precision distributions. Fortunately, this is no longer the case, as the bmm package allows for the estimation of variable precision models using the same tools that are used to estimate constant precision models. In this article, we will demonstrate how to implement variable precision for any of the existing models in the bmm package.
 
 # Implementing variable precision in the bmm package
 
@@ -63,22 +65,29 @@ The simplest option is to specify that `kappa`, the precision parameter of the v
 library(bmm)
 
 # no variable precision
+# thetat and kappa vary across set-sizes and have a random effect for set-size
 formula_fixed <- bmf(thetat ~ 0 + set_size + (0 + set_size | ID),
                  kappa ~ 0 + set_size + (0 + set_size | ID))
 
-# specify the formula, letting thetat and kappa vary across set-sizes and trials, and have a random effect for set-size
+# kappa varies across trials (variable precision)
 formula_vp <- bmf(thetat ~ 0 + set_size + (0 + set_size | ID),
                  kappa ~ 0 + set_size + (0 + set_size | ID) + (1|trial))
 ```
 
 In this formula, `(1|trial)` specifies that the precision parameter `kappa` is allowed to vary across trials. The `0 + set_size` term specifies that the mean parameter `thetat` and the precision parameter `kappa` are allowed to vary across set-sizes. The `(0 + set_size | ID)` term specifies that the mean and precision parameters are allowed to vary across set-sizes and that there is a random effect for set-size.
 
-```{r}
-mydata <- dplyr::filter(oberauer_lin_2017, set_size %in% c(1, 2, 3, 4))
+We would then fit the model like so:
+
+```r
+mydata <- oberauer_lin_2017
 mymodel <- mixture2p(resp_error = "dev_rad")
 fit_fixed <- bmm(formula_fixed, data = mydata, model = mymodel, file = "local/vp_tutorial_fixed", 
                backend = "cmdstanr", cores = 4)
 ```
+
+The model above makes a strong assumption - that the variability over trials is the same for all subjects. Even though we have set random effects on the overall precision (that is, participants can vary in how precise their memory is), we have assumed that all participants have the same variability over trials. 
+
+
 
 
 # References
