@@ -131,7 +131,7 @@ check_model.bmmodel <- function(model, data = NULL, formula = NULL) {
   # remove default priors if one of them is transformed in a non-linear formula
   model$default_priors[names(formula)[is_nl(formula)]] <- NULL
 
-  warnif(names(formula)[is_nl(formula)] %in% names(model$parameters),
+  warnif(any(names(formula)[is_nl(formula)] %in% names(model$parameter)),
          glue("Your formula contains non-linear transformations of model parameters.\n",
               "We advise to pass priors for the non-linear parameters to improve parameter estimation.\n",
               "Otherwise, improper flat priors will be used by default."))
