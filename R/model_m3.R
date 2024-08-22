@@ -173,16 +173,21 @@ check_model.m3 <- function(model, data = NULL, formula = NULL) {
 check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
    existing_par_names <- names(model$parameters)
 
-   # add user defined parameters to the model object
-   act_funs <- formula[model$resp_vars$resp_cats]
    if (!is.null(act_funs)) {
-      user_pars <- rhs_vars(act_funs)
+      user_pars <- rhs_vars(formula[is_nl(formula)])
+      user_pars <- user_pars[-which(user_pars %in% names(formula[is_nl(formula)]))]
       user_pars <- user_pars[which(!user_pars %in% names(model$parameters))]
       if (length(user_pars > 0)) {
          model$parameters <- append(model$parameters, user_pars)
          names(model$parameters) <- c(existing_par_names,user_pars)
       }
    }
+
+   # add link functions if missing
+   stopif(length(model$links) < (length(model$parameters) - 1),
+          glue("You have not provided link functions for any of the specified parameters.\n",
+               "Please provide link functions for all model parameters to ensure proper identification \n",
+               "of your model"))
 
    # add default priors if missing
    missing_priors <- names(model$parameters[which(!model$parameters %in% names(model$default_priors))])
