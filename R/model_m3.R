@@ -182,6 +182,16 @@ check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
       names(model$parameters) <- c(existing_par_names, user_pars)
    }
 
+   # add link functions if missing
+   stopif(
+      length(model$links) < (length(model$parameters) - 1),
+      glue(
+         "You have not provided link functions for any of the specified parameters.\n",
+         "Please provide link functions for all model parameters to ensure proper identification \n",
+         "of your model"
+      )
+   )
+
    # add default priors if missing
    missing_priors <- names(model$parameters[which(!model$parameters %in% names(model$default_priors))])
    missing_priors <- missing_priors[which(!missing_priors %in% names(model$fixed_parameters))]
