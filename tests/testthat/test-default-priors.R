@@ -197,3 +197,16 @@ test_that("default priors work when there are no fixed parameters", {
   pr <- default_prior(formula, oberauer_lin_2017, sdm('dev_rad'))
   expect_s3_class(pr, 'brmsprior')
 })
+
+test_that("default priors work when there are non-linear transformations of default parameters", {
+  expect_warning(
+    dp <- default_prior(
+      object = bmmformula(c ~ exp(nlc), nlc ~ 1),
+      data = oberauer_lin_2017,
+      model = sdm(resp_error = "dev_rad")
+    ),
+    "contains non-linear transformations of model parameters"
+  )
+  expect_true(!("c" %in% dp$dpar))
+  expect_true("nlc" %in% dp$nlpar)
+})

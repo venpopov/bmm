@@ -45,11 +45,11 @@
 #' @param file_compress Logical or a character string, specifying one of the
 #'   compression algorithms supported by [saveRDS] when saving
 #'   the fitted model object.
-#' @param file_refit Logical. Modifies when the fit stored via the `file` argument is
+#' @param file_refit Logical or character string. Modifies when the fit stored via the `file` argument is
 #'   re-used. Can be set globally for the current \R session via the
-#'   `"bmm.file_refit"` option (see [options]). If `TRUE` (the default), the
-#'   model is re-used if the file exists. If `FALSE`, the model is re-fitted. Note
-#'   that unlike `brms`, there is no "on_change" option
+#'   `"bmm.file_refit"` option (see [options]). If `TRUE` or "always", the
+#'   model is fitted again. If `FALSE` or "never" (the default), the model saved under the name specified in `file`
+#'   will be re-used. Note that unlike in `brms`, there is no "on_change" option
 #' @param ... Further arguments passed to [brms::brm()] or Stan. See the
 #'   description of [brms::brm()] for more details
 #'

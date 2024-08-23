@@ -117,17 +117,29 @@ set_default_prior <- function(model, data, formula) {
     return(NULL)
   }
 
+  prior <- brms::empty_prior()
+  bterms <- brms::brmsterms(formula)
+  bterms$allpars <- c(bterms$dpars, bterms$nlpars)
+  nlpars <- names(bterms$nlpars)
+  pars <- names(bterms$allpars)
+
   default_priors <- model$default_priors
   stopif(
     !is.list(default_priors) || !all(sapply(default_priors, is.list)),
     "The default_priors should be a list of lists"
   )
 
-  prior <- brms::empty_prior()
-  bterms <- brms::brmsterms(formula)
-  bterms$allpars <- c(bterms$dpars, bterms$nlpars)
-  nlpars <- names(bterms$nlpars)
-  pars <- names(bterms$allpars)
+  # remove default priors if one of them is transformed in a non-linear formula
+  dpar_is_nl <- names(which(sapply(formula$pforms, is_nl)))
+  default_priors[dpar_is_nl] <- NULL
+  warnif(
+    any(dpar_is_nl %in% names(model$parameter)),
+    "Your formula contains non-linear transformations of model parameters.
+     We advise to pass priors for the non-linear parameters to improve parameter estimation.
+     Otherwise, improper flat priors will be used by default."
+    )
+
+
 
   pars_key <- names(default_priors)
   pars <- pars[pars %in% pars_key]

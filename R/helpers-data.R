@@ -358,7 +358,7 @@ rad2deg <- function(rad) {
 #' str(sdata1)
 #' @importFrom brms standata
 #' @export
-standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
+standata.bmmformula <- function(object, data, model, ...) {
   # check model, formula and data, and transform data if necessary
   formula <- object
   configure_options(list(...))
@@ -369,12 +369,9 @@ standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
 
-  # configure the default prior and combine with user-specified prior
-  prior <- configure_prior(model, data, config_args$formula, prior)
-
-  # extract stan code
+  # extract stan data
   dots <- list(...)
-  fit_args <- combine_args(nlist(config_args, dots, prior))
+  fit_args <- combine_args(nlist(config_args, dots))
   fit_args$object <- fit_args$formula
   fit_args$formula <- NULL
   brms::do_call(brms::standata, fit_args)
