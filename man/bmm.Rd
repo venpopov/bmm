@@ -77,11 +77,11 @@ later usage. If the directory of the file does not exist, it will be created.}
 compression algorithms supported by \link{saveRDS} when saving
 the fitted model object.}
 
-\item{file_refit}{Logical. Modifies when the fit stored via the \code{file} argument is
+\item{file_refit}{Logical or character string. Modifies when the fit stored via the \code{file} argument is
 re-used. Can be set globally for the current \R session via the
-\code{"bmm.file_refit"} option (see \link{options}). If \code{TRUE} (the default), the
-model is re-used if the file exists. If \code{FALSE}, the model is re-fitted. Note
-that unlike \code{brms}, there is no "on_change" option}
+\code{"bmm.file_refit"} option (see \link{options}). If \code{TRUE} or "always", the
+model is fitted again. If \code{FALSE} or "never" (the default), the model saved under the name specified in \code{file}
+will be re-used. Note that unlike in \code{brms}, there is no "on_change" option}
 
 \item{...}{Further arguments passed to \code{\link[brms:brm]{brms::brm()}} or Stan. See the
 description of \code{\link[brms:brm]{brms::brm()}} for more details}
