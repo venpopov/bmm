@@ -139,11 +139,11 @@ the fitted model object.</p></dd>
 
 
 <dt id="arg-file-refit">file_refit<a class="anchor" aria-label="anchor" href="#arg-file-refit"></a></dt>
-<dd><p>Logical. Modifies when the fit stored via the <code>file</code> argument is
+<dd><p>Logical or character string. Modifies when the fit stored via the <code>file</code> argument is
 re-used. Can be set globally for the current <span style="R">R</span> session via the
-<code>"bmm.file_refit"</code> option (see <a href="https://rdrr.io/r/base/options.html" class="external-link">options</a>). If <code>TRUE</code> (the default), the
-model is re-used if the file exists. If <code>FALSE</code>, the model is re-fitted. Note
-that unlike <code>brms</code>, there is no "on_change" option</p></dd>
+<code>"bmm.file_refit"</code> option (see <a href="https://rdrr.io/r/base/options.html" class="external-link">options</a>). If <code>TRUE</code> or "always", the
+model is fitted again. If <code>FALSE</code> or "never" (the default), the model saved under the name specified in <code>file</code>
+will be re-used. Note that unlike in <code>brms</code>, there is no "on_change" option</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
