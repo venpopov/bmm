@@ -1,10 +1,9 @@
-#############################################################################!
+############################################################################# !
 # MODELS                                                                 ####
-#############################################################################!
+############################################################################# !
 # see file 'R/bmm_model_mixture3p.R' for an example
 .model_m3 <- function(resp_cats = NULL, num_options = NULL,
                       choice_rule = "softmax", version = "custom", ...) {
-
    # combine additional arguments passed to the model function in list
    dots <- list(...)
    if (is.null(dots$links)) dots$links <- vector("list", length = 0)
@@ -15,10 +14,10 @@
       resp_vars = nlist(resp_cats),
       other_vars = nlist(num_options, choice_rule),
       links = dots$links,
-      domain = 'Working Memory (categorical)',
-      task = 'n-AFC retrieval',
-      name = 'The Memory Measurement Model by Oberauer & Lewandowsky (2019)',
-      citation = 'Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.',
+      domain = "Working Memory (categorical)",
+      task = "n-AFC retrieval",
+      name = "The Memory Measurement Model by Oberauer & Lewandowsky (2019)",
+      citation = "Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.",
       version = version,
       requirements = '- Provide names for variables specifying the number of responses in a set of response categories.\n
          - Specify activation sources for each response categories \n
@@ -43,7 +42,7 @@
          a = "General activation. This source of activation is added to all items that were presented during the current trial."
       )
 
-      if (tolower(out$choice_rule) == "luce") {
+      if (tolower(out$other_vars$choice_rule) == "luce") {
          ss_links <- list(
             c = "log",
             a = "log"
@@ -64,13 +63,13 @@
       }
 
       # check if links or priors have been provided
-      missing_links <- !names(out$links) %in% ss_links
-      missing_priors <- !names(out$default_priors) %in% ss_default_priors
+      missing_links <- ss_links[!names(ss_links) %in% names(out$links)]
+      missing_priors <- ss_default_priors[!names(ss_default_priors) %in% names(out$default_priors)]
 
       # add version specific info to the model object
       out$parameters <- c(out$parameters, ss_parameters)
-      out$links <- c(out$links, ss_links[missing_links])
-      out$default_priors$s <- c(out$default_priors, ss_default_priors[missing_priors])
+      out$links <- c(out$links, missing_links)
+      out$default_priors <- c(out$default_priors, missing_priors)
    } else if (version == "cs") {
       cs_parameters <- list(
          c = "Context activation. This source of activation is added to the item cued to be recalled, that is the correct item.",
@@ -78,7 +77,7 @@
          f = "Filtering. This parameter captures the extent to which distractors remained in working memory."
       )
 
-      if (tolower(out$choice_rule) == "luce") {
+      if (tolower(out$other_vars$choice_rule) == "luce") {
          cs_links <- list(
             c = "log",
             a = "log",
@@ -103,16 +102,16 @@
       }
 
       # check if links or priors have been provided
-      missing_links <- !names(out$links) %in% cs_links
-      missing_priors <- !names(out$default_priors) %in% cs_default_priors
+      missing_links <- cs_links[!names(cs_links) %in% names(out$links)]
+      missing_priors <- cs_default_priors[!names(cs_default_priors) %in% names(out$default_priors)]
 
       # add version specific info to the model object
       out$parameters <- c(out$parameters, cs_parameters)
-      out$links <- c(out$links, cs_links[missing_links])
-      out$default_priors$s <- c(out$default_priors, cs_default_priors[missing_priors])
+      out$links <- c(out$links, missing_links)
+      out$default_priors <- c(out$default_priors, missing_priors)
    }
 
-   class(out) <- c('bmmodel','m3', paste0("m3_",version))
+   class(out) <- c("bmmodel", "m3", paste0("m3_", version))
    out
 }
 
@@ -154,13 +153,15 @@
 #' @export
 m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custom", ...) {
    stop_missing_args()
-   .model_m3(resp_cats = resp_cats, num_options = num_options,
-             choice_rule = choice_rule, version = version, ...)
+   .model_m3(
+      resp_cats = resp_cats, num_options = num_options,
+      choice_rule = choice_rule, version = version, ...
+   )
 }
 
-#############################################################################!
+############################################################################# !
 # CHECK_Model S3 methods                                                 ####
-#############################################################################!
+############################################################################# !
 
 #' @export
 check_model.m3 <- function(model, data = NULL, formula = NULL) {
@@ -173,34 +174,37 @@ check_model.m3 <- function(model, data = NULL, formula = NULL) {
 check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
    existing_par_names <- names(model$parameters)
 
-   # add user defined parameters to the model object
-   act_funs <- formula[model$resp_vars$resp_cats]
-   if (!is.null(act_funs)) {
-      user_pars <- rhs_vars(act_funs)
-      user_pars <- user_pars[which(!user_pars %in% names(model$parameters))]
-      if (length(user_pars > 0)) {
-         model$parameters <- append(model$parameters, user_pars)
-         names(model$parameters) <- c(existing_par_names,user_pars)
-      }
+   user_pars <- rhs_vars(formula[is_nl(formula)])
+   user_pars <- user_pars[-which(user_pars %in% names(formula[is_nl(formula)]))]
+   user_pars <- user_pars[which(!user_pars %in% names(model$parameters))]
+   if (length(user_pars > 0)) {
+      model$parameters <- append(model$parameters, user_pars)
+      names(model$parameters) <- c(existing_par_names, user_pars)
    }
 
    # add default priors if missing
    missing_priors <- names(model$parameters[which(!model$parameters %in% names(model$default_priors))])
    missing_priors <- missing_priors[which(!missing_priors %in% names(model$fixed_parameters))]
-   warnif(length(missing_priors) > 0 && getOption("bmm.default_priors"),
-          glue("You have not provided default_priors for at least one parameter in the model.\n",
-               "Default priors will be specified internally based on the provided link function.\n",
-               "Please check if the used priors are reasonable for your application"))
+   warnif(
+      length(missing_priors) > 0 && getOption("bmm.default_priors"),
+      glue(
+         "You have not provided default_priors for at least one parameter in the model.\n",
+         "Default priors will be specified internally based on the provided link function.\n",
+         "Please check if the used priors are reasonable for your application"
+      )
+   )
    for (m in missing_priors) {
-      if (model$links[[m]] ==  "log") {
+      if (model$links[[m]] == "log") {
          prior <- list(main = "normal(1,1)", effect = "normal(0,0.5)")
-      } else if (model$links[[m]] ==  "identity") {
+      } else if (model$links[[m]] == "identity") {
          prior <- list(main = "normal(0,1)", effect = "normal(0,1)")
       } else if (model$links[[m]] == "logit") {
          prior <- list(main = "normal(0,1)", effect = "normal(0,1)")
       } else {
-         stop2(glue("Invalid link function provided!\n",
-                    "Please use one of the following link functions: identity, log, logit"))
+         stop2(glue(
+            "Invalid link function provided!\n",
+            "Please use one of the following link functions: identity, log, logit"
+         ))
       }
       model$default_priors[[m]] <- prior
    }
@@ -208,12 +212,12 @@ check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
    NextMethod("check_model")
 }
 
-#############################################################################!
+############################################################################# !
 # CHECK_Formula S3 methods                                               ####
-#############################################################################!
+############################################################################# !
 
 #' @export
-check_formula.m3 <- function(model, data, formula){
+check_formula.m3 <- function(model, data, formula) {
    formula <- apply_links(formula, model$links)
    formula <- assign_nl(formula)
 
@@ -221,21 +225,29 @@ check_formula.m3 <- function(model, data, formula){
 }
 
 #' @export
-check_formula.m3_custom <- function(model, data, formula){
+check_formula.m3_custom <- function(model, data, formula) {
    # test if activation functions for all categories are provided
    missing_act_funs <- which(!model$resp_vars$resp_cats %in% names(formula))
-   stopif(length(missing_act_funs) > 0,
-          paste0("You did not provide activation functions for all response categories.\n ",
-                 "Please provide activation functions for the following response categories in your bmmformula:\n ",
-                 model$resp_vars$resp_cats[missing_act_funs]))
+   stopif(
+      length(missing_act_funs) > 0,
+      paste0(
+         "You did not provide activation functions for all response categories.\n ",
+         "Please provide activation functions for the following response categories in your bmmformula:\n ",
+         model$resp_vars$resp_cats[missing_act_funs]
+      )
+   )
 
    # test if all activation functions contain background noise "b"
    act_funs <- formula[model$resp_vars$resp_cats]
    form_miss_b <- unlist(lapply(act_funs, missing_b))
-   stopif(any(form_miss_b),
-          paste0("Some of your activation functions do not contain the background noise parameter \"b\".\n ",
-                 "The following activation functions need a background noise parameter: \n",
-                 model$resp_vars$resp_cats[which(form_miss_b)]))
+   stopif(
+      any(form_miss_b),
+      paste0(
+         "Some of your activation functions do not contain the background noise parameter \"b\".\n ",
+         "The following activation functions need a background noise parameter: \n",
+         model$resp_vars$resp_cats[which(form_miss_b)]
+      )
+   )
 
    NextMethod("check_formula")
 }
@@ -245,9 +257,9 @@ missing_b <- function(formula) {
    !("b" %in% rhs_vars(formula))
 }
 
-#############################################################################!
+############################################################################# !
 # Convert bmmformula to brmsformla methods                               ####
-#############################################################################!
+############################################################################# !
 # A bmf2bf.* function should be defined if the default method for consructing
 # the brmsformula from the bmmformula does not apply
 # The shared method for all `bmmmodels` is defined in helpers-formula.R.
@@ -265,33 +277,38 @@ bmf2bf.m3 <- function(model, formula) {
    choice_rule <- tolower(model$other_vars$choice_rule)
 
    # add transformation to activation according to choice rules
-   transform_act <- ifelse(choice_rule == "luce","log(","")
-   end_act <- ifelse(choice_rule == "luce",")","")
-   zero_Opt <- ifelse(model$other_vars$choice_rule == "softmax","(-100)","(exp(-100))")
-   op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","+","*")
-   trans_Nopts <- ifelse(model$other_vars$choice_rule == "softmax","log(","")
-   end_Nopts <- ifelse(model$other_vars$choice_rule == "softmax",")","")
+   transform_act <- ifelse(choice_rule == "luce", "log(", "")
+   end_act <- ifelse(choice_rule == "luce", ")", "")
+   zero_Opt <- ifelse(model$other_vars$choice_rule == "softmax", "(-100)", "(exp(-100))")
+   op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax", "+", "*")
+   trans_Nopts <- ifelse(model$other_vars$choice_rule == "softmax", "log(", "")
+   end_Nopts <- ifelse(model$other_vars$choice_rule == "softmax", ")", "")
 
    # set the base brmsformula based
-   brms_formula <- brms::bf(paste0("Y | trials(nTrials)", " ~", transform_act, nOpt_idx_vars[resp_cats[1]],"*(", resp_cats[1],
-                                   op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[1]],end_Nopts,")",
-                                   " + (1-",nOpt_idx_vars[resp_cats[1]],") *",zero_Opt,end_act),nl = TRUE)
+   brms_formula <- brms::bf(paste0(
+      "Y | trials(nTrials)", " ~", transform_act, nOpt_idx_vars[resp_cats[1]], "*(", resp_cats[1],
+      op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[1]], end_Nopts, ")",
+      " + (1-", nOpt_idx_vars[resp_cats[1]], ") *", zero_Opt, end_act
+   ), nl = TRUE)
 
    # for each dependent parameter, check if it is used as a non-linear predictor of
    # another parameter and add the corresponding brms function
-   for (i in 2:length(resp_cats) ) {
+   for (i in 2:length(resp_cats)) {
       brms_formula <- brms_formula +
-         glue_nlf(paste0("mu",resp_cats[i]), " ~", transform_act, nOpt_idx_vars[resp_cats[i]],"*(", resp_cats[i],
-                  op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[i]],end_Nopts,")",
-                  " + (1-",nOpt_idx_vars[resp_cats[i]],") *",zero_Opt,end_act)
+         glue_nlf(
+            paste0("mu", resp_cats[i]), " ~", transform_act, nOpt_idx_vars[resp_cats[i]], "*(", resp_cats[i],
+            op_Nopts, trans_Nopts, model$other_vars$num_options[resp_cats[i]], end_Nopts, ")",
+            " + (1-", nOpt_idx_vars[resp_cats[i]], ") *", zero_Opt, end_act
+         )
    }
 
    # add activation functions for simple and complex span versions
    if ("m3_ss" %in% class(model)) {
       # I leave that as an example here...
       brms_formula <- brms_formula +
-         glue_nlf(resp_cats[1], " ~ b + a + c")
-   } else if("m3_cs" %in% class(model)) {
+         glue_nlf(resp_cats[1], " ~ b + a + c") +
+         glue_nlf()
+   } else if ("m3_cs" %in% class(model)) {
 
    }
 
@@ -299,9 +316,9 @@ bmf2bf.m3 <- function(model, formula) {
 }
 
 
-#############################################################################!
+############################################################################# !
 # CONFIGURE_MODEL S3 METHODS                                             ####
-#############################################################################!
+############################################################################# !
 # Each model should have a corresponding configure_model.* function. See
 # ?configure_model for more information.
 
@@ -315,7 +332,7 @@ configure_model.m3 <- function(model, data, formula) {
    formula$family <- brms::multinomial(refcat = NA)
 
    formula$family$cats <- model$resp_vars$resp_cats
-   formula$family$dpars <- paste0("mu",model$resp_vars$resp_cats)
+   formula$family$dpars <- paste0("mu", model$resp_vars$resp_cats)
 
    # return the list
    out <- nlist(formula, data)
