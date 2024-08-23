@@ -4,6 +4,7 @@
 
 ### New features
 * Updates to the `bmf2bf` S3 methods to more flexibly accommodate the translation of `bmmformulas` into `brmsformulas`
+* the `file_refit` argument of the `bmm` function now accepts character string like brms. A warning is given when "on_change" is specified, as this is not currently implemented for `bmmodels`.
 
 ### Bug fixes
 * Fix a conflict in setting default priors when model parameters were transformed in a non-linear formula

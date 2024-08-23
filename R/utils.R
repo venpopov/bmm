@@ -683,6 +683,19 @@ deprecated_args <- function(...) {
 
 read_bmmfit <- function(file, file_refit) {
   file <- check_rds_file(file)
+
+  if(is.character(file_refit)) {
+    stopif(!tolower(file_refit) %in% c("never", "always", "on_change"),
+           glue("You have provided an invalid option for the file_refit argument.\n",
+                "Valid options are: \"never\" or \"always\" \n",
+                "The \"on_change\" option available in brms is currently not implemented for bmm."))
+
+    warnif(tolower(file_refit) == "on_change",
+           glue("The \"on_change\" option for the file_refit argument available in brms,\n",
+                "is currently not implemented for bmm.\n",
+                "To avoid overwriting an already saved bmmfit object, file_refit was set to \"never\"."))
+    file_refit <- ifelse(file_refit == "always", TRUE, FALSE)
+  }
   if (is.null(file) || file_refit) {
     return(NULL)
   }
