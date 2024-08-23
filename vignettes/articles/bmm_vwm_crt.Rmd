@@ -67,7 +67,7 @@ The `bmm` package implements several measurement models for analyzing continuous
 
 # Preparing data from half-circular stimulus spaces
 
-As already mentioned, some task require subjects to remember orientations (e.g. of bars or Gabor patches) without a direction. With such stimulus material the response error can range only from -90 to 90 degrees (or -pi/2 to pi/2), unlike for a full circular color, shape, or orientation space with directions (arrows or triangles). In case of orientations without a direction, you thus have to multiply the `response_error` by 2 when pre-processing the data, so that the response error ranges from -180 to 180 degrees (or -pi to pi). The same applies to the `nt_features` relative to the target orientation.
+As already mentioned, some task require subjects to remember orientations (e.g. of bars or Gabor patches) without a direction. With such stimulus material the response error can range only from -90 to 90 degrees (or -pi/2 to pi/2). When using data from such a task, you have to multiply the `response_error` by 2 when pre-processing the data, so that the response error ranges from -180 to 180 degrees (or -pi to pi). The same applies to the `nt_features` relative to the target orientation.
 
 
 # References
