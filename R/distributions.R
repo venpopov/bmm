@@ -207,7 +207,7 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 }
 
 .dsdm_integrate_numer_v <- Vectorize(.dsdm_integrate_numer,
-    vectorize.args = c("mu", "c", "kappa", 'lower','upper'))
+                                     vectorize.args = c("mu", "c", "kappa", 'lower','upper'))
 
 
 
@@ -525,4 +525,161 @@ rimm <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
   }
 
   .rimm_inner(n, mu, dist, c ,a ,b ,s ,kappa , xa)
+}
+
+#' @title Distribution functions for the Memory Measurement Model (M3)
+#'
+#' @description Density and random generation functions for the
+#'   memory measurement model. Please note that these functions are currently not vectorized.
+#'
+#' @name m3dist
+#'
+#' @param x Vector of observed responses
+#' @param n Number of observations to generate data for
+#' @param size Number of trials per observation
+#' @param pars Vector of parameters of the memory measurement model
+#' @param num_options Vector of the number of response options for each response category
+#' @param choice_rule Character string specifying which choice rule should be used. Options are "luce" or "softmax".
+#' @param version Character string specifying which M3 version should be used. Default is "custom", other options are "ss" and "cs".
+#' @param act_funs bmmformula object specifying the activation functions for the different response categories for the "custom" version of the M3.
+#' @param log Logical; if `TRUE`, values are returned on the log scale.
+#' @param ... can be used to pass additional variables that are used in the activation functions,
+#'   but not parameters of the model
+#'
+#' @keywords distribution
+#'
+#' @references Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks.
+#'   Psychological Review, 126(6), 880–932. https://doi.org/10.1037/rev0000159
+#'
+#' @return `dm3` gives the density of the memory measurement model,
+#'   and `rm3` gives the random generation function for the
+#'   memory measurement model.
+#'
+#' @export
+#'
+dm3 <- function(x, pars, num_options, choice_rule = "softmax", version = "custom", act_funs = NULL, log = TRUE, ...) {
+  # unpack additional arguments
+  dots <- list(...)
+  if (length(dots) != 0) pars <- c(pars, unlist(dots))
+
+  stopif(is.null(names(pars)) | is.null(names(num_options)),
+         glue("Unnamed vectors passed to either \"pars\", \"num_options\", or both.\n",
+              "Please name the \"pars\" vector with the respective parameter names,\n",
+              "and the \"num_options\" vector with the names of the response categories."))
+
+  stopif(!version %in% c("ss","cs","custom"),
+         glue("Unsupported Version: \"", version,"\" \n",
+              "Please choose one of the following options for the version argument:\n",
+              "\"ss\",\"cs\", or \"custom\""))
+
+  if (version == "ss") {
+    act_funs <- bmf(
+      corr ~ b + a + c,
+      other ~ b + a,
+      npl ~ b
+    )
+  } else if (version == "cs") {
+    act_funs <- bmf(
+      corr ~ b + a + c,
+      dist_context ~ b + f * a + f * c,
+      other ~ b + a,
+      dist_other ~ b + f * a,
+      npl ~ b
+    )
+  } else if (is.null(act_funs)) {
+    stop2(glue("No activation functions for version \"custom\" provided.\n",
+               "Please pass activation functions for the different response categories\n",
+               "using the \"act_funs\" argument."))
+  }
+
+  if (!length(rhs_vars(act_funs)) == length(pars)) {
+    stop2(glue("The number of parameters used in the activation functions \n",
+               "mismatches the number of parameters (\"pars\") and additional arguments (i.e. ...) passed to the function."))
+  } else if (!all(rhs_vars(act_funs) %in% names(pars))) {
+    stop2(glue("Some parameters used in the activation functions are not specified in the \"pars\" argument."))
+  }
+
+  resp_cats <- names(act_funs)
+  acts <- numeric()
+  for (i in resp_cats) {
+    act_fun <- act_funs[[i]]
+    # extract right-side formula
+    right_from = as.character(act_fun[-2]) %>% stringr::str_remove("~")
+    acts[i] <- with(data.frame(rbind(pars)), eval(parse(text = right_from[2])))
+  }
+  acts
+
+  if (tolower(choice_rule) == "luce") {
+    probs <- (acts*num_options)/sum(acts*num_options)
+  } else if (tolower(choice_rule) == "softmax") {
+    probs <- (exp(acts)*num_options)/sum(exp(acts)*num_options)
+  } else {
+    stop2(glue("Unsupported choice rule: \" ", choice_rule,"\"\n",
+               "Please select either \"luce\" or \"softmax\" as choice_rule."))
+  }
+
+  density <- dmultinom(x, size = sum(x), prob = probs, log = TRUE)
+  if (!log) return(exp(density))
+  density
+}
+
+#' @rdname m3dist
+#' @export
+rm3 <- function(n, size, pars, num_options, choice_rule = "softmax", version = "custom", act_funs = NULL, ...) {
+  # unpack additional arguments
+  dots <- list(...)
+  if (length(dots) != 0) pars <- c(pars, unlist(dots))
+
+  stopif(!version %in% c("ss","cs","custom"),
+         glue("Unsupported Version: \"", version,"\" \n",
+              "Please choose one of the following options for the version argument:\n",
+              "\"ss\",\"cs\", or \"custom\""))
+
+  if (version == "ss") {
+    act_funs <- bmf(
+      corr ~ b + a + c,
+      other ~ b + a,
+      npl ~ b
+    )
+  } else if (version == "cs") {
+    act_funs <- bmf(
+      corr ~ b + a + c,
+      dist_context ~ b + f * a + f * c,
+      other ~ b + a,
+      dist_other ~ b + f * a,
+      npl ~ b
+    )
+  } else if (is.null(act_funs)) {
+    stop2(glue("No activation functions for version \"custom\" provided.\n",
+               "Please pass activation functions for the different response categories\n",
+               "using the \"act_funs\" argument."))
+  }
+
+  if (!length(rhs_vars(act_funs)) == length(pars)) {
+    stop2(glue("The number of parameters used in the activation functions \n",
+               "mismatches the number of parameters (\"pars\") and additional arguments (i.e. ...) passed to the function."))
+  } else if (!all(rhs_vars(act_funs) %in% names(pars))) {
+    stop2(glue("Some parameters used in the activation functions are not specified in the \"pars\" argument."))
+  }
+
+  resp_cats <- names(act_funs)
+  acts <- numeric()
+  for (i in resp_cats) {
+    act_fun <- act_funs[[i]]
+    # extract right-side formula
+    right_from = as.character(act_fun[-2]) %>% stringr::str_remove("~")
+    acts[i] <- with(data.frame(rbind(pars)), eval(parse(text = right_from[2])))
+  }
+  acts
+
+  if (tolower(choice_rule) == "luce") {
+    probs <- (acts*num_options)/sum(acts*num_options)
+  } else if (tolower(choice_rule) == "softmax") {
+    probs <- (exp(acts)*num_options)/sum(exp(acts)*num_options)
+  } else {
+    stop2(glue("Unsupported choice rule: \" ", choice_rule,"\"\n",
+               "Please select either \"luce\" or \"softmax\" as choice_rule."))
+  }
+
+  t(rmultinom(n, size = size, prob = probs))
 }
