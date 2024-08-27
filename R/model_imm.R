@@ -5,7 +5,7 @@
 
 .model_imm <-
   function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
-           set_size = NULL, regex = FALSE, links = NULL, version = "full",
+           set_size = NULL, regex = FALSE, version = "full", links = NULL,
            call = NULL, ...) {
     out <- structure(
       list(
@@ -38,8 +38,8 @@
         links = list(
           mu1 = "tan_half",
           kappa = "log",
-          a = "identity",
-          c = "identity",
+          a = "log",
+          c = "log",
           s = "log"
         ),
         fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
@@ -55,7 +55,7 @@
       # attributes
       regex = regex,
       regex_vars = c('nt_features', 'nt_distances'),
-      class = c("bmmodel", "vwm", "non_targets", "imm", paste0('imm_',version)),
+      class = c("bmmodel", "circular", "non_targets", "imm", paste0('imm_',version)),
       call = call
     )
 
@@ -116,15 +116,12 @@
 #' @param regex Logical. If TRUE, the `nt_features` and `nt_distances` arguments
 #'   are interpreted as a regular expression to match the non-target feature
 #'   columns in the dataset.
-#' @param links A list of links for the parameters. *Currently does not affect
-#'   the model fits, but it will in the future.*
 #' @param version Character. The version of the IMM model to use. Can be one of
 #'  `full`, `bsc`, or `abc`. The default is `full`.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
 #' @keywords bmmodel
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # load data
 #' data <- oberauer_lin_2017
 #'
@@ -176,10 +173,8 @@
 #'            model = model3,
 #'            cores = 4,
 #'            backend = 'cmdstanr')
-#'}
 #' @export
-imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
-                links = NULL, version = "full", ...) {
+imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, version = "full", ...) {
   call <- match.call()
   dots <- list(...)
   if ("setsize" %in% names(dots)) {
@@ -192,17 +187,16 @@ imm <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
   stop_missing_args()
   .model_imm(resp_error = resp_error, nt_features = nt_features,
              nt_distances = nt_distances, set_size = set_size, regex = regex,
-             links = links, version = version, call = call, ...)
+             version = version, call = call, ...)
 }
 
 
 # deprecated calls for specific versions
 
 #' @rdname imm
-#' @keywords bmmodel
+#' @keywords deprecated
 #' @export
-IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
-                    links = NULL, ...) {
+IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...) {
   call <- match.call()
   dots <- list(...)
   warning("The function `IMMfull()` is deprecated. Please use `imm(version = 'full')` instead.")
@@ -213,15 +207,14 @@ IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FAL
   stop_missing_args()
   .model_imm(resp_error = resp_error, nt_features = nt_features,
              nt_distances = nt_distances, set_size = set_size, regex = regex,
-             links = links, version = "full", call = call, ...)
+             version = "full", call = call, ...)
 }
 
 
 #' @rdname imm
-#' @keywords bmmodel
+#' @keywords deprecated
 #' @export
-IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE,
-                   links = NULL, ...) {
+IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALSE, ...) {
   call <- match.call()
   dots <- list(...)
   warning("The function `IMMbsc()` is deprecated. Please use `imm(version = 'bsc')` instead.")
@@ -232,14 +225,13 @@ IMMbsc <- function(resp_error, nt_features, nt_distances, set_size, regex = FALS
   stop_missing_args()
   .model_imm(resp_error = resp_error, nt_features = nt_features,
              nt_distances = nt_distances, set_size = set_size, regex = regex,
-             links = links, version = "bsc", call = call, ...)
+             version = "bsc", call = call, ...)
 }
 
 #' @rdname imm
-#' @keywords bmmodel
+#' @keywords deprecated
 #' @export
-IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, links = NULL,
-                   ...) {
+IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, ...) {
   call <- match.call()
   dots <- list(...)
   warning("The function `IMMabc()` is deprecated. Please use `imm(version = 'abc')` instead.")
@@ -248,9 +240,10 @@ IMMabc <- function(resp_error, nt_features, set_size, regex = FALSE, links = NUL
     warning("The argument 'setsize' is deprecated. Please use 'set_size' instead.")
   }
   stop_missing_args()
-  .model_imm(resp_error = resp_error, nt_features = nt_features,
-             set_size = set_size, regex = regex, links = links,
-             version = "abc", call = call, ...)
+  .model_imm(
+    resp_error = resp_error, nt_features = nt_features, set_size = set_size,
+    regex = regex, version = "abc", call = call, ...
+  )
 }
 
 #############################################################################!
@@ -307,7 +300,7 @@ configure_model.imm_abc <- function(model, data, formula) {
   formula <- bmf2bf(model, formula) +
     brms::lf(kappa2 ~ 1) +
     brms::lf(mu2 ~ 1) +
-    brms::nlf(theta1 ~ c + a) +
+    brms::nlf(theta1 ~ log(exp(c) + exp(a))) +
     brms::nlf(kappa1 ~ kappa)
 
   # additional internal terms for the mixture model formula
@@ -335,7 +328,7 @@ configure_model.imm_abc <- function(model, data, formula) {
 #' @export
 configure_prior.imm_abc <- function(model, data, formula, user_prior, ...) {
   # retrieve arguments from the data check
-  prior <- empty_prior()
+  prior <- brms::empty_prior()
   set_size_var <- model$other_vars$set_size
   prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
 
@@ -394,8 +387,8 @@ configure_model.imm_bsc <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * exp(-expS*{nt_distances[i]})",
-               " * c + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (-expS*{nt_distances[i]} + c)",
+               " + (1 - {lure_idx[i]}) * (-100)") +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
@@ -456,7 +449,7 @@ configure_model.imm_full <- function(model, data, formula) {
   formula <- bmf2bf(model, formula) +
     brms::lf(kappa2 ~ 1) +
     brms::lf(mu2 ~ 1) +
-    brms::nlf(theta1 ~ c + a) +
+    brms::nlf(theta1 ~ log(exp(c) + exp(a))) +
     brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
 
@@ -468,8 +461,8 @@ configure_model.imm_full <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * (exp(-expS*{nt_distances[i]})",
-               " * c + a) + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * log(exp(c-expS*{nt_distances[i]}) + exp(a))",
+               "+ (1 - {lure_idx[i]}) * (-100)") +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 

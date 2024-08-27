@@ -21,6 +21,9 @@ arguments to be ignored.}
 
 \item{...}{Further arguments passed to \code{\link[brms:update.brmsfit]{brms::update.brmsfit()}}}
 }
+\value{
+An updated \code{bmmfit} object refit to the new data and/or formula
+}
 \description{
 Update an existing bmm mode. This function calls
 \code{\link[brms:update.brmsfit]{brms::update.brmsfit()}}, but it applies the necessary bmm postprocessing
@@ -34,4 +37,24 @@ that, set option "cmdstanr_write_stan_file_dir" to a nontemporary path of
 your choice before creating the original bmmfit.
 
 For more information and examples, see \code{\link[brms:update.brmsfit]{brms::update.brmsfit()}}
+}
+\examples{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# generate artificial data from the Signal Discrimination Model
+# generate artificial data from the Signal Discrimination Model
+dat <- data.frame(y = rsdm(2000))
+
+# define formula
+ff <- bmf(c ~ 1, kappa ~ 1)
+
+# fit the model
+fit <- bmm(formula = ff,
+           data = dat,
+           model = sdm(resp_error = "y"),
+           cores = 4,
+           backend = 'cmdstanr')
+
+# update the model
+fit <- update(fit, newdata = data.frame(y = rsdm(2000, kappa = 5)))
+\dontshow{\}) # examplesIf}
 }

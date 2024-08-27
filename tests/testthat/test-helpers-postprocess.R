@@ -10,7 +10,7 @@ test_that("bmm version is added to mock model", {
 
 
 test_that("get_mu_pars works",{
-  a <- brm(y~ a, data.frame(y = c(1,2,3), a = c('A',"B","C")),
+  a <- brms::brm(y~ a, data.frame(y = c(1,2,3), a = c('A',"B","C")),
            backend = "mock", mock_fit = 1, rename=F)
   mus <- get_mu_pars(a)
   expect_equal(mus, c("Intercept", "aB", "aC"))

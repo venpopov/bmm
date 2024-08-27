@@ -11,6 +11,7 @@
 #'   is necessary. Setting it to FALSE will cause all Stan code changing
 #'   arguments to be ignored.
 #' @param ... Further arguments passed to [brms::update.brmsfit()]
+#' @return An updated `bmmfit` object refit to the new data and/or formula
 #' @details When updating a brmsfit created with the cmdstanr backend in a
 #'   different R session, a recompilation will be triggered because by default,
 #'   cmdstanr writes the model executable to a temporary directory. To avoid
@@ -19,6 +20,24 @@
 #'
 #'   For more information and examples, see [brms::update.brmsfit()]
 #' @export
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' # generate artificial data from the Signal Discrimination Model
+#' # generate artificial data from the Signal Discrimination Model
+#' dat <- data.frame(y = rsdm(2000))
+#'
+#' # define formula
+#' ff <- bmf(c ~ 1, kappa ~ 1)
+#'
+#' # fit the model
+#' fit <- bmm(formula = ff,
+#'            data = dat,
+#'            model = sdm(resp_error = "y"),
+#'            cores = 4,
+#'            backend = 'cmdstanr')
+#' 
+#' # update the model
+#' fit <- update(fit, newdata = data.frame(y = rsdm(2000, kappa = 5)))
+#' 
 update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ...) {
   dots <- list(...)
 

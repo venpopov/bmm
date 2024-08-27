@@ -72,7 +72,6 @@
 #'   kappa ~ 0 + set_size + (0 + set_size | id)
 #' )
 #' identical(imm_formula, imm_formula2)
-#'
 bmmformula <- function(...) {
   dots <- list(...)
   formula <- list()
@@ -167,12 +166,12 @@ bmf <- function(...) {
 }
 
 
-#' checks if the formula is valid for the specified model
+#' Generic S3 method for checking if the formula is valid for the specified model
 #' @param model a model list object returned from check_model()
 #' @param data user supplied data
 #' @param formula user supplied formula
 #' @return the formula object
-#' @keywords internal, developer
+#' @keywords internal developer
 check_formula <- function(model, data, formula) {
   UseMethod("check_formula")
 }
@@ -227,9 +226,9 @@ check_formula.non_targets <- function(model, data, formula) {
 #'  appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
 #' @param model The model object defining one of the supported `bmmodels``
 #' @param formula The `bmmformula` that should be converted to a `brmsformula`
-#' @returns A `brmsformula` defining the response variables and the additional parameter
+#' @return A `brmsformula` defining the response variables and the additional parameter
 #'   formulas for the specified `bmmodel`
-#' @keywords internal, developer
+#' @keywords internal developer
 #' @examples
 #' model <- mixture2p(resp_error = "error")
 #'
@@ -244,22 +243,11 @@ bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
 }
 
-
-# default method for all bmmodels with 1 response variable
+# default method to paste the full brms formula for all bmmodels
 #' @export
 bmf2bf.bmmodel <- function(model, formula) {
   # check if the model has only one response variable and extract if TRUE
-  resp <- model$resp_vars
-
-  # not ideal but required to not break other models
-  if ("m3" %in% class(model)) {
-    brms_formula <- NextMethod("bmf2bf")
-  } else {
-    resp <- resp[[1]]
-
-    # set base brms formula based on response
-    brms_formula <- brms::bf(paste0(resp, "~ 1"))
-  }
+  brms_formula <- NextMethod("bmf2bf")
 
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function
@@ -272,6 +260,14 @@ bmf2bf.bmmodel <- function(model, formula) {
   }
   brms_formula
 }
+
+# paste first line of the brms formula for all bmmodels with 1 response variable
+#' @export
+bmf2bf.default <- function(model, formula) {
+  # set base brms formula based on response
+  brms::bf(paste0(model$resp_vars[[1]], "~ 1"))
+}
+
 
 add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
   formula_pars <- names(formula)

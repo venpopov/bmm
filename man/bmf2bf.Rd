@@ -31,4 +31,4 @@ formula <- bmmformula(
 brms_formula <- bmf2bf(model, formula)
 }
 \keyword{developer}
-\keyword{internal,}
+\keyword{internal}

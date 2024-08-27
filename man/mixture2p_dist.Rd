@@ -6,15 +6,15 @@
 \alias{pmixture2p}
 \alias{qmixture2p}
 \alias{rmixture2p}
-\title{The two-parameter mixture model (mixture2p)}
+\title{Distribution functions for the two-parameter mixture model (mixture2p)}
 \usage{
-dmixture2p(x, mu = 0, kappa = 5, pMem = 0.6, log = FALSE)
+dmixture2p(x, mu = 0, kappa = 5, p_mem = 0.6, log = FALSE)
 
-pmixture2p(q, mu = 0, kappa = 7, pMem = 0.8)
+pmixture2p(q, mu = 0, kappa = 7, p_mem = 0.8)
 
-qmixture2p(p, mu = 0, kappa = 5, pMem = 0.6)
+qmixture2p(p, mu = 0, kappa = 5, p_mem = 0.6)
 
-rmixture2p(n, mu = 0, kappa = 5, pMem = 0.6)
+rmixture2p(n, mu = 0, kappa = 5, p_mem = 0.6)
 }
 \arguments{
 \item{x}{Vector of observed responses}
@@ -23,7 +23,7 @@ rmixture2p(n, mu = 0, kappa = 5, pMem = 0.6)
 
 \item{kappa}{Vector of precision values}
 
-\item{pMem}{Vector of probabilities for memory recall}
+\item{p_mem}{Vector of probabilities for memory recall}
 
 \item{log}{Logical; if \code{TRUE}, values are returned on the log scale.}
 
@@ -44,10 +44,15 @@ generation function for the two-parameter mixture model.
 Density, distribution, and random generation functions for the
 two-parameter mixture model with the location of \code{mu}, precision of memory
 representations \code{kappa} and probability of recalling items from memory
-\code{pMem}.
+\code{p_mem}.
 }
 \examples{
-# example code
+# generate random samples from the mixture2p model and overlay the density
+r <- rmixture2p(10000, mu = 0, kappa = 4, p_mem = 0.8)
+x <- seq(-pi,pi,length.out=10000)
+d <- dmixture2p(x, mu = 0, kappa = 4, p_mem = 0.8)
+hist(r, breaks=60, freq=FALSE)
+lines(x,d,type="l", col="red")
 
 }
 \references{

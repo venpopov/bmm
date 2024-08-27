@@ -12,10 +12,11 @@
 #'   priors in `brms`, as we use domain knowledge to specify the priors.
 #'
 #' @inheritParams bmm
+#' @aliases default_prior
 #' @param object A `bmmformula` object
 #' @param ... Further arguments passed to [brms::default_prior()]
 #'
-#' @returns A data.frame with columns specifying the `prior`, the `class`, the
+#' @return A data.frame with columns specifying the `prior`, the `class`, the
 #'   `coef` and `group` for each of the priors specified. Separate rows contain
 #'   the information on the parameters (or parameter classes) for which priors
 #'   can be specified.
@@ -24,14 +25,11 @@
 #'
 #' @keywords extract_info
 #'
-#' @export
-#'
 #' @examples
 #' default_prior(bmf(c ~ 1, kappa ~ 1),
 #'   data = oberauer_lin_2017,
 #'   model = sdm(resp_error = "dev_rad")
 #' )
-#' @importFrom brms default_prior
 #' @export
 default_prior.bmmformula <- function(object, data, model, formula = object, ...) {
   withr::local_options(bmm.sort_data = FALSE)
@@ -113,11 +111,17 @@ fixed_pars_priors <- function(model, data, formula, additional_pars = list()) {
 #' @param data A data.frame containing the data used in the model
 #'
 #' @noRd
-#' @keywords internal, developer
+#' @keywords internal developer
 set_default_prior <- function(model, data, formula) {
   if (isFALSE(getOption("bmm.default_priors", TRUE))) {
     return(NULL)
   }
+
+  prior <- brms::empty_prior()
+  bterms <- brms::brmsterms(formula)
+  bterms$allpars <- c(bterms$dpars, bterms$nlpars)
+  nlpars <- names(bterms$nlpars)
+  pars <- names(bterms$allpars)
 
   default_priors <- model$default_priors
   stopif(
@@ -125,11 +129,17 @@ set_default_prior <- function(model, data, formula) {
     "The default_priors should be a list of lists"
   )
 
-  prior <- brms::empty_prior()
-  bterms <- brms::brmsterms(formula)
-  bterms$allpars <- c(bterms$dpars, bterms$nlpars)
-  nlpars <- names(bterms$nlpars)
-  pars <- names(bterms$allpars)
+  # remove default priors if one of them is transformed in a non-linear formula
+  dpar_is_nl <- names(which(sapply(formula$pforms, is_nl)))
+  default_priors[dpar_is_nl] <- NULL
+  warnif(
+    any(dpar_is_nl %in% names(model$parameter)),
+    "Your formula contains non-linear transformations of model parameters.
+     We advise to pass priors for the non-linear parameters to improve parameter estimation.
+     Otherwise, improper flat priors will be used by default."
+  )
+
+
 
   pars_key <- names(default_priors)
   pars <- pars[pars %in% pars_key]
@@ -229,8 +239,50 @@ set_default_prior <- function(model, data, formula) {
 #' @param user_prior A `brmsprior` object given by the user as an argument to
 #'  bmm()
 #' @param ... Additional arguments passed to the method
+#'
+#' @return A `brmsprior` object containing the default priors for the model
+#'
 #' @export
-#' @keywords internal, developer
+#'
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' configure_prior.mixture3p <- function(model, data, formula, user_prior, ...) {
+#'   # if there is set_size 1 in the data, set constant prior over thetant for set_size1
+#'   prior <- brms::empty_prior()
+#'   set_size_var <- model$other_vars$set_size
+#'   prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
+#'
+#'   thetant_preds <- rhs_vars(formula$pforms$thetant)
+#'   if (prior_cond && set_size_var %in% thetant_preds) {
+#'     prior <- prior + brms::prior_("constant(-100)",
+#'       class = "b",
+#'       coef = paste0(set_size_var, 1),
+#'       nlpar = "thetant"
+#'     )
+#'   }
+#'   # check if there is a random effect on theetant that include set_size as predictor
+#'   bterms <- brms::brmsterms(formula$pforms$thetant)
+#'   re_terms <- bterms$dpars$mu$re
+#'   if (!is.null(re_terms)) {
+#'     for (i in 1:nrow(re_terms)) {
+#'       group <- re_terms$group[[i]]
+#'       form <- re_terms$form[[i]]
+#'       thetant_preds <- rhs_vars(form)
+#'
+#'       if (prior_cond && set_size_var %in% thetant_preds) {
+#'         prior <- prior + brms::prior_("constant(1e-8)",
+#'           class = "sd",
+#'           coef = paste0(set_size_var, 1),
+#'           group = group,
+#'           nlpar = "thetant"
+#'         )
+#'       }
+#'     }
+#'   }
+#'
+#'   prior
+#' }
+#'
+#' @keywords internal developer
 configure_prior <- function(model, data, formula, user_prior, ...) {
   UseMethod("configure_prior")
 }

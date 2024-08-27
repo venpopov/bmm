@@ -7,7 +7,7 @@
 
   out <- structure(
     list(
-      resp_vars = nlist(resp_error),
+      resp_vars = nlist(resp_error), 
       other_vars = nlist(nt_features, set_size),
       domain = "Visual working memory",
       task = "Continuous reproduction",
@@ -51,7 +51,7 @@
     # attributes
     regex = regex,
     regex_vars = c('nt_features'),
-    class =  c("bmmodel", "vwm", "non_targets", "mixture3p"),
+    class =  c("bmmodel", "circular", "non_targets", "mixture3p"),
     call = call
   )
   out$links[names(links)] <- links
@@ -76,14 +76,11 @@
 #'   fixed.
 #' @param regex Logical. If TRUE, the `nt_features` argument is interpreted as
 #'  a regular expression to match the non-target feature columns in the dataset.
-#' @param links A list of links for the parameters. *Currently does not affect
-#'   the model fits, but it will in the future.*
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
 #' @keywords bmmodel
 #' @export
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # generate artificial data from the Bays et al (2009) 3-parameter mixture model
 #' dat <- data.frame(
 #'   y = rmixture3p(n=2000, mu = c(0,1,-1.5,2)),
@@ -121,9 +118,7 @@
 #'            cores = 4,
 #'            iter = 500,
 #'            backend = 'cmdstanr')
-#' }
-mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE,
-                      links = NULL, ...) {
+mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE, ...) {
   call <- match.call()
   dots <- list(...)
   if ("setsize" %in% names(dots)) {
@@ -132,8 +127,7 @@ mixture3p <- function(resp_error, nt_features, set_size, regex = FALSE,
   }
   stop_missing_args()
   .model_mixture3p(resp_error = resp_error, nt_features = nt_features,
-                   set_size = set_size, regex = regex, links = links,
-                   call = call, ...)
+                   set_size = set_size, regex = regex, call = call, ...)
 }
 
 #############################################################################!

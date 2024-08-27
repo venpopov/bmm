@@ -68,8 +68,9 @@ softmaxinv <- function(p, lambda = 1) {
 #'   parent.frame() the changes would apply to the environment of the function
 #'   that called it. In our case, this is the environment of the bmm()
 #'   function. Changes will not be propagated to the user environment.
-#' @keywords internal
-#' @returns A list of options to pass to brm()
+#' @keywords internal developer
+#' @noRd
+#' @return A list of options to pass to brm()
 configure_options <- function(opts, env = parent.frame()) {
   if (isTRUE(opts$parallel)) {
     cores <- parallel::detectCores()
@@ -202,13 +203,14 @@ read_lines2 <- function(con) {
 
 
 # for testing purposes
-install_and_load_bmm_version <- function(version) {
+install_and_load_bmm_version <- function(version, path) {
+  stopif(missing(path))
   if ("package:bmm" %in% search()) {
     detach("package:bmm", unload = TRUE)
   }
-  path <- paste0(.libPaths()[1], "/bmm-", version)
+  path <- file.path(path, paste0("bmm-", version))
   if (!dir.exists(path) || length(list.files(path)) == 0 ||
-      length(list.files(paste0(path, "/bmm"))) == 0) {
+    length(list.files(file.path(path, "bmm"))) == 0) {
     dir.create(path)
     remotes::install_github(paste0("venpopov/bmm@", version), lib = path)
   }
@@ -228,6 +230,14 @@ install_and_load_bmm_version <- function(version) {
 #'  - "time_mean": A named numeric vector with the mean sampling time
 #' @keywords extract_info
 #' @export
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' fit <- bmm(
+#'   formula = bmmformula(c ~ 1, kappa ~ 1),
+#'   data = data.frame(y = rsdm(1000)),
+#'   model = sdm(resp_error = "y")
+#' )
+#'
+#' fit_info(fit, "time")
 fit_info <- function(fit, what) {
   UseMethod("fit_info")
 }
@@ -493,6 +503,7 @@ identical.formula <- function(x, y, ...) {
 #' old_op <- bmm_options(sort_data = TRUE, parallel = TRUE)
 #' on.exit(bmm_options(old_op))
 #'
+#' bmm_options(reset_options = TRUE)
 #' @export
 bmm_options <- function(sort_data, parallel, default_priors, silent,
                         color_summary, file_refit, reset_options = FALSE) {
@@ -672,6 +683,19 @@ deprecated_args <- function(...) {
 
 read_bmmfit <- function(file, file_refit) {
   file <- check_rds_file(file)
+
+  if(is.character(file_refit)) {
+    stopif(!tolower(file_refit) %in% c("never", "always", "on_change"),
+           glue("You have provided an invalid option for the file_refit argument.\n",
+                "Valid options are: \"never\" or \"always\" \n",
+                "The \"on_change\" option available in brms is currently not implemented for bmm."))
+
+    warnif(tolower(file_refit) == "on_change",
+           glue("The \"on_change\" option for the file_refit argument available in brms,\n",
+                "is currently not implemented for bmm.\n",
+                "To avoid overwriting an already saved bmmfit object, file_refit was set to \"never\"."))
+    file_refit <- ifelse(file_refit == "always", TRUE, FALSE)
+  }
   if (is.null(file) || file_refit) {
     return(NULL)
   }

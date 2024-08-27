@@ -4,7 +4,7 @@
 \alias{mixture3p}
 \title{Three-parameter mixture model by Bays et al (2009).}
 \usage{
-mixture3p(resp_error, nt_features, set_size, regex = FALSE, links = NULL, ...)
+mixture3p(resp_error, nt_features, set_size, regex = FALSE, ...)
 }
 \arguments{
 \item{resp_error}{The name of the variable in the dataset containing
@@ -24,9 +24,6 @@ fixed.}
 
 \item{regex}{Logical. If TRUE, the \code{nt_features} argument is interpreted as
 a regular expression to match the non-target feature columns in the dataset.}
-
-\item{links}{A list of links for the parameters. \emph{Currently does not affect
-the model fits, but it will in the future.}}
 
 \item{...}{used internally for testing, ignore it}
 }
@@ -94,7 +91,7 @@ Three-parameter mixture model by Bays et al (2009).
 }
 }
 \examples{
-\dontrun{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # generate artificial data from the Bays et al (2009) 3-parameter mixture model
 dat <- data.frame(
   y = rmixture3p(n=2000, mu = c(0,1,-1.5,2)),
@@ -132,6 +129,6 @@ fit <- bmm(formula = ff,
            cores = 4,
            iter = 500,
            backend = 'cmdstanr')
-}
+\dontshow{\}) # examplesIf}
 }
 \keyword{bmmodel}
