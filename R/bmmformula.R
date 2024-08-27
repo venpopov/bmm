@@ -448,7 +448,7 @@ apply_links <- function(formula, links) {
   # extract dpars of non-linear formulas
   nl_dpars <- names(formula)[which(is_nl(formula))]
 
-  for (dpar in dpars) {
+  for (dpar in nl_dpars) {
     pform <- formula[[dpar]]
     deparse_form <- deparse(pform)
     split_form <- gsub("[[:space:]]", "", strsplit(deparse_form, "~")[[1]])
