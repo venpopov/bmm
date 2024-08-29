@@ -13,6 +13,21 @@ simulate_design(
   predictors
 )
 }
+\arguments{
+\item{model}{A bmmodel object to simulate data for}
+
+\item{sample_size}{The number of participants to simulate data for}
+
+\item{n_response}{The number of responses to simulate for each simulated participant}
+
+\item{formula}{A bmmformula object specifying the design to simulate data for}
+
+\item{generating_pars}{A named list that specifies the random generation function (\code{fun})
+and the parameters of that function (\code{pars}) for each of the generating parameters}
+
+\item{predictors}{A list of predictors that are used in the \code{formula} to transform and
+predict the parameters in different experimental conditions.}
+}
 \description{
 A short description...
 }

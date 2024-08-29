@@ -4,7 +4,7 @@
 \alias{mutate_form}
 \title{Helper function that calculates new variables from data given a formula}
 \usage{
-mutate_form(.data, formulas)
+mutate_form(.data, formula)
 }
 \arguments{
 \item{.data}{A data frame or vector containing variables or named elements that are used to

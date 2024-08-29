@@ -9,7 +9,7 @@ simulate_parameters(sample_size, generating_pars)
 \arguments{
 \item{sample_size}{The number of subjects parameters should be generated for}
 
-\item{generating_pars.}{Either a named list specifying the function (\code{fun}) to use to sample subject parameters,
+\item{generating_pars}{Either a named list specifying the function (\code{fun}) to use to sample subject parameters,
 as well as the parameters (\code{input_pars}) of the functions that should be used for sampling, or a data frame
 with the generating parameters for all subjects}
 }

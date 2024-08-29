@@ -3,6 +3,14 @@
 #' @description
 #' A short description...
 #'
+#' @param model A bmmodel object to simulate data for
+#' @param sample_size The number of participants to simulate data for
+#' @param n_response The number of responses to simulate for each simulated participant
+#' @param formula A bmmformula object specifying the design to simulate data for
+#' @param generating_pars A named list that specifies the random generation function (`fun`)
+#'   and the parameters of that function (`pars`) for each of the generating parameters
+#' @param predictors A list of predictors that are used in the `formula` to transform and
+#'   predict the parameters in different experimental conditions.
 #'
 #' @export
 #'
@@ -93,7 +101,7 @@ simulate_design.m3 <- function(model, sample_size, n_response,
 #' A short description...
 #'
 #' @param sample_size The number of subjects parameters should be generated for
-#' @param generating_pars. Either a named list specifying the function (`fun`) to use to sample subject parameters,
+#' @param generating_pars Either a named list specifying the function (`fun`) to use to sample subject parameters,
 #'   as well as the parameters (`input_pars`) of the functions that should be used for sampling, or a data frame
 #'   with the generating parameters for all subjects
 #'
@@ -112,7 +120,7 @@ simulate_parameters <- function(sample_size, generating_pars) {
     } else {
       if (length(generating_pars[[par]] == 1)) {
         list_pars[[par]] <- rep(generating_pars[[par]], sample_size)
-      } else if (length(generating_pars[[pars]] == sample_size)) {
+      } else if (length(generating_pars[[par]] == sample_size)) {
         list_pars[[par]] <- generating_pars[[par]]
       } else {
         # throw error: number of generating pars mismatches the specified sample_size
@@ -135,16 +143,16 @@ simulate_parameters <- function(sample_size, generating_pars) {
 #' @param formula A bmmformula object specifying the transformations that should be used to calculate
 #'   new variables or values.
 #'
-mutate_form <- function(.data, formulas) {
+mutate_form <- function(.data, formula) {
 
   # convert formulas to list
-  formulas = c(formulas)
+  formula = c(formula)
 
   # calculate the formula one by one
-  for (i in 1:length(formulas)) {
+  for (i in 1:length(formula)) {
 
     # get the formula
-    form = formulas[[i]]
+    form = formula[[i]]
 
     # extract dependent and independent variables
     DV = all.vars(form)[1]
