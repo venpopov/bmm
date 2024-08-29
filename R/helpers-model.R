@@ -228,8 +228,6 @@ supported_models <- function(print_call = TRUE) {
 }
 
 
-
-
 #' @title Generate a markdown list of the measurement models available in `bmm`
 #' @description Used internally to automatically populate information in the
 #'   README file
