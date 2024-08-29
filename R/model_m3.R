@@ -31,8 +31,7 @@
       b = ifelse(choice_rule == "softmax", 0, 0.1)
     ),
     default_priors = dots$default_priors,
-    void_mu = FALSE,
-    custom_bmf2bf = TRUE
+    void_mu = FALSE
   )
 
   # add version specific information
