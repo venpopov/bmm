@@ -9,6 +9,9 @@
 ### Bug fixes
 * Fix a conflict in setting default priors when model parameters were transformed in a non-linear formula
 
+### Documentation
+* add documentation to the article of the [continuous reproduction task](https://venpopov.github.io/bmm/articles/bmm_vwm_crt.html) for how to pre-process half-circular stimulus spaces when using `bmmodels` of the `circular` model class
+
 # bmm 1.0.0
 
 First version of the package on published on CRAN!
