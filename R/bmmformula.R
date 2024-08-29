@@ -76,6 +76,7 @@ bmmformula <- function(...) {
   dots <- list(...)
   formula <- list()
   for (i in seq_along(dots)) {
+    if (length(dots[[i]]) == 0) next
     arg <- dots[[i]]
     if (is_formula(arg)) {
       par <- all.vars(arg)[1]
@@ -268,7 +269,6 @@ bmf2bf.default <- function(model, formula) {
   brms::bf(paste0(model$resp_vars[[1]], "~ 1"))
 }
 
-
 add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
   formula_pars <- names(formula)
   model_pars <- names(model$parameters)
@@ -445,9 +445,10 @@ is_constant.default <- function(x) {
 #'
 #' @export
 apply_links <- function(formula, links) {
-  dpars <- names(formula)
+  # extract dpars of non-linear formulas
+  nl_dpars <- names(formula)[which(is_nl(formula))]
 
-  for (dpar in dpars) {
+  for (dpar in nl_dpars) {
     pform <- formula[[dpar]]
     deparse_form <- deparse(pform)
     split_form <- gsub("[[:space:]]", "", strsplit(deparse_form, "~")[[1]])

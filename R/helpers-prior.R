@@ -137,7 +137,8 @@ set_default_prior <- function(model, data, formula) {
     "Your formula contains non-linear transformations of model parameters.
      We advise to pass priors for the non-linear parameters to improve parameter estimation.
      Otherwise, improper flat priors will be used by default."
-  )
+    )
+
 
 
 

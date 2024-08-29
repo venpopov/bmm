@@ -86,6 +86,7 @@ configure_model <- function(model, data, formula) {
 ############################################################################# !
 # CHECK_MODEL methods                                                    ####
 ############################################################################# !
+
 #' Generic S3 method for checking if the model is supported and model preprocessing
 #'
 #' In addition for validating the model, specific methods might add information

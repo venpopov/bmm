@@ -151,11 +151,11 @@
 #'
 #' @export
 m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custom", ...) {
-  stop_missing_args()
-  .model_m3(
-    resp_cats = resp_cats, num_options = num_options,
-    choice_rule = choice_rule, version = version, ...
-  )
+   stop_missing_args()
+   .model_m3(
+      resp_cats = resp_cats, num_options = num_options,
+      choice_rule = choice_rule, version = version, ...
+   )
 }
 
 ############################################################################# !
@@ -360,30 +360,30 @@ check_formula.m3 <- function(model, data, formula) {
 
 #' @export
 check_formula.m3_custom <- function(model, data, formula) {
-  # test if activation functions for all categories are provided
-  missing_act_funs <- which(!model$resp_vars$resp_cats %in% names(formula))
-  stopif(
-    length(missing_act_funs) > 0,
-    paste0(
-      "You did not provide activation functions for all response categories.\n ",
-      "Please provide activation functions for the following response categories in your bmmformula:\n ",
-      model$resp_vars$resp_cats[missing_act_funs]
-    )
-  )
+   # test if activation functions for all categories are provided
+   missing_act_funs <- which(!model$resp_vars$resp_cats %in% names(formula))
+   stopif(
+      length(missing_act_funs) > 0,
+      paste0(
+         "You did not provide activation functions for all response categories.\n ",
+         "Please provide activation functions for the following response categories in your bmmformula:\n ",
+         model$resp_vars$resp_cats[missing_act_funs]
+      )
+   )
 
-  # test if all activation functions contain background noise "b"
-  act_funs <- formula[model$resp_vars$resp_cats]
-  form_miss_b <- unlist(lapply(act_funs, missing_b))
-  stopif(
-    any(form_miss_b),
-    paste0(
-      "Some of your activation functions do not contain the background noise parameter \"b\".\n ",
-      "The following activation functions need a background noise parameter: \n",
-      model$resp_vars$resp_cats[which(form_miss_b)]
-    )
-  )
+   # test if all activation functions contain background noise "b"
+   act_funs <- formula[model$resp_vars$resp_cats]
+   form_miss_b <- unlist(lapply(act_funs, missing_b))
+   stopif(
+      any(form_miss_b),
+      paste0(
+         "Some of your activation functions do not contain the background noise parameter \"b\".\n ",
+         "The following activation functions need a background noise parameter: \n",
+         model$resp_vars$resp_cats[which(form_miss_b)]
+      )
+   )
 
-  NextMethod("check_formula")
+   NextMethod("check_formula")
 }
 
 # helper to test if background noise par is missing
@@ -443,16 +443,6 @@ bmf2bf.m3 <- function(model, formula) {
       )
   }
 
-  # add activation functions for simple and complex span versions
-  if ("m3_ss" %in% class(model)) {
-    # I leave that as an example here...
-    brms_formula <- brms_formula +
-      glue_nlf(resp_cats[1], " ~ b + a + c") +
-      glue_nlf()
-  } else if ("m3_cs" %in% class(model)) {
-
-  }
-
   brms_formula
 }
 
@@ -465,17 +455,17 @@ bmf2bf.m3 <- function(model, formula) {
 
 #' @export
 configure_model.m3 <- function(model, data, formula) {
-  # construct brms formula from the bmm formula
-  bmm_formula <- formula
-  formula <- bmf2bf(model, bmm_formula)
+   # construct brms formula from the bmm formula
+   bmm_formula <- formula
+   formula <- bmf2bf(model, bmm_formula)
 
-  # construct the family
-  formula$family <- brms::multinomial(refcat = NA)
+   # construct the family
+   formula$family <- brms::multinomial(refcat = NA)
 
-  formula$family$cats <- model$resp_vars$resp_cats
-  formula$family$dpars <- paste0("mu", model$resp_vars$resp_cats)
+   formula$family$cats <- model$resp_vars$resp_cats
+   formula$family$dpars <- paste0("mu", model$resp_vars$resp_cats)
 
-  # return the list
-  out <- nlist(formula, data)
-  return(out)
+   # return the list
+   out <- nlist(formula, data)
+   return(out)
 }
