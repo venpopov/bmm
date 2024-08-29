@@ -129,6 +129,12 @@ Figure 1.1: A typical continuous reproduction task
 </ul>
 </div>
 </div>
+<div class="section level2" number="4">
+<h2 id="preparing-data-from-half-circular-stimulus-spaces">
+<span class="header-section-number">4</span> Preparing data from half-circular stimulus spaces<a class="anchor" aria-label="anchor" href="#preparing-data-from-half-circular-stimulus-spaces"></a>
+</h2>
+<p>As already mentioned, some task require subjects to remember orientations (e.g. of bars or Gabor patches) without a direction. With such stimulus material the response error can range only from -90 to 90 degrees (or -pi/2 to pi/2). When using data from such a task, you have to multiply the <code>response_error</code> by 2 when pre-processing the data, so that the response error ranges from -180 to 180 degrees (or -pi to pi). The same applies to the <code>nt_features</code> relative to the target orientation.</p>
+</div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
