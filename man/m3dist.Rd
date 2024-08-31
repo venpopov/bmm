@@ -6,47 +6,25 @@
 \alias{rm3}
 \title{Distribution functions for the Memory Measurement Model (M3)}
 \usage{
-dm3(
-  x,
-  pars,
-  num_options,
-  choice_rule = "softmax",
-  version = "custom",
-  act_funs = NULL,
-  log = TRUE,
-  ...
-)
+dm3(x, pars, m3_model, act_funs = NULL, log = TRUE, ...)
 
-rm3(
-  n,
-  size,
-  pars,
-  num_options,
-  choice_rule = "softmax",
-  version = "custom",
-  act_funs = NULL,
-  ...
-)
+rm3(n, size, pars, m3_model, act_funs = NULL, ...)
 }
 \arguments{
-\item{x}{Vector of observed responses}
+\item{x}{Numeric vector of observed responses}
 
-\item{pars}{Vector of parameters of the memory measurement model}
+\item{pars}{A named vector of parameters of the memory measurement model}
 
-\item{num_options}{Vector of the number of response options for each response category}
+\item{m3_model}{A \code{bmmodel} object specifying the m3 model that densities or random samples should be generated for}
 
-\item{choice_rule}{Character string specifying which choice rule should be used. Options are "luce" or "softmax".}
-
-\item{version}{Character string specifying which M3 version should be used. Default is "custom", other options are "ss" and "cs".}
-
-\item{act_funs}{bmmformula object specifying the activation functions for the different response categories for the "custom" version of the M3.}
+\item{act_funs}{A \code{bmmformula} object specifying the activation functions for the different response categories for the "custom" version of the M3.}
 
 \item{log}{Logical; if \code{TRUE}, values are returned on the log scale.}
 
 \item{...}{can be used to pass additional variables that are used in the activation functions,
 but not parameters of the model}
 
-\item{n}{Number of observations to generate data for}
+\item{n}{Numeric. Number of observations to generate data for}
 
 \item{size}{Number of trials per observation}
 }

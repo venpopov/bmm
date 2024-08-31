@@ -151,11 +151,11 @@
 #'
 #' @export
 m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custom", ...) {
-   stop_missing_args()
-   .model_m3(
-      resp_cats = resp_cats, num_options = num_options,
-      choice_rule = choice_rule, version = version, ...
-   )
+  stop_missing_args()
+  .model_m3(
+    resp_cats = resp_cats, num_options = num_options,
+    choice_rule = choice_rule, version = version, ...
+  )
 }
 
 ############################################################################# !
@@ -336,20 +336,8 @@ check_data.m3 <- function(model, data, formula) {
 
 #' @export
 check_formula.m3 <- function(model, data, formula) {
-  if (model$version == "ss") {
-    formula <- bmf(
-      formula(paste(model$resp_vars$resp_cats[1], "~ b + a + c")),
-      formula(paste(model$resp_vars$resp_cats[2], "~ b + a")),
-      formula(paste(model$resp_vars$resp_cats[3], "~ b"))
-    ) + formula
-  } else if (model$version == "cs") {
-    formula <- bmf(
-      formula(paste(model$resp_vars$resp_cats[1], "~ b + a + c")),
-      formula(paste(model$resp_vars$resp_cats[2], "~ b + f * (a + c)")),
-      formula(paste(model$resp_vars$resp_cats[3], "~ b + a")),
-      formula(paste(model$resp_vars$resp_cats[4], "~ b + f * a")),
-      formula(paste(model$resp_vars$resp_cats[5], "~ b"))
-    ) + formula
+  if (model$version != "custom") {
+    formula <- act_funs_m3versions(model, warnings = FALSE) + formula
   }
 
   formula <- apply_links(formula, model$links)
@@ -360,30 +348,30 @@ check_formula.m3 <- function(model, data, formula) {
 
 #' @export
 check_formula.m3_custom <- function(model, data, formula) {
-   # test if activation functions for all categories are provided
-   missing_act_funs <- which(!model$resp_vars$resp_cats %in% names(formula))
-   stopif(
-      length(missing_act_funs) > 0,
-      paste0(
-         "You did not provide activation functions for all response categories.\n ",
-         "Please provide activation functions for the following response categories in your bmmformula:\n ",
-         model$resp_vars$resp_cats[missing_act_funs]
-      )
-   )
+  # test if activation functions for all categories are provided
+  missing_act_funs <- which(!model$resp_vars$resp_cats %in% names(formula))
+  stopif(
+    length(missing_act_funs) > 0,
+    paste0(
+      "You did not provide activation functions for all response categories.\n ",
+      "Please provide activation functions for the following response categories in your bmmformula:\n ",
+      model$resp_vars$resp_cats[missing_act_funs]
+    )
+  )
 
-   # test if all activation functions contain background noise "b"
-   act_funs <- formula[model$resp_vars$resp_cats]
-   form_miss_b <- unlist(lapply(act_funs, missing_b))
-   stopif(
-      any(form_miss_b),
-      paste0(
-         "Some of your activation functions do not contain the background noise parameter \"b\".\n ",
-         "The following activation functions need a background noise parameter: \n",
-         model$resp_vars$resp_cats[which(form_miss_b)]
-      )
-   )
+  # test if all activation functions contain background noise "b"
+  act_funs <- formula[model$resp_vars$resp_cats]
+  form_miss_b <- unlist(lapply(act_funs, missing_b))
+  stopif(
+    any(form_miss_b),
+    paste0(
+      "Some of your activation functions do not contain the background noise parameter \"b\".\n ",
+      "The following activation functions need a background noise parameter: \n",
+      model$resp_vars$resp_cats[which(form_miss_b)]
+    )
+  )
 
-   NextMethod("check_formula")
+  NextMethod("check_formula")
 }
 
 # helper to test if background noise par is missing
@@ -455,17 +443,92 @@ bmf2bf.m3 <- function(model, formula) {
 
 #' @export
 configure_model.m3 <- function(model, data, formula) {
-   # construct brms formula from the bmm formula
-   bmm_formula <- formula
-   formula <- bmf2bf(model, bmm_formula)
+  # construct brms formula from the bmm formula
+  bmm_formula <- formula
+  formula <- bmf2bf(model, bmm_formula)
 
-   # construct the family
-   formula$family <- brms::multinomial(refcat = NA)
+  # construct the family
+  formula$family <- brms::multinomial(refcat = NA)
 
-   formula$family$cats <- model$resp_vars$resp_cats
-   formula$family$dpars <- paste0("mu", model$resp_vars$resp_cats)
+  formula$family$cats <- model$resp_vars$resp_cats
+  formula$family$dpars <- paste0("mu", model$resp_vars$resp_cats)
 
-   # return the list
-   out <- nlist(formula, data)
-   return(out)
+  # return the list
+  out <- nlist(formula, data)
+  return(out)
+}
+
+
+#' @title Get Activation Functions for different M3 versions
+#'
+#' @description
+#' This function generates the activation functions for different versions of the Memory
+#' Measurement Model (m3) implemented in the `bmm` package. If no `bmmodel` object is
+#' passed then it will print the available model versions.
+#'
+#'
+#' @param model A bmmodel object that specifies the M3 model for which the
+#'  activation functions should be generated. If no model is passed the available
+#'  M3 versions will be printed to the console.
+#' @param warnings Logical flag to indicate if information about the generated model formulas
+#'  should be printed when the function is called.
+#'
+#' @return A bmmformula object with the activation functions for the m3 version specified in
+#'  the model object. The activation functions use the names of the response categories
+#'  specified in the model object.
+#'
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' model <- m3(
+#'  resp_cats = c("correct","other", "npl"),
+#'  num_options = c(1,4,5),
+#'  version = "ss"
+#' )
+#'
+#' ss_act_funs <- act_funs_m3versions(model, warnings = FALSE)
+#'
+#' @export
+act_funs_m3versions <- function(model = NULL, warnings = TRUE) {
+  if(is.null(model)) {
+    msg <- glue("Available m3 versions with pre-defined activation functions are:\n",
+                " - \"ss\" for simple span tasks: 3 response categories (correct, other, npl) \n" ,
+                " - \"cs\" for complex span tasks. 5 response categories (correct, dist_context, other, dist_other, npl)")
+    return(print(msg))
+  }
+
+  stopif(!"m3" %in% class(model),
+         glue("Activation functions can only be generated for \"m3\" models."))
+
+  if(model$version == "ss") {
+    warnif(warnings,
+           glue("\n","The \"ss\" version of the m3 requires that response categories are ordered as follows:\n",
+                " 1) correct: correct responses\n",
+                " 2) other: other list responses\n",
+                " 3) npl: not presented lures"))
+
+    act_funs <- bmf(
+      formula(glue(model$resp_vars$resp_cats[1], "~ b + a + c")),
+      formula(glue(model$resp_vars$resp_cats[2], "~ b + a")),
+      formula(glue(model$resp_vars$resp_cats[3], "~ b"))
+    )
+  } else if(model$version == "cs") {
+    warnif(warnings,
+           glue("\n","The \"cs\" version of the m3 requires that response categories are ordered as follows:\n",
+                " 1) correct: correct responses\n",
+                " 2) dist_context: distractor responses close in context to the correct item\n",
+                " 3) other: other list responses\n",
+                " 4) dist_other: all distractor responses not close in context to the correct item\n",
+                " 5) npl: not presented lures"))
+
+    act_funs <- bmf(
+      formula(glue(model$resp_vars$resp_cats[1], "~ b + a + c")),
+      formula(glue(model$resp_vars$resp_cats[2], "~ b + f * a + f * c")),
+      formula(glue(model$resp_vars$resp_cats[3], "~ b + a")),
+      formula(glue(model$resp_vars$resp_cats[4], "~ b + f * a")),
+      formula(glue(model$resp_vars$resp_cats[5], "~ b"))
+    )
+  } else {
+    act_funs <- bmf()
+  }
+
+  return(act_funs)
 }
