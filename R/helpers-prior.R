@@ -141,6 +141,7 @@ set_default_prior <- function(model, data, formula) {
 
 
 
+
   pars_key <- names(default_priors)
   pars <- pars[pars %in% pars_key]
 

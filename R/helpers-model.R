@@ -229,8 +229,6 @@ supported_models <- function(print_call = TRUE) {
 }
 
 
-
-
 #' @title Generate a markdown list of the measurement models available in `bmm`
 #' @description Used internally to automatically populate information in the
 #'   README file
@@ -376,8 +374,6 @@ get_model2 <- function(model) {
 #' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' library(usethis)
 #'
-#' # create a new model file without a brms::custom_family, and open the file
-#' use_model_template("newmodel")
 #'
 #' # create a new model file with a brms::custom_family, three .stan files in
 #' # inst/stan_chunks/ and open the files
