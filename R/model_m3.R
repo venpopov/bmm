@@ -488,7 +488,7 @@ configure_model.m3 <- function(model, data, formula) {
 #'
 #' @export
 act_funs_m3versions <- function(model = NULL, warnings = TRUE) {
-  if(is.null(model)) {
+  if (is.null(model)) {
     msg <- glue("Available m3 versions with pre-defined activation functions are:\n",
                 " - \"ss\" for simple span tasks: 3 response categories (correct, other, npl) \n" ,
                 " - \"cs\" for complex span tasks. 5 response categories (correct, dist_context, other, dist_other, npl)")
@@ -498,7 +498,7 @@ act_funs_m3versions <- function(model = NULL, warnings = TRUE) {
   stopif(!"m3" %in% class(model),
          glue("Activation functions can only be generated for \"m3\" models."))
 
-  if(model$version == "ss") {
+  if (model$version == "ss") {
     warnif(warnings,
            glue("\n","The \"ss\" version of the m3 requires that response categories are ordered as follows:\n",
                 " 1) correct: correct responses\n",
@@ -510,7 +510,7 @@ act_funs_m3versions <- function(model = NULL, warnings = TRUE) {
       formula(glue(model$resp_vars$resp_cats[2], "~ b + a")),
       formula(glue(model$resp_vars$resp_cats[3], "~ b"))
     )
-  } else if(model$version == "cs") {
+  } else if (model$version == "cs") {
     warnif(warnings,
            glue("\n","The \"cs\" version of the m3 requires that response categories are ordered as follows:\n",
                 " 1) correct: correct responses\n",
