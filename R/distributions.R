@@ -612,13 +612,13 @@ dm3 <- function(x, pars, m3_model, act_funs = NULL, log = TRUE, ...) {
   acts
 
   num_options <- m3_model$other_vars$num_options
-  if (tolower(m3_model$other_vars$choice_rule) == "luce") {
+  if (tolower(m3_model$other_vars$choice_rule) == "simple") {
     probs <- (acts*num_options)/sum(acts*num_options)
   } else if (tolower(m3_model$other_vars$choice_rule) == "softmax") {
     probs <- (exp(acts)*num_options)/sum(exp(acts)*num_options)
   } else {
     stop2(glue("Unsupported choice rule: \" ", m3_model$other_vars$choice_rule,"\"\n",
-               "Please select either \"luce\" or \"softmax\" as choice_rule."))
+               "Please select either \"simple\" or \"softmax\" as choice_rule."))
   }
 
   density <- dmultinom(x, size = sum(x), prob = probs, log = TRUE)
@@ -667,13 +667,13 @@ rm3 <- function (n, size, pars, m3_model, act_funs = NULL, ...) {
   acts
 
   num_options <- m3_model$other_vars$num_options
-  if (tolower(m3_model$other_vars$choice_rule) == "luce") {
+  if (tolower(m3_model$other_vars$choice_rule) == "simple") {
     probs <- (acts*num_options)/sum(acts*num_options)
   } else if (tolower(m3_model$other_vars$choice_rule) == "softmax") {
     probs <- (exp(acts)*num_options)/sum(exp(acts)*num_options)
   } else {
     stop2(glue("Unsupported choice rule: \" ", m3_model$other_vars$choice_rule,"\"\n",
-               "Please select either \"luce\" or \"softmax\" as choice_rule."))
+               "Please select either \"simple\" or \"softmax\" as choice_rule."))
   }
 
   t(rmultinom(n, size = size, prob = probs))

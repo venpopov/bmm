@@ -41,7 +41,7 @@
       a = "General activation. This source of activation is added to all items that were presented during the current trial."
     )
 
-    if (tolower(out$other_vars$choice_rule) == "luce") {
+    if (tolower(out$other_vars$choice_rule) == "simple") {
       ss_links <- list(
         c = "log",
         a = "log"
@@ -76,7 +76,7 @@
       f = "Filtering. This parameter captures the extent to which distractors remained in working memory."
     )
 
-    if (tolower(out$other_vars$choice_rule) == "luce") {
+    if (tolower(out$other_vars$choice_rule) == "simple") {
       cs_links <- list(
         c = "log",
         a = "log",
@@ -122,6 +122,11 @@
 #' @title `r .model_m3()$name`
 #' @name m3
 #'
+#' @description
+#' The Memory Measurement Model (M3) is a measurement model for working memory
+#' tasks with categorical responses. It assumes that each candidate in each response
+#' category is activated by a combination of sources of activation. The probability
+#' of choosing a response category is determined by the activation of the candidates.
 #'
 #' @param resp_cats The variable names that contain the number of responses for each of the
 #'   response categories used for the M3.
@@ -131,12 +136,11 @@
 #'   candidates in each response category. The order of these variables should be in the
 #'   same order as the names of the response categories passed to `resp_cats`
 #' @param choice_rule The choice rule that should be used for the M3. The options are "softmax"
-#'   or "luce". The "softmax" option implements the softmax normalization of activation into
-#'   probabilities for choosing the different response categories. The "luce" option implements
-#'   the normalization of the different activations over the sum of all activations without
-#'   exponentiating them. For details on the differences of these choice rules please see
-#'   the appendix of Oberauer & Lewandowsky (2019) "Simple measurement models for complex
-#'   working memory tasks. Psychological Review"
+#'   or "simple". The "softmax" option implements the softmax normalization of activation into
+#'   probabilities for choosing the different response categories. The "simple" option implements
+#'   a simple normalization of the absolute activations over the sum of all activations. For details
+#'   on the differences of these choice rules please see the appendix of Oberauer & Lewandowsky (2019)
+#'   "Simple measurement models for complex working memory tasks" published in Psychological Review.
 #' @param version Character. The version of the M3 model to use. Can be one of
 #'  `ss`, `cs`, or `custom`. The default is `custom`.
 #' @param ... used internally for testing, ignore it
@@ -406,8 +410,8 @@ bmf2bf.m3 <- function(model, formula) {
   choice_rule <- tolower(model$other_vars$choice_rule)
 
   # add transformation to activation according to choice rules
-  transform_act <- ifelse(choice_rule == "luce", "log(", "")
-  end_act <- ifelse(choice_rule == "luce", ")", "")
+  transform_act <- ifelse(choice_rule == "simple", "log(", "")
+  end_act <- ifelse(choice_rule == "simple", ")", "")
   zero_Opt <- ifelse(model$other_vars$choice_rule == "softmax", "(-100)", "(exp(-100))")
   op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax", "+", "*")
   trans_Nopts <- ifelse(model$other_vars$choice_rule == "softmax", "log(", "")

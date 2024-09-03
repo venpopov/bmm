@@ -17,8 +17,8 @@ candidates in each response category. The order of these variables should be in 
 same order as the names of the response categories passed to \code{resp_cats}}
 
 \item{choice_rule}{The choice rule that should be used for the M3. The options are "softmax"
-or "luce". The "softmax" option implements the softmax normalization of activation into
-probabilities for choosing the different response categories. The "luce" option implements
+or "simple". The "softmax" option implements the softmax normalization of activation into
+probabilities for choosing the different response categories. The "simple" option implements
 the normalization of the different activations over the sum of all activations without
 exponentiating them. For details on the differences of these choice rules please see
 the appendix of Oberauer & Lewandowsky (2019) "Simple measurement models for complex
@@ -33,7 +33,10 @@ working memory tasks. Psychological Review"}
 An object of class \code{bmmmodel}
 }
 \description{
-The Memory Measurement Model by Oberauer & Lewandowsky (2019)
+The Memory Measurement Model (M3) is a measurement model for working memory
+tasks with categorical responses. It assumes that each candidate in each response
+category is activated by a combination of sources of activation. The probability
+of choosing a response category is determined by the activation of the candidates.
 }
 \examples{
 \dontrun{
