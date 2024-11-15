@@ -7,7 +7,7 @@ development:
 
 navbar:
   structure:
-     left: [intro, reference, articles, changelog, develop]
+     left: [intro, reference, articles, changelog, develop, parameter_recovery]
   components:
      reference:
         text: Functions
@@ -20,7 +20,10 @@ navbar:
         href: news/index.html
      develop:
         text: Develop
-        href: https://venpopov.github.io/bmm/dev/dev-notes/index.html
+        href: https://venpopov.github.io/bmm/dev-notes/index.html
+     parameter_recovery:
+        text: Parameter recovery
+        href: https://venpopov.github.io/bmm/parameter_recovery/index.html
 
 
 
