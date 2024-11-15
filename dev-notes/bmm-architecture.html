@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.549">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>BMM Developer Notes - 3&nbsp; BMM code structure</title>
+<title>3&nbsp; BMM code structure – BMM Developer Notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -118,7 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -141,17 +141,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./bmm-architecture.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">BMM code structure</span></a></li></ol></nav>
-        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
   </nav>
@@ -208,17 +208,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-main-workhorse---fit_model" id="toc-the-main-workhorse---fit_model" class="nav-link active" data-scroll-target="#the-main-workhorse---fit_model"><span class="header-section-number">3.1</span> The main workhorse - <code>fit_model()</code></a></li>
+  <li><a href="#the-main-workhorse---bmm" id="toc-the-main-workhorse---bmm" class="nav-link active" data-scroll-target="#the-main-workhorse---bmm"><span class="header-section-number">3.1</span> The main workhorse - <code>bmm()</code></a></li>
   <li><a href="#models" id="toc-models" class="nav-link" data-scroll-target="#models"><span class="header-section-number">3.2</span> Models</a></li>
   <li><a href="#s3-methods" id="toc-s3-methods" class="nav-link" data-scroll-target="#s3-methods"><span class="header-section-number">3.3</span> S3 methods</a></li>
   <li><a href="#file-organization" id="toc-file-organization" class="nav-link" data-scroll-target="#file-organization"><span class="header-section-number">3.4</span> File organization</a>
   <ul class="collapse">
-  <li><a href="#rfit_model.r" id="toc-rfit_model.r" class="nav-link" data-scroll-target="#rfit_model.r"><code>R/fit_model.R</code></a></li>
+  <li><a href="#rbmm.r" id="toc-rbmm.r" class="nav-link" data-scroll-target="#rbmm.r"><code>R/bmm.R</code></a></li>
   <li><a href="#rhelpers-.r" id="toc-rhelpers-.r" class="nav-link" data-scroll-target="#rhelpers-.r"><code>R/helpers-*.R</code></a></li>
-  <li><a href="#rbmm_model_.r" id="toc-rbmm_model_.r" class="nav-link" data-scroll-target="#rbmm_model_.r"><code>R/bmm_model_*.R</code></a></li>
-  <li><a href="#rbmm_distributions.r" id="toc-rbmm_distributions.r" class="nav-link" data-scroll-target="#rbmm_distributions.r"><code>R/bmm_distributions.R</code></a></li>
-  <li><a href="#rrandom_data_generation.r" id="toc-rrandom_data_generation.r" class="nav-link" data-scroll-target="#rrandom_data_generation.r"><code>R/random_data_generation.R</code></a></li>
-  <li><a href="#rutils.r-rbrms-misc.r" id="toc-rutils.r-rbrms-misc.r" class="nav-link" data-scroll-target="#rutils.r-rbrms-misc.r"><code>R/utils.R</code>, <code>R/brms-misc.R</code></a></li>
+  <li><a href="#rbmmformula.r" id="toc-rbmmformula.r" class="nav-link" data-scroll-target="#rbmmformula.r"><code>R/bmmformula.R</code></a></li>
+  <li><a href="#rmodel_.r" id="toc-rmodel_.r" class="nav-link" data-scroll-target="#rmodel_.r"><code>R/model_*.R</code></a></li>
+  <li><a href="#rdistributions.r" id="toc-rdistributions.r" class="nav-link" data-scroll-target="#rdistributions.r"><code>R/distributions.R</code></a></li>
+  <li><a href="#rutils.r-rbrms-misc.r-rrestructure.r-rsummary.r-rupdate.r" id="toc-rutils.r-rbrms-misc.r-rrestructure.r-rsummary.r-rupdate.r" class="nav-link" data-scroll-target="#rutils.r-rbrms-misc.r-rrestructure.r-rsummary.r-rupdate.r"><code>R/utils.R</code>, <code>R/brms-misc.R</code>, <code>R/restructure.R</code>, <code>R/summary.R</code>, <code>R/update.R</code></a></li>
   <li><a href="#inststan_chunks" id="toc-inststan_chunks" class="nav-link" data-scroll-target="#inststan_chunks"><code>inst/stan_chunks/</code></a></li>
   </ul></li>
   </ul>
@@ -247,85 +247,121 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Adding a new model is straightforward using the <code>use_model_template()</code> function, which will be described in the next section. You do not have to edit any of the files below, but it will be helpful to understand the structure of the package.</p>
-<section id="the-main-workhorse---fit_model" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="the-main-workhorse---fit_model"><span class="header-section-number">3.1</span> The main workhorse - <code>fit_model()</code></h2>
-<p>The main function for fitting models is <code>fit_model()</code>. This function is the main entry point for users to fit models. It is set-up to be independent of the specific models that are implemented in the package:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>fit_model <span class="ot">&lt;-</span> <span class="cf">function</span>(formula, data, model, <span class="at">parallel =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb1-2"><a href="#cb1-2"></a>                      <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">prior =</span> <span class="cn">NULL</span>, ...) {</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  <span class="co"># enable parallel sampling if parallel equals TRUE</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>  opts <span class="ot">&lt;-</span> <span class="fu">configure_options</span>(<span class="fu">nlist</span>(parallel, chains))</span>
-<span id="cb1-5"><a href="#cb1-5"></a></span>
-<span id="cb1-6"><a href="#cb1-6"></a>  <span class="co"># check model, formula and data, and transform data if necessary</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>  model <span class="ot">&lt;-</span> <span class="fu">check_model</span>(model)</span>
-<span id="cb1-8"><a href="#cb1-8"></a>  formula <span class="ot">&lt;-</span> <span class="fu">check_formula</span>(model, formula)</span>
-<span id="cb1-9"><a href="#cb1-9"></a>  data <span class="ot">&lt;-</span> <span class="fu">check_data</span>(model, data, formula)</span>
+<section id="the-main-workhorse---bmm" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="the-main-workhorse---bmm"><span class="header-section-number">3.1</span> The main workhorse - <code>bmm()</code></h2>
+<p>The main function for fitting models is <code>bmm()</code>. This function is the main entry point for users to fit models. It is set-up to be independent of the specific models that are implemented in the package.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>bmm <span class="ot">&lt;-</span> <span class="cf">function</span>(formula, data, model,</span>
+<span id="cb1-2"><a href="#cb1-2"></a>                <span class="at">prior =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-3"><a href="#cb1-3"></a>                <span class="at">sort_data =</span> <span class="fu">getOption</span>(<span class="st">'bmm.sort_data'</span>, <span class="st">"check"</span>),</span>
+<span id="cb1-4"><a href="#cb1-4"></a>                <span class="at">silent =</span> <span class="fu">getOption</span>(<span class="st">'bmm.silent'</span>, <span class="dv">1</span>),</span>
+<span id="cb1-5"><a href="#cb1-5"></a>                <span class="at">backend =</span> <span class="fu">getOption</span>(<span class="st">'brms.backend'</span>, <span class="cn">NULL</span>),</span>
+<span id="cb1-6"><a href="#cb1-6"></a>                <span class="at">file =</span> <span class="cn">NULL</span>, <span class="at">file_compress =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-7"><a href="#cb1-7"></a>                <span class="at">file_refit =</span> <span class="fu">getOption</span>(<span class="st">'bmm.file_refit'</span>, <span class="cn">FALSE</span>), ...) {</span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="fu">deprecated_args</span>(...)</span>
+<span id="cb1-9"><a href="#cb1-9"></a>  dots <span class="ot">&lt;-</span> <span class="fu">list</span>(...)</span>
 <span id="cb1-10"><a href="#cb1-10"></a></span>
-<span id="cb1-11"><a href="#cb1-11"></a>  <span class="co"># generate the model specification to pass to brms later</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>  config_args <span class="ot">&lt;-</span> <span class="fu">configure_model</span>(model, data, formula)</span>
+<span id="cb1-11"><a href="#cb1-11"></a>  x <span class="ot">&lt;-</span> <span class="fu">read_bmmfit</span>(file, file_refit)</span>
+<span id="cb1-12"><a href="#cb1-12"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(x)) <span class="fu">return</span>(x)</span>
 <span id="cb1-13"><a href="#cb1-13"></a></span>
-<span id="cb1-14"><a href="#cb1-14"></a> <span class="co"># combine the default prior plus user given prior</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a>  config_args<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="fu">combine_prior</span>(config_args<span class="sc">$</span>prior, prior)</span>
-<span id="cb1-16"><a href="#cb1-16"></a></span>
-<span id="cb1-17"><a href="#cb1-17"></a>  <span class="co"># estimate the model</span></span>
-<span id="cb1-18"><a href="#cb1-18"></a>  dots <span class="ot">&lt;-</span> <span class="fu">list</span>(...)</span>
-<span id="cb1-19"><a href="#cb1-19"></a>  fit_args <span class="ot">&lt;-</span> <span class="fu">c</span>(config_args, opts, dots)</span>
-<span id="cb1-20"><a href="#cb1-20"></a>  fit <span class="ot">&lt;-</span> <span class="fu">call_brm</span>(fit_args)</span>
-<span id="cb1-21"><a href="#cb1-21"></a></span>
-<span id="cb1-22"><a href="#cb1-22"></a>  <span class="co"># model postprocessing</span></span>
-<span id="cb1-23"><a href="#cb1-23"></a>  fit <span class="ot">&lt;-</span> <span class="fu">postprocess_brm</span>(model, fit)</span>
-<span id="cb1-24"><a href="#cb1-24"></a></span>
-<span id="cb1-25"><a href="#cb1-25"></a>  <span class="fu">return</span>(fit)</span>
-<span id="cb1-26"><a href="#cb1-26"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-14"><a href="#cb1-14"></a>  <span class="co"># set temporary global options and return modified arguments for brms</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>  configure_opts <span class="ot">&lt;-</span> <span class="fu">nlist</span>(sort_data, silent, backend, <span class="at">parallel =</span> dots<span class="sc">$</span>parallel,</span>
+<span id="cb1-16"><a href="#cb1-16"></a>                          <span class="at">cores =</span> dots<span class="sc">$</span>cores)</span>
+<span id="cb1-17"><a href="#cb1-17"></a>  opts <span class="ot">&lt;-</span> <span class="fu">configure_options</span>(configure_opts)</span>
+<span id="cb1-18"><a href="#cb1-18"></a>  dots<span class="sc">$</span>parallel <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a></span>
+<span id="cb1-20"><a href="#cb1-20"></a>  <span class="co"># check model, formula and data, and transform data if necessary</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>  user_formula <span class="ot">&lt;-</span> formula</span>
+<span id="cb1-22"><a href="#cb1-22"></a>  model <span class="ot">&lt;-</span> <span class="fu">check_model</span>(model, data, formula)</span>
+<span id="cb1-23"><a href="#cb1-23"></a>  data <span class="ot">&lt;-</span> <span class="fu">check_data</span>(model, data, formula)</span>
+<span id="cb1-24"><a href="#cb1-24"></a>  formula <span class="ot">&lt;-</span> <span class="fu">check_formula</span>(model, data, formula)</span>
+<span id="cb1-25"><a href="#cb1-25"></a></span>
+<span id="cb1-26"><a href="#cb1-26"></a>  <span class="co"># generate the model specification to pass to brms later</span></span>
+<span id="cb1-27"><a href="#cb1-27"></a>  config_args <span class="ot">&lt;-</span> <span class="fu">configure_model</span>(model, data, formula)</span>
+<span id="cb1-28"><a href="#cb1-28"></a></span>
+<span id="cb1-29"><a href="#cb1-29"></a>  <span class="co"># configure the default prior and combine with user-specified prior</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a>  prior <span class="ot">&lt;-</span> <span class="fu">configure_prior</span>(model, data, config_args<span class="sc">$</span>formula, prior)</span>
+<span id="cb1-31"><a href="#cb1-31"></a></span>
+<span id="cb1-32"><a href="#cb1-32"></a>  <span class="co"># estimate the model</span></span>
+<span id="cb1-33"><a href="#cb1-33"></a>  fit_args <span class="ot">&lt;-</span> <span class="fu">combine_args</span>(<span class="fu">nlist</span>(config_args, opts, dots, prior))</span>
+<span id="cb1-34"><a href="#cb1-34"></a>  fit <span class="ot">&lt;-</span> <span class="fu">call_brm</span>(fit_args)</span>
+<span id="cb1-35"><a href="#cb1-35"></a></span>
+<span id="cb1-36"><a href="#cb1-36"></a>  <span class="co"># model post-processing</span></span>
+<span id="cb1-37"><a href="#cb1-37"></a>  fit <span class="ot">&lt;-</span> <span class="fu">postprocess_brm</span>(model, fit, <span class="at">fit_args =</span> fit_args, <span class="at">user_formula =</span> user_formula,</span>
+<span id="cb1-38"><a href="#cb1-38"></a>                         <span class="at">configure_opts =</span> configure_opts)</span>
+<span id="cb1-39"><a href="#cb1-39"></a></span>
+<span id="cb1-40"><a href="#cb1-40"></a>  <span class="co"># save the fitted model object if !is.null</span></span>
+<span id="cb1-41"><a href="#cb1-41"></a>  <span class="fu">save_bmmfit</span>(fit, file, <span class="at">compress =</span> file_compress)</span>
+<span id="cb1-42"><a href="#cb1-42"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>It calls several subroutines, implemented as generic S3 methods, to:</p>
 <ul>
 <li><code>configure_options()</code> - to configure local options for fitting, such as parallel sampling,</li>
 <li><code>check_model()</code> - check if the model exists</li>
-<li><code>check_formula()</code> - check if the formula is specified correctly</li>
-<li><code>check_data()</code> - whether the data contains all necessary information</li>
-<li><code>configure_model()</code> - to configure the model for fitting</li>
-<li><code>combine_priors()</code> - to combine a user specified prior with the default priors we provide for each model</li>
-<li><code>call_brm()</code> - to fit the model using the <code>brm()</code> function from the <code>brms</code> package</li>
-<li><code>postprocess_brm()</code> - to postprocess the fitted model</li>
+<li><code>check_formula()</code> - check if the formula is specified correctly and transform it to a brmsformula</li>
+<li><code>check_data()</code> - check whether the data contains all necessary information</li>
+<li><code>configure_model()</code> - configures the model called for fitting</li>
+<li><code>configure_prior()</code> - sets the default priors for the model and combines them with the user prior</li>
+<li><code>call_brm()</code> - fit the model using the <code>brm()</code> function from the <code>brms</code> package</li>
+<li><code>postprocess_brm()</code> - to post-process the fitted model</li>
 </ul>
+<p>In addition, it also tests if the specified <code>bmmodel</code> has already been estimated and saved to a <code>file</code>. This is done via the <code>read_bmmfit</code> and <code>save_bmmfit</code> functions.</p>
 </section>
 <section id="models" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="models"><span class="header-section-number">3.2</span> Models</h2>
-<p>All models in the package are defined as S3 classes and follow a strict template. This allows us to implement general methods for handling model fitting, data checking, and postprocessing. Each model has an internal function that defines the model and its parameters, and a user-facing alias. For a complete example model file and an explanation, see <a href="example-model.html" class="quarto-xref">Section&nbsp;<span>4</span></a>. The general model template looks like this:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>.model_modelname <span class="ot">&lt;-</span> <span class="cf">function</span>(required_arg1, required_arg2, ...) {</span>
-<span id="cb2-2"><a href="#cb2-2"></a>   out <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb2-3"><a href="#cb2-3"></a>      <span class="at">vars =</span> <span class="fu">nlist</span>(required_arg1, required_arg2),</span>
-<span id="cb2-4"><a href="#cb2-4"></a>      <span class="at">info =</span> <span class="fu">list</span>(</span>
-<span id="cb2-5"><a href="#cb2-5"></a>         <span class="at">domain =</span> <span class="st">''</span>,</span>
-<span id="cb2-6"><a href="#cb2-6"></a>         <span class="at">task =</span> <span class="st">''</span>,</span>
-<span id="cb2-7"><a href="#cb2-7"></a>         <span class="at">name =</span> <span class="st">''</span>,</span>
-<span id="cb2-8"><a href="#cb2-8"></a>         <span class="at">citation =</span> <span class="st">''</span>,</span>
-<span id="cb2-9"><a href="#cb2-9"></a>         <span class="at">version =</span> <span class="st">''</span>,</span>
-<span id="cb2-10"><a href="#cb2-10"></a>         <span class="at">requirements =</span> <span class="st">''</span>,</span>
-<span id="cb2-11"><a href="#cb2-11"></a>         <span class="at">parameters =</span> <span class="fu">list</span>()</span>
-<span id="cb2-12"><a href="#cb2-12"></a>      ))</span>
-<span id="cb2-13"><a href="#cb2-13"></a>   <span class="fu">class</span>(out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'bmmmodel'</span>, <span class="st">'modelname'</span>)</span>
-<span id="cb2-14"><a href="#cb2-14"></a>   out</span>
-<span id="cb2-15"><a href="#cb2-15"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>All models in the package are defined as S3 classes and follow a strict template. This allows us to implement general methods for handling model fitting, data checking, and post-processing. Each model has an internal function that defines the model and its parameters, and a user-facing alias. For a complete example model file and an explanation, see <a href="example-model.html" class="quarto-xref">Section&nbsp;<span>4</span></a>. The general model template looks like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>.model_my_new_model <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">resp_var1 =</span> <span class="cn">NULL</span>, <span class="at">required_args1 =</span> <span class="cn">NULL</span>, </span>
+<span id="cb2-2"><a href="#cb2-2"></a>                                <span class="at">required_arg2 =</span> <span class="cn">NULL</span>, <span class="at">links =</span> <span class="cn">NULL</span>, <span class="at">version =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-3"><a href="#cb2-3"></a>                                <span class="at">call =</span> <span class="cn">NULL</span>, ...) {</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  out <span class="ot">&lt;-</span> <span class="fu">structure</span>(</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="fu">list</span>(</span>
+<span id="cb2-6"><a href="#cb2-6"></a>      <span class="at">resp_vars =</span> <span class="fu">nlist</span>(resp_error),</span>
+<span id="cb2-7"><a href="#cb2-7"></a>      <span class="at">other_vars =</span> <span class="fu">nlist</span>(),</span>
+<span id="cb2-8"><a href="#cb2-8"></a>      <span class="at">domain =</span> <span class="st">""</span>,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>      <span class="at">task =</span> <span class="st">""</span>,</span>
+<span id="cb2-10"><a href="#cb2-10"></a>      <span class="at">name =</span> <span class="st">""</span>,</span>
+<span id="cb2-11"><a href="#cb2-11"></a>      <span class="at">version =</span> <span class="st">""</span>,</span>
+<span id="cb2-12"><a href="#cb2-12"></a>      <span class="at">citation =</span> <span class="st">""</span>,</span>
+<span id="cb2-13"><a href="#cb2-13"></a>      <span class="at">requirements =</span> <span class="st">""</span>,</span>
+<span id="cb2-14"><a href="#cb2-14"></a>      <span class="at">parameters =</span> <span class="fu">list</span>(),</span>
+<span id="cb2-15"><a href="#cb2-15"></a>      <span class="at">links =</span> <span class="fu">list</span>(),</span>
+<span id="cb2-16"><a href="#cb2-16"></a>      <span class="at">fixed_parameters =</span> <span class="fu">list</span>(),</span>
+<span id="cb2-17"><a href="#cb2-17"></a>      <span class="at">default_priors =</span> <span class="fu">list</span>(),</span>
+<span id="cb2-18"><a href="#cb2-18"></a>      <span class="at">version =</span> version,</span>
+<span id="cb2-19"><a href="#cb2-19"></a>      <span class="at">void_mu =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a>    ),</span>
+<span id="cb2-21"><a href="#cb2-21"></a>    <span class="at">class =</span> <span class="fu">c</span>(<span class="st">"bmmodel"</span>, <span class="st">"my_new_model"</span>),</span>
+<span id="cb2-22"><a href="#cb2-22"></a>    <span class="at">call =</span> call</span>
+<span id="cb2-23"><a href="#cb2-23"></a>  )</span>
+<span id="cb2-24"><a href="#cb2-24"></a>  out<span class="sc">$</span>links[<span class="fu">names</span>(links)] <span class="ot">&lt;-</span> links</span>
+<span id="cb2-25"><a href="#cb2-25"></a>  out</span>
+<span id="cb2-26"><a href="#cb2-26"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Each model is accompanied by a user-facing alias, the documentation of which is generated automatically based on the info list in the model definition.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># user facing alias</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="co"># information in the title and details sections will be filled in</span></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="co"># automatically based on the information in the .model_modelname()$info</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="co">#' @title `r .model_modelname()$info$name`</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="co">#' @details `r model_info(modelname(NA,NA))`</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="co">#' @param required_arg1 A description of the required argument</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a><span class="co">#' @param required_arg2 A description of the required argument</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a><span class="co">#' @param ... used internally for testing, ignore it</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="co">#' @return An object of class `bmmmodel`</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a><span class="co">#' @export</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a><span class="co">#' @examples</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a><span class="co">#' \dontrun{</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="co">#' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a><span class="co">#' }</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a>modelname <span class="ot">&lt;-</span> .model_modelname</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Then users can fit the model using the <code>fit_model()</code> function, and the model will be automatically recognized and handled by the package:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_model</span>(formula, </span>
-<span id="cb4-2"><a href="#cb4-2"></a>                 <span class="at">data =</span> mydata, </span>
-<span id="cb4-3"><a href="#cb4-3"></a>                 <span class="at">model =</span> <span class="fu">modelname</span>(required_arg1, required_arg2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">#' @title `r .model_my_new_model()name`</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">#' @name Model Name#' @details `r model_info(.model_my_new_model())`</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">#' @param resp_var1 A description of the response variable</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">#' @param required_arg1 A description of the required argument</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="co">#' @param required_arg2 A description of the required argument</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co">#' @param ... used internally for testing, ignore it</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="co">#' @return An object of class `bmmmodel`</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="co">#' @export</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co">#' @examples</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="co">#' \dontrun{</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="co">#' # put a full example here (see 'R/bmm_model_mixture3p.R' for an example)</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="co">#' }</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>my_new_model <span class="ot">&lt;-</span> <span class="cf">function</span>(resp_var1, required_arg1, required_arg2, </span>
+<span id="cb3-17"><a href="#cb3-17"></a>                         <span class="at">links =</span> <span class="cn">NULL</span>, <span class="at">version =</span> <span class="cn">NULL</span>, ...) {</span>
+<span id="cb3-18"><a href="#cb3-18"></a>  call <span class="ot">&lt;-</span> <span class="fu">match.call</span>()</span>
+<span id="cb3-19"><a href="#cb3-19"></a>  <span class="fu">stop_missing_args</span>()</span>
+<span id="cb3-20"><a href="#cb3-20"></a>  <span class="fu">.model_my_new_model</span>(<span class="at">resp_var1 =</span> resp_var1, <span class="at">required_arg1 =</span> required_arg1,</span>
+<span id="cb3-21"><a href="#cb3-21"></a>                      <span class="at">required_arg2 =</span> required_arg2, <span class="at">links =</span> links, <span class="at">version =</span> version,</span>
+<span id="cb3-22"><a href="#cb3-22"></a>                      <span class="at">call =</span> call, ...)</span>
+<span id="cb3-23"><a href="#cb3-23"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then users can fit the model using the <code>bmm()</code> function, and the model will be automatically recognized and handled by the package:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">bmm</span>(<span class="at">formula =</span> my_bmmformula, </span>
+<span id="cb4-2"><a href="#cb4-2"></a>           <span class="at">data =</span> my_data, </span>
+<span id="cb4-3"><a href="#cb4-3"></a>           <span class="at">model =</span> <span class="fu">my_new_model</span>(resp_var1, required_arg1, required_arg2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="s3-methods" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="s3-methods"><span class="header-section-number">3.3</span> S3 methods</h2>
@@ -333,35 +369,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>configure_model <span class="ot">&lt;-</span> <span class="cf">function</span>(model) {</span>
 <span id="cb5-2"><a href="#cb5-2"></a>   <span class="fu">UseMethod</span>(<span class="st">'configure_model'</span>)</span>
 <span id="cb5-3"><a href="#cb5-3"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>and it will call a function <code>configure_model.modelname()</code> that is specified for each model. The same is true for other functions, such as <code>check_data()</code>, <code>postprocess_brm()</code>, and <code>check_formula()</code>. This allows us to add new models without having to edit the main fitting function, <code>fit_model()</code>.</p>
+<p>and it will call a function <code>configure_model.modelname()</code> that is specified for each model. The same is true for other functions, such as <code>check_data()</code>, <code>postprocess_brm()</code>, and <code>check_formula()</code>. This allows us to add new models without having to edit the main fitting function, <code>bmm()</code>.</p>
 </section>
 <section id="file-organization" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="file-organization"><span class="header-section-number">3.4</span> File organization</h2>
 <p>The <code>bmm</code> package is organized into several files. The main files are:</p>
-<section id="rfit_model.r" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="rfit_model.r"><code>R/fit_model.R</code></h3>
-<p>It contains the main function for fitting models, <code>fit_model()</code>. This function is the main entry point for users to fit models. It is set-up to be independent of the specific models that are implemented in the package.</p>
+<section id="rbmm.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rbmm.r"><code>R/bmm.R</code></h3>
+<p>It contains the main function for fitting models, <code>bmm()</code>. This function is the main entry point for users to fit models. It is set-up to be independent of the specific models that are implemented in the package.</p>
 <p>To add new models, you do not have to edit this file. The functions above are generic S3 methods, and they will automatically recognize new models if you add appropriate methods for them (see section <a href="#adding-new-models-to-bmm">Adding new models</a>).</p>
 </section>
 <section id="rhelpers-.r" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="rhelpers-.r"><code>R/helpers-*.R</code></h3>
-<p><code>R/helpers-data.R</code>, <code>R/helpers-postprocess.R</code>, <code>R/helpers-model.R</code>, <code>R/helpers-formula.R</code> and <code>R/helpers-prior.R</code></p>
-<p>These files define the main generic S3 methods for checking data, postprocessing the fitted model, configuring the model, checking the model formula, and combining priors. They contain the default methods for these functions, which are called by <code>fit_model()</code> if no specific method is defined for a model. If you want to add a new model, you will need to add specific methods for these functions for your model. <em>You do not need to edit these files to add a new model.</em></p>
+<p><code>R/helpers-data.R</code>, <code>R/helpers-parameters.R</code>, <code>R/helpers-postprocess.R</code>, <code>R/helpers-model.R</code>, and <code>R/helpers-prior.R</code></p>
+<p>These files define the main generic S3 methods for checking data, post-processing the fitted model, configuring the model, checking the model formula, and combining priors. They contain the default methods for these functions, which are called by <code>bmm()</code> if no specific method is defined for a model. If you want to add a new model, you will need to add specific methods for these functions for your model. <em>You do not need to edit these files to add a new model.</em></p>
 </section>
-<section id="rbmm_model_.r" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="rbmm_model_.r"><code>R/bmm_model_*.R</code></h3>
-<p>Each model and it’s methods is defined in a separate file. For example, the 3-parameter mixture model is defined in <code>bmm_model_mixture3p.R</code>. This file contains the internal function that defines the model and its parameters, and the specific methods for the generic S3 functions. Your new model will exist in a file like this. The name of the file should be <code>bmm_model_name_of_your_model.R</code>. You don’t have to add this file manually - see section <a href="#adding-new-models-to-bmm">Adding new models</a>.</p>
+<section id="rbmmformula.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rbmmformula.r"><code>R/bmmformula.R</code></h3>
+<p>This file contains the definition of the <code>bmmformula</code> class, which is used to represent the formula for the model. It contains the <code>bmmformula()</code> function and its alias <code>bmf()</code>, which is used to create a new formula object.</p>
+<p>In addition, it contains the definition of the <code>bmf2bf</code> S3 method that is used to convert a <code>bmmformula</code> object into a <code>brms_formula</code>`object. This is necessary, as <code>brmsformula</code> objects are required to include the response variable in the first formula line. In contrast <code>bmmformula</code> objects only contain formulas predicting the paramaeters of a <code>bmmmodel</code>. The <code>bmf2bf</code> S3 method is used to perform this conversion and add the first formula line and including the response variable in the <code>brmsformula</code> created during model configuration.</p>
 </section>
-<section id="rbmm_distributions.r" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="rbmm_distributions.r"><code>R/bmm_distributions.R</code></h3>
+<section id="rmodel_.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rmodel_.r"><code>R/model_*.R</code></h3>
+<p>Each model and it’s methods is defined in a separate file. For example, the 3-parameter mixture model is defined in <code>model_mixture3p.R</code>. This file contains the internal function that defines the model and its parameters, and the specific methods for the generic S3 functions. Your new model will exist in a file like this. The name of the file should be <code>model_name_of_your_model.R</code>. You don’t have to add this file manually - see section <a href="#adding-new-models-to-bmm">Adding new models</a>.</p>
+</section>
+<section id="rdistributions.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rdistributions.r"><code>R/distributions.R</code></h3>
 <p>This file contains the definition of the custom distributions that are used in the package. It specifies the density, random number generation, and probability functions for the custom distributions. If your model requires a custom distribution, you will need to add it to this file. These are not used during model fitting, but can be used to generate data from the model, and to plot the model fit.</p>
 </section>
-<section id="rrandom_data_generation.r" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="rrandom_data_generation.r"><code>R/random_data_generation.R</code></h3>
-<p>Functions for generating random data from the models. This is useful for testing the models.</p>
-</section>
-<section id="rutils.r-rbrms-misc.r" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="rutils.r-rbrms-misc.r"><code>R/utils.R</code>, <code>R/brms-misc.R</code></h3>
+<section id="rutils.r-rbrms-misc.r-rrestructure.r-rsummary.r-rupdate.r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="rutils.r-rbrms-misc.r-rrestructure.r-rsummary.r-rupdate.r"><code>R/utils.R</code>, <code>R/brms-misc.R</code>, <code>R/restructure.R</code>, <code>R/summary.R</code>, <code>R/update.R</code></h3>
 <p>Various utility functions.</p>
 </section>
 <section id="inststan_chunks" class="level3 unnumbered">
@@ -408,18 +445,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -451,7 +477,47 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -486,7 +552,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
@@ -762,12 +832,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./git-workflow.html" class="pagination-link  aria-label=" &lt;span="" and="" github="" workflow&lt;="" span&gt;"="">
+      <a href="./git-workflow.html" class="pagination-link" aria-label="Git and Github workflow">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Git and Github workflow</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./example-model.html" class="pagination-link" aria-label="<span class='chapter-number'>4</span>&nbsp; <span class='chapter-title'>Example model file</span>">
+      <a href="./example-model.html" class="pagination-link" aria-label="Example model file">
         <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Example model file</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
