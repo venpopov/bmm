@@ -33,7 +33,8 @@
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
-<li class="nav-item"><a class="nav-link" href="https://venpopov.github.io/bmm/dev/dev-notes/index.html">Develop</a></li>
+<li class="nav-item"><a class="nav-link" href="https://venpopov.github.io/bmm/dev-notes/index.html">Develop</a></li>
+<li class="nav-item"><a class="nav-link" href="https://venpopov.github.io/bmm/parameter_recovery/index.html">Parameter recovery</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -253,8 +254,18 @@ with <code>cmdstanr</code>:</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The model takes about 30 seconds to fit after it is compiled.</p>
 <p>We can now inspect the results of the model fit:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>Loading required package<span class="sc">:</span> rstan</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>Loading required package<span class="sc">:</span> StanHeaders</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>rstan version <span class="dv">2</span>.<span class="fl">32.6</span> (Stan version <span class="dv">2</span>.<span class="fl">32.2</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>For execution on a local, multicore CPU with excess RAM we recommend calling</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="fu">options</span>(<span class="at">mc.cores =</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()).</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>To avoid recompilation of unchanged Stan programs, we recommend calling</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">rstan_options</span>(<span class="at">auto_write =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>For within<span class="sc">-</span>chain threading using <span class="st">`</span><span class="at">reduce_sum()</span><span class="st">`</span> or <span class="st">`</span><span class="at">map_rect()</span><span class="st">`</span> Stan functions,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>change <span class="st">`</span><span class="at">threads_per_chain</span><span class="st">`</span> option<span class="sc">:</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">rstan_options</span>(<span class="at">threads_per_chain =</span> <span class="dv">1</span>)</span></code></pre></div>
 <pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">sdm</span>(resp_error = "y") 
 <span style="color: #AF5FFF;">  Links: </span>mu = tan_half; c = log; kappa = log 
 <span style="color: #AF5FFF;">Formula: </span>mu = 0
@@ -306,7 +317,7 @@ the estimated posterior distributions of the parameters:</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># extract the posterior draws</span></span>
-<span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="http://mjskay.github.io/tidybayes/reference/tidy_draws.html" class="external-link">tidy_draws</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="https://mjskay.github.io/tidybayes/reference/tidy_draws.html" class="external-link">tidy_draws</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">draws</span>, <span class="va">b_c_condA</span><span class="op">:</span><span class="va">b_kappa_condC</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># plot posterior with original parameters overlayed as diamonds</span></span>
@@ -314,7 +325,7 @@ the estimated posterior distributions of the parameters:</p>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html" class="external-link">gather</a></span><span class="op">(</span><span class="va">par</span>, <span class="va">value</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">value</span>, <span class="va">par</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="http://mjskay.github.io/tidybayes/reference/tidybayes-deprecated.html" class="external-link">stat_halfeyeh</a></span><span class="op">(</span>normalize <span class="op">=</span> <span class="st">"groups"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="https://mjskay.github.io/tidybayes/reference/tidybayes-deprecated.html" class="external-link">stat_halfeyeh</a></span><span class="op">(</span>normalize <span class="op">=</span> <span class="st">"groups"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'b_c_condA'</span>, <span class="st">'b_c_condB'</span>, <span class="st">'b_c_condC'</span>,</span>
 <span>                                       <span class="st">'b_kappa_condA'</span>, <span class="st">'b_kappa_condB'</span>, <span class="st">'b_kappa_condC'</span><span class="op">)</span>,</span>
 <span>                               value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cs</span>, <span class="va">kappas</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -396,7 +407,7 @@ Oberauer, Klaus. 2023. <span>“Measurement Models for Visual Working Memory—a
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
