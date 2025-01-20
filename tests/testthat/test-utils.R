@@ -8,7 +8,7 @@ test_that("init argument is overwritten if the user supplies it", {
 test_that("user cannot overwrite the custom family", {
   config_args <- list(formula = 'a', family = 'b', data = 'd', stanvars = 'e', init = 1)
   dots <- list(family = 'c')
-  expect_error(combine_args(nlist(config_args, dots)), 'You cannot provide a family argument to bmm')
+  expect_error(combine_args(nlist(config_args, dots)), 'Unsupported argument')
 })
 
 test_that("empty dots don't crash the function", {

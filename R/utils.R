@@ -14,7 +14,7 @@
 NULL
 
 
-#' Softmax and logsoftmax functions and their inverse functions
+#' Softmax function and its inverse
 #'
 #' `softmax` returns the value of the softmax function
 #' `softmaxinv` returns the value of the inverse-softmax function
@@ -42,7 +42,6 @@ NULL
 #' softmaxinv(softmax(5:7))
 softmax <- function(eta, lambda = 1) {
   stopifnot(requireNamespace("matrixStats", quietly = TRUE))
-  m <- length(eta) + 1
   denom <- matrixStats::logSumExp(c(lambda * eta, 0))
   exp(c(lambda * eta, 0) - denom)
 }
@@ -50,11 +49,11 @@ softmax <- function(eta, lambda = 1) {
 #' @rdname softmax
 #' @export
 softmaxinv <- function(p, lambda = 1) {
-  m <- length(p)
-  if (m > 1) {
-    return((log(p) - log(p[m]))[1:(m - 1)] / lambda)
+  len <- length(p)
+  if (len <= 1) {
+    return(numeric(0))
   }
-  numeric(0)
+  (log(p) - log(p[len]))[1:(len - 1)] / lambda
 }
 
 #' @title Configure local options during model fitting
@@ -129,26 +128,15 @@ glue_lf <- function(..., env.frame = -1) {
 }
 
 # function to ensure that if the user wants to overwrite an argument (such as
-# init), they can
+# init), they can. args$prior is NULL by default or is a user-provided prior
+# any argument in args$dots is potentially overwrite a default argument in config_args
 combine_args <- function(args) {
   config_args <- args$config_args
-  opts <- args$opts
   dots <- args$dots
-  if (!is.null(args$prior)) {
-    config_args$prior <- args$prior
-  }
-  if (is.null(dots)) {
-    return(c(config_args, opts))
-  }
-  for (i in names(dots)) {
-    if (not_in(i, c("family"))) {
-      config_args[[i]] <- dots[[i]]
-    } else {
-      stop2("You cannot provide a family argument to bmm(). \\
-             Please use the model argument instead.")
-    }
-  }
-  c(config_args, opts)
+  stopif("family" %in% names(dots), "Unsupported argument 'family'. Use the model argument instead.")
+  config_args$prior <- args$prior %||% config_args$prior
+  config_args[names(dots)] <- dots
+  c(config_args, args$opts)
 }
 
 ############################
@@ -429,15 +417,16 @@ print.message <- function(x, ...) {
 # @param all_variables character vector of all variables within which to search
 # @param regex logical. If TRUE, x is treated as a regular expression
 get_variables <- function(x, all_variables, regex = FALSE) {
-  if (regex) {
-    variables <- all_variables[grep(x, all_variables)]
-    stopif(
-      length(variables) == 0,
-      "No variables found that match the regular expression '{x}'"
-    )
-    return(variables)
+  if (!regex) {
+    return(x)
   }
-  x
+  
+  variables <- all_variables[grep(x, all_variables)]
+  stopif(
+    length(variables) == 0,
+    "No variables found that match the regular expression '{x}'"
+  )
+  variables
 }
 
 # replace the base identical function with a S3 method
@@ -536,11 +525,11 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
   )
   stopif(
     !missing(parallel) && !is.logical(parallel),
-    "parallel must be one of TRUE or FALSE"
+    "parallel must either TRUE or FALSE"
   )
   stopif(
     !missing(default_priors) && !is.logical(default_priors),
-    "default_priors must be a TRUE or FALSE"
+    "default_priors must be either TRUE or FALSE"
   )
   stopif(
     !missing(silent) && (!is.numeric(silent) || silent < 0 || silent > 2),
@@ -548,11 +537,11 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
   )
   stopif(
     !missing(color_summary) && !is.logical(color_summary),
-    "color_summary must be a logical value"
+    "color_summary must be either TRUE or FALSE"
   )
   stopif(
     !missing(file_refit) && !is.logical(file_refit),
-    "file_refit must be a logical value"
+    "file_refit must be either TRUE or FALSE"
   )
 
   # set default options if function is called for the first time or if reset_options is TRUE
@@ -636,10 +625,9 @@ reset_env.bmmfit <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.bmmformula <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.bmmformula <- function(object, env = globalenv(), ...) {
+  # we loop this way instead of lapply or map because the latter
+  # will drop the attributes and class of a bmmformula
   for (par in names(object)) {
     object[[par]] <- reset_env(object[[par]], env)
   }
@@ -647,10 +635,7 @@ reset_env.bmmformula <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.brmsformula <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.brmsformula <- function(object, env = globalenv(), ...) {
   object$formula <- reset_env(object$formula, env)
   for (par in names(object$pforms)) {
     object$pforms[[par]] <- reset_env(object$pforms[[par]], env)
@@ -662,19 +647,13 @@ reset_env.brmsformula <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.formula <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.formula <- function(object, env =  globalenv(), ...) {
   environment(object) <- env
   object
 }
 
 #' @export
-reset_env.brmsfamily <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.brmsfamily <- function(object, env = globalenv(), ...) {
   if (!is.null(object$env)) {
     object$env <- env
   }
