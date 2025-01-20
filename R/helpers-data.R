@@ -64,8 +64,8 @@ check_data.circular <- function(model, data, formula) {
   warnif(
     max(abs(data[[resp_name]]), na.rm = T) > 2 * pi,
     "It appears your response variable is in degrees.
-          The model requires the response variable to be in radians.
-          The model will continue to run, but the results may be compromised."
+    The model requires the response variable to be in radians.
+    The model will continue to run, but the results may be compromised."
   )
 
   NextMethod("check_data")
@@ -78,8 +78,8 @@ check_data.non_targets <- function(model, data, formula) {
   warnif(
     max(abs(data[, nt_features]), na.rm = T) > 2 * pi,
     "It appears at least one of your non_target variables are in degrees.
-          The model requires these variable to be in radians.
-          The model will continue to run, but the results may be compromised."
+    The model requires these variable to be in radians.
+    The model will continue to run, but the results may be compromised."
   )
 
   ss <- check_var_set_size(model$other_vars$set_size, data)
@@ -89,7 +89,7 @@ check_data.non_targets <- function(model, data, formula) {
   stopif(
     !isTRUE(all.equal(length(nt_features), max_set_size - 1)),
     "The number of columns for non-target values in the argument \\
-         'nt_features' should equal max(set_size)-1"
+    'nt_features' should equal max(set_size)-1"
   )
 
   # create index variables for nt_features and correction variable for theta due to set_size
@@ -114,8 +114,8 @@ check_var_set_size <- function(set_size, data) {
   stopif(
     length(set_size) > 1,
     "The set_size variable '{set_size}' must be a single numeric value or \\
-          a single variable in your data. You provided a vector of length \\
-          {length(set_size)}"
+    a single variable in your data. You provided a vector of length \\
+    {length(set_size)}"
   )
 
   # class check - is set_size a single numeric value or a variable in the data
@@ -126,7 +126,7 @@ check_var_set_size <- function(set_size, data) {
     stopif(
       is_try_error(ss_numeric),
       "The set_size variable '{set_size}' must be coercible to a numeric \\
-           vector. Did you code your set size as a character vector?"
+      vector. Did you code your set size as a character vector?"
     )
 
     max_set_size <- max(ss_numeric, na.rm = T)

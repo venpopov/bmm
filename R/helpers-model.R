@@ -86,6 +86,7 @@ configure_model <- function(model, data, formula) {
 ############################################################################# !
 # CHECK_MODEL methods                                                    ####
 ############################################################################# !
+
 #' Generic S3 method for checking if the model is supported and model preprocessing
 #'
 #' In addition for validating the model, specific methods might add information
@@ -109,16 +110,17 @@ check_model.default <- function(model, data = NULL, formula = NULL) {
     stopif(
       fun_name %in% bmm_models,
       "Did you forget to provide the required arguments to the model function?
-            See ?{fun_name} for details on properly specifying the model argument"
+      See ?{fun_name} for details on properly specifying the model argument"
     )
   }
+
   stopif(
     !is_supported_bmmodel(model),
     "You provided an object of class `{class(model)}` to the model argument.
-          The model argument should be a `bmmodel` function.
-          You can see the list of supported models by running `supported_models()`
+    The model argument should be a `bmmodel` function.
+    You can see the list of supported models by running `supported_models()`
 
-          {supported_models()}"
+    {supported_models()}"
   )
   model
 }
@@ -129,8 +131,6 @@ check_model.bmmodel <- function(model, data = NULL, formula = NULL) {
   model <- change_constants(model, formula)
   NextMethod("check_model")
 }
-
-
 
 # check if the user has provided a regular expression for any model variables and
 # replace the regular expression with the actual variables
@@ -192,7 +192,6 @@ change_constants <- function(model, formula) {
   model
 }
 
-
 ############################################################################# !
 # HELPER FUNCTIONS                                                       ####
 ############################################################################# !
@@ -223,13 +222,11 @@ supported_models <- function(print_call = TRUE) {
     args <- gsub("'", "", args)
     out <- paste0(out, "- `", model, "(", args, ")`", "\n", sep = "")
   }
-  out <- paste0(out, "\nType `?modelname` to get information about a specific model, e.g. `?imm`\n")
+  out <- glue("{out}\nType `?modelname` to get information about a specific model, e.g. `?imm`\n")
   out <- gsub("`", " ", out)
   class(out) <- "message"
   out
 }
-
-
 
 
 #' @title Generate a markdown list of the measurement models available in `bmm`
@@ -338,10 +335,6 @@ get_model2 <- function(model) {
   get(model, mode = "function")
 }
 
-
-
-
-
 #' Create a file with a template for adding a new model (for developers)
 #'
 #' @param model_name A string with the name of the model. The file will be named
@@ -381,8 +374,6 @@ get_model2 <- function(model) {
 #' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' library(usethis)
 #'
-#' # create a new model file without a brms::custom_family, and open the file
-#' use_model_template("newmodel")
 #'
 #' # create a new model file with a brms::custom_family, three .stan files in
 #' # inst/stan_chunks/ and open the files
@@ -401,6 +392,7 @@ use_model_template <- function(model_name,
                                open_files = TRUE,
                                testing = FALSE) {
   file_name <- paste0("model_", model_name, ".R")
+
   # check if model exists
   if (model_name %in% supported_models(print_call = FALSE)) {
     stop(paste0("Model ", model_name, " already exists"))
@@ -693,7 +685,6 @@ stancode.bmmformula <- function(object, data, model, prior = NULL, ...) {
   code <- brms::do_call(brms::stancode, fit_args)
   add_bmm_version_to_stancode(code)
 }
-
 
 add_bmm_version_to_stancode <- function(stancode) {
   version <- packageVersion("bmm")

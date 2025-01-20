@@ -18,8 +18,8 @@
 #' SDs_degress <- SDs * 180 / pi
 #'
 #' # plot the relationship between kappa and circular SD
-#' plot(kappas,SDs)
-#' plot(kappas,SDs_degress)
+#' plot(kappas, SDs)
+#' plot(kappas, SDs_degress)
 #'
 k2sd <- function(K) {
   S <- matrix(0, 1, length(K))
@@ -57,7 +57,7 @@ k2sd <- function(K) {
 c_sqrtexp2bessel <- function(c, kappa) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(c < 0)), "c must be non-negative")
-  c * besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa)
+  c * besselI(kappa, 0, expon.scaled = TRUE) * sqrt(2 * pi * kappa)
 }
 
 #' @rdname c_parametrizations
@@ -66,5 +66,5 @@ c_sqrtexp2bessel <- function(c, kappa) {
 c_bessel2sqrtexp <- function(c, kappa) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(c < 0)), "c must be non-negative")
-  c / (besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa))
+  c / (besselI(kappa, 0, expon.scaled = TRUE) * sqrt(2 * pi * kappa))
 }

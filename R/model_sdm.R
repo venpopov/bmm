@@ -1,34 +1,34 @@
-#############################################################################!
+############################################################################# !
 # MODELS                                                                 ####
-#############################################################################!
+############################################################################# !
 
 .model_sdm <- function(resp_error = NULL, links = NULL, version = "simple", call = NULL, ...) {
   out <- structure(
     list(
       resp_vars = nlist(resp_error),
       other_vars = nlist(),
-      domain = 'Visual working memory',
-      task = 'Continuous reproduction',
-      name = 'Signal Discrimination Model (SDM) by Oberauer (2023)',
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Signal Discrimination Model (SDM) by Oberauer (2023)",
       citation = glue(
-        'Oberauer, K. (2023). Measurement models for visual working memory - \\
-        A factorial model comparison. Psychological Review, 130(3), 841-852'
+        "Oberauer, K. (2023). Measurement models for visual working memory - \\
+        A factorial model comparison. Psychological Review, 130(3), 841-852"
       ),
       version = version,
       requirements = glue(
-        '- The response variable should be in radians and represent the angular \\
-        error relative to the target'
+        "- The response variable should be in radians and represent the angular \\
+        error relative to the target"
       ),
       parameters = list(
-        mu = glue('Location parameter of the SDM distribution (in radians; \\
-                  by default fixed internally to 0)'),
-        c = 'Memory strength parameter of the SDM distribution',
-        kappa = 'Precision parameter of the SDM distribution'
+        mu = glue("Location parameter of the SDM distribution (in radians; \\
+                  by default fixed internally to 0)"),
+        c = "Memory strength parameter of the SDM distribution",
+        kappa = "Precision parameter of the SDM distribution"
       ),
       links = list(
-        mu = 'tan_half',
-        c = 'log',
-        kappa = 'log'
+        mu = "tan_half",
+        c = "log",
+        kappa = "log"
       ),
       fixed_parameters = list(mu = 0),
       default_priors = list(
@@ -38,7 +38,7 @@
       ),
       void_mu = FALSE
     ),
-    class = c('bmmodel', 'circular', 'sdm', paste0("sdm_", version)),
+    class = c("bmmodel", "circular", "sdm", paste0("sdm_", version)),
     call = call
   )
   out$links[names(links)] <- links
@@ -68,15 +68,19 @@
 #' dat <- data.frame(y = rsdm(n = 1000, c = 4, kappa = 3))
 #'
 #' # specify formula
-#' ff <- bmf(c ~ 1,
-#'           kappa ~ 1)
+#' ff <- bmf(
+#'   c ~ 1,
+#'   kappa ~ 1
+#' )
 #'
 #' # specify the model
-#' fit <- bmm(formula = ff,
-#'            data = dat,
-#'            model = sdm(resp_error = 'y'),
-#'            cores = 4,
-#'            backend = 'cmdstanr')
+#' fit <- bmm(
+#'   formula = ff,
+#'   data = dat,
+#'   model = sdm(resp_error = "y"),
+#'   cores = 4,
+#'   backend = "cmdstanr"
+#' )
 sdm <- function(resp_error, version = "simple", ...) {
   call <- match.call()
   stop_missing_args()
@@ -87,15 +91,15 @@ sdm <- function(resp_error, version = "simple", ...) {
 #' @keywords deprecated
 #' @export
 sdmSimple <- function(resp_error, version = "simple", ...) {
-  warning("The function `sdmSimple()` is deprecated. Please use `sdm()` instead.")
+  warning2("The function `sdmSimple()` is deprecated. Please use `sdm()` instead.")
   call <- match.call()
   stop_missing_args()
   .model_sdm(resp_error = resp_error, version = version, call = call, ...)
 }
 
-#############################################################################!
+############################################################################# !
 # CHECK_DATA S3 METHODS                                                  ####
-#############################################################################!
+############################################################################# !
 
 #' @export
 check_data.sdm <- function(model, data, formula) {
@@ -105,9 +109,9 @@ check_data.sdm <- function(model, data, formula) {
 }
 
 
-#############################################################################!
+############################################################################# !
 # CONFIGURE_MODEL S3 METHODS                                             ####
-#############################################################################!
+############################################################################# !
 # Each model should have a corresponding configure_model.* function. See
 # ?configure_model for more information.
 
@@ -117,7 +121,7 @@ configure_model.sdm <- function(model, data, formula) {
   # construct the family
   # note - c has a log link, but I've coded it manually for computational efficiency
   sdm_simple <- brms::custom_family(
-    "sdm_simple",
+    name = "sdm_simple",
     dpars = c("mu", "c", "kappa"),
     links = c("tan_half", "identity", "log"),
     lb = c(NA, NA, NA),
@@ -149,9 +153,9 @@ configure_model.sdm <- function(model, data, formula) {
 }
 
 
-#############################################################################!
+############################################################################# !
 # POSTPROCESS METHODS                                                    ####
-#############################################################################!
+############################################################################# !
 
 #' @export
 postprocess_brm.sdm <- function(model, fit, ...) {
@@ -168,8 +172,6 @@ revert_postprocess_brm.sdm <- function(model, fit, ...) {
   fit
 }
 
-
-
 log_lik_sdm_simple <- function(i, prep) {
   mu <- brms::get_dpar(prep, "mu", i = i)
   c <- brms::get_dpar(prep, "c", i = i)
@@ -184,4 +186,3 @@ posterior_predict_sdm_simple <- function(i, prep, ...) {
   kappa <- brms::get_dpar(prep, "kappa", i = i)
   rsdm(length(mu), mu, c, kappa)
 }
-

@@ -72,7 +72,7 @@
 #'   kappa ~ 0 + set_size + (0 + set_size | id)
 #' )
 #' identical(imm_formula, imm_formula2)
-bmmformula <- function(...){
+bmmformula <- function(...) {
   dots <- list(...)
   formula <- list()
   for (i in seq_along(dots)) {
@@ -104,21 +104,25 @@ bmf <- function(...) {
 
 # method for adding formulas to a bmmformula
 #' @export
-"+.bmmformula" <- function(f1,f2) {
+"+.bmmformula" <- function(f1, f2) {
   stopif(!is_bmmformula(f1), "The first argument must be a bmmformula.")
 
   if (is_formula(f2)) {
     par2 <- all.vars(f2)[1]
     if (par2 %in% names(f1)) {
-      message2(paste("The parameter", par2, "is already part of the formula.",
-                    "Overwriting the initial formula."))
+      message2(
+        "The parameter {par2} is already part of the formula.
+        Overwriting the initial formula."
+      )
     }
     f1[[par2]] <- f2
   } else if (is_bmmformula(f2)) {
     for (par2 in names(f2)) {
       if (par2 %in% names(f1)) {
-        message2(paste("The parameter", par2, "is already part of the formula.",
-                      "Overwriting the initial formula."))
+        message2(
+          "The parameter is already part of the formula.
+          Overwriting the initial formula."
+        )
       }
       f1[[par2]] <- f2[[par2]]
     }
@@ -169,18 +173,22 @@ bmf <- function(...) {
 #' @return the formula object
 #' @keywords internal developer
 check_formula <- function(model, data, formula) {
-  UseMethod('check_formula')
+  UseMethod("check_formula")
 }
 
 #' @export
 check_formula.bmmodel <- function(model, data, formula) {
-  stopif(is_brmsformula(formula),
-         "The provided formula is a brms formula. Please use the bmf() function. E.g.:
-         bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
+  stopif(
+    is_brmsformula(formula),
+    "The provided formula is a brms formula. Please use the bmf() function. E.g.:
+    bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)"
+  )
 
-  stopif(!is_bmmformula(formula),
-         "The provided formula is not a bmm formula. Please use the bmf() function. E.g.:
-         bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)")
+  stopif(
+    !is_bmmformula(formula),
+    "The provided formula is not a bmm formula. Please use the bmf() function. E.g.:
+    bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)"
+  )
 
   wpar <- wrong_parameters(model, formula)
   stopif(length(wpar), "Unrecognized model parameters: {collapse_comma(wpar)}")
@@ -201,11 +209,13 @@ check_formula.non_targets <- function(model, data, formula) {
   has_set_size <- sapply(pred_list, function(x) set_size_var %in% x)
   ss_forms <- formula[has_set_size]
   intercepts <- sapply(ss_forms, has_intercept)
-  stopif(any(intercepts),
-         "The formula for parameter(s) {names(ss_forms)[intercepts]} contains \\
-         an intercept and also uses set_size as a predictor. This model requires \\
-         that the intercept is supressed when set_size is used as predictor. \\
-         Try using 0 + {set_size_var} instead.")
+  stopif(
+    any(intercepts),
+    "The formula for parameter(s) {names(ss_forms)[intercepts]} contains \\
+    an intercept and also uses set_size as a predictor. This model requires \\
+    that the intercept is supressed when set_size is used as predictor. \\
+    Try using 0 + {set_size_var} instead."
+  )
   NextMethod("check_formula")
 }
 
@@ -220,14 +230,14 @@ check_formula.non_targets <- function(model, data, formula) {
 #'   formulas for the specified `bmmodel`
 #' @keywords internal developer
 #' @examples
-#'   model <- mixture2p(resp_error = "error")
+#' model <- mixture2p(resp_error = "error")
 #'
-#'   formula <- bmmformula(
-#'     thetat ~ 0 + set_size + (0 + set_size | id),
-#'     kappa ~ 1 + (1 | id)
-#'   )
+#' formula <- bmmformula(
+#'   thetat ~ 0 + set_size + (0 + set_size | id),
+#'   kappa ~ 1 + (1 | id)
+#' )
 #'
-#'   brms_formula <- bmf2bf(model, formula)
+#' brms_formula <- bmf2bf(model, formula)
 #' @export
 bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
@@ -253,7 +263,7 @@ bmf2bf.bmmodel <- function(model, formula) {
 
 # paste first line of the brms formula for all bmmodels with 1 response variable
 #' @export
-bmf2bf.default <- function(model, formula){
+bmf2bf.default <- function(model, formula) {
   # set base brms formula based on response
   brms::bf(paste0(model$resp_vars[[1]], "~ 1"))
 }
@@ -266,20 +276,19 @@ add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
   if (replace_fixed) {
     formula_pars <- formula_pars[!formula_pars %in% fixed_pars]
   }
-  missing_pars <- setdiff(model_pars,formula_pars)
+  missing_pars <- setdiff(model_pars, formula_pars)
   is_fixed <- missing_pars %in% fixed_pars
   names(is_fixed) <- missing_pars
   for (mpar in missing_pars) {
-    add <- stats::as.formula(paste(mpar,"~ 1"))
+    add <- stats::as.formula(paste(mpar, "~ 1"))
     if (is_fixed[mpar]) {
       attr(add, "constant") <- TRUE
     } else {
-      message2("No formula for parameter {mpar} provided. Only a fixed \\
-                intercept will be estimated.")
+      message2("No formula for parameter {mpar} provided. Only a fixed intercept will be estimated.")
     }
     formula[mpar] <- list(add)
   }
-  all_pars <- unique(c(model_pars,formula_pars))
+  all_pars <- unique(c(model_pars, formula_pars))
   formula[all_pars] # reorder formula to match model parameters order
 }
 

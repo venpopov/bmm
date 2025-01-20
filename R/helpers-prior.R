@@ -80,7 +80,7 @@ fixed_pars_priors <- function(model, formula, additional_pars = list()) {
   par_list <- c(model$fixed_parameters, additional_pars)
   pars <- names(par_list)
   values <- unlist(par_list)
-  priors <- glue::glue("constant({values})")
+  priors <- glue("constant({values})")
 
   # determine type of parameters
   bterms <- brms::brmsterms(formula)
@@ -136,9 +136,7 @@ set_default_prior <- function(model, data, formula) {
     "Your formula contains non-linear transformations of model parameters.
      We advise to pass priors for the non-linear parameters to improve parameter estimation.
      Otherwise, improper flat priors will be used by default."
-    )
-
-
+  )
 
   pars_key <- names(default_priors)
   pars <- pars[pars %in% pars_key]
@@ -148,7 +146,6 @@ set_default_prior <- function(model, data, formula) {
     terms <- stats::terms(bform)
     prior_desc <- default_priors[[par]]
     has_effects_prior <- !is.null(prior_desc$effects)
-
 
     all_rhs_terms <- attr(terms, "term.labels")
     fixef <- all_rhs_terms[attr(terms, "order") == 1]
@@ -177,10 +174,7 @@ set_default_prior <- function(model, data, formula) {
     # check if intercept is present and set prior_desc[[1]] on the intercept
     if (attr(terms, "intercept")) {
       if (par %in% nlpars) {
-        prior2 <- brms::prior_(prior_desc$main,
-          class = "b",
-          coef = "Intercept", nlpar = par
-        )
+        prior2 <- brms::prior_(prior_desc$main, class = "b", coef = "Intercept", nlpar = par)
       } else {
         prior2 <- brms::prior_(prior_desc$main, class = "Intercept", dpar = par)
       }

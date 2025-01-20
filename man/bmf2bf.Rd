@@ -21,14 +21,14 @@ Called by \code{\link[=configure_model]{configure_model()}} inside \code{\link[=
 appropriate bmf2bf.\* methods based on the classes defined in the model_\* function.
 }
 \examples{
-  model <- mixture2p(resp_error = "error")
+model <- mixture2p(resp_error = "error")
 
-  formula <- bmmformula(
-    thetat ~ 0 + set_size + (0 + set_size | id),
-    kappa ~ 1 + (1 | id)
-  )
+formula <- bmmformula(
+  thetat ~ 0 + set_size + (0 + set_size | id),
+  kappa ~ 1 + (1 | id)
+)
 
-  brms_formula <- bmf2bf(model, formula)
+brms_formula <- bmf2bf(model, formula)
 }
 \keyword{developer}
 \keyword{internal}
