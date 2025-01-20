@@ -139,7 +139,7 @@ bmm <- function(formula, data, model,
 
   # estimate the model
   fit_args <- combine_args(nlist(config_args, opts, dots, prior))
-  fit <- call_brm(fit_args)
+  fit <- brms::do_call(brms::brm, fit_args)
 
   # model post-processing
   fit <- postprocess_brm(

@@ -9,7 +9,7 @@ postprocess_brm(model, fit, ...)
 \arguments{
 \item{model}{A model list object returned from check_model()}
 
-\item{fit}{the fitted brm model returned by \code{call_brm()}}
+\item{fit}{the fitted brm model}
 
 \item{...}{Additional arguments passed to the method}
 }

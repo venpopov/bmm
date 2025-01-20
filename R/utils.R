@@ -128,15 +128,6 @@ glue_lf <- function(..., env.frame = -1) {
   brms::lf(stats::as.formula(glue(..., .envir = sys.frame(env.frame))))
 }
 
-#' wrapper function to call brms, saving fit_args if backend is mock for testing
-#' not used directly, but called by bmm(). If bmm() is run with
-#' backend="mock", then we can perform tests on the fit_args to check if the
-#' model configuration is correct. Avoids compiling and running the model
-#' @noRd
-call_brm <- function(fit_args) {
-  fit <- brms::do_call(brms::brm, fit_args)
-}
-
 # function to ensure that if the user wants to overwrite an argument (such as
 # init), they can
 combine_args <- function(args) {
