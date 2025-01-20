@@ -111,7 +111,7 @@ bmm <- function(formula, data, model,
   dots <- list(...)
 
   # check if the model has been previously fit and return it if requested
-  x <- read_bmmfit(file, file_refit)
+  x <- try_read_bmmfit(file, file_refit)
   if (!is.null(x)) {
     return(x)
   }
@@ -149,8 +149,8 @@ bmm <- function(formula, data, model,
     configure_opts = configure_opts
   )
 
-  # save the fitted model object if !is.null
-  save_bmmfit(fit, file, compress = file_compress)
+  # save the fitted model object if file argument provided and return the object
+  try_save_bmmfit(fit, file, compress = file_compress)
 }
 
 

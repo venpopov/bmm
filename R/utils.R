@@ -723,9 +723,7 @@ deprecated_args <- function(...) {
 }
 
 
-read_bmmfit <- function(file, file_refit) {
-  file <- check_rds_file(file)
-
+try_read_bmmfit <- function(file, file_refit) {
   if (is.character(file_refit)) {
     stopif(
       !tolower(file_refit) %in% c("never", "always", "on_change"),
@@ -736,48 +734,43 @@ read_bmmfit <- function(file, file_refit) {
 
     warnif(
       tolower(file_refit) == "on_change",
-      glue(
-        'The "on_change" option for the file_refit argument available in brms,
-        is currently not implemented for bmm.
-        To avoid overwriting an already saved bmmfit object, file_refit was set to "never".'
-      )
+      'The "on_change" option for the file_refit argument available in brms,
+      is currently not implemented for bmm.
+      To avoid overwriting an already saved bmmfit object, file_refit was set to "never".'
     )
     file_refit <- ifelse(file_refit == "always", TRUE, FALSE)
   }
+  file <- check_rds_file(file)
   if (is.null(file) || file_refit) {
     return(NULL)
   }
-  dir <- dirname(file)
-  dir <- try(fs::dir_create(dir))
+  dir <- try(fs::dir_create(dirname(file)))
   stopif(is_try_error(dir), "Cannot create directory for file.")
 
   out <- suppressWarnings(try(readRDS(file), silent = TRUE))
-  if (!is_try_error(out)) {
-    if (!is_bmmfit(out)) {
-      stop2("Object loaded via 'file' is not of class 'bmmfit'.")
-    }
-    out$file <- file
-  } else {
-    out <- NULL
+  if (is_try_error(out)) {
+    return(NULL)
   }
+  
+  stopif(!is_bmmfit(out), "Object loaded via 'file' is not of class 'bmmfit'.")
+  out$file <- file
   out
 }
 
-save_bmmfit <- function(x, file, compress) {
+try_save_bmmfit <- function(object, file, compress) {
   file <- check_rds_file(file)
-  x$file <- file
+  object$file <- file
   if (!is.null(file)) {
-    saveRDS(x, file, compress = compress)
+    saveRDS(object, file, compress = compress)
   }
-  x
+  object
 }
 
 check_rds_file <- function(file) {
   if (is.null(file)) {
     return(NULL)
   }
-  stopif(!is.character(file), "'file' must be a character string.")
-  stopif(length(file) > 1, "'file' must be a single character string.")
+  stopif(!is.character(file) || length(file) > 1, "'file' must be a single string.")
   ext <- fs::path_ext(file)
   if (ext != "rds") {
     file <- paste0(file, ".rds")

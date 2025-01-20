@@ -70,21 +70,21 @@ test_that("check_rds_file works", {
   expect_null(check_rds_file(NULL))
 })
 
-test_that("read_bmmfit works", {
+test_that("try_read_bmmfit works", {
   mock_fit <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
                   backend = "mock", mock_fit = 1, rename = F)
   file <- tempfile()
   mock_fit$file <- paste0(file, '.rds')
   saveRDS(mock_fit, paste0(file, '.rds'))
-  expect_equal(read_bmmfit(file, FALSE), mock_fit, ignore_function_env = TRUE,
+  expect_equal(try_read_bmmfit(file, FALSE), mock_fit, ignore_function_env = TRUE,
                ignore_formula_env = TRUE)
 
   x = 1
   saveRDS(x, paste0(file, '.rds'))
-  expect_error(read_bmmfit(file, FALSE), "not of class 'bmmfit'")
+  expect_error(try_read_bmmfit(file, FALSE), "not of class 'bmmfit'")
 })
 
-test_that("save_bmmfit works", {
+test_that("try_save_bmmfit works", {
   file <- tempfile()
   mock_fit <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
                   backend = "mock", mock_fit = 1, rename = F,
