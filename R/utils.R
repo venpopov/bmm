@@ -297,7 +297,6 @@ stop_quietly <- function() {
   stop()
 }
 
-
 # for some models it is faster to sample if the normalizing constant is calculated
 # only once for all trials that have the same value for the predictors. Currently
 # this is only used in the sdm model, and to work it requires that the

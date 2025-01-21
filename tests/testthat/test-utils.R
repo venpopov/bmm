@@ -71,6 +71,7 @@ test_that("check_rds_file works", {
 })
 
 test_that("try_read_bmmfit works", {
+  withr::local_options(bmm.sort_data = FALSE)
   mock_fit <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
                   backend = "mock", mock_fit = 1, rename = F)
   file <- tempfile()
@@ -85,6 +86,7 @@ test_that("try_read_bmmfit works", {
 })
 
 test_that("try_save_bmmfit works", {
+  withr::local_options(bmm.sort_data = FALSE)
   file <- tempfile()
   mock_fit <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
                   backend = "mock", mock_fit = 1, rename = F,
