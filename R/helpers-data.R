@@ -185,8 +185,11 @@ check_var_set_size <- function(set_size, data) {
 #'
 calc_error_relative_to_nontargets <- function(data, response, nt_features) {
   y <- y_nt <- non_target_name <- non_target_value <- NULL
-  data <- data %>%
-    tidyr::gather(non_target_name, non_target_value, eval(nt_features))
+  stopif(
+    !requireNamespace("tidyr", quietly = TRUE), 
+    'The "tidyr" package is required for this functionality'
+  )
+  data <- tidyr::gather(data, non_target_name, non_target_value, eval(nt_features))
 
   data$y_nt <- wrap(data[[response]] - data[["non_target_value"]])
   data
@@ -297,7 +300,7 @@ is_data_ordered <- function(data, formula) {
   predictors <- rhs_vars(formula)
   predictors <- predictors[not_in(predictors, dpars)]
   predictors <- predictors[predictors %in% colnames(data)]
-  data <- data[, predictors]
+  data <- data[predictors]
   if (length(predictors) > 1) {
     gr_idx <- do.call(paste, c(data, list(sep = "_")))
   } else {

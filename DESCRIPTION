@@ -25,30 +25,30 @@ Depends:
 Imports: 
     brms (>= 2.21.0),
     crayon,
-    dplyr,
     fs,
     glue,
-    magrittr,
     matrixStats,
     methods,
     parallel,
     stats,
-    tidyr,
     withr
 Suggests: 
     bookdown,
     cmdstanr (>= 0.7.0),
     cowplot,
+    dplyr,
     fansi,
     ggplot2,
     ggthemes,
     knitr,
+    magrittr,
     mixtur,
     remotes,
     rmarkdown,
     stringr,
     testthat (>= 3.0.0),
     tidybayes,
+    tidyr,
     usethis,
     waldo
 Additional_repositories: https://mc-stan.org/r-packages/

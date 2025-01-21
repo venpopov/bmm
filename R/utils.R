@@ -1,19 +1,3 @@
-#' Pipe operator
-#'
-#' See `magrittr::[\%>\%][magrittr::pipe]` for details.
-#'
-#' @name %>%
-#' @rdname pipe
-#' @keywords internal
-#' @export
-#' @importFrom magrittr %>%
-#' @usage lhs \%>\% rhs
-#' @param lhs A value or the magrittr placeholder.
-#' @param rhs A function call using the magrittr semantics.
-#' @return The result of calling `rhs(lhs)`.
-NULL
-
-
 #' Softmax function and its inverse
 #'
 #' `softmax` returns the value of the softmax function
@@ -309,6 +293,10 @@ order_data_query <- function(model, data, formula) {
   predictors <- predictors[not_in(predictors, dpars)]
   predictors <- predictors[predictors %in% colnames(data)]
 
+  if (length(predictors) == 0) {
+    return(data)
+  }
+
   if (sort_data == "check" && !is_data_ordered(data, formula)) {
     message2(
       "\n\nData is not ordered by predictors.
@@ -360,12 +348,12 @@ order_data_query <- function(model, data, formula) {
           "Your data has been sorted by the following predictors: ",
           paste(predictors, collapse = ", "), "\n"
         )
-        data <- dplyr::arrange_at(data, predictors)
+        data <- data[do.call(order, data[predictors]),]
       }
     }
     message("\n\n", disable_msg)
   } else if (isTRUE(sort_data)) {
-    data <- dplyr::arrange_at(data, predictors)
+    data <- data[do.call(order, data[predictors]),]
     message(
       "\nYour data has been sorted by the following predictors: ",
       paste(predictors, collapse = ", "), "\n"

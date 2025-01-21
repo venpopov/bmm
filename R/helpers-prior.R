@@ -300,15 +300,17 @@ configure_prior.bmmodel <- function(model, data, formula, user_prior, ...) {
 # given prior) parts present in prior2 will overwrite the corresponding parts in
 # prior1
 combine_prior <- function(prior1, prior2) {
-  if (!is.null(prior2)) {
-    combined_prior <- dplyr::anti_join(prior1, prior2,
-      by = c("class", "dpar", "nlpar", "coef", "group", "resp")
-    )
-    prior <- combined_prior + prior2
-  } else {
-    prior <- prior1
+  if (is.null(prior2)) {
+    return(prior1)
   }
-  return(prior)
+
+  cols <- c("class", "dpar", "nlpar", "coef", "group", "resp")
+  prior1_types <- do.call(paste, prior1[, cols])
+  prior2_types <- do.call(paste, prior2[, cols])
+  is_duplicate <- prior1_types %in% prior2_types
+  prior <- prior1[!is_duplicate,] + prior2
+  row.names(prior) <- 1:nrow(prior)
+  prior
 }
 
 
