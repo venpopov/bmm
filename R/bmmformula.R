@@ -73,24 +73,21 @@
 #' )
 #' identical(imm_formula, imm_formula2)
 bmmformula <- function(...) {
-  dots <- list(...)
-  formula <- list()
-  for (i in seq_along(dots)) {
-    arg <- dots[[i]]
-    if (is_formula(arg)) {
-      par <- all.vars(arg)[1]
-    } else if (is.numeric(arg) && length(arg) == 1) {
-      par <- names(dots)[i]
-    } else {
-      stop2("The arguments must be formulas or numeric values.")
-    }
-    stopif(par %in% names(formula), "Duplicated formula for parameter {par}")
-    formula[[par]] <- arg
-  }
-  class(formula) <- "bmmformula"
-  # assign attribute nl TRUE/FALSE to each component of the formula
-  formula <- assign_nl_attr(formula)
-  assign_constants(formula)
+  out <- list(...)
+  is_form_or_num <- function(x) is_formula(x) || (is.numeric(x) && length(x) == 1)
+  stopif(!all(sapply(out, is_form_or_num)), "Arguments must be formulas or numeric assignments.")
+
+  par_names <- sapply(seq_along(out), function(i) {
+    ifelse(is_formula(out[[i]]), all.vars(out[[i]])[1], names(out[i]))
+  })
+
+  duplicates <- duplicated(par_names)
+  stopif(any(duplicates), "Duplicate formula for parameter(s) {par_names[duplicates]}")
+  names(out) <- par_names
+  class(out) <- "bmmformula"
+
+  out <- assign_nl_attr(out)
+  assign_constants(out)
 }
 
 
@@ -153,8 +150,7 @@ bmf <- function(...) {
   out <- unclass(formula)
   out[pars] <- value
   class(out) <- "bmmformula"
-  out <- assign_nl_attr(out)
-  out
+  assign_nl_attr(out)
 }
 
 
@@ -171,12 +167,6 @@ check_formula <- function(model, data, formula) {
 #' @export
 check_formula.bmmodel <- function(model, data, formula) {
   stopif(
-    is_brmsformula(formula),
-    "The provided formula is a brms formula. Please use the bmf() function. E.g.:
-    bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)"
-  )
-
-  stopif(
     !is_bmmformula(formula),
     "The provided formula is not a bmm formula. Please use the bmf() function. E.g.:
     bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)"
@@ -191,7 +181,7 @@ check_formula.bmmodel <- function(model, data, formula) {
 
 #' @export
 check_formula.default <- function(model, data, formula) {
-  return(formula)
+  formula
 }
 
 #' @export
@@ -310,7 +300,7 @@ has_intercept.formula <- function(object) {
   has_intercept(try_terms)
 }
 
-rhs_vars <- function(formula, ...) {
+rhs_vars <- function(object, ...) {
   UseMethod("rhs_vars")
 }
 
@@ -318,16 +308,8 @@ rhs_vars <- function(formula, ...) {
 # @param collapse Logical. Should it return a single vector with all the variables
 #  or a list with the variables for each parameter?
 #' @export
-rhs_vars.bmmformula <- function(formula, collapse = TRUE, ...) {
-  lhs_vars <- names(formula)
-  rhs_vars <- list()
-  for (var in lhs_vars) {
-    if (is_formula(formula[[var]])) {
-      rhs_vars[[var]] <- rhs_vars(formula[[var]])
-    } else {
-      rhs_vars[[var]] <- character(0)
-    }
-  }
+rhs_vars.bmmformula <- function(object, collapse = TRUE, ...) {
+  rhs_vars <- lapply(object, function(x) rhs_vars(x))
   if (!collapse) {
     return(rhs_vars)
   }
@@ -336,18 +318,14 @@ rhs_vars.bmmformula <- function(formula, collapse = TRUE, ...) {
 }
 
 #' @export
-rhs_vars.formula <- function(formula, ...) {
-  all.vars(f_rhs(formula))
+rhs_vars.formula <- function(object, ...) {
+  rhs <- object[[length(object)]]
+  all.vars(rhs)
 }
 
-
-f_rhs <- function(formula) {
-  stopifnot(is_formula(formula))
-  if (length(formula) == 3) {
-    formula[[3]]
-  } else {
-    formula[[2]]
-  }
+#' @export
+rhs_vars.default <- function(object, ...) {
+  character(0)
 }
 
 # adds an attribute nl to each component of the the formula indicating if the

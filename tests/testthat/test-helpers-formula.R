@@ -34,7 +34,7 @@ test_that("check_formula gives expected errors", {
       data = NULL,
       formula = brmsf <- brms::bf(dev_rad ~ 1, c ~ 1)
     ),
-    "The provided formula is a brms formula."
+    "The provided formula is not a bmm formula"
   )
 
   expect_error(
