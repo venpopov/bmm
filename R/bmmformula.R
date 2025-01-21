@@ -300,13 +300,22 @@ wrong_parameters <- function(model, formula) {
   fpars[wpars]
 }
 
-has_intercept <- function(formula) {
-  if (is.null(formula)) {
+has_intercept <- function(object) {
+  UseMethod("has_intercept")
+}
+
+#' @export
+has_intercept.terms <- function(object) {
+  as.logical(attr(object, "intercept"))
+}
+
+#' @export
+has_intercept.formula <- function(object) {
+  try_terms <- try(terms(object), silent = TRUE)
+  if (is_try_error(try_terms)) {
     return(FALSE)
-  } else if (!is_formula(formula)) {
-    stop("The formula must be a formula object.")
   }
-  as.logical(attr(stats::terms(formula), "intercept"))
+  has_intercept(try_terms)
 }
 
 rhs_vars <- function(formula, ...) {
