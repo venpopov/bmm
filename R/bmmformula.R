@@ -89,7 +89,7 @@ bmmformula <- function(...) {
   }
   class(formula) <- "bmmformula"
   # assign attribute nl TRUE/FALSE to each component of the formula
-  formula <- assign_nl(formula)
+  formula <- assign_nl_attr(formula)
   assign_constants(formula)
 }
 
@@ -106,31 +106,23 @@ bmf <- function(...) {
 #' @export
 "+.bmmformula" <- function(f1, f2) {
   stopif(!is_bmmformula(f1), "The first argument must be a bmmformula.")
+  f2_not_a_formula <- !(is_formula(f2) || is_bmmformula(f2)) && !is.null(f2)
+  stopif(f2_not_a_formula, "The second argument must be a formula or a bmmformula.")
 
   if (is_formula(f2)) {
-    par2 <- all.vars(f2)[1]
-    if (par2 %in% names(f1)) {
-      message2(
-        "The parameter {par2} is already part of the formula.
-        Overwriting the initial formula."
-      )
-    }
-    f1[[par2]] <- f2
-  } else if (is_bmmformula(f2)) {
-    for (par2 in names(f2)) {
-      if (par2 %in% names(f1)) {
-        message2(
-          "The parameter is already part of the formula.
-          Overwriting the initial formula."
-        )
-      }
-      f1[[par2]] <- f2[[par2]]
-    }
-  } else if (!is.null(f2)) {
-    stop2("The second argument must be a formula or a bmmformula.")
+    dvar <- all.vars(f2)[1]
+    f2 <- setNames(list(f2), dvar)
   }
-  # reassign attribute nl to each component of the formula
-  f1 <- assign_nl(f1)
+
+  for (par in names(f2)) {
+    if (par %in% names(f1)) {
+      message2("Duplicate parameter: {par}. Overwriting the initial formula.")
+    }
+    f1[[par]] <- f2[[par]]
+  }
+
+  # we need to recompute which formulas are non-linear
+  f1 <- assign_nl_attr(f1)
   assign_constants(f1)
 }
 
@@ -150,7 +142,7 @@ bmf <- function(...) {
   }
 
   # reassign attribute nl to each component of the formula
-  assign_nl(out)
+  assign_nl_attr(out)
 }
 
 #' @export
@@ -161,7 +153,7 @@ bmf <- function(...) {
   out <- unclass(formula)
   out[pars] <- value
   class(out) <- "bmmformula"
-  out <- assign_nl(out)
+  out <- assign_nl_attr(out)
   out
 }
 
@@ -360,7 +352,7 @@ f_rhs <- function(formula) {
 
 # adds an attribute nl to each component of the the formula indicating if the
 # any of the predictors of the component are also predicted in another component
-assign_nl <- function(formula) {
+assign_nl_attr <- function(formula) {
   dpars <- names(formula)
   preds <- rhs_vars(formula, collapse = FALSE)
   for (dpar in dpars) {

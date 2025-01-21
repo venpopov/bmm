@@ -59,14 +59,14 @@ test_that('rhs_vars works', {
   expect_equal(rhs_vars(f),c("a","b","d","c","m","j"))
 })
 
-test_that('assign_nl works', {
+test_that('assign_nl_attr works', {
   x <- bmf(y ~ c, c ~ a + b, a ~ d, m ~ 1)
-  x <- assign_nl(x)
+  x <- assign_nl_attr(x)
   types <- is_nl(x)
   expect_equal(types, c(y = TRUE, c = TRUE, a = FALSE, m = FALSE))
 
   x <- bmf(y ~ 1)
-  x <- assign_nl(x)
+  x <- assign_nl_attr(x)
   types <- is_nl(x)
   expect_equal(types, c(y = FALSE))
 

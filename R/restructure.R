@@ -45,7 +45,7 @@ restructure.bmmfit <- function(x, ...) {
     x$bmm$model$info <- NULL
     x$bmm$model[names(info)] <- info
     x <- add_links(x)
-    x$bmm$user_formula <- assign_nl(x$bmm$user_formula)
+    x$bmm$user_formula <- assign_nl_attr(x$bmm$user_formula)
   }
 
   if (restr_version < "0.4.4") {
