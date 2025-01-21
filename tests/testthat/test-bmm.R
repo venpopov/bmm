@@ -71,7 +71,7 @@ test_that("Available models produce expected errors", {
     expect_error(
       bmm(bmf(kappa ~ 1), model = model(), backend = "mock",
           mock_fit = 1, rename = FALSE),
-      "argument \"data\" is missing, with no default"
+      "Data must be specified"
     )
   }
 

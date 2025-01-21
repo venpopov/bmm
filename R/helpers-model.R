@@ -141,34 +141,21 @@ replace_regex_variables <- function(model, data) {
   # check if the regex transformation has already been applied (e.g., if
   # updating a previously fit model)
   regex_applied <- isTRUE(attr(model, "regex_applied"))
-
-  if (!regex_applied) {
-    data_cols <- names(data)
-    # save original user-provided variables
-    user_vars <- c(model$resp_vars, model$other_vars)
-    attr(model, "user_vars") <- user_vars
-
-    if (regex && length(regex_vars) > 0) {
-      for (var in regex_vars) {
-        if (var %in% names(model$other_vars)) {
-          model$other_vars[[var]] <- get_variables(
-            model$other_vars[[var]],
-            data_cols,
-            regex
-          )
-        }
-        if (var %in% names(model$resp_vars)) {
-          model$resp_vars[[var]] <- get_variables(
-            model$resp_vars[[var]],
-            data_cols,
-            regex
-          )
-        }
-      }
-      attr(model, "regex_applied") <- regex
-    }
+  if (regex_applied || !regex || length(regex_vars) == 0) {
+    return(model)
   }
 
+  data_cols <- names(data)
+  # save original user-provided variables
+  user_vars <- c(model$resp_vars, model$other_vars)
+  attr(model, "user_vars") <- user_vars
+
+  for (var in regex_vars) {
+    var_type <- if (var %in% names(model$other_vars)) "other_vars" else "resp_vars"
+    model[[var_type]][[var]] <- get_variables(model[[var_type]][[var]], data_cols, regex)
+  }
+
+  attr(model, "regex_applied") <- regex
   model
 }
 
