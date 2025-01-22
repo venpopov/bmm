@@ -2,77 +2,76 @@
 # MODELS                                                                 ####
 ############################################################################# !
 
-.model_imm <-
-  function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
-           set_size = NULL, regex = FALSE, version = "full", links = NULL,
-           call = NULL, ...) {
-    out <- structure(
-      list(
-        resp_vars = nlist(resp_error),
-        other_vars = nlist(nt_features, nt_distances, set_size),
-        domain = "Visual working memory",
-        task = "Continuous reproduction",
-        name = "Interference measurement model by Oberauer and Lin (2017).",
-        version = version,
-        citation = glue(
-          "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
+.model_imm <- function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
+                       set_size = NULL, regex = FALSE, version = "full", links = NULL,
+                       call = NULL, ...) {
+  out <- structure(
+    list(
+      resp_vars = nlist(resp_error),
+      other_vars = nlist(nt_features, nt_distances, set_size),
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Interference measurement model by Oberauer and Lin (2017).",
+      version = version,
+      citation = glue(
+        "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
           of visual working memory. Psychological Review, 124(1), 21-59"
-        ),
-        requirements = glue(
-          "- The response vairable should be in radians and \\
+      ),
+      requirements = glue(
+        "- The response vairable should be in radians and \\
           represent the angular error relative to the target
           - The non-target features should be in radians and be \\
           centered relative to the target"
-        ),
-        parameters = list(
-          mu1 = glue(
-            "Location parameter of the von Mises distribution for memory \\
-            responses (in radians). Fixed internally to 0 by default."
-          ),
-          kappa = "Concentration parameter of the von Mises distribution",
-          a = "General activation of memory items",
-          c = "Context activation",
-          s = "Spatial similarity gradient"
-        ),
-        links = list(
-          mu1 = "tan_half",
-          kappa = "log",
-          a = "log",
-          c = "log",
-          s = "log"
-        ),
-        fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
-        default_priors = list(
-          mu1 = list(main = "student_t(1, 0, 1)"),
-          kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
-          a = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
-          c = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
-          s = list(main = "normal(0, 1)", effects = "normal(0, 1)")
-        ),
-        void_mu = FALSE
       ),
-      # attributes
-      regex = regex,
-      regex_vars = c("nt_features", "nt_distances"),
-      class = c("bmmodel", "circular", "non_targets", "imm", paste0("imm_", version)),
-      call = call
-    )
+      parameters = list(
+        mu1 = glue(
+          "Location parameter of the von Mises distribution for memory \\
+            responses (in radians). Fixed internally to 0 by default."
+        ),
+        kappa = "Concentration parameter of the von Mises distribution",
+        a = "General activation of memory items",
+        c = "Context activation",
+        s = "Spatial similarity gradient"
+      ),
+      links = list(
+        mu1 = "tan_half",
+        kappa = "log",
+        a = "log",
+        c = "log",
+        s = "log"
+      ),
+      fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
+      default_priors = list(
+        mu1 = list(main = "student_t(1, 0, 1)"),
+        kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
+        a = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
+        c = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
+        s = list(main = "normal(0, 1)", effects = "normal(0, 1)")
+      ),
+      void_mu = FALSE
+    ),
+    # attributes
+    regex = regex,
+    regex_vars = c("nt_features", "nt_distances"),
+    class = c("bmmodel", "circular", "non_targets", "imm", paste0("imm_", version)),
+    call = call
+  )
 
-    # add version specific information
-    if (version == "abc") {
-      out$parameters$s <- NULL
-      out$links$s <- NULL
-      out$default_priors$s <- NULL
-      attributes(out)$regex_vars <- c("nt_features")
-    } else if (version == "bsc") {
-      out$parameters$a <- NULL
-      out$links$a <- NULL
-      out$default_priors$a <- NULL
-    }
-
-    out$links[names(links)] <- links
-    out
+  # add version specific information
+  if (version == "abc") {
+    out$parameters$s <- NULL
+    out$links$s <- NULL
+    out$default_priors$s <- NULL
+    attributes(out)$regex_vars <- c("nt_features")
+  } else if (version == "bsc") {
+    out$parameters$a <- NULL
+    out$links$a <- NULL
+    out$default_priors$a <- NULL
   }
+
+  out$links[names(links)] <- links
+  out
+}
 
 # user facing alias
 
@@ -234,7 +233,7 @@ check_data.imm_full <- function(model, data, formula) {
 
   # replace NA values with 999 so they have 0 effect through the distance formula
   data[, nt_distances][is.na(data[, nt_distances])] <- 999
-  
+
   stopif(
     any(data[, nt_distances] < 0),
     "All non-target distances to the target need to be postive."
@@ -357,40 +356,16 @@ configure_prior.imm_full <- function(model, data, formula, user_prior, ...) {
   prior <- brms::empty_prior()
   set_size_var <- model$other_vars$set_size
 
-  if (all(data$ss_numeric != 1) || is.numeric(data[[set_size_var]])) {
+  # Models with non-target errors need constant priors on set-size 1 factors
+  set_size_is_factor_with_level1 <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
+  if (!set_size_is_factor_with_level1) {
     return(prior)
   }
 
-  for (nlpar in nlpars) {
-    pform <- formula$pforms[[nlpar]]
-    bterms <- brms::brmsterms(pform)
-    re_terms <- bterms$dpars$mu$re
-
-    if (set_size_var %in% rhs_vars(pform)) {
-      prior <- prior +
-        brms::prior_("constant(0)",
-          class = "b",
-          coef = paste0(set_size_var, 1),
-          nlpar = nlpar
-        )
-    }
-
-    for (i in seq_len(NROW(re_terms))) {
-      if (set_size_var %in% rhs_vars(re_terms$form[[i]])) {
-        prior <- prior +
-          brms::prior_("constant(1e-8)",
-            class = "sd",
-            coef = paste0(set_size_var, 1),
-            group = re_terms$group[[i]],
-            nlpar = nlpar
-          )
-      }
-    }
-  }
-
-  prior
+  prior +
+    constrain_set_size1_fixef(formula, nlpars, set_size_var, "constant(0)") +
+    constrain_set_size1_ranef(formula, nlpars, set_size_var, "constant(1e-8)")
 }
-
 
 # ---- deprecated calls for specific versions ----
 
