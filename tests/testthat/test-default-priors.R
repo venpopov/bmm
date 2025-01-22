@@ -205,7 +205,7 @@ test_that("default priors work when there are non-linear transformations of defa
       data = oberauer_lin_2017,
       model = sdm(resp_error = "dev_rad")
     ),
-    "contains non-linear transformations of model parameters"
+    "Non-linear transformations"
   )
   expect_true(!("c" %in% dp$dpar))
   expect_true("nlc" %in% dp$nlpar)

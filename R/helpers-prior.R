@@ -95,119 +95,104 @@ fixed_pars_priors <- function(model, formula, additional_pars = list()) {
   brms::set_prior(priors, class = classes, coef = coefs, dpar = dpars, nlpar = nlpars)
 }
 
-
 #' Set default priors for a bmmodel
 #'
-#' This function
-#' allows you to specify default priors flexibly regardless of the formula the
-#' user has supplied. The function will automatically recognize when intercepts
-#' are present or suppressed, and will set the default priors accordingly. You
-#' can specify priors of intercepts/main levels of a predictor with supressed
-#' intercept, and priors on the effects of the predictors relative to the
-#' intercept.
+#' This function allows you to specify default priors flexibly regardless of the
+#' formula the user has supplied. The function will automatically recognize when
+#' intercepts are present or suppressed, and will set the default priors
+#' accordingly. You can specify priors of intercepts/main levels of a predictor
+#' with suppressed intercept, and priors on the effects of the predictors
+#' relative to the intercept.
 #'
 #' @param model A `bmmodel` object
 #' @param formula A `brmsformula` object
 #' @param data A data.frame containing the data used in the model
+#' @details This function is complicated because of some strange logic in how `brms`
+#' stores data in formulas. In brms, dpars are parameters that appear in the
+#' family. When a dpar is predicted by a deterministic non-linear formula containing
+#' custom parameters, those custom parameters are considered "nlpars" and stored in
+#' the bterms$nlpars component. Nevertheless, the attribute "nl = TRUE" is applied to those
+#' dpars that are predicted by nlpars. dpars with the "nl = TRUE" attribute are not sampled
+#' from and cannot be given priors.
+#'
+#' To avoid deeply nested if-else statements, the function uses a cascading approaching -
+#' succesful if statements cause the for loop to continue with the next case, skipping all
+#' subsequent checks. Thus, later parts of the code will be executed only if earier if
+#' statements have failed. Not ideal, but simpler than the alternative.
 #' @noRd
 #' @keywords internal developer
 set_default_prior <- function(model, data, formula) {
   if (isFALSE(getOption("bmm.default_priors", TRUE))) {
     return(NULL)
   }
-
-  prior <- brms::empty_prior()
-  bterms <- brms::brmsterms(formula)
-  bterms$allpars <- c(bterms$dpars, bterms$nlpars)
-  nlpars <- names(bterms$nlpars)
-  pars <- names(bterms$allpars)
-
   default_priors <- model$default_priors
   stopif(
     !is.list(default_priors) || !all(sapply(default_priors, is.list)),
     "The default_priors should be a list of lists"
   )
 
-  # remove default priors if one of them is transformed in a non-linear formula
-  dpar_is_nl <- names(which(sapply(formula$pforms, is_nl)))
-  default_priors[dpar_is_nl] <- NULL
+  dpars_predicted_by_nlpars <- names(which(sapply(formula$pforms, is_nl)))
+  default_priors[dpars_predicted_by_nlpars] <- NULL
   warnif(
-    any(dpar_is_nl %in% names(model$parameter)),
-    "Your formula contains non-linear transformations of model parameters.
-     We advise to pass priors for the non-linear parameters to improve parameter estimation.
-     Otherwise, improper flat priors will be used by default."
+    any(dpars_predicted_by_nlpars %in% names(model$parameter)),
+    "Non-linear transformations of model parameters detected in the formula.
+    Consider specifying priors for better estimation; otherwise, flat priors will be used."
   )
 
-  pars_key <- names(default_priors)
-  pars <- pars[pars %in% pars_key]
+  # Helper function to create a prior object conditional on parameter type
+  create_prior <- function(prior_desc, class, par, ...) {
+    if (par %in% names(bterms$nlpars)) {
+      brms::prior_(prior_desc, class = class, nlpar = par, ...)
+    } else {
+      brms::prior_(prior_desc, class = class, dpar = par, ...)
+    }
+  }
+
+  bterms <- brms::brmsterms(formula)
+  bterms$allpars <- c(bterms$dpars, bterms$nlpars)
+  pars <- intersect(names(bterms$allpars), names(default_priors))
+  prior <- brms::empty_prior()
 
   for (par in pars) {
-    bform <- bterms$allpars[[par]]$fe
-    terms <- stats::terms(bform)
+    terms <- stats::terms(bterms$allpars[[par]]$fe)
     prior_desc <- default_priors[[par]]
     has_effects_prior <- !is.null(prior_desc$effects)
-
     all_rhs_terms <- attr(terms, "term.labels")
-    fixef <- all_rhs_terms[attr(terms, "order") == 1]
-    inter <- all_rhs_terms[attr(terms, "order") > 1]
-    nfixef <- length(fixef)
-    ninter <- length(inter)
-    interaction_only <- nfixef == 0 && ninter > 0
+    fixed_effects_count <- length(all_rhs_terms[attr(terms, "order") == 1])
+    interactions_count <- length(all_rhs_terms[attr(terms, "order") > 1])
+    interaction_only <- fixed_effects_count == 0 && interactions_count > 0
 
-    # if the user has specified a non-linear predictor on a model parameter, do
-    # not set prior
-    if (any(all_rhs_terms %in% pars)) {
+    # priors on fixed effects
+    if (has_effects_prior && fixed_effects_count > 0) {
+      fixed_effects_prior <- create_prior(prior_desc$effects, "b", par = par)
+      prior <- combine_prior(prior, fixed_effects_prior)
+    }
+
+    # priors on intercept; unfortunately too convoluted to use the create_prior function
+    if (has_intercept(terms)) {
+      if (par %in% names(bterms$nlpars)) {
+        intercept_prior <- brms::prior_(prior_desc$main, class = "b", coef = "Intercept", nlpar = par)
+      } else {
+        intercept_prior <- brms::prior_(prior_desc$main, class = "Intercept", dpar = par)
+      }
+      prior <- combine_prior(prior, intercept_prior)
       next
     }
 
-    # by default set the effects prior on the class 'b'. The intercept can be
-    # overwritten later
-    if (has_effects_prior && nfixef > 0) {
-      if (par %in% nlpars) {
-        prior2 <- brms::prior_(prior_desc$effects, class = "b", nlpar = par)
-      } else {
-        prior2 <- brms::prior_(prior_desc$effects, class = "b", dpar = par)
-      }
-      prior <- combine_prior(prior, prior2)
-    }
-
-    # check if intercept is present and set prior_desc[[1]] on the intercept
-    if (attr(terms, "intercept")) {
-      if (par %in% nlpars) {
-        prior2 <- brms::prior_(prior_desc$main, class = "b", coef = "Intercept", nlpar = par)
-      } else {
-        prior2 <- brms::prior_(prior_desc$main, class = "Intercept", dpar = par)
-      }
-      prior <- combine_prior(prior, prior2)
+    # priors when intercept is supressed and all levels are explicit
+    if ((fixed_effects_count == 1 && interactions_count == 0) || interaction_only) {
+      levels_only_prior <- create_prior(prior_desc[[1]], "b", par = par)
+      prior <- combine_prior(prior, levels_only_prior)
       next
     }
 
-    # next check if there is only one predictor, in which case set the main
-    # prior on all levels same if there are multiple predictors, but they are
-    # specified only as an interaction get individual predictors, and the
-    # formula terms. Fixed effects are those that match
-    if ((nfixef == 1 && ninter == 0) || interaction_only) {
-      if (par %in% nlpars) {
-        prior2 <- brms::prior_(prior_desc[[1]], class = "b", nlpar = par)
-      } else {
-        prior2 <- brms::prior_(prior_desc[[1]], class = "b", dpar = par)
-      }
-      prior <- combine_prior(prior, prior2)
-      next
-    }
-
-    # if there are multiple predictors, set the main prior on the levels of the
-    # first predictor
-    first_term <- attr(terms, "term.labels")[1]
-    levels <- levels(data[[first_term]])
-    coefs <- paste0(first_term, levels)
+    # edge case: with multiple predictors and no intercept, set the main prior on
+    # the levels of the first predictor
+    first_predictor <- all_rhs_terms[1]
+    coefs <- paste0(first_predictor, levels(data[[first_predictor]]))
     for (coef in coefs) {
-      if (par %in% nlpars) {
-        prior2 <- brms::prior_(prior_desc[[1]], class = "b", coef = coef, nlpar = par)
-      } else {
-        prior2 <- brms::prior_(prior_desc[[1]], class = "b", coef = coef, dpar = par)
-      }
-      prior <- combine_prior(prior, prior2)
+      first_predictor_prior <- create_prior(prior_desc[[1]], "b", par, coef = coef)
+      prior <- combine_prior(prior, first_predictor_prior)
     }
   }
   prior
@@ -308,7 +293,7 @@ combine_prior <- function(prior1, prior2) {
   prior1_types <- do.call(paste, prior1[, cols])
   prior2_types <- do.call(paste, prior2[, cols])
   is_duplicate <- prior1_types %in% prior2_types
-  prior <- prior1[!is_duplicate,] + prior2
+  prior <- prior1[!is_duplicate, ] + prior2
   row.names(prior) <- 1:nrow(prior)
   prior
 }
