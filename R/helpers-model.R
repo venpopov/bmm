@@ -467,21 +467,21 @@ use_model_template <- function(model_name,
     # user facing alias
     # information in the title and details sections will be filled in
     # automatically based on the information in the .model_<<model_name>>()$info\n 
-    #' @title `r .model_<<model_name>>()$name`
-    #' @name Model Name,
-    #' @details `r model_info(.model_<<model_name>>())`
-    #' @param resp_var1 A description of the response variable
-    #' @param required_arg1 A description of the required argument
-    #' @param required_arg2 A description of the required argument
-    #' @param links A list of links for the parameters.
-    #' @param version A character label for the version of the model. Can be empty or NULL if there is only one version. 
-    #' @param ... used internally for testing, ignore it
-    #' @return An object of class `bmmodel`
-    #' @export
-    #' @examples
-    #' \\dontrun{
-    #' # put a full example here (see 'R/model_mixture3p.R' for an example)
-    #' }
+    #\' @title `r .model_<<model_name>>()$name`
+    #\' @name Model Name,
+    #\' @details `r model_info(.model_<<model_name>>())`
+    #\' @param resp_var1 A description of the response variable
+    #\' @param required_arg1 A description of the required argument
+    #\' @param required_arg2 A description of the required argument
+    #\' @param links A list of links for the parameters.
+    #\' @param version A character label for the version of the model. Can be empty or NULL if there is only one version. 
+    #\' @param ... used internally for testing, ignore it
+    #\' @return An object of class `bmmodel`
+    #\' @export
+    #\' @examples
+    #\' \\dontrun{
+    #\' # put a full example here (see 'R/model_mixture3p.R' for an example)
+    #\' }
     <<model_name>> <- function(resp_var1, required_arg1, required_arg2, links = NULL, version = NULL, ...) {
        call <- match.call()
        stop_missing_args()
