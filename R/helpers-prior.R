@@ -139,15 +139,6 @@ set_default_prior <- function(model, data, formula) {
     Consider specifying priors for better estimation; otherwise, flat priors will be used."
   )
 
-  # Helper function to create a prior object conditional on parameter type
-  create_prior <- function(prior_desc, class, par, ...) {
-    if (par %in% names(bterms$nlpars)) {
-      brms::prior_(prior_desc, class = class, nlpar = par, ...)
-    } else {
-      brms::prior_(prior_desc, class = class, dpar = par, ...)
-    }
-  }
-
   bterms <- brms::brmsterms(formula)
   bterms$allpars <- c(bterms$dpars, bterms$nlpars)
   pars <- intersect(names(bterms$allpars), names(default_priors))
@@ -164,38 +155,48 @@ set_default_prior <- function(model, data, formula) {
 
     # priors on fixed effects
     if (has_effects_prior && fixed_effects_count > 0) {
-      fixed_effects_prior <- create_prior(prior_desc$effects, "b", par = par)
+      fixed_effects_prior <- .build_prior(prior_desc$effects, "b", par = par, bterms = bterms)
       prior <- combine_prior(prior, fixed_effects_prior)
     }
 
     # priors on intercept; unfortunately too convoluted to use the create_prior function
     if (has_intercept(terms)) {
-      if (par %in% names(bterms$nlpars)) {
-        intercept_prior <- brms::prior_(prior_desc$main, class = "b", coef = "Intercept", nlpar = par)
-      } else {
-        intercept_prior <- brms::prior_(prior_desc$main, class = "Intercept", dpar = par)
-      }
+      intercept_prior <- .build_prior(prior_desc$main, "Intercept", par = par, bterms = bterms)
       prior <- combine_prior(prior, intercept_prior)
       next
     }
 
     # priors when intercept is supressed and all levels are explicit
     if ((fixed_effects_count == 1 && interactions_count == 0) || interaction_only) {
-      levels_only_prior <- create_prior(prior_desc[[1]], "b", par = par)
+      levels_only_prior <- .build_prior(prior_desc[[1]], "b", par = par, bterms = bterms)
       prior <- combine_prior(prior, levels_only_prior)
       next
     }
 
     # edge case: with multiple predictors and no intercept, set the main prior on
     # the levels of the first predictor
-    first_predictor <- all_rhs_terms[1]
-    coefs <- paste0(first_predictor, levels(data[[first_predictor]]))
-    for (coef in coefs) {
-      first_predictor_prior <- create_prior(prior_desc[[1]], "b", par, coef = coef)
+    first_predictor_coefs <- paste0(all_rhs_terms[1], levels(data[[all_rhs_terms[1]]]))
+    for (coef in first_predictor_coefs) {
+      first_predictor_prior <- .build_prior(prior_desc[[1]], "b", par, coef = coef, bterms = bterms)
       prior <- combine_prior(prior, first_predictor_prior)
     }
   }
   prior
+}
+
+# Helper function to create a prior object conditional on parameter type
+.build_prior <- function(prior_desc, class, par, bterms, ...) {
+  args <- c(list(prior = prior_desc, class = class), list(...))
+  if (par %in% names(bterms$nlpars)) {
+    if (class == "Intercept") {
+      args$class <- "b" # Intercept priors in brms are stored in `b` for nlpars
+      args$coef <- "Intercept"
+    }
+    args$nlpar <- par
+  } else {
+    args$dpar <- par
+  }
+  do.call(brms::prior_, args)
 }
 
 #' Generic S3 method for configuring the default prior for a bmmodel
