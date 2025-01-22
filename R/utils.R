@@ -747,3 +747,9 @@ check_rds_file <- function(file) {
 `%||%` <- function(a, b) {
   if (!is.null(a)) a else b
 }
+
+# like unlist, but keeps the final outcome a list of all
+# elements of nested lists. Only works 1-level deep
+unnest_list <- function(list_of_lists) {
+  do.call(c, list_of_lists)
+}

@@ -304,7 +304,6 @@ rhs_vars <- function(object, ...) {
   UseMethod("rhs_vars")
 }
 
-# @param formula a bmmformula object
 # @param collapse Logical. Should it return a single vector with all the variables
 #  or a list with the variables for each parameter?
 #' @export
@@ -328,9 +327,52 @@ rhs_vars.default <- function(object, ...) {
   character(0)
 }
 
+lhs_vars <- function(object, ...) {
+  UseMethod("lhs_vars")
+}
+
+#' @export
+lhs_vars.default <- function(object, ...) {
+  character(0)
+}
+
+#' @export
+lhs_vars.bmmformula <- function(object, ...) {
+  names(object)
+}
+
+#' @export 
+lhs_vars.brmsformula <- function(object, ...) {
+  bterms <- brms::brmsterms(object)
+  lhs_vars(bterms)
+}
+
+#' @export
+lhs_vars.brmsterms <- function(object, resp = FALSE, ...) {
+  names(c(object$dpars, object$nlpars))
+}
+
+#' @export 
+lhs_vars.formula <- function(object, ...) {
+  if (length(object) == 3) {
+    return(as.character(object[[2]]))
+  }
+  character(0)
+}
+
 # adds an attribute nl to each component of the the formula indicating if the
 # any of the predictors of the component are also predicted in another component
 assign_nl_attr <- function(formula) {
+  UseMethod("assign_nl_attr")
+}
+
+#' @export
+assign_nl_attr.default <- function(formula) {
+  stop2("Don't know how to assign nl attributes to a {class(formula)[1]} object")
+}
+
+#' @export
+assign_nl_attr.bmmformula <- function(formula) {
   dpars <- names(formula)
   preds <- rhs_vars(formula, collapse = FALSE)
   for (dpar in dpars) {
