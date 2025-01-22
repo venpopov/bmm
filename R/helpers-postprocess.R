@@ -59,9 +59,8 @@ get_mu_pars <- function(object) {
     X <- get_model_matrix(dpars$mu$fe, object$data)
     return(colnames(X))
   }
-  return(NULL)
+  NULL
 }
-
 
 #' @title Generic S3 method for reverting any postprocessing of the fitted brm model
 #' @description Called by update.bmmfit() to automatically revert some of the postprocessing
