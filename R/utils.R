@@ -55,21 +55,17 @@ softmaxinv <- function(p, lambda = 1) {
 #' @return A list of options to pass to brm()
 configure_options <- function(opts, env = parent.frame()) {
   if (isTRUE(opts$parallel)) {
+    # for backward compatibility - we depricated the parallel argument
     cores <- parallel::detectCores()
-    chains <- opts$chains
-    if (is.null(opts$chains)) {
-      chains <- 4
-    }
+    chains <- opts$chains %||% 4
   } else {
     cores <- opts$cores %||% getOption("mc.cores", 1)
   }
   if (not_in_list("silent", opts)) {
     opts$silent <- getOption("bmm.silent", 1)
   }
-  if (is.null(opts$backend)) {
-    if (requireNamespace("cmdstanr", quietly = TRUE)) {
-      opts$backend <- "cmdstanr"
-    }
+  if (is.null(opts$backend) && requireNamespace("cmdstanr", quietly = TRUE)) {
+    opts$backend <- "cmdstanr"
   }
   withr::local_options(
     list(
@@ -182,13 +178,11 @@ warnif <- function(condition, message) {
   }
 }
 
-
 # function to ensure proper reading of stan files
 read_lines2 <- function(con) {
   lines <- readLines(con, n = -1L, warn = FALSE)
   paste(lines, collapse = "\n")
 }
-
 
 # for testing purposes
 install_and_load_bmm_version <- function(version, path) {
@@ -204,7 +198,6 @@ install_and_load_bmm_version <- function(version, path) {
   }
   library(bmm, lib.loc = path)
 }
-
 
 #' Extract information from a brmsfit object
 #' @param fit A brmsfit object, or a list of brmsfit objects
@@ -397,7 +390,6 @@ stop_missing_args <- function() {
 print.message <- function(x, ...) {
   cat(x, ...)
 }
-
 
 # returns either x, or all variables that match the regular expression x
 # @param x character vector or regular expression
@@ -594,7 +586,6 @@ tryCatch2 <- function(expr, capture = FALSE) {
   }
 }
 
-
 # resets the environments stored within an objects
 reset_env <- function(object, env = NULL, ...) {
   UseMethod("reset_env")
@@ -688,7 +679,6 @@ deprecated_args <- function(...) {
   )
 }
 
-
 try_read_bmmfit <- function(file, file_refit) {
   if (is.character(file_refit)) {
     stopif(
@@ -744,8 +734,8 @@ check_rds_file <- function(file) {
   file
 }
 
-`%||%` <- function(a, b) {
-  if (!is.null(a)) a else b
+`%||%` <- function(l, r) {
+  if (!is.null(l)) l else r
 }
 
 # like unlist, but keeps the final outcome a list of all
