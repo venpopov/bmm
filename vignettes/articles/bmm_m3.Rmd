@@ -173,10 +173,10 @@ Let's begin by loading the `bmm` package.
 library(bmm)
 ```
 
-For this example, we will be using the data from the first experiment from @oberauerSimpleMeasurementModels2019. This data set is part of the `bmm` package as `Oberauer_Lewandowsky_2019_E1`
+For this example, we will be using the data from the first experiment from @oberauerSimpleMeasurementModels2019. This data set is part of the `bmm` package as `oberauer_lewandowsky_2019_e1`
 
 ```{r}
-data <- OberauerLewandowsky_2019_E1
+data <- oberauer_lewandowsky_2019_e1
 head(data)
 ```
 
@@ -185,7 +185,7 @@ The data contains the following variables:
 -   `ID`: an integer uniquely identifying each participant in the experiment
 -   `cond`: a factor distinguishing three experimental conditions that varied the type of distractors
 -   `corr`, `other`, `dist`, and `npl`: The frequencies of responding with one item of the respective response categories
--   `nCorr`, `nOther`, `nDist`, and `nNPL`: The number of response candidates in each response categories for each experimental condition
+-   `n_corr`, `n_other`, `n_dist`, and `n_npl`: The number of response candidates in each response categories for each experimental condition
 
 This data set already contains all the information required to fit the M3 model. But if you have a data set that is in long format and contains which `response_category` the `response` in each trial belongs to, then you need to aggregate the data and sum the number of responses for each category in each of the experimental conditions that the model should be fitted to.
 
@@ -267,7 +267,7 @@ Thus, a basic set up of an `m3` object looks like this:
 
 ```{r}
 my_model <- m3(resp_cats = c("corr","other","dist","npl"),
-               num_options = c("nCorr","nOther","nDist","nNPL"),
+               num_options = c("n_corr","n_other","n_dist","n_npl"),
                choice_rule = "simple",
                version = "custom")
 ```
@@ -292,7 +292,7 @@ my_priors <- list(
 )
 
 my_model <- m3(resp_cats = c("corr","other","dist","npl"),
-               num_options = c("nCorr","nOther","nDist","nNPL"),
+               num_options = c("n_corr","n_other","n_dist","n_npl"),
                choice_rule = "simple",
                links = my_links,
                default_priors = my_priors)

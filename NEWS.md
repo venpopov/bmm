@@ -9,7 +9,7 @@
 ### New features
 * Updates to the `bmf2bf` S3 methods to more flexibly accommodate the translation of `bmmformulas` into `brmsformulas`
 * New functions **apply_links** will add link functions to all non-linear formulas in a **bmmformula** object.
-* A new example data set **Oberauer_Lewandowsky_2019_E1** was added to the package, so that users can explore applications of the newly implemented **m3** model with this data set.
+* A new example data set **oberauer_lewandowsky_2019_e1** was added to the package, so that users can explore applications of the newly implemented **m3** model with this data set.
 * the `file_refit` argument of the `bmm` function now accepts character string like `brms`. A warning is given when "on_change" is specified, as this is not currently implemented for `bmmodels`.
 
 ### Bug fixes

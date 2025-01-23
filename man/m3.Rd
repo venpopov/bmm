@@ -19,10 +19,9 @@ same order as the names of the response categories passed to \code{resp_cats}}
 \item{choice_rule}{The choice rule that should be used for the M3. The options are "softmax"
 or "simple". The "softmax" option implements the softmax normalization of activation into
 probabilities for choosing the different response categories. The "simple" option implements
-the normalization of the different activations over the sum of all activations without
-exponentiating them. For details on the differences of these choice rules please see
-the appendix of Oberauer & Lewandowsky (2019) "Simple measurement models for complex
-working memory tasks. Psychological Review"}
+a simple normalization of the absolute activations over the sum of all activations. For details
+on the differences of these choice rules please see the appendix of Oberauer & Lewandowsky (2019)
+"Simple measurement models for complex working memory tasks" published in Psychological Review.}
 
 \item{version}{Character. The version of the M3 model to use. Can be one of
 \code{ss}, \code{cs}, or \code{custom}. The default is \code{custom}.}

@@ -47,7 +47,7 @@
 #' Raw data of 40 subjects that completed a verbal memory recall task in three different
 #' conditions using different types of distractor words.
 #'
-#' @format ## `OberauerLewandowsky_2019_E1`
+#' @format ## `oberauer_lewandowsky_2019_e1`
 #' A data frame with 120 rows and 10 columns:
 #' \describe{
 #'   \item{ID}{Integer uniquely identifying each subject}
@@ -61,7 +61,7 @@
 #'   \item{dist}{The frequency a subject recalled one of the distractors}
 #'   \item{npl}{The frequency a subject recalled a not-presented lure (NPL), that is a word
 #'   that was not presented during a trial}
-#'   \item{nCorr, nOther, nDist, nNPL}{The number of candidataes in each of the response categories}
+#'   \item{n_corr, n_other, n_dist, n_npl}{The number of candidataes in each of the response categories}
 #' }
-#'
-"OberauerLewandowsky_2019_E1"
+#' @keywords dataset
+"oberauer_lewandowsky_2019_e1"
