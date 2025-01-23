@@ -70,7 +70,7 @@ default_prior.bmmformula <- function(object, data, model, formula = object, ...)
 #'   class="Intercept", dpar=parameter_name) for all fixed parameters in the
 #'   model
 #' @noRd
-fixed_pars_priors <- function(model, data, formula, additional_pars = list()) {
+fixed_pars_priors <- function(model, formula, additional_pars = list()) {
   fix_pars <- model$fixed_parameters
   if (length(fix_pars) == 0) {
     return(brms::empty_prior())
@@ -94,7 +94,6 @@ fixed_pars_priors <- function(model, data, formula, additional_pars = list()) {
   nlpars <- ifelse(pars %in% nlpars, pars, "")
   brms::set_prior(priors, class = classes, coef = coefs, dpar = dpars, nlpar = nlpars)
 }
-
 
 #' Set default priors for a bmmodel
 #'
@@ -289,7 +288,7 @@ configure_prior.default <- function(model, data, formula, user_prior, ...) {
 
 #' @export
 configure_prior.bmmodel <- function(model, data, formula, user_prior = NULL, ...) {
-  prior <- fixed_pars_priors(model, data, formula)
+  prior <- fixed_pars_priors(model, formula)
   default_prior <- set_default_prior(model, data, formula)
   prior <- combine_prior(default_prior, prior)
   prior <- combine_prior(prior, user_prior)
