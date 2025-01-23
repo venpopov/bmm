@@ -52,7 +52,6 @@ check_data.bmmodel <- function(model, data, formula) {
   NextMethod("check_data")
 }
 
-
 #' @export
 check_data.circular <- function(model, data, formula) {
   resp_name <- model$resp_vars[[1]]
@@ -107,7 +106,6 @@ check_data.non_targets <- function(model, data, formula) {
   NextMethod("check_data")
 }
 
-
 check_var_set_size <- function(set_size, data) {
   stopif(
     length(set_size) > 1,
@@ -157,7 +155,6 @@ check_var_set_size <- function(set_size, data) {
 ############################################################################# !
 # HELPER FUNCTIONS                                                       ####
 ############################################################################# !
-
 #' Calculate response error relative to non-target values
 #'
 #' @description Given a vector of responses, and the values of non-targets, this

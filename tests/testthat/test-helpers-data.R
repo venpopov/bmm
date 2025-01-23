@@ -4,81 +4,55 @@ test_that("check_data() produces expected errors and warnings", {
     "Data must be specified using the 'data' argument."
   )
   expect_error(
-    check_data(
-      .model_mixture2p(resp_error = "y"),
-      data.frame(),
-      bmmformula(kappa ~ 1)
-    ),
+    check_data(.model_mixture2p(resp_error = "y"), data.frame(), bmf(kappa ~ 1)),
     "Argument 'data' does not contain observations."
   )
   expect_error(
-    check_data(
-      .model_mixture2p(resp_error = "y"),
-      data.frame(x = 1),
-      bmmformula(kappa ~ 1)
-    ),
+    check_data(.model_mixture2p(resp_error = "y"), data.frame(x = 1), bmf(kappa ~ 1)),
     "The response variable 'y' is not present in the data."
   )
   expect_error(
-    check_data(
-      .model_mixture2p(resp_error = "y"),
-      y ~ 1
-    ),
+    check_data(.model_mixture2p(resp_error = "y"), y ~ 1),
     "Argument 'data' must be coercible to a data.frame."
   )
 
   mls <- lapply(c("mixture2p", "mixture3p", "imm"), get_model)
   for (ml in mls) {
+    model <- ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z")
     expect_warning(
-      check_data(
-        ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z"),
-        data.frame(y = 12, x = 1, z = 2),
-        bmmformula(kappa ~ 1)
-      ),
+      check_data(model, data.frame(y = 12, x = 1, z = 2), bmf(kappa ~ 1)),
       "It appears your response variable is in degrees.\n"
     )
-    expect_silent(check_data(
-      ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z"),
-      data.frame(y = 1, x = 1, z = 2), bmmformula(y ~ 1)
-    ))
+    model <- ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z")
+    expect_silent(check_data(model, data.frame(y = 1, x = 1, z = 2), bmf(y ~ 1)))
   }
 
   mls <- lapply(c("mixture3p", "imm"), get_model)
   for (ml in mls) {
+    model <- ml(resp_error = "y", nt_features = "x", set_size = 5, nt_distances = "z")
     expect_error(
-      check_data(
-        ml(resp_error = "y", nt_features = "x", set_size = 5, nt_distances = "z"),
-        data.frame(y = 1, x = 1, z = 2),
-        bmmformula(kappa ~ 1)
-      ),
+      check_data(model, data.frame(y = 1, x = 1, z = 2), bmf(kappa ~ 1)),
       "'nt_features' should equal max\\(set_size\\)-1"
     )
+
+    model <- ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z")
     expect_warning(
-      check_data(
-        ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z"),
-        data.frame(y = 1, x = 2 * pi + 1, z = 2),
-        bmmformula(kappa ~ 1)
-      ),
+      check_data(model, data.frame(y = 1, x = 2 * pi + 1, z = 2), bmf(kappa ~ 1)),
       "at least one of your non_target variables are in degrees"
     )
   }
 
   for (version in c("bsc", "full")) {
+    ml <- imm(
+      resp_error = "y", nt_features = paste0("x", 1:3), set_size = 4,
+      nt_distances = "z", version = version
+    )
     expect_error(
-      check_data(
-        imm(
-          resp_error = "y", nt_features = paste0("x", 1:4), set_size = 5,
-          nt_distances = "z", version = version
-        ),
-        data.frame(y = 1, x1 = 1, x2 = 2, x3 = 3, x4 = 4, z = 2),
-        bmmformula(kappa ~ 1)
-      ),
+      check_data(ml, data.frame(y = 1, x1 = 1, x2 = 2, x3 = 3, z = 2), bmf(kappa ~ 1)),
       "'nt_distances' should equal max\\(set_size\\)-1"
     )
   }
 })
-
-
 
 test_that("check_var_set_size accepts valid input", {
   # Simple numeric vector is valid
@@ -94,20 +68,17 @@ test_that("check_var_set_size accepts valid input", {
   expect_equal(check_var_set_size("y", dat)$max_set_size, 3)
   all(is.numeric(check_var_set_size("y", dat)$ss_numeric), na.rm = T)
 
-
   # Character vector representing numbers is valid
   dat <- data.frame(y = rep(c("1", "2", "3"), each = 3))
   expect_silent(check_var_set_size("y", dat))
   expect_equal(check_var_set_size("y", dat)$max_set_size, 3)
   all(is.numeric(check_var_set_size("y", dat)$ss_numeric), na.rm = T)
 
-
   # Numeric vector with NA values is valid (assuming NA is treated correctly)
   dat <- data.frame(y = rep(c(1, 5, NA), each = 3))
   expect_silent(check_var_set_size("y", dat))
   expect_equal(check_var_set_size("y", dat)$max_set_size, 5)
   all(is.numeric(check_var_set_size("y", dat)$ss_numeric), na.rm = T)
-
 
   # Factor with NA and numeric levels is valid
   dat <- data.frame(y = factor(rep(c(1, 5, NA), each = 3)))
@@ -171,23 +142,19 @@ test_that("check_var_set_size rejects invalid input", {
   )
 })
 
-
-
-
-
-
 test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call = FALSE), get_model)
   for (ml in mls) {
-    expect_s3_class(check_data(
-      ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z", resp_cats = c("w","l"), num_options = c(1,1)),
-      data.frame(y = 1, x = 1, z = 2, w = 1, s = 2, l = 1),
-      bmmformula(kappa ~ 1)
-    ), "data.frame")
+    model <- ml(
+      resp_error = "y", nt_features = "x", set_size = 2, 
+      nt_distances = "z", resp_cats = c("w", "l"), num_options = c(1, 1))
+    )
+    expect_s3_class(
+      check_data(model, data.frame(y = 1, x = 1, z = 2, w = 1, s = 2, l = 1), bmf(kappa ~ 1)),
+      "data.frame"
+    )
   }
 })
-
-
 
 test_that("wrap(x) returns the same for values between -pi and pi", {
   x <- runif(100, -pi, pi)
@@ -200,7 +167,6 @@ test_that("wrap(x) returns the correct value for values between (pi, 2*pi)", {
   expect_equal(wrap(x), -(pi - 1))
   expect_equal(wrap(rad2deg(x), radians = F), rad2deg(wrap(x)))
 })
-
 
 test_that("wrap(x) returns the correct value for values between (-2*pi, -pi)", {
   x <- -pi - 1
@@ -219,7 +185,6 @@ test_that("wrap(x) returns the correct value for values between (3*pi,4*pi)", {
   expect_equal(wrap(x), -(pi - 1))
   expect_equal(wrap(rad2deg(x), radians = F), rad2deg(wrap(x)))
 })
-
 
 test_that("deg2rad returns the correct values for 0, 180, 360", {
   x <- c(0, 90, 180)
@@ -245,8 +210,8 @@ test_that("standata() works with formula", {
   expect_equal(class(sd)[1], "standata")
 })
 
-test_that("standata() works with bmmformula", {
-  ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
+test_that("standata() works with bmf", {
+  ff <- bmf(kappa ~ 1, thetat ~ 1, thetant ~ 1)
   dat <- oberauer_lin_2017
   sd <- standata(ff, dat, mixture3p(
     resp_error = "dev_rad",
@@ -257,17 +222,8 @@ test_that("standata() works with bmmformula", {
 })
 
 test_that("standata() returns a standata class", {
-  ff <- bmmformula(
-    kappa ~ 1,
-    thetat ~ 1,
-    thetant ~ 1
-  )
-
-  dat <- data.frame(
-    y = rmixture3p(n = 3),
-    nt1_loc = 2,
-    nt2_loc = -1.5
-  )
+  ff <- bmf(kappa ~ 1, thetat ~ 1, thetant ~ 1)
+  dat <- data.frame(y = rmixture3p(n = 3), nt1_loc = 2, nt2_loc = -1.5)
 
   standata <- standata(ff, dat, mixture3p(
     resp_error = "y",
@@ -277,46 +233,20 @@ test_that("standata() returns a standata class", {
   expect_equal(class(standata)[1], "standata")
 })
 
-
 # first draft of tests was written by ChatGPT4
 test_that("has_nonconsecutive_duplicates works", {
-  # Test with a vector that has only consecutive duplicates
   expect_false(has_nonconsecutive_duplicates(c("a", "a", "b", "b", "c", "c")))
-
-  # Test with a vector that has non-consecutive duplicates
   expect_true(has_nonconsecutive_duplicates(c("a", "b", "a", "c", "c", "b")))
-
-  # Test with a single unique value repeated
   expect_false(has_nonconsecutive_duplicates(rep("a", 5)))
-
-  # Test with a vector of all unique values
   expect_false(has_nonconsecutive_duplicates(letters[1:5]))
-
-  # Test with a vector that has a mix of consecutive and non-consecutive duplicates
   expect_true(has_nonconsecutive_duplicates(c("a", "a", "b", "a", "b", "b")))
-
-  # Test with a numeric vector with mixed values
   expect_true(has_nonconsecutive_duplicates(c(1, 2, 3, 1, 4, 2)))
-
-  # Test with an empty vector
   expect_false(has_nonconsecutive_duplicates(numeric(0)))
-
-  # Test with a vector that has only one element
   expect_false(has_nonconsecutive_duplicates(c("a")))
-
-  # Test with a vector that has non-consecutive duplicates at the beginning and end
   expect_true(has_nonconsecutive_duplicates(c("a", "b", "b", "a")))
-
-  # Test with a vector that includes NA values
   expect_false(has_nonconsecutive_duplicates(c(NA, NA, NA)))
-
-  # Test with a vector that includes NA values among other values
   expect_false(has_nonconsecutive_duplicates(c(NA, 1, NA)))
-
-  # Test with a complex vector including numbers, NA, and characters
   expect_true(has_nonconsecutive_duplicates(c(1, "a", 2, "b", 1, NA, "a")))
-
-  # Test with a vector that changes type (numeric and character mixed)
   expect_true(has_nonconsecutive_duplicates(c("1", 2, "2", 1)))
 })
 
@@ -383,16 +313,10 @@ test_that("is_data_ordered works when there are non-linear predictors", {
     C = rep(1:3, times = 2)
   )
   # Test with a data frame that is ordered
-  formula1 <- bmf(
-    y ~ nlD,
-    nlD ~ B
-  )
+  formula1 <- bmf(y ~ nlD, nlD ~ B)
   expect_true(is_data_ordered(data, formula1))
 
   # Test with a data frame that is not ordered
-  formula2 <- bmf(
-    y ~ nlD,
-    nlD ~ C
-  )
+  formula2 <- bmf(y ~ nlD, nlD ~ C)
   expect_false(is_data_ordered(data, formula2))
 })
