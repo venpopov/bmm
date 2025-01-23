@@ -120,7 +120,7 @@ bmf <- function(...) {
     for (par2 in names(f2)) {
       if (par2 %in% names(f1)) {
         message2(
-          "The parameter is already part of the formula.
+          "The parameter {par2} is already part of the formula.
           Overwriting the initial formula."
         )
       }
@@ -304,7 +304,7 @@ has_intercept <- function(formula) {
   if (is.null(formula)) {
     return(FALSE)
   } else if (!is_formula(formula)) {
-    stop("The formula must be a formula object.")
+    stop2("The formula must be a formula object.")
   }
   as.logical(attr(stats::terms(formula), "intercept"))
 }

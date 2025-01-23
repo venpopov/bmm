@@ -2,7 +2,6 @@
 # CHECK_DATA METHODS                                                     ####
 ############################################################################# !
 
-
 #' @title Generic S3 method for checking data based on model type
 #' @description Called by [bmm()] to automatically perform checks on the
 #'   data depending on the model type. It will call the appropriate check_data
@@ -53,7 +52,6 @@ check_data.bmmodel <- function(model, data, formula) {
   NextMethod("check_data")
 }
 
-
 #' @export
 check_data.circular <- function(model, data, formula) {
   resp_name <- model$resp_vars[[1]]
@@ -70,7 +68,6 @@ check_data.circular <- function(model, data, formula) {
 
   NextMethod("check_data")
 }
-
 
 #' @export
 check_data.non_targets <- function(model, data, formula) {
@@ -108,7 +105,6 @@ check_data.non_targets <- function(model, data, formula) {
 
   NextMethod("check_data")
 }
-
 
 check_var_set_size <- function(set_size, data) {
   stopif(
@@ -156,11 +152,9 @@ check_var_set_size <- function(set_size, data) {
   list(max_set_size = max_set_size, ss_numeric = ss_numeric)
 }
 
-
 ############################################################################# !
 # HELPER FUNCTIONS                                                       ####
 ############################################################################# !
-
 #' Calculate response error relative to non-target values
 #'
 #' @description Given a vector of responses, and the values of non-targets, this
