@@ -294,16 +294,23 @@ add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
 }
 
 wrong_parameters <- function(model, formula) {
-  fpars <- names(formula)
-  mpars <- names(model$parameters)
-  rhs_vars <- rhs_vars(formula)
-  if ("m3" %in% class(model)) {
-    resp_vars <- model$resp_vars$resp_cats
-    wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars) & not_in(fpars, resp_vars)
-  } else {
-    wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
+  predicted_pars <- names(formula)
+  possible_pars <- c(names(model$parameters), rhs_vars(formula), get_resp_vars(model))
+  mismatched <- not_in(predicted_pars, possible_pars)
+  predicted_pars[mismatched]
+}
+
+get_resp_vars <- function(object, ...) {
+  UseMethod("get_resp_vars")
+}
+
+get_resp_vars.bmmodel <- function(object, ...) {
+  vars <- object$resp_vars
+  if (is.list(vars)) {
+    vars <- unlist(vars, use.names = FALSE)
   }
-  fpars[wpars]
+  stopif(!is.character(vars) && !is.na(vars), "`resp_vars` cannot be coerced to a character vector")
+  vars
 }
 
 has_intercept <- function(formula) {
