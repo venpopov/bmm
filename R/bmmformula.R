@@ -300,10 +300,12 @@ wrong_parameters <- function(model, formula) {
   predicted_pars[mismatched]
 }
 
+
 get_resp_vars <- function(object, ...) {
   UseMethod("get_resp_vars")
 }
 
+#' @export
 get_resp_vars.bmmodel <- function(object, ...) {
   vars <- object$resp_vars
   if (is.list(vars)) {
