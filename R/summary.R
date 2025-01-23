@@ -29,13 +29,13 @@
 #'
 #' # summary of the model
 #' summary(fit)
-summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE,  mc_se = FALSE, ..., backend = 'bmm') {
+summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, mc_se = FALSE, ..., backend = "bmm") {
   object <- restructure(object)
-  backend <- match.arg(backend, c('bmm', 'brms'))
+  backend <- match.arg(backend, c("bmm", "brms"))
 
   # get summary object from brms, since it contains a lot of necessary information:
-  out <- NextMethod('summary')
-  if (backend == 'brms') {
+  out <- NextMethod("summary")
+  if (backend == "brms") {
     return(out)
   }
 
@@ -50,103 +50,75 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
   out$data <- object$data
 
   # assign bmmsummary class to handle the printing
-  class(out) <- 'bmmsummary'
+  class(out) <- "bmmsummary"
   out
 }
 
 
 #' @export
-print.bmmsummary <- function(x, digits = 2, color = getOption('bmm.color_summary', TRUE), ...) {
+print.bmmsummary <- function(x, digits = 2, color = getOption("bmm.color_summary", TRUE), ...) {
   options(bmm.color_summary = color)
   pars_to_print <- select_pars(x)
   # add check if the parameter is fixed by the user
 
-  cat(style('purple1')("  Model: "))
+  cat(style("purple1")("  Model: "))
   cat(summarise_model(x$model, newline = TRUE, wsp = 9), "\n")
-  cat(style('purple1')("  Links: "))
+  cat(style("purple1")("  Links: "))
   cat(summarise_links(x$model$links), "\n")
-  cat(style('purple1')("Formula: "))
-  cat(summarise_formula.bmmformula(x$formula, newline = TRUE, wsp = 9, model = x$model),'\n')
-  cat(style('purple1')("   Data:"), attr(x$data, 'data_name'),
-      "(Number of observations:", paste0(nrow(x$data), ")"))
+  cat(style("purple1")("Formula: "))
+  cat(summarise_formula.bmmformula(x$formula, newline = TRUE, wsp = 9, model = x$model), "\n")
+  cat(
+    style("purple1")("   Data:"), attr(x$data, "data_name"),
+    "(Number of observations:", paste0(nrow(x$data), ")")
+  )
   cat("\n")
   total_ndraws <- ceiling((x$iter - x$warmup) / x$thin * x$chains)
   cat(paste0(
-    style('purple1')("  Draws: "), x$chains, " chains, each with iter = ", x$iter,
+    style("purple1")("  Draws: "), x$chains, " chains, each with iter = ", x$iter,
     "; warmup = ", x$warmup, "; thin = ", x$thin, ";\n",
     "         total post-warmup draws = ", total_ndraws, "\n\n"
   ))
 
-  # if (length(x$splines)) {
-  #   cat("Smoothing Spline Hyperparameters:\n")
-  #   print_format(x$splines, digits)
-  #   cat("\n")
-  # }
-  # if (length(x$gp)) {
-  #   cat("Gaussian Process Hyperparameters:\n")
-  #   print_format(x$gp, digits)
-  #   cat("\n")
-  # }
-  # if (nrow(x$cor_pars)) {
-  #   cat("Correlation Structures:\n")
-  #   # TODO: better printing for correlation structures?
-  #   print_format(x$cor_pars, digits)
-  #   cat("\n")
-  # }
   if (length(x$random)) {
-    cat(style('green')("Multilevel Hyperparameters:\n"))
+    cat(style("green")("Multilevel Hyperparameters:\n"))
     for (i in seq_along(x$random)) {
       g <- names(x$random)[i]
       cat(paste0("~", g, " (Number of levels: ", x$ngrps[[g]], ") \n"))
       re <- x$random[[g]]
-      re <- re[!is.na(re$Rhat),]
+      re <- re[!is.na(re$Rhat), ]
       print_format(re, digits)
       cat("\n")
     }
   }
   if (nrow(x$fixed)) {
-    cat(style('green')("Regression Coefficients:\n"))
-    include <- sapply(paste0(pars_to_print,'_'), function(p) grepl(p, rownames(x$fixed)))
+    cat(style("green")("Regression Coefficients:\n"))
+    include <- sapply(paste0(pars_to_print, "_"), function(p) grepl(p, rownames(x$fixed)))
     include <- apply(include, 1, any)
-    reduced <- x$fixed[include,]
+    reduced <- x$fixed[include, ]
     is_constant <- is.na(reduced$Rhat)
-    print_format(reduced[!is_constant,], digits)
+    print_format(reduced[!is_constant, ], digits)
     cat("\n")
 
     if (sum(is_constant)) {
-      cat(style('green')("Constant Parameters:\n"))
-      res <- reduced[is_constant,]
+      cat(style("green")("Constant Parameters:\n"))
+      res <- reduced[is_constant, ]
       constants <- rownames(res)
 
-      res <- data.frame("Value" = res[,1], row.names = paste0(constants, "    "))
+      res <- data.frame("Value" = res[, 1], row.names = paste0(constants, "    "))
       print_format(res, digits)
       cat("\n")
     }
   }
-  # if (length(x[["mo"]])) {
-  #   cat("Monotonic Simplex Parameters:\n")
-  #   print_format(x[["mo"]], digits)
-  #   cat("\n")
-  # }
-  # if (nrow(x$spec_pars)) {
-  #   cat("Further Distributional Parameters:\n")
-  #   print_format(x$spec_pars, digits)
-  #   cat("\n")
-  # }
-  # if (length(x$rescor_pars)) {
-  #   cat("Residual Correlations: \n")
-  #   print_format(x$rescor, digits)
-  #   cat("\n")
-  # }
+
   cat(paste0("Draws were sampled using ", x$sampler, ". "))
   if (x$algorithm == "sampling") {
-    cat(paste0(
-      "For each parameter, Bulk_ESS\n",
-      "and Tail_ESS are effective sample size measures, ",
-      "and Rhat is the potential\n",
-      "scale reduction factor on split chains ",
-      "(at convergence, Rhat = 1)."
-    ))
+    cat(
+      glue(
+        "For each parameter, Bulk_ESS
+        and Tail_ESS are effective sample size measures, and Rhat is the potential
+        scale reduction factor on split chains (at convergence, Rhat = 1)."
+      )
+    )
   }
   cat("\n")
   invisible(x)
@@ -172,7 +144,7 @@ summarise_links <- function(links) {
   paste(out, sep = "", collapse = "; ")
 }
 
-summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp=0, model = NULL) {
+summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp = 0, model = NULL) {
   fixpars <- NULL
   if (!is.null(model)) {
     formula <- suppressMessages(add_missing_parameters(model, formula, replace_fixed = FALSE))
@@ -185,9 +157,9 @@ summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp=0, model =
 
 
 #' @export
-print.bmmformula <- function(x, newline = TRUE, wsp=0, ...) {
-  wspace <- collapse(rep(' ', wsp))
-  sep <- paste0(ifelse(newline, '\n', ','), wspace)
+print.bmmformula <- function(x, newline = TRUE, wsp = 0, ...) {
+  wspace <- collapse(rep(" ", wsp))
+  sep <- paste0(ifelse(newline, "\n", ","), wspace)
   for (i in 1:length(x)) {
     if (is.numeric(x[[i]])) {
       x[[i]] <- paste0(names(x)[i], " = ", x[[i]])
@@ -198,7 +170,7 @@ print.bmmformula <- function(x, newline = TRUE, wsp=0, ...) {
 
 
 summarise_model <- function(model, ...) {
-  UseMethod('summarise_model')
+  UseMethod("summarise_model")
 }
 
 # TODO: build this up
@@ -207,12 +179,11 @@ summarise_model.bmmodel <- function(model, ...) {
   construct_model_call(model, ...)
 }
 
-# TODO: add nice coloring with crayon; add option to disable coloring
 # creates a string representation of the call to the model with the user variables
 # will likely also depend on the theme users have
 construct_model_call <- function(model, newline = FALSE, wsp = 1, ...) {
   call <- attr(model, "call")
-  if(is.null(call)) {
+  if (is.null(call)) {
     classes <- class(model)
     model_name <- classes[length(classes)]
 
@@ -228,16 +199,16 @@ construct_model_call <- function(model, newline = FALSE, wsp = 1, ...) {
   }
 
   # create necessary padding
-  wspace <- collapse(rep(' ', wsp + nchar(model_name) + 1))
-  sep <- paste0(ifelse(newline, ',\n', ','), wspace)
+  wspace <- collapse(rep(" ", wsp + nchar(model_name) + 1))
+  sep <- paste0(ifelse(newline, ",\n", ","), wspace)
 
   args <- sapply(vnames, function(var) {
-    paste0(var, " = ", paste0(deparse(allvars[[var]]), collapse = ', '))
+    paste0(var, " = ", paste0(deparse(allvars[[var]]), collapse = ", "))
   })
 
   # combine with the padding and the function name
   args <- paste0(args, collapse = sep)
-  paste0(style('coral2')(model_name), "(", args, ")")
+  paste0(style("coral2")(model_name), "(", args, ")")
 }
 
 # helper function to print summary matrices in nice format
@@ -266,11 +237,9 @@ print_format <- function(x, digits = 2, no_digits = c("Bulk_ESS", "Tail_ESS")) {
 }
 
 style <- function(...) {
-  if (getOption('bmm.color_summary', TRUE)) {
+  if (getOption("bmm.color_summary", TRUE)) {
     crayon::make_style(...)
   } else {
     function(x) x
   }
 }
-
-

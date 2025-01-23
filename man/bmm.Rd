@@ -132,11 +132,13 @@ dat <- data.frame(y = rsdm(2000))
 ff <- bmmformula(c ~ 1, kappa ~ 1)
 
 # fit the model
-fit <- bmm(formula = ff,
-           data = dat,
-           model = sdm(resp_error = "y"),
-           cores = 4,
-           backend = 'cmdstanr')
+fit <- bmm(
+  formula = ff,
+  data = dat,
+  model = sdm(resp_error = "y"),
+  cores = 4,
+  backend = "cmdstanr"
+)
 \dontshow{\}) # examplesIf}
 }
 \references{

@@ -93,27 +93,35 @@
 #' ff <- bmmformula(c ~ 1, kappa ~ 1)
 #'
 #' # fit the model
-#' fit <- bmm(formula = ff,
-#'            data = dat,
-#'            model = sdm(resp_error = "y"),
-#'            cores = 4,
-#'            backend = 'cmdstanr')
+#' fit <- bmm(
+#'   formula = ff,
+#'   data = dat,
+#'   model = sdm(resp_error = "y"),
+#'   cores = 4,
+#'   backend = "cmdstanr"
+#' )
 bmm <- function(formula, data, model,
                 prior = NULL,
-                sort_data = getOption('bmm.sort_data', "check"),
-                silent = getOption('bmm.silent', 1),
-                backend = getOption('brms.backend', NULL),
+                sort_data = getOption("bmm.sort_data", "check"),
+                silent = getOption("bmm.silent", 1),
+                backend = getOption("brms.backend", NULL),
                 file = NULL, file_compress = TRUE,
-                file_refit = getOption('bmm.file_refit', FALSE), ...) {
+                file_refit = getOption("bmm.file_refit", FALSE), ...) {
   deprecated_args(...)
   dots <- list(...)
 
+  # check if the model has been previously fit and return it if requested
   x <- read_bmmfit(file, file_refit)
-  if (!is.null(x)) return(x)
+  if (!is.null(x)) {
+    return(x)
+  }
 
   # set temporary global options and return modified arguments for brms
-  configure_opts <- nlist(sort_data, silent, backend, parallel = dots$parallel,
-                          cores = dots$cores)
+  configure_opts <- nlist(
+    sort_data, silent, backend,
+    parallel = dots$parallel,
+    cores = dots$cores
+  )
   opts <- configure_options(configure_opts)
   dots$parallel <- NULL
 
@@ -134,8 +142,12 @@ bmm <- function(formula, data, model,
   fit <- call_brm(fit_args)
 
   # model post-processing
-  fit <- postprocess_brm(model, fit, fit_args = fit_args, user_formula = user_formula,
-                         configure_opts = configure_opts)
+  fit <- postprocess_brm(
+    model, fit,
+    fit_args = fit_args,
+    user_formula = user_formula,
+    configure_opts = configure_opts
+  )
 
   # save the fitted model object if !is.null
   save_bmmfit(fit, file, compress = file_compress)
@@ -147,11 +159,13 @@ bmm <- function(formula, data, model,
 #' @export
 fit_model <- function(formula, data, model,
                       prior = NULL,
-                      sort_data = getOption('bmm.sort_data', "check"),
-                      silent = getOption('bmm.silent', 1),
-                      backend = getOption('brms.backend', NULL),
+                      sort_data = getOption("bmm.sort_data", "check"),
+                      silent = getOption("bmm.silent", 1),
+                      backend = getOption("brms.backend", NULL),
                       ...) {
   message("You are using the deprecated `fit_model()` function. Please use `bmm()` instead.")
-  bmm(formula = formula, data = data, model = model, prior = prior,
-      sort_data = sort_data, silent = silent, backend = backend, ...)
+  bmm(
+    formula = formula, data = data, model = model, prior = prior,
+    sort_data = sort_data, silent = silent, backend = backend, ...
+  )
 }

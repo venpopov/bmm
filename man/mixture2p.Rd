@@ -70,7 +70,7 @@ Two-parameter mixture model by Zhang and Luck (2008).
 \examples{
 \dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # generate artificial data
-dat <- data.frame(y = rmixture2p(n=2000))
+dat <- data.frame(y = rmixture2p(n = 2000))
 
 # define formula
 ff <- bmmformula(kappa ~ 1, thetat ~ 1)
@@ -78,12 +78,14 @@ ff <- bmmformula(kappa ~ 1, thetat ~ 1)
 model <- mixture2p(resp_error = "y")
 
 # fit the model
-fit <- bmm(formula = ff,
-           data = dat,
-           model = model,
-           cores = 4,
-           iter = 500,
-           backend = 'cmdstanr')
+fit <- bmm(
+  formula = ff,
+  data = dat,
+  model = model,
+  cores = 4,
+  iter = 500,
+  backend = "cmdstanr"
+)
 \dontshow{\}) # examplesIf}
 }
 \keyword{bmmodel}

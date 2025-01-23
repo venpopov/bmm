@@ -111,19 +111,19 @@ bmf <- function(...) {
   if (is_formula(f2)) {
     par2 <- all.vars(f2)[1]
     if (par2 %in% names(f1)) {
-      message2(paste(
-        "The parameter", par2, "is already part of the formula.",
-        "Overwriting the initial formula."
-      ))
+      message2(
+        "The parameter {par2} is already part of the formula.
+        Overwriting the initial formula."
+      )
     }
     f1[[par2]] <- f2
   } else if (is_bmmformula(f2)) {
     for (par2 in names(f2)) {
       if (par2 %in% names(f1)) {
-        message2(paste(
-          "The parameter", par2, "is already part of the formula.",
-          "Overwriting the initial formula."
-        ))
+        message2(
+          "The parameter {par2} is already part of the formula.
+          Overwriting the initial formula."
+        )
       }
       f1[[par2]] <- f2[[par2]]
     }
@@ -182,13 +182,13 @@ check_formula.bmmodel <- function(model, data, formula) {
   stopif(
     is_brmsformula(formula),
     "The provided formula is a brms formula. Please use the bmf() function. E.g.:
-         bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)"
+    bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)"
   )
 
   stopif(
     !is_bmmformula(formula),
     "The provided formula is not a bmm formula. Please use the bmf() function. E.g.:
-         bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)"
+    bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)"
   )
 
   wpar <- wrong_parameters(model, formula)
@@ -213,9 +213,9 @@ check_formula.non_targets <- function(model, data, formula) {
   stopif(
     any(intercepts),
     "The formula for parameter(s) {names(ss_forms)[intercepts]} contains \\
-         an intercept and also uses set_size as a predictor. This model requires \\
-         that the intercept is supressed when set_size is used as predictor. \\
-         Try using 0 + {set_size_var} instead."
+    an intercept and also uses set_size as a predictor. This model requires \\
+    that the intercept is supressed when set_size is used as predictor. \\
+    Try using 0 + {set_size_var} instead."
   )
   NextMethod("check_formula")
 }
@@ -285,8 +285,7 @@ add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
     if (is_fixed[mpar]) {
       attr(add, "constant") <- TRUE
     } else {
-      message2("No formula for parameter {mpar} provided. Only a fixed \\
-                intercept will be estimated.")
+      message2("No formula for parameter {mpar} provided. Only a fixed intercept will be estimated.")
     }
     formula[mpar] <- list(add)
   }

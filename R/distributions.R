@@ -57,50 +57,60 @@
 #'
 #' @examples
 #' # plot the density of the SDM distribution
-#' x <- seq(-pi,pi,length.out=10000)
-#' plot(x,dsdm(x,0,2,3),type="l", xlim=c(-pi,pi),ylim=c(0,1),
-#'      xlab="Angle error (radians)",
-#'      ylab="density",
-#'      main="SDM density")
-#' lines(x,dsdm(x,0,9,1),col="red")
-#' lines(x,dsdm(x,0,2,8),col="green")
-#' legend("topright",c("c=2, kappa=3.0, mu=0",
-#'                     "c=9, kappa=1.0, mu=0",
-#'                     "c=2, kappa=8, mu=1"),
-#'        col=c("black","red","green"),lty=1, cex=0.8)
+#' x <- seq(-pi, pi, length.out = 10000)
+#' plot(x, dsdm(x, 0, 2, 3),
+#'   type = "l", xlim = c(-pi, pi), ylim = c(0, 1),
+#'   xlab = "Angle error (radians)",
+#'   ylab = "density",
+#'   main = "SDM density"
+#' )
+#' lines(x, dsdm(x, 0, 9, 1), col = "red")
+#' lines(x, dsdm(x, 0, 2, 8), col = "green")
+#' legend("topright", c(
+#'   "c=2, kappa=3.0, mu=0",
+#'   "c=9, kappa=1.0, mu=0",
+#'   "c=2, kappa=8, mu=1"
+#' ),
+#' col = c("black", "red", "green"), lty = 1, cex = 0.8
+#' )
 #'
 #' # plot the cumulative distribution function of the SDM distribution
 #' p <- psdm(x, mu = 0, c = 3.1, kappa = 5)
-#' plot(x,p,type="l")
+#' plot(x, p, type = "l")
 #'
 #' # generate random deviates from the SDM distribution and overlay the density
 #' r <- rsdm(10000, mu = 0, c = 3.1, kappa = 5)
 #' d <- dsdm(x, mu = 0, c = 3.1, kappa = 5)
-#' hist(r, breaks=60, freq=FALSE)
-#' lines(x,d,type="l", col="red")
+#' hist(r, breaks = 60, freq = FALSE)
+#' lines(x, d, type = "l", col = "red")
 dsdm <- function(x, mu = 0, c = 3, kappa = 3.5, log = FALSE,
                  parametrization = "sqrtexp") {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(c < 0)), "c must be non-negative")
 
   .dsdm_numer <- switch(parametrization,
-                        "bessel" = .dsdm_numer_bessel,
-                        "sqrtexp" = .dsdm_numer_sqrtexp)
+    bessel = .dsdm_numer_bessel,
+    sqrtexp = .dsdm_numer_sqrtexp
+  )
 
   lnumerator <- .dsdm_numer(x, mu, c, kappa, log = TRUE)
 
   if (any(length(mu) > 1, length(c) > 1, length(kappa) > 1)) {
-    denom <- .dsdm_integrate_numer_v(.dsdm_numer, mu, c, kappa, lower = mu,
-                                     upper = mu + pi)
+    denom <- .dsdm_integrate_numer_v(.dsdm_numer, mu, c, kappa,
+      lower = mu,
+      upper = mu + pi
+    )
   } else {
-    denom <- .dsdm_integrate_numer(.dsdm_numer, mu, c, kappa, lower = mu,
-                                   upper = mu + pi)
+    denom <- .dsdm_integrate_numer(.dsdm_numer, mu, c, kappa,
+      lower = mu,
+      upper = mu + pi
+    )
   }
 
-  denom <- 2*denom
+  denom <- 2 * denom
 
   if (!log) {
-    return(exp(lnumerator)/denom)
+    return(exp(lnumerator) / denom)
   }
   lnumerator - log(denom)
 }
@@ -120,18 +130,24 @@ psdm <- function(q, mu = 0, c = 3, kappa = 3.5, lower.tail = TRUE, log.p = FALSE
   lower.bound <- (lower.bound + pi) %% pi2
 
   .dsdm_integrate <- function(mu, c, kappa, lower, upper, parametrization) {
-    stats::integrate(dsdm, lower = lower, upper = upper, mu, c, kappa,
-                     parametrization = parametrization)$value
+    stats::integrate(dsdm,
+      lower = lower, upper = upper, mu, c, kappa,
+      parametrization = parametrization
+    )$value
   }
 
   .dsdm_integrate_v <- Vectorize(.dsdm_integrate)
 
   if (any(length(q) > 1, length(mu) > 1, length(c) > 1, length(kappa) > 1)) {
-    out <- .dsdm_integrate_v(mu, c, kappa, lower = lower.bound, upper = q,
-                             parametrization = parametrization)
+    out <- .dsdm_integrate_v(mu, c, kappa,
+      lower = lower.bound, upper = q,
+      parametrization = parametrization
+    )
   } else {
-    out <-  .dsdm_integrate(mu, c, kappa, lower = lower.bound, upper = q,
-                            parametrization = parametrization)
+    out <- .dsdm_integrate(mu, c, kappa,
+      lower = lower.bound, upper = q,
+      parametrization = parametrization
+    )
   }
 
   if (!lower.tail) {
@@ -145,7 +161,7 @@ psdm <- function(q, mu = 0, c = 3, kappa = 3.5, lower.tail = TRUE, log.p = FALSE
 
 #' @rdname SDMdist
 #' @export
-qsdm <- function(p, mu=0, c=3, kappa=3.5, parametrization = "sqrtexp") {
+qsdm <- function(p, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
   .NotYetImplemented()
 }
 
@@ -156,12 +172,12 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
   stopif(isTRUE(any(c < 0)), "c must be non-negative")
   stopif(length(n) > 1, "n must be a single integer")
 
-  maxy <- dsdm(0, 0, c, kappa)
+  max_y <- dsdm(0, 0, c, kappa)
   xa <- c()
 
   .rsdm_inner <- function(n, mu, c, kappa, parametrization, xa) {
     x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, 1) * maxy
+    y <- stats::runif(n, 0, 1) * max_y
     accept <- y < dsdm(x, mu, c, kappa, parametrization = parametrization)
     xa <- c(xa, x[accept])
 
@@ -206,7 +222,8 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 }
 
 .dsdm_integrate_numer_v <- Vectorize(.dsdm_integrate_numer,
-                                     vectorize.args = c("mu", "c", "kappa", 'lower','upper'))
+  vectorize.args = c("mu", "c", "kappa", "lower", "upper")
+)
 
 
 
@@ -244,20 +261,20 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 #' @examples
 #' # generate random samples from the mixture2p model and overlay the density
 #' r <- rmixture2p(10000, mu = 0, kappa = 4, p_mem = 0.8)
-#' x <- seq(-pi,pi,length.out=10000)
+#' x <- seq(-pi, pi, length.out = 10000)
 #' d <- dmixture2p(x, mu = 0, kappa = 4, p_mem = 0.8)
-#' hist(r, breaks=60, freq=FALSE)
-#' lines(x,d,type="l", col="red")
+#' hist(r, breaks = 60, freq = FALSE)
+#' lines(x, d, type = "l", col = "red")
 #'
-dmixture2p <- function(x, mu=0, kappa=5, p_mem = 0.6, log = FALSE) {
+dmixture2p <- function(x, mu = 0, kappa = 5, p_mem = 0.6, log = FALSE) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(p_mem < 0)), "p_mem must be larger than zero.")
   stopif(isTRUE(any(p_mem > 1)), "p_mem must be smaller than one.")
 
   density <- matrix(data = NaN, nrow = length(x), ncol = 2)
 
-  density[,1] <- log(p_mem) + brms::dvon_mises(x = x,mu = mu , kappa = kappa, log = T)
-  density[,2] <- log(1 - p_mem) + brms::dvon_mises(x = x,mu = 0 , kappa = 0, log = T)
+  density[, 1] <- log(p_mem) + brms::dvon_mises(x = x, mu = mu, kappa = kappa, log = T)
+  density[, 2] <- log(1 - p_mem) + brms::dvon_mises(x = x, mu = 0, kappa = 0, log = T)
 
   density <- matrixStats::rowLogSumExps(density)
 
@@ -270,29 +287,29 @@ dmixture2p <- function(x, mu=0, kappa=5, p_mem = 0.6, log = FALSE) {
 
 #' @rdname mixture2p_dist
 #' @export
-pmixture2p <- function(q, mu=0, kappa=7, p_mem = 0.8) {
+pmixture2p <- function(q, mu = 0, kappa = 7, p_mem = 0.8) {
   .NotYetImplemented()
 }
 
 #' @rdname mixture2p_dist
 #' @export
-qmixture2p <- function(p, mu=0, kappa=5, p_mem = 0.6) {
+qmixture2p <- function(p, mu = 0, kappa = 5, p_mem = 0.6) {
   .NotYetImplemented()
 }
 
 #' @rdname mixture2p_dist
 #' @export
-rmixture2p <- function(n, mu=0, kappa=5, p_mem = 0.6) {
+rmixture2p <- function(n, mu = 0, kappa = 5, p_mem = 0.6) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(p_mem < 0)), "p_mem must be larger than zero.")
   stopif(isTRUE(any(p_mem > 1)), "p_mem must be smaller than one.")
 
-  maxy <- dmixture2p(0, 0, kappa, p_mem)
+  max_y <- dmixture2p(0, 0, kappa, p_mem)
   xa <- c()
 
   .rmixture2p_inner <- function(n, mu, c, kappa, p_mem, xa) {
     x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, 1) * maxy
+    y <- stats::runif(n, 0, 1) * max_y
     accept <- y < dmixture2p(x, mu, kappa, p_mem)
     xa <- c(xa, x[accept])
 
@@ -345,29 +362,31 @@ rmixture2p <- function(n, mu=0, kappa=5, p_mem = 0.6) {
 #' @examples
 #' # generate random samples from the mixture3p model and overlay the density
 #' r <- rmixture3p(10000, mu = c(0, 2, -1.5), kappa = 4, p_mem = 0.6, p_nt = 0.2)
-#' x <- seq(-pi,pi,length.out=10000)
+#' x <- seq(-pi, pi, length.out = 10000)
 #' d <- dmixture3p(x, mu = c(0, 2, -1.5), kappa = 4, p_mem = 0.6, p_nt = 0.2)
-#' hist(r, breaks=60, freq=FALSE)
-#' lines(x,d,type="l", col="red")
+#' hist(r, breaks = 60, freq = FALSE)
+#' lines(x, d, type = "l", col = "red")
 #'
-dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2, log = FALSE) {
+dmixture3p <- function(x, mu = c(0, 2, -1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2, log = FALSE) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(p_mem < 0)), "p_mem must be larger than zero.")
   stopif(isTRUE(any(p_nt < 0)), "p_nt must be larger than zero.")
   stopif(isTRUE(any(p_mem + p_nt > 1)), "The sum of p_mem and p_nt must be smaller than one.")
 
   density <- matrix(data = NaN, nrow = length(x), ncol = length(mu) + 1)
-  probs <- c(p_mem,
-             rep(p_nt/(length(mu) - 1), each = length(mu) - 1),
-             (1 - p_mem - p_nt))
+  probs <- c(
+    p_mem,
+    rep(p_nt / (length(mu) - 1), each = length(mu) - 1),
+    (1 - p_mem - p_nt)
+  )
 
   for (i in 1:(length(mu))) {
-    density[,i] <- log(probs[i]) +
+    density[, i] <- log(probs[i]) +
       brms::dvon_mises(x = x, mu = mu[i], kappa = kappa, log = T)
   }
 
-  density[,length(mu) + 1] <- log(probs[length(mu) + 1]) +
-    stats::dunif(x = x,-pi, pi, log = T)
+  density[, length(mu) + 1] <- log(probs[length(mu) + 1]) +
+    stats::dunif(x = x, -pi, pi, log = T)
 
   density <- matrixStats::rowLogSumExps(density)
 
@@ -380,31 +399,31 @@ dmixture3p <- function(x, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2, lo
 
 #' @rdname mixture3p_dist
 #' @export
-pmixture3p <- function(q, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
+pmixture3p <- function(q, mu = c(0, 2, -1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
   .NotYetImplemented()
 }
 
 #' @rdname mixture3p_dist
 #' @export
-qmixture3p <- function(p, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
+qmixture3p <- function(p, mu = c(0, 2, -1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
   .NotYetImplemented()
 }
 
 #' @rdname mixture3p_dist
 #' @export
-rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
+rmixture3p <- function(n, mu = c(0, 2, -1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(p_mem < 0)), "p_mem must be larger than zero.")
   stopif(isTRUE(any(p_nt < 0)), "p_nt must be larger than zero.")
   stopif(isTRUE(any(p_mem + p_nt > 1)), "The sum of p_mem and p_nt must be smaller than one.")
 
-  x <- seq(-pi,pi,length.out = 361)
-  maxy <- max(dmixture3p(x, mu, kappa, p_mem, p_nt))
+  x <- seq(-pi, pi, length.out = 361)
+  max_y <- max(dmixture3p(x, mu, kappa, p_mem, p_nt))
   xa <- c()
 
   .rmixture3p_inner <- function(n, mu, c, kappa, p_mem, p_nt, xa) {
     x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, 1) * maxy
+    y <- stats::runif(n, 0, 1) * max_y
     accept <- y < dmixture3p(x, mu, kappa, p_mem, p_nt)
     xa <- c(xa, x[accept])
 
@@ -457,40 +476,46 @@ rmixture3p <- function(n, mu=c(0,2,-1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2) {
 #'
 #' @examples
 #' # generate random samples from the imm and overlay the density
-#' r <- rimm(10000, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
-#'           c = 5, a = 2, s = 2, b = 1, kappa = 4)
-#' x <- seq(-pi,pi,length.out=10000)
-#' d <- dimm(x, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
-#'           c = 5, a = 2, s = 2, b = 1, kappa = 4)
-#' hist(r, breaks=60, freq=FALSE)
-#' lines(x,d,type="l", col="red")
+#' r <- rimm(10000,
+#'   mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+#'   c = 5, a = 2, s = 2, b = 1, kappa = 4
+#' )
+#' x <- seq(-pi, pi, length.out = 10000)
+#' d <- dimm(x,
+#'   mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+#'   c = 5, a = 2, s = 2, b = 1, kappa = 4
+#' )
+#' hist(r, breaks = 60, freq = FALSE)
+#' lines(x, d, type = "l", col = "red")
 #'
-dimm <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
-                 c=5, a = 2, b = 1, s = 2, kappa=5, log = FALSE) {
+dimm <- function(x, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+                 c = 5, a = 2, b = 1, s = 2, kappa = 5, log = FALSE) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(length(mu) != length(dist),
-         "The number of items does not match the distances provided from the cued location.")
+  len_mu <- length(mu)
+  stopif(
+    len_mu != length(dist),
+    "The number of items does not match the distances provided from the cued location."
+  )
   stopif(isTRUE(any(s < 0)), "s must be non-negative")
   stopif(isTRUE(any(dist < 0)), "all distances have to be positive.")
 
   # compute activation for all items
-  weights <- rep(c, length(mu)) * exp(-s*dist) + rep(a, length(mu))
+  weights <- rep(c, len_mu) * exp(-s * dist) + rep(a, len_mu)
 
   # add activation of background noise
-  weights <- c(weights,b)
+  weights <- c(weights, b)
 
   # compute probability for responding stemming from each distribution
-  probs <- weights/sum(weights)
+  probs <- weights / sum(weights)
+  density <- matrix(data = NaN, nrow = length(x), ncol = len_mu + 1)
 
-  density <- matrix(data = NaN, nrow = length(x), ncol = length(mu) + 1)
-
-  for (i in 1:(length(mu))) {
-    density[,i] <- log(probs[i]) +
-      brms::dvon_mises(x = x, mu = mu[i], kappa = kappa, log = T)
+  for (i in seq_along(mu)) {
+    density[, i] <- log(probs[i]) +
+      brms::dvon_mises(x, mu = mu[i], kappa = kappa, log = T)
   }
 
-  density[,length(mu) + 1] <- log(probs[length(mu) + 1]) +
-    stats::dunif(x = x,-pi, pi, log = T)
+  density[, len_mu + 1] <- log(probs[len_mu + 1]) +
+    stats::dunif(x = x, -pi, pi, log = T)
 
   density <- matrixStats::rowLogSumExps(density)
 
@@ -503,35 +528,37 @@ dimm <- function(x, mu=c(0,2,-1.5), dist = c(0,0.5,2),
 
 #' @rdname IMMdist
 #' @export
-pimm <- function(q, mu=c(0,2,-1.5), dist = c(0,0.5,2),
-                 c=1, a = 0.2, b = 0, s = 2, kappa=5) {
+pimm <- function(q, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+                 c = 1, a = 0.2, b = 0, s = 2, kappa = 5) {
   .NotYetImplemented()
 }
 
 #' @rdname IMMdist
 #' @export
-qimm <- function(p, mu=c(0,2,-1.5), dist = c(0,0.5,2),
-                 c=1, a = 0.2, b = 0, s = 2, kappa=5) {
+qimm <- function(p, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+                 c = 1, a = 0.2, b = 0, s = 2, kappa = 5) {
   .NotYetImplemented()
 }
 
 #' @rdname IMMdist
 #' @export
-rimm <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
-                 c=1, a = 0.2, b = 1, s = 2, kappa=5) {
+rimm <- function(n, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
+                 c = 1, a = 0.2, b = 1, s = 2, kappa = 5) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(length(mu) != length(dist),
-         "The number of items does not match the distances provided from the cued location.")
   stopif(isTRUE(any(s < 0)), "s must be non-negative")
   stopif(isTRUE(any(dist < 0)), "all distances have to be positive.")
+  stopif(
+    length(mu) != length(dist),
+    "The number of items does not match the distances provided from the cued location."
+  )
 
-  x <-  seq(-pi,pi,length.out = 361)
-  maxy <- max(dimm(x, mu, dist, c, a, b, s, kappa))
+  x <- seq(-pi, pi, length.out = 361)
+  max_y <- max(dimm(x, mu, dist, c, a, b, s, kappa))
   xa <- c()
 
   .rimm_inner <- function(n, mu, dist, c, a, b, s, kappa, xa) {
     x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, 1) * maxy
+    y <- stats::runif(n, 0, 1) * max_y
     accept <- y < dimm(x, mu, dist, c, a, b, s, kappa)
     xa <- c(xa, x[accept])
 
@@ -542,7 +569,7 @@ rimm <- function(n, mu=c(0,2,-1.5), dist = c(0,0.5,2),
     xa[1:n]
   }
 
-  .rimm_inner(n, mu, dist, c ,a ,b ,s ,kappa , xa)
+  .rimm_inner(n, mu, dist, c, a, b, s, kappa, xa)
 }
 
 #' @title Distribution functions for the Memory Measurement Model (M3)

@@ -110,17 +110,17 @@ check_model.default <- function(model, data = NULL, formula = NULL) {
     stopif(
       fun_name %in% bmm_models,
       "Did you forget to provide the required arguments to the model function?
-            See ?{fun_name} for details on properly specifying the model argument"
+      See ?{fun_name} for details on properly specifying the model argument"
     )
   }
 
   stopif(
     !is_supported_bmmodel(model),
     "You provided an object of class `{class(model)}` to the model argument.
-          The model argument should be a `bmmodel` function.
-          You can see the list of supported models by running `supported_models()`
+    The model argument should be a `bmmodel` function.
+    You can see the list of supported models by running `supported_models()`
 
-          {supported_models()}"
+    {supported_models()}"
   )
   model
 }
@@ -222,7 +222,7 @@ supported_models <- function(print_call = TRUE) {
     args <- gsub("'", "", args)
     out <- paste0(out, "- `", model, "(", args, ")`", "\n", sep = "")
   }
-  out <- paste0(out, "\nType `?modelname` to get information about a specific model, e.g. `?imm`\n")
+  out <- glue("{out}\nType `?modelname` to get information about a specific model, e.g. `?imm`\n")
   out <- gsub("`", " ", out)
   class(out) <- "message"
   out

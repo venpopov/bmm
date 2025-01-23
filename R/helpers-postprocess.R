@@ -31,7 +31,8 @@ postprocess_brm.bmmodel <- function(model, fit, ...) {
   dots <- list(...)
   class(fit) <- c("bmmfit", "brmsfit")
   fit$version$bmm <- utils::packageVersion("bmm")
-  fit$bmm <- nlist(model,
+  fit$bmm <- nlist(
+    model,
     user_formula = dots$user_formula,
     configure_opts = dots$configure_opts
   )

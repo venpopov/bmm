@@ -80,15 +80,19 @@ and how to use it. * \strong{Domain:} Visual working memory
 dat <- data.frame(y = rsdm(n = 1000, c = 4, kappa = 3))
 
 # specify formula
-ff <- bmf(c ~ 1,
-          kappa ~ 1)
+ff <- bmf(
+  c ~ 1,
+  kappa ~ 1
+)
 
 # specify the model
-fit <- bmm(formula = ff,
-           data = dat,
-           model = sdm(resp_error = 'y'),
-           cores = 4,
-           backend = 'cmdstanr')
+fit <- bmm(
+  formula = ff,
+  data = dat,
+  model = sdm(resp_error = "y"),
+  cores = 4,
+  backend = "cmdstanr"
+)
 \dontshow{\}) # examplesIf}
 }
 \keyword{bmmodel}
