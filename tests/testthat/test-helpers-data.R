@@ -147,7 +147,7 @@ test_that("check_data() returns a data.frame()", {
   for (ml in mls) {
     model <- ml(
       resp_error = "y", nt_features = "x", set_size = 2, 
-      nt_distances = "z", resp_cats = c("w", "l"), num_options = c(1, 1))
+      nt_distances = "z", resp_cats = c("w", "l"), num_options = c(1, 1)
     )
     expect_s3_class(
       check_data(model, data.frame(y = 1, x = 1, z = 2, w = 1, s = 2, l = 1), bmf(kappa ~ 1)),
