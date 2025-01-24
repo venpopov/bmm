@@ -153,7 +153,6 @@ bmf <- function(...) {
   assign_nl_attr(out)
 }
 
-
 #' Generic S3 method for checking if the formula is valid for the specified model
 #' @param model a model list object returned from check_model()
 #' @param data user supplied data
@@ -246,7 +245,6 @@ bmf2bf.bmmodel <- function(model, formula) {
 # paste first line of the brms formula for all bmmodels with 1 response variable
 #' @export
 bmf2bf.default <- function(model, formula) {
-  # set base brms formula based on response
   brms::bf(paste0(model$resp_vars[[1]], "~ 1"))
 }
 

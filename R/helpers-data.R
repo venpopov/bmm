@@ -69,7 +69,6 @@ check_data.circular <- function(model, data, formula) {
   NextMethod("check_data")
 }
 
-
 #' @export
 check_data.non_targets <- function(model, data, formula) {
   nt_features <- model$other_vars$nt_features
@@ -106,7 +105,6 @@ check_data.non_targets <- function(model, data, formula) {
 
   NextMethod("check_data")
 }
-
 
 check_var_set_size <- function(set_size, data) {
   stopif(
@@ -146,11 +144,9 @@ check_var_set_size <- function(set_size, data) {
   list(max_set_size = max_set_size, ss_numeric = ss_numeric)
 }
 
-
 ############################################################################# !
 # HELPER FUNCTIONS                                                       ####
 ############################################################################# !
-
 #' Calculate response error relative to non-target values
 #'
 #' @description Given a vector of responses, and the values of non-targets, this
