@@ -453,30 +453,35 @@ is_constant.default <- function(x) {
 #'
 #' @export
 apply_links <- function(formula, links) {
-  # extract dpars of non-linear formulas
-  nl_dpars <- names(formula)[which(is_nl(formula))]
+  stopifnot(is_bmmformula(formula))
+  stopifnot(is.list(links) || is.null(links), all(sapply(links, is.character)))
+  if (length(links) == 0) {
+    return(formula)
+  }
+  
+  pars_with_links <- names(links)
+  replacements <- sapply(pars_with_links, function(par) {
+    switch(links[[par]],
+      log = glue("exp({par})"),
+      logit = glue("inv_logit({par})"),
+      probit = glue("Phi({par})"),
+      identity = par,
+      stop2("Unknown link type {links[[par]]}. Check ?apply_links for supported types")
+    )
+  })
+  
+  tbr_patterns <- paste0("\\b", pars_with_links, "\\b") # match whole word only
+  names(tbr_patterns) <- pars_with_links
 
-  for (dpar in nl_dpars) {
-    pform <- formula[[dpar]]
-    deparse_form <- deparse(pform)
-    split_form <- gsub("[[:space:]]", "", strsplit(deparse_form, "~")[[1]])
-
-    for (par in names(links)) {
-      if (is.numeric(links[[par]])) {
-        replace <- as.character(links[[par]])
-      } else {
-        replace <- dplyr::case_when(
-          links[[par]] == "log" ~ paste0(" exp(", par, ") "),
-          links[[par]] == "logit" ~ paste0(" inv_logit(", par, ") "),
-          links[[par]] == "probit" ~ paste0("Phi(", par, ")"),
-          TRUE ~ par
-        )
-      }
-      par_name <- paste0("\\b", par, "\\b") # match whole word only
-      split_form[2] <- gsub(par_name, replace, split_form[2])
+  for (dpar in names(formula)[is_nl(formula)]) {
+    formula_str <- deparse(formula[[dpar]])
+    for (par in pars_with_links) {
+      formula_str <- gsub(tbr_patterns[par], replacements[par], formula_str)
     }
-    formula[[dpar]] <- stats::as.formula(paste0(split_form[1], "~", split_form[2]))
+    formula[[dpar]] <- stats::as.formula(formula_str)
   }
 
-  formula
+  formula <- reset_env(formula)
+  formula <- assign_nl(formula)
+  assign_constants(formula)
 }
