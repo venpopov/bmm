@@ -574,134 +574,80 @@ rimm <- function(n, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
 
 #' @title Distribution functions for the Memory Measurement Model (M3)
 #'
-#' @description Density and random generation functions for the
-#'   memory measurement model. Please note that these functions are currently not vectorized.
+#' @description Density and random generation functions for the memory
+#'   measurement model. Please note that these functions are currently not
+#'   vectorized.
 #'
 #' @name m3dist
 #'
-#' @param x Numeric vector of observed responses
-#' @param n Numeric. Number of observations to generate data for
-#' @param size Number of trials per observation
+#' @param x Integer vector of length `K` where K is the number of response categories 
+#'   and each value is the number of observed responses per category
+#' @param n Integer. Number of observations to generate data for
+#' @param size The total number of observations in all categories 
 #' @param pars A named vector of parameters of the memory measurement model
-#' @param m3_model A `bmmodel` object specifying the m3 model that densities or random samples should be generated for
-#' @param act_funs A `bmmformula` object specifying the activation functions for the different response categories for the "custom" version of the M3.
-#' @param log Logical; if `TRUE`, values are returned on the log scale.
-#' @param ... can be used to pass additional variables that are used in the activation functions,
-#'   but not parameters of the model
+#' @param m3_model A `bmmodel` object specifying the m3 model that densities or
+#'   random samples should be generated for
+#' @param act_funs A `bmmformula` object specifying the activation functions for
+#'   the different response categories for the "custom" version of the M3. The 
+#'   default will attempt to construct the standard activation functions for the 
+#'   "ss" and "cs" model version. For a custom m3 model you need to specify the
+#'   act_funs argument manually
+#' @param log Logical; if `TRUE` (default), values are returned on the log scale.
+#' @param ... can be used to pass additional variables that are used in the
+#'   activation functions, but not parameters of the model
 #'
 #' @keywords distribution
 #'
-#' @references Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks.
-#'   Psychological Review, 126(6), 880–932. https://doi.org/10.1037/rev0000159
+#' @references Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models
+#'   for complex working-memory tasks. Psychological Review, 126(6), 880–932.
+#'   https://doi.org/10.1037/rev0000159
 #'
-#' @return `dm3` gives the density of the memory measurement model,
-#'   and `rm3` gives the random generation function for the
-#'   memory measurement model.
+#' @return `dm3` gives the density of the memory measurement model, and `rm3`
+#'   gives the random generation function for the memory measurement model.
 #'
+#' @examples
+#'   model <- m3(
+#'    resp_cats = c("corr", "other", "npl"),
+#'    num_options = c(1, 4, 5),
+#'    choice_rule = "simple",
+#'    version = "ss"
+#'  )
+#'  dm3(x = c(20, 10, 10), pars = c(a = 1, b = 1, c = 2), m3_model = model)
 #' @export
-#'
-dm3 <- function(x, pars, m3_model, act_funs = NULL, log = TRUE, ...) {
-  # unpack additional arguments
-  dots <- list(...)
-  if (length(dots) != 0) pars <- c(pars, unlist(dots))
-
-  stopif(is.null(names(pars)),
-         glue("Unnamed vectors passed to \"pars\".\n",
-              "Please name the \"pars\" vector with the  parameter names used in the activation functions."))
-
-  stopif(!m3_model$version %in% c("ss","cs","custom"),
-         glue("Unsupported Version: \"", version,"\" \n",
-              "Please choose one of the following options for the version argument:\n",
-              "\"ss\",\"cs\", or \"custom\""))
-
-  if (is.null(act_funs)) act_funs <- act_funs_m3versions(m3_model, warnings = FALSE)
-  if (is.null(act_funs)) {
-    stop2(glue("No activation functions for version \"custom\" provided.\n",
-               "Please pass activation functions for the different response categories\n",
-               "using the \"act_funs\" argument."))
-  }
-
-  if (!length(rhs_vars(act_funs)) == length(pars)) {
-    stop2(glue("The number of parameters used in the activation functions \n",
-               "mismatches the number of parameters (\"pars\") and additional arguments (i.e. ...) passed to the function."))
-  } else if (!all(rhs_vars(act_funs) %in% names(pars))) {
-    stop2(glue("Some parameters used in the activation functions are not specified in the \"pars\" argument."))
-  }
-
-  resp_cats <- m3_model$resp_var$resp_cats
-  acts <- numeric()
-  for (i in resp_cats) {
-    act_fun <- act_funs[[i]]
-    # extract right-side formula
-    right_from = as.character(act_fun[-2]) %>% stringr::str_remove("~")
-    acts[i] <- with(data.frame(rbind(pars)), eval(parse(text = right_from[2])))
-  }
-  acts
-
-  num_options <- m3_model$other_vars$num_options
-  if (tolower(m3_model$other_vars$choice_rule) == "simple") {
-    probs <- (acts*num_options)/sum(acts*num_options)
-  } else if (tolower(m3_model$other_vars$choice_rule) == "softmax") {
-    probs <- (exp(acts)*num_options)/sum(exp(acts)*num_options)
-  } else {
-    stop2(glue("Unsupported choice rule: \" ", m3_model$other_vars$choice_rule,"\"\n",
-               "Please select either \"simple\" or \"softmax\" as choice_rule."))
-  }
-
-  density <- dmultinom(x, size = sum(x), prob = probs, log = TRUE)
-  if (!log) return(exp(density))
-  density
+dm3 <- function(x, pars, m3_model, act_funs = construct_m3_act_funs(m3_model, warnings = FALSE), 
+                log = TRUE, ...) {
+  probs <- .compute_m3_probability_vector(pars, m3_model, act_funs, ...)
+  dmultinom(x, prob = probs, log = log)
 }
 
 #' @rdname m3dist
 #' @export
-rm3 <- function (n, size, pars, m3_model, act_funs = NULL, ...) {
-  # unpack additional arguments
-  dots <- list(...)
-  if (length(dots) != 0) pars <- c(pars, unlist(dots))
-
-  stopif(is.null(names(pars)),
-         glue("Unnamed vectors passed to \"pars\".\n",
-              "Please name the \"pars\" vector with the  parameter names used in the activation functions."))
-
-  stopif(!m3_model$version %in% c("ss","cs","custom"),
-         glue("Unsupported Version: \"", version,"\" \n",
-              "Please choose one of the following options for the version argument:\n",
-              "\"ss\",\"cs\", or \"custom\""))
-
-  if (is.null(act_funs)) act_funs <- act_funs_m3versions(m3_model, warnings = FALSE)
-  if (is.null(act_funs)) {
-    stop2(glue("No activation functions for version \"custom\" provided.\n",
-               "Please pass activation functions for the different response categories\n",
-               "using the \"act_funs\" argument."))
-  }
-
-  if (!length(rhs_vars(act_funs)) == length(pars)) {
-    stop2(glue("The number of parameters used in the activation functions \n",
-               "mismatches the number of parameters (\"pars\") and additional arguments (i.e. ...) passed to the function."))
-  } else if (!all(rhs_vars(act_funs) %in% names(pars))) {
-    stop2(glue("Some parameters used in the activation functions are not specified in the \"pars\" argument."))
-  }
-
-  resp_cats <- m3_model$resp_var$resp_cats
-  acts <- numeric()
-  for (i in resp_cats) {
-    act_fun <- act_funs[[i]]
-    # extract right-side formula
-    right_from = as.character(act_fun[-2]) %>% stringr::str_remove("~")
-    acts[i] <- with(data.frame(rbind(pars)), eval(parse(text = right_from[2])))
-  }
-  acts
-
-  num_options <- m3_model$other_vars$num_options
-  if (tolower(m3_model$other_vars$choice_rule) == "simple") {
-    probs <- (acts*num_options)/sum(acts*num_options)
-  } else if (tolower(m3_model$other_vars$choice_rule) == "softmax") {
-    probs <- (exp(acts)*num_options)/sum(exp(acts)*num_options)
-  } else {
-    stop2(glue("Unsupported choice rule: \" ", m3_model$other_vars$choice_rule,"\"\n",
-               "Please select either \"simple\" or \"softmax\" as choice_rule."))
-  }
-
+rm3 <- function(n, size, pars, m3_model, act_funs = construct_m3_act_funs(m3_model, warnings = FALSE),
+                ...) {
+  probs <- .compute_m3_probability_vector(pars, m3_model, act_funs, ...)
   t(rmultinom(n, size = size, prob = probs))
 }
+
+.compute_m3_probability_vector <-
+  function(pars, m3_model, act_funs = construct_m3_act_funs(m3_model, warnings = FALSE), ...) {
+    pars <- c(pars, unlist(list(...)))
+    stopif(
+      is_try_error(try(act_funs, silent = TRUE)),
+      'No activation functions for version "custom" provided.
+    Please pass activation functions for the different response categories
+    using the "act_funs" argument.'
+    )
+    stopif(
+      !identical(sort(rhs_vars(act_funs)), sort(names(pars))),
+      'The names or number of parameters used in the activation functions mismatch the names or number
+    of parameters ("pars") and additional arguments (i.e. ...) passed to the function.'
+    )
+
+    acts <- sapply(act_funs, function(pform) eval(pform[[length(pform)]], envir = as.list(pars)))
+
+    num_options <- m3_model$other_vars$num_options
+    choice_rule <- tolower(m3_model$other_vars$choice_rule)
+    if (choice_rule == "softmax") acts <- exp(acts)
+    acts <- acts * num_options
+    probs <- acts / sum(acts)
+  }

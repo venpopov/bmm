@@ -156,6 +156,15 @@
 #' @export
 m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custom", ...) {
   stop_missing_args()
+  stopif(
+    !version %in% c("custom", "cs", "ss"), 
+    'Unknown version: {version}. It should be one of "ss", "cs" or "custom"'
+  )
+  stopif(
+    !tolower(choice_rule) %in% c("softmax", "simple"),
+    'Unsupported choice rule "{choice_rule}. Must be one of "simple" or "softmax"'
+  )
+
   .model_m3(
     resp_cats = resp_cats, num_options = num_options,
     choice_rule = choice_rule, version = version, ...
@@ -341,7 +350,7 @@ check_data.m3 <- function(model, data, formula) {
 #' @export
 check_formula.m3 <- function(model, data, formula) {
   if (model$version != "custom") {
-    formula <- act_funs_m3versions(model, warnings = FALSE) + formula
+    formula <- construct_m3_act_funs(model, warnings = FALSE) + formula
   }
 
   formula <- apply_links(formula, model$links)
@@ -470,7 +479,6 @@ configure_model.m3 <- function(model, data, formula) {
 #' Measurement Model (m3) implemented in the `bmm` package. If no `bmmodel` object is
 #' passed then it will print the available model versions.
 #'
-#'
 #' @param model A bmmodel object that specifies the M3 model for which the
 #'  activation functions should be generated. If no model is passed the available
 #'  M3 versions will be printed to the console.
@@ -484,55 +492,66 @@ configure_model.m3 <- function(model, data, formula) {
 #' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' model <- m3(
 #'  resp_cats = c("correct","other", "npl"),
-#'  num_options = c(1,4,5),
+#'  num_options = c(1, 4, 5),
 #'  version = "ss"
 #' )
 #'
-#' ss_act_funs <- act_funs_m3versions(model, warnings = FALSE)
-#'
+#' ss_act_funs <- construct_m3_act_funs(model, warnings = FALSE)
+#' 
 #' @export
-act_funs_m3versions <- function(model = NULL, warnings = TRUE) {
+construct_m3_act_funs <- function(model = NULL, warnings = TRUE) {
   if (is.null(model)) {
-    msg <- glue("Available m3 versions with pre-defined activation functions are:\n",
-                " - \"ss\" for simple span tasks: 3 response categories (correct, other, npl) \n" ,
-                " - \"cs\" for complex span tasks. 5 response categories (correct, dist_context, other, dist_other, npl)")
-    return(print(msg))
+    message2(
+      'Available m3 versions with pre-defined activation functions are:
+          - "ss" for simple span tasks: 3 response categories (correct, other, npl)
+          - "cs" for complex span tasks. 5 response categories (correct, dist_context, other, dist_other, npl)'
+    )
+    return(invisible())
   }
 
-  stopif(!"m3" %in% class(model),
-         glue("Activation functions can only be generated for \"m3\" models."))
+  stopif(
+    !inherits(model, "m3") || !model$version %in% c("ss", "cs"), 
+    'Activation functions can only be generated for "m3" models "ss" and "cs"'
+  )
 
+  resp_cats <- model$resp_vars$resp_cats
   if (model$version == "ss") {
-    warnif(warnings,
-           glue("\n","The \"ss\" version of the m3 requires that response categories are ordered as follows:\n",
-                " 1) correct: correct responses\n",
-                " 2) other: other list responses\n",
-                " 3) npl: not presented lures"))
+    warnif(
+      warnings,
+      glue(
+        '\nThe "ss" version of the m3 requires that response categories are ordered as follows:
+        1) correct: correct responses
+        2) other: other list responses
+        3) npl: not presented lures'
+      )
+    )
 
     act_funs <- bmf(
-      formula(glue(model$resp_vars$resp_cats[1], "~ b + a + c")),
-      formula(glue(model$resp_vars$resp_cats[2], "~ b + a")),
-      formula(glue(model$resp_vars$resp_cats[3], "~ b"))
+      formula(glue("{resp_cats[1]} ~ b + a + c")),
+      formula(glue("{resp_cats[2]} ~ b + a")),
+      formula(glue("{resp_cats[3]} ~ b"))
     )
   } else if (model$version == "cs") {
-    warnif(warnings,
-           glue("\n","The \"cs\" version of the m3 requires that response categories are ordered as follows:\n",
-                " 1) correct: correct responses\n",
-                " 2) dist_context: distractor responses close in context to the correct item\n",
-                " 3) other: other list responses\n",
-                " 4) dist_other: all distractor responses not close in context to the correct item\n",
-                " 5) npl: not presented lures"))
+    warnif(
+      warnings,
+      glue(
+        "\n", "The \"cs\" version of the m3 requires that response categories are ordered as follows:\n",
+        " 1) correct: correct responses\n",
+        " 2) dist_context: distractor responses close in context to the correct item\n",
+        " 3) other: other list responses\n",
+        " 4) dist_other: all distractor responses not close in context to the correct item\n",
+        " 5) npl: not presented lures"
+      )
+    )
 
     act_funs <- bmf(
-      formula(glue(model$resp_vars$resp_cats[1], "~ b + a + c")),
-      formula(glue(model$resp_vars$resp_cats[2], "~ b + f * a + f * c")),
-      formula(glue(model$resp_vars$resp_cats[3], "~ b + a")),
-      formula(glue(model$resp_vars$resp_cats[4], "~ b + f * a")),
-      formula(glue(model$resp_vars$resp_cats[5], "~ b"))
+      formula(glue("{resp_cats[1]} ~ b + a + c")),
+      formula(glue("{resp_cats[2]} ~ b + f * a + f * c")),
+      formula(glue("{resp_cats[3]} ~ b + a")),
+      formula(glue("{resp_cats[4]} ~ b + f * a")),
+      formula(glue("{resp_cats[5]} ~ b"))
     )
-  } else {
-    act_funs <- bmf()
-  }
+  } 
 
-  return(act_funs)
+  reset_env(act_funs)
 }
