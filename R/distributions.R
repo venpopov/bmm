@@ -634,13 +634,13 @@ rm3 <- function(n, size, pars, m3_model, act_funs = construct_m3_act_funs(m3_mod
     stopif(
       is_try_error(try(act_funs, silent = TRUE)),
       'No activation functions for version "custom" provided.
-    Please pass activation functions for the different response categories
-    using the "act_funs" argument.'
+      Please pass activation functions for the different response categories
+      using the "act_funs" argument.'
     )
     stopif(
       !identical(sort(rhs_vars(act_funs)), sort(names(pars))),
       'The names or number of parameters used in the activation functions mismatch the names or number
-    of parameters ("pars") and additional arguments (i.e. ...) passed to the function.'
+      of parameters ("pars") and additional arguments (i.e. ...) passed to the function.'
     )
 
     acts <- sapply(act_funs, function(pform) eval(pform[[length(pform)]], envir = as.list(pars)))
@@ -649,5 +649,5 @@ rm3 <- function(n, size, pars, m3_model, act_funs = construct_m3_act_funs(m3_mod
     choice_rule <- tolower(m3_model$other_vars$choice_rule)
     if (choice_rule == "softmax") acts <- exp(acts)
     acts <- acts * num_options
-    probs <- acts / sum(acts)
+    acts / sum(acts)
   }
