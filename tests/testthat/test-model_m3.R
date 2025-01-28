@@ -20,9 +20,9 @@ test_that("construct_m3_act_funs works with complex span m3", {
   expect_equal(
     construct_m3_act_funs(model, warnings = FALSE),
     bmf(
-      correct ~ b + a + c, 
-      dist_context ~ b + f * a + f * c, 
-      other ~ b + a, 
+      correct ~ b + a + c,
+      dist_context ~ b + f * a + f * c,
+      other ~ b + a,
       dist_other ~ b + f * a,
       npl ~ b
     ),
@@ -233,6 +233,53 @@ test_that("m3 works with num_options as a numeric vector", {
   expect_silent(bmm(
     formula = formula,
     data = oberauer_lewandowsky_2019_e1,
+    model = my_model,
+    backend = 'mock',
+    mock_fit = 1,
+    rename = F
+  ))
+})
+
+test_that("m3_custom version works with variables contained in data in the activation formulas",{
+  my_data <- data.frame(
+    corr = c(5,6,7,8),
+    other = c(1,2,3,4),
+    npl = c(1,2,3,4),
+    time = c(1,2,1,2),
+    id = c(1,1,2,2)
+  )
+
+  formula <- bmf(
+    corr ~ b + a + cstart + cslope * time,
+    other ~ b + a,
+    npl ~ b,
+    a ~ 1 ,
+    cstart ~ 1,
+    cslope ~ 1
+  )
+
+  my_model <- m3(
+    resp_cats = c("corr", "other", "npl"),
+    num_options = c(1, 2, 3),
+    choice_rule = "softmax",
+    version = "custom"
+  )
+
+  my_model$links <- list(
+    a = "log",
+    cstart = "log",
+    cslope = "log"
+  )
+
+  my_model$default_priors <- list(
+    a = list(main = "normal(0, 0.5)", effects = "normal(0, 0.5)"),
+    cstart = list(main = "normal(0, 0.5)", effects = "normal(0, 0.5)"),
+    cslope = list(main = "normal(0, 0.5)", effects = "normal(0, 0.5)")
+  )
+
+  expect_silent(bmm(
+    formula = formula,
+    data = my_data,
     model = my_model,
     backend = 'mock',
     mock_fit = 1,
