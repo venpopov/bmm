@@ -54,7 +54,7 @@ variables for faster sampling. If FALSE, the data will not be sorted, but
 sampling will be slower. If "check" (the default), \code{\link[=bmm]{bmm()}} will check if
 the data is sorted, and ask you via a console prompt if it should be
 sorted. You can set the default value for this option using global
-\verb{options(bmm.sort_data = TRUE/FALSE/"check)})\verb{or via}bmm_options(sort_data)`}
+\verb{options(bmm.sort_data = TRUE/FALSE/"check"))} or via \code{bmm_options(sort_data)}}
 
 \item{silent}{Verbosity level between 0 and 2. If 1 (the default), most of the
 informational messages of compiler and sampler are suppressed. If 2, even
@@ -70,7 +70,11 @@ set the default backend using global \code{options(brms.backend = "rstan"/"cmdst
 
 \item{file}{Either \code{NULL} or a character string. If a string, the fitted
 model object is saved via \link{saveRDS} in a file named after the string. The
-\verb{.rds extension is added automatically. If the file already exists, }bmm\verb{will load and return the saved model object. Unless you specify the}file_refit\verb{argument as well, the existing files won't be overwritten, you have to manually remove the file in order to refit and save the model under an existing file name. The file name is stored in the}bmmfit` object for
+.rds extension is added automatically. If the file already exists, \code{bmm}
+will load and return the saved model object. Unless you specify the
+\code{file_refit} argument as well, the existing files won't be overwritten, you
+have to manually remove the file in order to refit and save the model under
+an existing file name. The file name is stored in the \code{bmmfit} object for
 later usage. If the directory of the file does not exist, it will be created.}
 
 \item{file_compress}{Logical or a character string, specifying one of the
@@ -78,7 +82,7 @@ compression algorithms supported by \link{saveRDS} when saving
 the fitted model object.}
 
 \item{file_refit}{Logical or character string. Modifies when the fit stored via the \code{file} argument is
-re-used. Can be set globally for the current \R session via the
+re-used. Can be set globally for the current R session via the
 \code{"bmm.file_refit"} option (see \link{options}). If \code{TRUE} or "always", the
 model is fitted again. If \code{FALSE} or "never" (the default), the model saved under the name specified in \code{file}
 will be re-used. Note that unlike in \code{brms}, there is no "on_change" option}
