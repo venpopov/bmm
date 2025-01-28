@@ -4,6 +4,7 @@
 <url><loc>https://venpopov.github.io/bmm/dev/articles/bmm_bmmformula.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/articles/bmm_extract_info.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/articles/bmm_imm.html</loc></url>
+<url><loc>https://venpopov.github.io/bmm/dev/articles/bmm_m3.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/articles/bmm_mixture_models.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/articles/bmm_sdm_simple.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/articles/bmm_vwm_crt.html</loc></url>
@@ -13,6 +14,7 @@
 <url><loc>https://venpopov.github.io/bmm/dev/news/index.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/IMMdist.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/SDMdist.html</loc></url>
+<url><loc>https://venpopov.github.io/bmm/dev/reference/apply_links.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/bmf2bf.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/bmm-package.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/bmm.html</loc></url>
@@ -26,15 +28,19 @@
 <url><loc>https://venpopov.github.io/bmm/dev/reference/circle_transform.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/configure_model.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/configure_prior.html</loc></url>
+<url><loc>https://venpopov.github.io/bmm/dev/reference/construct_m3_act_funs.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/default_prior.bmmformula.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/fit_info.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/imm.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/index.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/k2sd.html</loc></url>
+<url><loc>https://venpopov.github.io/bmm/dev/reference/m3.html</loc></url>
+<url><loc>https://venpopov.github.io/bmm/dev/reference/m3dist.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/mixture2p.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/mixture2p_dist.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/mixture3p.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/mixture3p_dist.html</loc></url>
+<url><loc>https://venpopov.github.io/bmm/dev/reference/oberauer_lewandowsky_2019_e1.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/oberauer_lin_2017.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/pipe.html</loc></url>
 <url><loc>https://venpopov.github.io/bmm/dev/reference/postprocess_brm.html</loc></url>

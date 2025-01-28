@@ -41,14 +41,20 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="bmm-110">bmm 1.1.0<a class="anchor" aria-label="anchor" href="#bmm-110"></a></h2>
 <div class="section level4">
+<h4 id="new-models-1-1-0">New models<a class="anchor" aria-label="anchor" href="#new-models-1-1-0"></a></h4>
+<ul><li>Add the Memory Measurement Model (Oberauer &amp; Lewandwosky, 2019) as new model class <strong>m3</strong> to the package. This has three versions, a simple span versions <strong>ss</strong>, a complex span version <strong>cs</strong>, and a <strong>custom</strong> version that allows to provide custom activation functions, for all response categories. For details for the memory measurement model, see the <a href="https://venpopov.github.io/bmm/articles/bmm_m3.html">article</a> on the <code>bmm</code> website.</li>
+</ul></div>
+<div class="section level4">
 <h4 id="new-features-1-1-0">New features<a class="anchor" aria-label="anchor" href="#new-features-1-1-0"></a></h4>
 <ul><li>Updates to the <code>bmf2bf</code> S3 methods to more flexibly accommodate the translation of <code>bmmformulas</code> into <code>brmsformulas</code>
 </li>
-<li>the <code>file_refit</code> argument of the <code>bmm</code> function now accepts character string like brms. A warning is given when “on_change” is specified, as this is not currently implemented for <code>bmmodels</code>.</li>
+<li>New functions <strong>apply_links</strong> will add link functions to all non-linear formulas in a <strong>bmmformula</strong> object.</li>
+<li>A new example data set <strong>oberauer_lewandowsky_2019_e1</strong> was added to the package, so that users can explore applications of the newly implemented <strong>m3</strong> model with this data set.</li>
+<li>the <code>file_refit</code> argument of the <code>bmm</code> function now accepts character string like <code>brms</code>. A warning is given when “on_change” is specified, as this is not currently implemented for <code>bmmodels</code>.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fixes-1-1-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-1-0"></a></h4>
-<ul><li>Fix a conflict in setting default priors when model parameters were transformed in a non-linear formula</li>
+<ul><li>Fix a conflict in setting default priors when model parameters were transformed in a non-linear formula.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="documentation-1-1-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-1-0"></a></h4>
