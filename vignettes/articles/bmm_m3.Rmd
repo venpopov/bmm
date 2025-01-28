@@ -1,5 +1,5 @@
 ---
-title: "The Memory Measurement Model (`m3`)"
+title: "The Memory Measurement Model (M3)"
 output: bookdown::html_document2
 author: 
   - Gidon Frischkorn
@@ -9,7 +9,7 @@ bibliography: REFERENCES.bib
 header-includes:
   - \usepackage{amsmath}
 vignette: >
-  %\VignetteIndexEntry{The Memory Measurement Model (`m3`)}
+  %\VignetteIndexEntry{The Memory Measurement Model (M3)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 pkgdown:

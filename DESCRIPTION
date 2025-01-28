@@ -53,6 +53,8 @@ Suggests:
     waldo
 Additional_repositories: https://mc-stan.org/r-packages/
 Config/testthat/edition: 3
+Config/Needs/website: rmarkdown
+VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
