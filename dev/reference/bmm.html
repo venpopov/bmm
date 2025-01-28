@@ -107,7 +107,7 @@ variables for faster sampling. If FALSE, the data will not be sorted, but
 sampling will be slower. If "check" (the default), <code>bmm()</code> will check if
 the data is sorted, and ask you via a console prompt if it should be
 sorted. You can set the default value for this option using global
-<code>options(bmm.sort_data = TRUE/FALSE/"check)</code>)<code>or via</code>bmm_options(sort_data)`</p></dd>
+<code>options(bmm.sort_data = TRUE/FALSE/"check"))</code> or via <code>bmm_options(sort_data)</code></p></dd>
 
 
 <dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
@@ -129,7 +129,11 @@ set the default backend using global <code>options(brms.backend = "rstan"/"cmdst
 <dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
 <dd><p>Either <code>NULL</code> or a character string. If a string, the fitted
 model object is saved via <a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a> in a file named after the string. The
-<code>.rds extension is added automatically. If the file already exists, </code>bmm<code>will load and return the saved model object. Unless you specify the</code>file_refit<code>argument as well, the existing files won't be overwritten, you have to manually remove the file in order to refit and save the model under an existing file name. The file name is stored in the</code>bmmfit` object for
+.rds extension is added automatically. If the file already exists, <code>bmm</code>
+will load and return the saved model object. Unless you specify the
+<code>file_refit</code> argument as well, the existing files won't be overwritten, you
+have to manually remove the file in order to refit and save the model under
+an existing file name. The file name is stored in the <code>bmmfit</code> object for
 later usage. If the directory of the file does not exist, it will be created.</p></dd>
 
 
@@ -141,7 +145,7 @@ the fitted model object.</p></dd>
 
 <dt id="arg-file-refit">file_refit<a class="anchor" aria-label="anchor" href="#arg-file-refit"></a></dt>
 <dd><p>Logical or character string. Modifies when the fit stored via the <code>file</code> argument is
-re-used. Can be set globally for the current <span style="R">R</span> session via the
+re-used. Can be set globally for the current R session via the
 <code>"bmm.file_refit"</code> option (see <a href="https://rdrr.io/r/base/options.html" class="external-link">options</a>). If <code>TRUE</code> or "always", the
 model is fitted again. If <code>FALSE</code> or "never" (the default), the model saved under the name specified in <code>file</code>
 will be re-used. Note that unlike in <code>brms</code>, there is no "on_change" option</p></dd>
