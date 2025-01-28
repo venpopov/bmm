@@ -458,7 +458,7 @@ apply_links <- function(formula, links) {
   if (length(links) == 0) {
     return(formula)
   }
-  
+
   pars_with_links <- names(links)
   replacements <- sapply(pars_with_links, function(par) {
     switch(links[[par]],
@@ -469,12 +469,12 @@ apply_links <- function(formula, links) {
       stop2("Unknown link type {links[[par]]}. Check ?apply_links for supported types")
     )
   })
-  
+
   tbr_patterns <- paste0("\\b", pars_with_links, "\\b") # match whole word only
   names(tbr_patterns) <- pars_with_links
 
   for (dpar in names(formula)[is_nl(formula)]) {
-    formula_str <- deparse(formula[[dpar]])
+    formula_str <- deparse(formula[[dpar]], width.cutoff = 500L)
     for (par in pars_with_links) {
       formula_str <- gsub(tbr_patterns[par], replacements[par], formula_str)
     }
