@@ -53,7 +53,7 @@ The memory measurement model (`m3`) is a computational measurement model for wor
 1.  Memory strength of individual elements or items, often labelled item memory
 2.  Memory strength of relations, relying on temporary bindings, often labelled binding or source memory
 
-In addition, the `m3` allows to include additional hypothetical processes that might increase or diminishing these activation strengths due to experimental manipulations, such as manipulating encoding time or distraction.
+The `m3` also allows to include additional hypothetical processes that might increase or diminishing these activation strengths due to experimental manipulations, such as manipulating encoding time or distraction.
 
 ## Basic assumptions of the `m3`
 
@@ -66,7 +66,7 @@ The set of response candidates can either a) follow naturally from the stimulus 
 
 To simplify the use of the `m3`, we do not model the activation of each response candidate, but we group the response candidates into categories that all share the same sources of activation. For example, consider a simple short term memory task (simple span task) in which subjects are asked to remember digits in their serial order and are then cued with a random serial position to retrieve the respective digit. In this task, participants can either recall the correct digit that was associated with the cued position, often labelled the item-in-position. But they could also recall any of the other digits they had to remember, often labelled items from other list positions. Finally, they could also recall a digit that was not part of the memory set at all, usually labelled not-presented items or lures. Thus, we have three categories of responses in this task: correct responses or items-in position (labelled $correct$), other list items (labelled $other$), and not presented items (labelled $npl$).
 
-After, we have decided on the relevant response categories. We need to specify which activation sources contribute towards each category. For the above simple short term memory tasks, these would most reasonably be:
+After we have decided on the relevant response categories, we need to specify which activation sources contribute towards each category. For the above simple short term memory tasks, these would most reasonably be:
 
 $$
 \begin{align} 
@@ -102,7 +102,7 @@ $$
 
 This choice rule can be interpreted as an n-alternative SDT model over the different response candidates with a Gumbel (or double-exponential) noise distribution.
 
-After having normalized the activation of each category into probabilities the model than links the response frequencies of each response categories $Y$ to the probabilities assuming a Multinomial distributions with the total number of $trials$ and the derived probabilities $p$:
+The model links the response frequencies $Y$ to the probabilities $p$ using a Multinomial distribution with the total number of trials:
 
 $$
 Y \sim multinomial(p, trials)
@@ -110,11 +110,11 @@ $$
 
 # Parametization of the `m3` in `bmm`
 
-There are three versions of the `m3` implemented in `bmm`:
+There are three versions of the `m3` model implemented in `bmm`:
 
-a)  the `m3` for simple span task (`version = "ss"`)
-b)  the `m3` for complex span task (`version = "cs"`)
-c)  a fully *custom* `m3` that can be adapted to any kind of task with categorical responses (`version = "custom"`).
+-  the `m3` for simple span tasks (`version = "ss"`)
+-  the `m3` for complex span tasks (`version = "cs"`)
+-  a fully *custom* `m3` that can be adapted to any kind of task with categorical responses (`version = "custom"`).
 
 ## `m3` for simple and complex span tasks
 
@@ -272,7 +272,7 @@ my_model <- m3(resp_cats = c("corr","other","dist","npl"),
                version = "custom")
 ```
 
-For the `custom` version of the, you additionally need to provide the `links` that should be used for each of the model parameters. We also recommend that you provide `default_priors` for each model parameter Otherwise, they will be set based on the provided `links`.
+For the `custom` version, you additionally need to provide the `links` that should be used for each of the model parameters. We also recommend that you provide `default_priors` for each model parameter Otherwise, they will be set based on the provided `links`.
 
 The `links` ensure that model parameters stay in the correct value range. In particular for the `simple` choice rule it is essential, that all activation are positive. Thus, we recommend using `log` link functions for all parameters that represent activation sources, such as general or context activation, especially when using the `simple` choice rule.
 

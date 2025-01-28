@@ -79,6 +79,7 @@ articles:
     - articles/bmm_mixture_models
     - articles/bmm_imm
     - articles/bmm_sdm_simple
+    - articles/bmm_m3
 
  - title: Using the bmm package
    desc: >

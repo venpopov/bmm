@@ -2,115 +2,91 @@
 # MODELS                                                                 ####
 ############################################################################# !
 # see file 'R/bmm_model_mixture3p.R' for an example
-.model_m3 <- function(resp_cats = NULL, num_options = NULL,
-                      choice_rule = "softmax", version = "custom", ...) {
-  # combine additional arguments passed to the model function in list
-  dots <- list(...)
-  if (is.null(dots$links)) dots$links <- vector("list", length = 0)
-  if (is.null(dots$default_priors)) dots$default_priors <- vector("list", length = 0)
-
-  # save model information
-  out <- list(
-    resp_vars = nlist(resp_cats),
-    other_vars = nlist(num_options, choice_rule),
-    links = dots$links,
-    domain = "Working Memory (categorical)",
-    task = "n-AFC retrieval",
-    name = "The Memory Measurement Model by Oberauer & Lewandowsky (2019)",
-    citation = "Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.",
-    version = version,
-    requirements = '- Provide names for variables specifying the number of responses in a set of response categories.\n
-         - Specify activation sources for each response categories \n
-         - Include at least an activation source "b" for all response categories \n
-         - Predict the specified activation at least by a fixed intercept and any additional predictors from your data',
+# Define lookup tables for parameters, links, and default priors
+.m3_version_table <- list(
+  ss = list(
     parameters = list(
-      b = "Background activation. Activation added to the activation function for each response category, and represents the background
-              noise. This parameter is fixed for scaling, but needs to be included in all models."
+      c = "Context activation. Added to the item cued to be recalled, that is the correct item.",
+      a = "General activation. Added to all items that were presented during the current trial."
     ),
-    fixed_parameters = list(
-      b = ifelse(choice_rule == "softmax", 0, 0.1)
+    links = list(
+      simple = list(c = "log", a = "log"),
+      softmax = list(c = "identity", a = "identity")
     ),
-    default_priors = dots$default_priors,
-    void_mu = FALSE
-  )
-
-  # add version specific information
-  if (version == "ss") {
-    ss_parameters <- list(
-      c = "Context activation. This source of activation is added to the item cued to be recalled, that is the correct item.",
-      a = "General activation. This source of activation is added to all items that were presented during the current trial."
-    )
-
-    if (tolower(out$other_vars$choice_rule) == "simple") {
-      ss_links <- list(
-        c = "log",
-        a = "log"
-      )
-      ss_default_priors <- list(
+    priors = list(
+      simple = list(
         a = list(main = "normal(1,0.5)", effects = "normal(0,0.5)"),
         c = list(main = "normal(1.5,0.5)", effects = "normal(0,0.5)")
-      )
-    } else {
-      ss_links <- list(
-        c = "identity",
-        a = "identity"
-      )
-      ss_default_priors <- list(
+      ),
+      softmax = list(
         a = list(main = "normal(2,1)", effects = "normal(0,0.5)"),
         c = list(main = "normal(3,1)", effects = "normal(0,2)")
       )
-    }
-
-    # check if links or priors have been provided
-    missing_links <- ss_links[!names(ss_links) %in% names(out$links)]
-    missing_priors <- ss_default_priors[!names(ss_default_priors) %in% names(out$default_priors)]
-
-    # add version specific info to the model object
-    out$parameters <- c(out$parameters, ss_parameters)
-    out$links <- c(out$links, missing_links)
-    out$default_priors <- c(out$default_priors, missing_priors)
-  } else if (version == "cs") {
-    cs_parameters <- list(
-      c = "Context activation. This source of activation is added to the item cued to be recalled, that is the correct item.",
-      a = "General activation. This source of activation is added to all items that were presented during the current trial.",
-      f = "Filtering. This parameter captures the extent to which distractors remained in working memory."
     )
-
-    if (tolower(out$other_vars$choice_rule) == "simple") {
-      cs_links <- list(
-        c = "log",
-        a = "log",
-        f = "logit"
-      )
-      cs_default_priors <- list(
+  ),
+  cs = list(
+    parameters = list(
+      c = "Context activation. Added to the item cued to be recalled, that is the correct item.",
+      a = "General activation. Added to all items that were presented during the current trial.",
+      f = "Filtering. This parameter captures the extent to which distractors remained in working memory."
+    ),
+    links = list(
+      simple = list(c = "log", a = "log", f = "logit"),
+      softmax = list(c = "identity", a = "identity", f = "logit")
+    ),
+    priors = list(
+      simple = list(
         a = list(main = "normal(1,0.5)", effects = "normal(0,.5)"),
         c = list(main = "normal(1.5,0.5)", effects = "normal(0,.5)"),
         f = list(main = "logistic(0,1)", effects = "normal(0,1)")
-      )
-    } else {
-      cs_links <- list(
-        c = "identity",
-        a = "identity",
-        f = "logit"
-      )
-      cs_default_priors <- list(
+      ),
+      softmax = list(
         a = list(main = "normal(3,1)", effects = "normal(0,0.5)"),
         c = list(main = "normal(3,1)", effects = "normal(0,2)"),
-        f = list(main = "logisitic(0,1)", effects = "normal(0,1)")
+        f = list(main = "logistic(0,1)", effects = "normal(0,1)")
       )
-    }
+    )
+  )
+)
 
-    # check if links or priors have been provided
-    missing_links <- cs_links[!names(cs_links) %in% names(out$links)]
-    missing_priors <- cs_default_priors[!names(cs_default_priors) %in% names(out$default_priors)]
+.model_m3 <- function(resp_cats = NULL, num_options = NULL,
+                      choice_rule = "softmax", version = "custom", links = NULL,
+                      default_priors = NULL, call = NULL, ...) {
+  out <- structure(
+    list(
+      resp_vars = nlist(resp_cats),
+      other_vars = nlist(num_options, choice_rule),
+      domain = "Working Memory (categorical)",
+      task = "n-AFC retrieval",
+      name = "The Memory Measurement Model by Oberauer & Lewandowsky (2019)",
+      citation = glue(
+        "Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models \\
+        for complex working-memory tasks. Psychological Review, 126."
+      ),
+      version = version,
+      requirements = paste0(
+        '- Provide names for variables specifying the number of responses in a set of response categories.\n',
+        '  - Specify activation sources for each response categories\n',
+        '  - Include at least an activation source "b" for all response categories\n',
+        '  - Predict the specified activation at least by a fixed intercept and any additional predictors from your data\n'
+      ),
+      parameters = c(
+        list(b = "Background activation. Added to each response category. Fixed for scaling, necessary in all models."),
+        .m3_version_table[[version]][["parameters"]]
+      ),
+      fixed_parameters = list(
+        b = if (choice_rule == "softmax") 0 else 0.1
+      ),
+      links = .m3_version_table[[version]][["links"]][[choice_rule]],
+      default_priors = .m3_version_table[[version]][["priors"]][[choice_rule]],
+      void_mu = FALSE
+    ),
+    class = c("bmmodel", "m3", paste0("m3_", version)),
+    call = call
+  )
 
-    # add version specific info to the model object
-    out$parameters <- c(out$parameters, cs_parameters)
-    out$links <- c(out$links, missing_links)
-    out$default_priors <- c(out$default_priors, missing_priors)
-  }
-
-  class(out) <- c("bmmodel", "m3", paste0("m3_", version))
+  out$links[names(links)] <- links
+  out$default_priors[names(default_priors)] <- default_priors
   out
 }
 
@@ -145,6 +121,14 @@
 #'  `ss`, `cs`, or `custom`. The default is `custom`.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmmodel`
+#' 
+#' @details `r model_info(.model_m3(), components =c('domain', 'task', 'name', 'citation'))`
+#' #### Version: `ss`
+#' `r model_info(.model_m3(version = "ss"), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
+#' #### Version: `cs`
+#' `r model_info(.model_m3(version = "cs"), components =c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
+#' #### Version: `custom`
+#' `r model_info(.model_m3(version = "custom"), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
 #'
 #' @keywords bmmmodel
 #'
@@ -155,6 +139,7 @@
 #'
 #' @export
 m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custom", ...) {
+  call <- match.call()
   stop_missing_args()
   stopif(
     !version %in% c("custom", "cs", "ss"), 
@@ -164,10 +149,15 @@ m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custo
     !tolower(choice_rule) %in% c("softmax", "simple"),
     'Unsupported choice rule "{choice_rule}. Must be one of "simple" or "softmax"'
   )
+  stopif(
+    length(num_options) != length(resp_cats), 
+    "The option variables should have the same length as the response variables."
+  )
+  names(num_options) <- names(num_options) %||% paste0("n_opt_",resp_cats)
 
   .model_m3(
     resp_cats = resp_cats, num_options = num_options,
-    choice_rule = choice_rule, version = version, ...
+    choice_rule = choice_rule, version = version, call = call, ...
   )
 }
 
@@ -176,64 +166,38 @@ m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custo
 ############################################################################# !
 
 #' @export
-check_model.m3 <- function(model, data = NULL, formula = NULL) {
-  # name number of response options if names are empty
-  if (is.null(names(model$other_vars$num_options))) names(model$other_vars$num_options) <- model$resp_vars$resp_cats
-  NextMethod("check_model")
-}
-
-#' @export
 check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
-  existing_par_names <- names(model$parameters)
-
-  if(!is.null(formula)) {
+  if (!is.null(formula)) {
     user_pars <- rhs_vars(formula[is_nl(formula)])
-    user_pars <- user_pars[-which(user_pars %in% names(formula[is_nl(formula)]))]
-    user_pars <- user_pars[which(!user_pars %in% names(model$parameters))]
-    if (length(user_pars > 0)) {
-      model$parameters <- append(model$parameters, user_pars)
-      names(model$parameters) <- c(existing_par_names, user_pars)
-    }
+    user_pars <- setdiff(user_pars, names(formula[is_nl(formula)]))
+    user_pars <- setdiff(user_pars, names(model$parameters))
+    model$parameters <- c(model$parameters, setNames(user_pars, user_pars))
   }
 
-
-  # add link functions if missing
   stopif(
-    length(model$links) < (length(model$parameters) - 1),
-    glue(
-      "You have not provided link functions for any of the specified parameters.\n",
-      "Please provide link functions for all model parameters to ensure proper identification \n",
-      "of your model"
-    )
+    length(model$links) < length(model$parameters) - 1,
+    "Please provide link functions for all model parameters to ensure proper identification of your model"
   )
 
   # add default priors if missing
-  missing_priors <- names(model$parameters[which(!model$parameters %in% names(model$default_priors))])
-  missing_priors <- missing_priors[which(!missing_priors %in% names(model$fixed_parameters))]
+  missing_priors <- setdiff(names(model$parameters), names(model$default_priors))
+  missing_priors <- setdiff(missing_priors, names(model$fixed_parameters))
   warnif(
     length(missing_priors) > 0 && getOption("bmm.default_priors"),
-    glue(
-      "You have not provided default_priors for at least one parameter in the model.\n",
-      "Default priors will be specified internally based on the provided link function.\n",
-      "Please check if the used priors are reasonable for your application"
-    )
+    "You have not provided default_priors for at least one parameter in the model.
+    Default priors will be specified internally based on the provided link function.
+    Please check if the used priors are reasonable for your application"
   )
-  for (m in missing_priors) {
-    if (model$links[[m]] == "log") {
-      prior <- list(main = "normal(1,1)", effect = "normal(0,0.5)")
-    } else if (model$links[[m]] == "identity") {
-      prior <- list(main = "normal(0,1)", effect = "normal(0,1)")
-    } else if (model$links[[m]] == "logit") {
-      prior <- list(main = "normal(0,1)", effect = "normal(0,1)")
-    } else {
-      stop2(glue(
-        "Invalid link function provided!\n",
-        "Please use one of the following link functions: identity, log, logit"
-      ))
-    }
-    model$default_priors[[m]] <- prior
-  }
-
+  additional_priors <- lapply(missing_priors, function(m) {
+    switch(model$links[[m]],
+      log = list(main = "normal(1,1)", effect = "normal(0,0.5)"),
+      identitiy = list(main = "normal(0,1)", effect = "normal(0,1)"),
+      logit = list(main = "normal(0,1)", effect = "normal(0,1)"),
+      stop2("Invalid link function provided! Please use one of the following link functions: identity, log, logit")
+    )
+  })
+  model$default_priors <- c(model$default_priors, additional_priors)
+  
   NextMethod("check_model")
 }
 
@@ -243,102 +207,47 @@ check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
 
 #' @export
 check_data.m3 <- function(model, data, formula) {
-  # Get the vector of the response variables
   resp_name <- model$resp_vars$resp_cats
-  # Get the names for each columns
-  col_name <- colnames(data)
+  n_opt_vect <- model$other_vars$num_options
+  col_names <- colnames(data)
 
-  # Check if the response variables are legal or not.
-  if (sum(grepl("[[:punct:]]|\\s", resp_name)) > 0) {
-    stop2("Space and punctuation are not allowed in the response variable names.")
-  }
-
-  # Check if the response variables are all present in the data
-  missing_list <- setdiff(resp_name, intersect(resp_name, col_name))
-  if (length(missing_list) > 0) {
-    stop(paste0(
-      "The response variable(s) '",
-      paste0(missing_list, collapse = "', '"),
-      "' is not present in the data."
-    ))
-  }
+  missing_variables <- setdiff(resp_name, col_names)
+  stopif(length(missing_variables), "The response variable(s) {paste0(missing_variables, collapse = ', ')} missing in the data")
 
   # Transfer all of the response variables to a matrix and name it 'Y'
-  data$nTrials <- rowSums(data[, resp_name], na.rm = TRUE)
   resp_matrix <- as.matrix(data[, resp_name])
   resp_matrix[is.na(resp_matrix)] <- 0
+  data <- data[not_in(col_names, resp_name)]
+  data$nTrials <- rowSums(resp_matrix)
   data$Y <- resp_matrix
-  data <- dplyr::select(data, -dplyr::all_of(resp_name))
 
-  # Get the vector of the options variables
-  nOpt_vect <- model$other_vars$num_options
-
-  # Check whether the option variables have the same length as the response variables.
-  if (length(nOpt_vect) != length(resp_name)) {
-    stop2("The option variables should have the same length as the response variables.")
-  }
-
-  # If the number of options is a string, then it is the name of the column in the data
-  if (is.character(nOpt_vect)) {
-    option_name <- nOpt_vect
-
-    # Check if the name of the number of options is legal or not.
-    if (sum(grepl("[[:punct:]]|\\s", option_name)) > 0) {
-      stop2("Space and punctuation are not allowed in the number of options variable name.")
-    }
-
-    # Check if the number of options is present in the data
-    missing_list <- setdiff(option_name, intersect(option_name, col_name))
-    if (length(missing_list) > 0) {
-      stop(paste0(
-        "The variable(s) '",
-        paste0(missing_list, collapse = "', '"),
-        "' is not present in the data."
-      ))
-    }
-
-    # create index variables for any number of Option being zero in one row
-    nOpt_idx_vars <- paste0("Idx_", resp_name)
-    for (i in 1:length(nOpt_vect)) {
-      if (all(data[[nOpt_vect[i]]] == 0)) {
-        stop2("At least one of the specified number of candidates in the response categories is zero for all oberservations.\n
-            Please remove this category from the model, as it is not identified.")
-      }
-
-      data[[nOpt_idx_vars[i]]] <- ifelse(data[[nOpt_vect[i]]] > 0, 1, 0)
-      data[[nOpt_vect[i]]] <- ifelse(data[[nOpt_vect[i]]] == 0, 0.0001, data[[nOpt_vect[i]]])
-    }
-
-    # If the number of options is a numeric vector,
-    # then it represents the number of options for each response variable in all conditions.
-  } else if (is.numeric(nOpt_vect)) {
-    if (any(nOpt_vect == 0)) {
-      stop2("At least one of the specified number of candidates in the response categories is zero for all oberservations.\n
-            Please remove this category from the model, as it is not identified.")
-    }
-
-    nOpt_name <- paste0("nOpt_", resp_name)
-
-    nOpt_data <- data.frame(nOpt_name, nOpt_vect) %>%
-      tidyr::pivot_wider(names_from = nOpt_name, values_from = nOpt_vect)
-
-    # Add the number of options to the data
-    data <- dplyr::cross_join(data, nOpt_data)
-
-    # create index variables for any number of Option being zero in one row
-    nOpt_idx_vars <- paste0("Idx_", resp_name)
-    for (i in 1:length(nOpt_vect)) {
-      if (all(data[[nOpt_vect[i]]] == 0)) {
-        stop2("At least one of the specified number of candidates in the response categories is zero for all oberservations.\n
-            Please remove this category from the model, as it is not identified.")
-      }
-
-      data[[nOpt_idx_vars[i]]] <- ifelse(data[[nOpt_vect[i]]] > 0, 1, 0)
-      data[[nOpt_vect[i]]] <- ifelse(data[[nOpt_vect[i]]] == 0, 0.0001, data[[nOpt_vect[i]]])
+  if (is.character(n_opt_vect)) {
+    # If the number of options is a string, then it is the name of the column in the data
+    missing_options <- setdiff(n_opt_vect, col_names)
+    stopif(length(missing_options), "The variable(s) {paste0(missing_options, collapse = ', ')} missing in the data")
+  } else if (is.numeric(n_opt_vect)) {
+    # If the number of options is numeric, then it represents the number of options for each response variable
+    for (opt in names(n_opt_vect)) {
+      stopif(opt %in% names(data), "The variable {opt} already exists in the data. Give explicit names to your num_options vector")
+      data[opt] <- n_opt_vect[opt]
     }
   } else {
     stop2("The number of options should be a string or a numeric vector.")
   }
+
+  # create index variables for any number of Option being zero in one row
+  n_opt_idx_vars <- paste0("Idx_", resp_name)
+  for (i in 1:length(n_opt_vect)) {
+    stopif(
+      sum(data[[n_opt_vect[i]]]) == 0,
+      "At least one of the specified number of candidates in the response categories is zero for all oberservations.
+      Please remove this category from the model, as it is not identified."
+    )
+
+    data[[n_opt_idx_vars[i]]] <- ifelse(data[[n_opt_vect[i]]] > 0, 1, 0)
+    data[[n_opt_vect[i]]] <- ifelse(data[[n_opt_vect[i]]] == 0, 0.0001, data[[n_opt_vect[i]]])
+  }
+
   NextMethod("check_data")
 }
 
@@ -361,87 +270,72 @@ check_formula.m3 <- function(model, data, formula) {
 
 #' @export
 check_formula.m3_custom <- function(model, data, formula) {
+  resp_cats <- model$resp_vars$resp_cats
   # test if activation functions for all categories are provided
-  missing_act_funs <- which(!model$resp_vars$resp_cats %in% names(formula))
+  missing_act_funs <- !resp_cats %in% names(formula)
   stopif(
-    length(missing_act_funs) > 0,
-    paste0(
-      "You did not provide activation functions for all response categories.\n ",
-      "Please provide activation functions for the following response categories in your bmmformula:\n ",
-      model$resp_vars$resp_cats[missing_act_funs]
-    )
+    any(missing_act_funs),
+    "You did not provide activation functions for all response categories.
+    Please provide activation functions for the following response categories in your bmmformula:
+    {resp_cats[missing_act_funs]}"
   )
 
   # test if all activation functions contain background noise "b"
-  act_funs <- formula[model$resp_vars$resp_cats]
-  form_miss_b <- unlist(lapply(act_funs, missing_b))
+  act_funs <- formula[resp_cats]
+  form_miss_b <- vapply(act_funs, function(f) !("b" %in% rhs_vars(f)), logical(1))
   stopif(
     any(form_miss_b),
-    paste0(
-      "Some of your activation functions do not contain the background noise parameter \"b\".\n ",
-      "The following activation functions need a background noise parameter: \n",
-      model$resp_vars$resp_cats[which(form_miss_b)]
-    )
+    "Some of your activation functions do not contain the background noise parameter \"b\".
+    The following activation functions need a background noise parameter:
+    {resp_cats[form_miss_b]}"
   )
 
   NextMethod("check_formula")
 }
 
-# helper to test if background noise par is missing
-missing_b <- function(formula) {
-  !("b" %in% rhs_vars(formula))
-}
-
 ############################################################################# !
 # Convert bmmformula to brmsformla methods                               ####
 ############################################################################# !
-# A bmf2bf.* function should be defined if the default method for consructing
-# the brmsformula from the bmmformula does not apply
-# The shared method for all `bmmmodels` is defined in helpers-formula.R.
-# See ?bmf2bf for details.
-# (YOU CAN DELETE THIS SECTION IF YOUR MODEL USES A STANDARD FORMULA WITH 1 RESPONSE VARIABLE)
-
 #' @export
 bmf2bf.m3 <- function(model, formula) {
   # retrieve required response arguments
-  resp_cats <- model$resp_vars$resp_cats
-  nOpt_idx_vars <- paste0("Idx_", resp_cats)
-  names(nOpt_idx_vars) <- resp_cats
   if (is.character(model$other_vars$num_options)) {
-    num_options <- model$other_vars$num_options
+    options_vars <- model$other_vars$num_options
   } else {
-    num_options <- paste0("nOpt_", resp_cats)
-    names(num_options) <- resp_cats
+    options_vars <- names(model$other_vars$num_options)
   }
-
-
-  # retrieve choice rule
-  choice_rule <- tolower(model$other_vars$choice_rule)
+  resp_cats <- model$resp_vars$resp_cats
+  n_opt_idx_vars <- paste0("Idx_", resp_cats)
+  names(n_opt_idx_vars) <- resp_cats
+  names(options_vars) <- resp_cats
 
   # add transformation to activation according to choice rules
-  transform_act <- ifelse(choice_rule == "simple", "log(", "")
-  end_act <- ifelse(choice_rule == "simple", ")", "")
-  zero_Opt <- ifelse(model$other_vars$choice_rule == "softmax", "(-100)", "(exp(-100))")
-  op_Nopts <- ifelse(model$other_vars$choice_rule == "softmax", "+", "*")
-  trans_Nopts <- ifelse(model$other_vars$choice_rule == "softmax", "log(", "")
-  end_Nopts <- ifelse(model$other_vars$choice_rule == "softmax", ")", "")
+  choice_rule <- tolower(model$other_vars$choice_rule)
+  open <- ifelse(choice_rule == "simple", "log(", "")
+  close <- ifelse(choice_rule == "simple", ")", "")
+  zero_opt <- ifelse(choice_rule == "softmax", "(-100)", "exp(-100)")
+  operator <- ifelse(choice_rule == "softmax", "+", "*")
+  open_n_opts <- ifelse(choice_rule == "softmax", "log(", "")
+  close_n_opts <- ifelse(choice_rule == "softmax", ")", "")
 
   # set the base brmsformula based
-  brms_formula <- brms::bf(paste0(
-    "Y | trials(nTrials)", " ~", transform_act, nOpt_idx_vars[resp_cats[1]], "*(", resp_cats[1],
-    op_Nopts, trans_Nopts, num_options[resp_cats[1]], end_Nopts, ")",
-    " + (1-", nOpt_idx_vars[resp_cats[1]], ") *", zero_Opt, end_act
+  cat <- resp_cats[1]
+  brms_formula <- brms::bf(glue(
+    "Y | trials(nTrials) ~ 
+    {open}
+    {n_opt_idx_vars[cat]} * ({cat} {operator} {open_n_opts}{options_vars[cat]}{close_n_opts}) + (1 - {n_opt_idx_vars[cat]}) * {zero_opt}
+    {close}"
   ), nl = TRUE)
 
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function
-  for (i in 2:length(resp_cats)) {
-    brms_formula <- brms_formula +
-      glue_nlf(
-        paste0("mu", resp_cats[i]), " ~", transform_act, nOpt_idx_vars[resp_cats[i]], "*(", resp_cats[i],
-        op_Nopts, trans_Nopts, num_options[resp_cats[i]], end_Nopts, ")",
-        " + (1-", nOpt_idx_vars[resp_cats[i]], ") *", zero_Opt, end_act
-      )
+  for (cat in resp_cats[-1]) {
+    brms_formula <- brms_formula + glue_nlf(
+      "mu{cat} ~ 
+      {open}
+      {n_opt_idx_vars[cat]} * ({cat} {operator} {open_n_opts}{options_vars[cat]}{close_n_opts}) + (1 - {n_opt_idx_vars[cat]}) * {zero_opt}
+      {close}"
+    )
   }
 
   brms_formula
@@ -457,18 +351,14 @@ bmf2bf.m3 <- function(model, formula) {
 #' @export
 configure_model.m3 <- function(model, data, formula) {
   # construct brms formula from the bmm formula
-  bmm_formula <- formula
-  formula <- bmf2bf(model, bmm_formula)
+  formula <- bmf2bf(model, formula)
 
   # construct the family
   formula$family <- brms::multinomial(refcat = NA)
-
   formula$family$cats <- model$resp_vars$resp_cats
   formula$family$dpars <- paste0("mu", model$resp_vars$resp_cats)
 
-  # return the list
-  out <- nlist(formula, data)
-  return(out)
+  nlist(formula, data)
 }
 
 
@@ -518,12 +408,10 @@ construct_m3_act_funs <- function(model = NULL, warnings = TRUE) {
   if (model$version == "ss") {
     warnif(
       warnings,
-      glue(
-        '\nThe "ss" version of the m3 requires that response categories are ordered as follows:
-        1) correct: correct responses
-        2) other: other list responses
-        3) npl: not presented lures'
-      )
+      '\nThe "ss" version of the m3 requires that response categories are ordered as follows:
+      1) correct: correct responses
+      2) other: other list responses
+      3) npl: not presented lures'
     )
 
     act_funs <- bmf(
@@ -534,14 +422,12 @@ construct_m3_act_funs <- function(model = NULL, warnings = TRUE) {
   } else if (model$version == "cs") {
     warnif(
       warnings,
-      glue(
-        "\n", "The \"cs\" version of the m3 requires that response categories are ordered as follows:\n",
-        " 1) correct: correct responses\n",
-        " 2) dist_context: distractor responses close in context to the correct item\n",
-        " 3) other: other list responses\n",
-        " 4) dist_other: all distractor responses not close in context to the correct item\n",
-        " 5) npl: not presented lures"
-      )
+      "\nThe \"cs\" version of the m3 requires that response categories are ordered as follows:
+      1) correct: correct responses
+      2) dist_context: distractor responses close in context to the correct item
+      3) other: other list responses
+      4) dist_other: all distractor responses not close in context to the correct item
+      5) npl: not presented lures"
     )
 
     act_funs <- bmf(
