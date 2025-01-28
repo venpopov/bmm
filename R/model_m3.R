@@ -121,7 +121,7 @@
 #'  `ss`, `cs`, or `custom`. The default is `custom`.
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
-#' 
+#'
 #' @details `r model_info(.model_m3(), components =c('domain', 'task', 'name', 'citation'))`
 #' #### Version: `ss`
 #' `r model_info(.model_m3(version = "ss"), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
@@ -142,7 +142,7 @@ m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custo
   call <- match.call()
   stop_missing_args()
   stopif(
-    !version %in% c("custom", "cs", "ss"), 
+    !version %in% c("custom", "cs", "ss"),
     'Unknown version: {version}. It should be one of "ss", "cs" or "custom"'
   )
   stopif(
@@ -150,7 +150,7 @@ m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custo
     'Unsupported choice rule "{choice_rule}. Must be one of "simple" or "softmax"'
   )
   stopif(
-    length(num_options) != length(resp_cats), 
+    length(num_options) != length(resp_cats),
     "The option variables should have the same length as the response variables."
   )
   names(num_options) <- names(num_options) %||% paste0("n_opt_",resp_cats)
@@ -171,6 +171,7 @@ check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
     user_pars <- rhs_vars(formula[is_nl(formula)])
     user_pars <- setdiff(user_pars, names(formula[is_nl(formula)]))
     user_pars <- setdiff(user_pars, names(model$parameters))
+    user_pars <- setdiff(user_pars, colnames(data))
     model$parameters <- c(model$parameters, setNames(user_pars, user_pars))
   }
 
@@ -197,7 +198,7 @@ check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
     )
   })
   model$default_priors <- c(model$default_priors, additional_priors)
-  
+
   NextMethod("check_model")
 }
 
@@ -321,7 +322,7 @@ bmf2bf.m3 <- function(model, formula) {
   # set the base brmsformula based
   cat <- resp_cats[1]
   brms_formula <- brms::bf(glue(
-    "Y | trials(nTrials) ~ 
+    "Y | trials(nTrials) ~
     {open}
     {n_opt_idx_vars[cat]} * ({cat} {operator} {open_n_opts}{options_vars[cat]}{close_n_opts}) + (1 - {n_opt_idx_vars[cat]}) * {zero_opt}
     {close}"
@@ -331,7 +332,7 @@ bmf2bf.m3 <- function(model, formula) {
   # another parameter and add the corresponding brms function
   for (cat in resp_cats[-1]) {
     brms_formula <- brms_formula + glue_nlf(
-      "mu{cat} ~ 
+      "mu{cat} ~
       {open}
       {n_opt_idx_vars[cat]} * ({cat} {operator} {open_n_opts}{options_vars[cat]}{close_n_opts}) + (1 - {n_opt_idx_vars[cat]}) * {zero_opt}
       {close}"
@@ -400,7 +401,7 @@ construct_m3_act_funs <- function(model = NULL, warnings = TRUE) {
   }
 
   stopif(
-    !inherits(model, "m3") || !model$version %in% c("ss", "cs"), 
+    !inherits(model, "m3") || !model$version %in% c("ss", "cs"),
     'Activation functions can only be generated for "m3" models "ss" and "cs"'
   )
 
@@ -437,7 +438,7 @@ construct_m3_act_funs <- function(model = NULL, warnings = TRUE) {
       formula(glue("{resp_cats[4]} ~ b + f * a")),
       formula(glue("{resp_cats[5]} ~ b"))
     )
-  } 
+  }
 
   reset_env(act_funs)
 }
