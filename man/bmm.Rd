@@ -99,6 +99,7 @@ backend interface to Stan.
 The following models are supported:
 \itemize{
 \item imm(resp_error, nt_features, nt_distances, set_size, regex, version)
+\item m3(resp_cats, num_options, choice_rule, version)
 \item mixture2p(resp_error)
 \item mixture3p(resp_error, nt_features, set_size, regex)
 \item sdm(resp_error, version)

@@ -95,7 +95,6 @@ fixed_pars_priors <- function(model, formula, additional_pars = list()) {
   brms::set_prior(priors, class = classes, coef = coefs, dpar = dpars, nlpar = nlpars)
 }
 
-
 #' Set default priors for a bmmodel
 #'
 #' This function
@@ -109,6 +108,7 @@ fixed_pars_priors <- function(model, formula, additional_pars = list()) {
 #' @param model A `bmmodel` object
 #' @param formula A `brmsformula` object
 #' @param data A data.frame containing the data used in the model
+#'
 #' @noRd
 #' @keywords internal developer
 set_default_prior <- function(model, data, formula) {
@@ -137,6 +137,7 @@ set_default_prior <- function(model, data, formula) {
      We advise to pass priors for the non-linear parameters to improve parameter estimation.
      Otherwise, improper flat priors will be used by default."
   )
+
 
   pars_key <- names(default_priors)
   pars <- pars[pars %in% pars_key]
@@ -286,7 +287,7 @@ configure_prior.default <- function(model, data, formula, user_prior, ...) {
 }
 
 #' @export
-configure_prior.bmmodel <- function(model, data, formula, user_prior, ...) {
+configure_prior.bmmodel <- function(model, data, formula, user_prior = NULL, ...) {
   prior <- fixed_pars_priors(model, formula)
   default_prior <- set_default_prior(model, data, formula)
   prior <- combine_prior(default_prior, prior)

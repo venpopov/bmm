@@ -145,9 +145,12 @@ test_that("check_var_set_size rejects invalid input", {
 test_that("check_data() returns a data.frame()", {
   mls <- lapply(supported_models(print_call = FALSE), get_model)
   for (ml in mls) {
-    model <- ml(resp_error = "y", nt_features = "x", set_size = 2, nt_distances = "z")
+    model <- ml(
+      resp_error = "y", nt_features = "x", set_size = 2, 
+      nt_distances = "z", resp_cats = c("w", "l"), num_options = c(1, 1)
+    )
     expect_s3_class(
-      check_data(model, data.frame(y = 1, x = 1, z = 2), bmf(kappa ~ 1)),
+      check_data(model, data.frame(y = 1, x = 1, z = 2, w = 1, s = 2, l = 1), bmf(kappa ~ 1)),
       "data.frame"
     )
   }

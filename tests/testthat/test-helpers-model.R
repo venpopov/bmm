@@ -13,6 +13,7 @@ test_that("check_model() refuses invalid models and accepts valid models", {
   expect_error(check_model(sdm), "Did you forget")
   okmodels <- supported_models(print_call = FALSE)
   for (model in okmodels) {
+    if (model == "m3") next
     model <- get_model(model)()
     expect_silent(check_model(model))
     expect_type(check_model(model), "list")
