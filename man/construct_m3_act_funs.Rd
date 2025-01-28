@@ -25,13 +25,12 @@ Measurement Model (m3) implemented in the \code{bmm} package. If no \code{bmmode
 passed then it will print the available model versions.
 }
 \examples{
-\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 model <- m3(
  resp_cats = c("correct","other", "npl"),
  num_options = c(1, 4, 5),
  version = "ss"
 )
 
-ss_act_funs <- construct_m3_act_funs(model, warnings = FALSE)
-\dontshow{\}) # examplesIf}
+construct_m3_act_funs(model, warnings = FALSE)
 }
+\keyword{transform}

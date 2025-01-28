@@ -20,7 +20,7 @@ The \code{bmmformula} the links have been applied to
 \description{
 This function applies the specified link functions in the list of \code{links} to the
 \code{bmmformula} that is passed to it. This function is mostly used internally for configuring
-\code{bmmmodels}.
+\code{bmmodels}.
 }
 \examples{
 # specify a bmmformula
@@ -28,5 +28,5 @@ form <- bmf(x ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
 links <- list(a = "log", c = "logit")
 
 apply_links(form, links)
-
 }
+\keyword{developer}

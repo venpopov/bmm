@@ -29,7 +29,7 @@ on the differences of these choice rules please see the appendix of Oberauer & L
 \item{...}{used internally for testing, ignore it}
 }
 \value{
-An object of class \code{bmmmodel}
+An object of class \code{bmmodel}
 }
 \description{
 The Memory Measurement Model (M3) is a measurement model for working memory
@@ -162,4 +162,4 @@ of choosing a response category is determined by the activation of the candidate
 }
 
 }
-\keyword{bmmmodel}
+\keyword{bmmodel}

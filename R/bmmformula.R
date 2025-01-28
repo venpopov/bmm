@@ -436,7 +436,7 @@ is_constant.default <- function(x) {
 #' @description
 #'   This function applies the specified link functions in the list of `links` to the
 #'   `bmmformula` that is passed to it. This function is mostly used internally for configuring
-#'   `bmmmodels`.
+#'   `bmmodels`.
 #' @param formula A `bmmformula` that the links should be applied to
 #' @param links A list of `links` that should be applied to the formula. Each element in this list
 #'   should be named using the parameter labels the links should be applied for and contain
@@ -450,7 +450,7 @@ is_constant.default <- function(x) {
 #' links <- list(a = "log", c = "logit")
 #'
 #' apply_links(form, links)
-#'
+#' @keywords developer
 #' @export
 apply_links <- function(formula, links) {
   stopifnot(is_bmmformula(formula))

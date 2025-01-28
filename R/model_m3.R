@@ -120,7 +120,7 @@
 #' @param version Character. The version of the M3 model to use. Can be one of
 #'  `ss`, `cs`, or `custom`. The default is `custom`.
 #' @param ... used internally for testing, ignore it
-#' @return An object of class `bmmmodel`
+#' @return An object of class `bmmodel`
 #' 
 #' @details `r model_info(.model_m3(), components =c('domain', 'task', 'name', 'citation'))`
 #' #### Version: `ss`
@@ -130,7 +130,7 @@
 #' #### Version: `custom`
 #' `r model_info(.model_m3(version = "custom"), components = c('requirements', 'parameters', 'fixed_parameters', 'links', 'prior'))`
 #'
-#' @keywords bmmmodel
+#' @keywords bmmodel
 #'
 #' @examples
 #' \dontrun{
@@ -379,15 +379,15 @@ configure_model.m3 <- function(model, data, formula) {
 #'  the model object. The activation functions use the names of the response categories
 #'  specified in the model object.
 #'
-#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
+#' @examples
 #' model <- m3(
 #'  resp_cats = c("correct","other", "npl"),
 #'  num_options = c(1, 4, 5),
 #'  version = "ss"
 #' )
 #'
-#' ss_act_funs <- construct_m3_act_funs(model, warnings = FALSE)
-#' 
+#' construct_m3_act_funs(model, warnings = FALSE)
+#' @keywords transform
 #' @export
 construct_m3_act_funs <- function(model = NULL, warnings = TRUE) {
   if (is.null(model)) {

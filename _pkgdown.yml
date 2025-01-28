@@ -65,11 +65,7 @@ reference:
    desc: "Functions to assist in developing new models"
  - contents:
    - has_keyword("developer")
- - title: "Deprecated"
-   desc: "Deprecated functions (will be removed in future versions)"
- - contents:
-   - has_keyword("deprecated")
-
+ 
 
 articles:
  - title: Continuous reproduction tasks
