@@ -2,77 +2,76 @@
 # MODELS                                                                 ####
 ############################################################################# !
 
-.model_imm <-
-  function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
-           set_size = NULL, regex = FALSE, version = "full", links = NULL,
-           call = NULL, ...) {
-    out <- structure(
-      list(
-        resp_vars = nlist(resp_error),
-        other_vars = nlist(nt_features, nt_distances, set_size),
-        domain = "Visual working memory",
-        task = "Continuous reproduction",
-        name = "Interference measurement model by Oberauer and Lin (2017).",
-        version = version,
-        citation = glue(
-          "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
+.model_imm <- function(resp_error = NULL, nt_features = NULL, nt_distances = NULL,
+                       set_size = NULL, regex = FALSE, version = "full", links = NULL,
+                       call = NULL, ...) {
+  out <- structure(
+    list(
+      resp_vars = nlist(resp_error),
+      other_vars = nlist(nt_features, nt_distances, set_size),
+      domain = "Visual working memory",
+      task = "Continuous reproduction",
+      name = "Interference measurement model by Oberauer and Lin (2017).",
+      version = version,
+      citation = glue(
+        "Oberauer, K., & Lin, H.Y. (2017). An interference model \\
           of visual working memory. Psychological Review, 124(1), 21-59"
-        ),
-        requirements = glue(
-          "- The response vairable should be in radians and \\
+      ),
+      requirements = glue(
+        "- The response vairable should be in radians and \\
           represent the angular error relative to the target
           - The non-target features should be in radians and be \\
           centered relative to the target"
-        ),
-        parameters = list(
-          mu1 = glue(
-            "Location parameter of the von Mises distribution for memory \\
-            responses (in radians). Fixed internally to 0 by default."
-          ),
-          kappa = "Concentration parameter of the von Mises distribution",
-          a = "General activation of memory items",
-          c = "Context activation",
-          s = "Spatial similarity gradient"
-        ),
-        links = list(
-          mu1 = "tan_half",
-          kappa = "log",
-          a = "log",
-          c = "log",
-          s = "log"
-        ),
-        fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
-        default_priors = list(
-          mu1 = list(main = "student_t(1, 0, 1)"),
-          kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
-          a = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
-          c = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
-          s = list(main = "normal(0, 1)", effects = "normal(0, 1)")
-        ),
-        void_mu = FALSE
       ),
-      # attributes
-      regex = regex,
-      regex_vars = c("nt_features", "nt_distances"),
-      class = c("bmmodel", "circular", "non_targets", "imm", paste0("imm_", version)),
-      call = call
-    )
+      parameters = list(
+        mu1 = glue(
+          "Location parameter of the von Mises distribution for memory \\
+            responses (in radians). Fixed internally to 0 by default."
+        ),
+        kappa = "Concentration parameter of the von Mises distribution",
+        a = "General activation of memory items",
+        c = "Context activation",
+        s = "Spatial similarity gradient"
+      ),
+      links = list(
+        mu1 = "tan_half",
+        kappa = "log",
+        a = "log",
+        c = "log",
+        s = "log"
+      ),
+      fixed_parameters = list(mu1 = 0, mu2 = 0, kappa2 = -100),
+      default_priors = list(
+        mu1 = list(main = "student_t(1, 0, 1)"),
+        kappa = list(main = "normal(2, 1)", effects = "normal(0, 1)"),
+        a = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
+        c = list(main = "normal(0, 1)", effects = "normal(0, 1)"),
+        s = list(main = "normal(0, 1)", effects = "normal(0, 1)")
+      ),
+      void_mu = FALSE
+    ),
+    # attributes
+    regex = regex,
+    regex_vars = c("nt_features", "nt_distances"),
+    class = c("bmmodel", "circular", "non_targets", "imm", paste0("imm_", version)),
+    call = call
+  )
 
-    # add version specific information
-    if (version == "abc") {
-      out$parameters$s <- NULL
-      out$links$s <- NULL
-      out$default_priors$s <- NULL
-      attributes(out)$regex_vars <- c("nt_features")
-    } else if (version == "bsc") {
-      out$parameters$a <- NULL
-      out$links$a <- NULL
-      out$default_priors$a <- NULL
-    }
-
-    out$links[names(links)] <- links
-    out
+  # add version specific information
+  if (version == "abc") {
+    out$parameters$s <- NULL
+    out$links$s <- NULL
+    out$default_priors$s <- NULL
+    attributes(out)$regex_vars <- c("nt_features")
+  } else if (version == "bsc") {
+    out$parameters$a <- NULL
+    out$links$a <- NULL
+    out$default_priors$a <- NULL
   }
+
+  out$links[names(links)] <- links
+  out
+}
 
 # user facing alias
 
@@ -234,7 +233,7 @@ check_data.imm_full <- function(model, data, formula) {
 
   # replace NA values with 999 so they have 0 effect through the distance formula
   data[, nt_distances][is.na(data[, nt_distances])] <- 999
-  
+
   stopif(
     any(data[, nt_distances] < 0),
     "All non-target distances to the target need to be postive."
@@ -249,22 +248,14 @@ check_data.imm_full <- function(model, data, formula) {
 # Each model should have a corresponding configure_model.* function. See
 # ?configure_model for more information.
 
-#' @export
-configure_model.imm_abc <- function(model, data, formula) {
-  # retrieve arguments from the data check
-  max_set_size <- attr(data, "max_set_size")
-  lure_idx <- attr(data, "lure_idx_vars")
-  nt_features <- model$other_vars$nt_features
-  set_size_var <- model$other_vars$set_size
-
-  # construct main brms formula from the bmm formula
-  formula <- bmf2bf(model, formula) +
+.base_imm_formula <- function(model, formula) {
+  bmf2bf(model, formula) +
     brms::lf(kappa2 ~ 1) +
     brms::lf(mu2 ~ 1) +
-    brms::nlf(theta1 ~ log(exp(c) + exp(a))) +
     brms::nlf(kappa1 ~ kappa)
+}
 
-  # additional internal terms for the mixture model formula
+.add_imm_mixture_terms <- function(formula, max_set_size, lure_idx, nt_features, theta_exprs) {
   kappa_nts <- paste0("kappa", 3:(max_set_size + 1))
   theta_nts <- paste0("theta", 3:(max_set_size + 1))
   mu_nts <- paste0("mu", 3:(max_set_size + 1))
@@ -272,57 +263,36 @@ configure_model.imm_abc <- function(model, data, formula) {
   for (i in 1:(max_set_size - 1)) {
     formula <- formula +
       glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf("{theta_nts[i]} ~ {lure_idx[i]} * a + (1 - {lure_idx[i]}) * (-100)") +
+      glue_nlf("{theta_nts[i]} ~ {theta_exprs[i]}") +
       glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
   }
 
-  # define mixture family
-  formula$family <- brms::mixture(
+  formula
+}
+
+.imm_mixture_family <- function(max_set_size) {
+  brms::mixture(
     brms::von_mises("tan_half"), brms::von_mises("identity"),
     nmix = c(1, max_set_size),
     order = "none"
   )
-
-  nlist(formula, data)
 }
 
-
 #' @export
-configure_prior.imm_abc <- function(model, data, formula, user_prior, ...) {
+configure_model.imm_abc <- function(model, data, formula) {
   # retrieve arguments from the data check
-  prior <- brms::empty_prior()
-  set_size_var <- model$other_vars$set_size
-  prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
+  max_set_size <- attr(data, "max_set_size")
+  lure_idx <- attr(data, "lure_idx_vars")
+  nt_features <- model$other_vars$nt_features
 
-  a_preds <- rhs_vars(formula$pforms$a)
-  if (prior_cond && set_size_var %in% a_preds) {
-    prior <- prior + brms::prior_("constant(0)",
-      class = "b",
-      coef = paste0(set_size_var, 1),
-      nlpar = "a"
-    )
-  }
+  formula <- .base_imm_formula(model, formula) +
+    brms::nlf(theta1 ~ log(exp(c) + exp(a)))
 
-  # check if there is a random effect on thetant that include set_size as predictor
-  bterms <- brms::brmsterms(formula$pforms$a)
-  re_terms <- bterms$dpars$mu$re
-  if (!is.null(re_terms)) {
-    for (i in 1:nrow(re_terms)) {
-      group <- re_terms$group[[i]]
-      form <- re_terms$form[[i]]
-      a_preds <- rhs_vars(form)
-      if (prior_cond && set_size_var %in% a_preds) {
-        prior <- prior + brms::prior_("constant(1e-8)",
-          class = "sd",
-          coef = paste0(set_size_var, 1),
-          group = group,
-          nlpar = "a"
-        )
-      }
-    }
-  }
+  theta_exprs <- glue("{lure_idx} * a + (1 - {lure_idx}) * (-100)")
+  formula <- .add_imm_mixture_terms(formula, max_set_size, lure_idx, nt_features, theta_exprs)
+  formula$family <- .imm_mixture_family(max_set_size)
 
-  prior
+  nlist(formula, data)
 }
 
 #' @export
@@ -331,77 +301,17 @@ configure_model.imm_bsc <- function(model, data, formula) {
   max_set_size <- attr(data, "max_set_size")
   lure_idx <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
-  set_size_var <- model$other_vars$set_size
   nt_distances <- model$other_vars$nt_distances
 
-  # construct main brms formula from the bmm formula
-  formula <- bmf2bf(model, formula) +
-    brms::lf(kappa2 ~ 1) +
-    brms::lf(mu2 ~ 1) +
+  formula <- .base_imm_formula(model, formula) +
     brms::nlf(theta1 ~ c) +
-    brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
 
-  # additional internal terms for the mixture model formula
-  kappa_nts <- paste0("kappa", 3:(max_set_size + 1))
-  theta_nts <- paste0("theta", 3:(max_set_size + 1))
-  mu_nts <- paste0("mu", 3:(max_set_size + 1))
-
-  for (i in 1:(max_set_size - 1)) {
-    formula <- formula +
-      glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf(
-        "{theta_nts[i]} ~ {lure_idx[i]} * (-expS*{nt_distances[i]} + c)",
-        " + (1 - {lure_idx[i]}) * (-100)"
-      ) +
-      glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
-  }
-
-  # define mixture family
-  formula$family <- brms::mixture(
-    brms::von_mises("tan_half"), brms::von_mises("identity"),
-    nmix = c(1, max_set_size),
-    order = "none"
-  )
+  theta_exprs <- glue("{lure_idx} * (-expS*{nt_distances} + c) + (1 - {lure_idx}) * (-100)")
+  formula <- .add_imm_mixture_terms(formula, max_set_size, lure_idx, nt_features, theta_exprs)
+  formula$family <- .imm_mixture_family(max_set_size)
 
   nlist(formula, data)
-}
-
-#' @export
-configure_prior.imm_bsc <- function(model, data, formula, user_prior, ...) {
-  # retrieve arguments from the data check
-  prior <- brms::empty_prior()
-  set_size_var <- model$other_vars$set_size
-  prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
-  s_preds <- rhs_vars(formula$pforms$s)
-  if (prior_cond && set_size_var %in% s_preds) {
-    prior <- prior + brms::prior_("constant(0)",
-      class = "b",
-      coef = paste0(set_size_var, 1),
-      nlpar = "s"
-    )
-  }
-
-  # check if there is a random effect on theetant that include set_size as predictor
-  bterms <- brms::brmsterms(formula$pforms$s)
-  re_terms <- bterms$dpars$mu$re
-  if (!is.null(re_terms)) {
-    for (i in 1:nrow(re_terms)) {
-      group <- re_terms$group[[i]]
-      form <- re_terms$form[[i]]
-      s_preds <- rhs_vars(form)
-      if (prior_cond && set_size_var %in% s_preds) {
-        prior <- prior + brms::prior_("constant(1e-8)",
-          class = "sd",
-          coef = paste0(set_size_var, 1),
-          group = group,
-          nlpar = "s"
-        )
-      }
-    }
-  }
-
-  prior
 }
 
 #' @export
@@ -410,107 +320,52 @@ configure_model.imm_full <- function(model, data, formula) {
   max_set_size <- attr(data, "max_set_size")
   lure_idx <- attr(data, "lure_idx_vars")
   nt_features <- model$other_vars$nt_features
-  set_size_var <- model$other_vars$set_size
   nt_distances <- model$other_vars$nt_distances
 
-  # construct main brms formula from the bmm formula
-  formula <- bmf2bf(model, formula) +
-    brms::lf(kappa2 ~ 1) +
-    brms::lf(mu2 ~ 1) +
+  formula <- .base_imm_formula(model, formula) +
     brms::nlf(theta1 ~ log(exp(c) + exp(a))) +
-    brms::nlf(kappa1 ~ kappa) +
     brms::nlf(expS ~ exp(s))
 
-  # additional internal terms for the mixture model formula
-  kappa_nts <- paste0("kappa", 3:(max_set_size + 1))
-  theta_nts <- paste0("theta", 3:(max_set_size + 1))
-  mu_nts <- paste0("mu", 3:(max_set_size + 1))
-
-  for (i in 1:(max_set_size - 1)) {
-    formula <- formula +
-      glue_nlf("{kappa_nts[i]} ~ kappa") +
-      glue_nlf(
-        "{theta_nts[i]} ~ {lure_idx[i]} * log(exp(c-expS*{nt_distances[i]}) + exp(a))",
-        "+ (1 - {lure_idx[i]}) * (-100)"
-      ) +
-      glue_nlf("{mu_nts[i]} ~ {nt_features[i]}")
-  }
-
-
-  # define mixture family
-  formula$family <- brms::mixture(brms::von_mises("tan_half"),
-    brms::von_mises("identity"),
-    nmix = c(1, max_set_size),
-    order = "none"
-  )
+  theta_exprs <- glue("{lure_idx} * log(exp(c-expS*{nt_distances}) + exp(a)) + (1 - {lure_idx}) * (-100)")
+  formula <- .add_imm_mixture_terms(formula, max_set_size, lure_idx, nt_features, theta_exprs)
+  formula$family <- .imm_mixture_family(max_set_size)
 
   nlist(formula, data)
 }
 
+############################################################################# !
+# CONFIGURE_PRIOR METHODS                                                ####
+############################################################################# !
+
 #' @export
-configure_prior.imm_full <- function(model, data, formula, user_prior, ...) {
-  # retrieve arguments from the data check
-  set_size_var <- model$other_vars$set_size
-  prior_cond <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
-  s_preds <- rhs_vars(formula$pforms$s)
-  a_preds <- rhs_vars(formula$pforms$a)
-  prior <- brms::empty_prior()
-  if (prior_cond && set_size_var %in% a_preds) {
-    prior <- prior + brms::prior_("constant(0)",
-      class = "b",
-      coef = paste0(set_size_var, 1),
-      nlpar = "a"
-    )
-  }
-  if (prior_cond && set_size_var %in% s_preds) {
-    prior <- prior + brms::prior_("constant(0)",
-      class = "b",
-      coef = paste0(set_size_var, 1),
-      nlpar = "s"
-    )
-  }
-
-  # check if there is a random effect on theetant that include set_size as predictor
-  bterms <- brms::brmsterms(formula$pforms$a)
-  re_terms <- bterms$dpars$mu$re
-  if (!is.null(re_terms)) {
-    for (i in 1:nrow(re_terms)) {
-      group <- re_terms$group[[i]]
-      form <- re_terms$form[[i]]
-      a_preds <- rhs_vars(form)
-      if (prior_cond && set_size_var %in% a_preds) {
-        prior <- prior + brms::prior_("constant(1e-8)",
-          class = "sd",
-          coef = paste0(set_size_var, 1),
-          group = group,
-          nlpar = "a"
-        )
-      }
-    }
-  }
-
-  # check if there is a random effect on theetant that include set_size as predictor
-  bterms <- brms::brmsterms(formula$pforms$s)
-  re_terms <- bterms$dpars$mu$re
-  if (!is.null(re_terms)) {
-    for (i in 1:nrow(re_terms)) {
-      group <- re_terms$group[[i]]
-      form <- re_terms$form[[i]]
-      s_preds <- rhs_vars(form)
-      if (prior_cond && set_size_var %in% s_preds) {
-        prior <- prior + brms::prior_("constant(1e-8)",
-          class = "sd",
-          coef = paste0(set_size_var, 1),
-          group = group,
-          nlpar = "s"
-        )
-      }
-    }
-  }
-
-  prior
+configure_prior.imm_abc <- function(model, data, formula, user_prior, ...) {
+  .configure_prior_imm(model, data, formula, nlpars = "a")
 }
 
+#' @export
+configure_prior.imm_bsc <- function(model, data, formula, user_prior, ...) {
+  .configure_prior_imm(model, data, formula, nlpars = "s")
+}
+
+#' @export
+configure_prior.imm_full <- function(model, data, formula, user_prior, ...) {
+  .configure_prior_imm(model, data, formula, nlpars = c("a", "s"))
+}
+
+.configure_prior_imm <- function(model, data, formula, nlpars, ...) {
+  prior <- brms::empty_prior()
+  set_size_var <- model$other_vars$set_size
+
+  # Models with non-target errors need constant priors on set-size 1 factors
+  set_size_is_factor_with_level1 <- any(data$ss_numeric == 1) && !is.numeric(data[[set_size_var]])
+  if (!set_size_is_factor_with_level1) {
+    return(prior)
+  }
+
+  prior +
+    constrain_set_size1_fixef(formula, nlpars, set_size_var, "constant(0)") +
+    constrain_set_size1_ranef(formula, nlpars, set_size_var, "constant(1e-8)")
+}
 
 # ---- deprecated calls for specific versions ----
 
@@ -532,7 +387,6 @@ IMMfull <- function(resp_error, nt_features, nt_distances, set_size, regex = FAL
     version = "full", call = call, ...
   )
 }
-
 
 #' @rdname imm
 #' @keywords deprecated

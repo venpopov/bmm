@@ -114,11 +114,11 @@ test_that("check_var_set_size rejects invalid input", {
 
   # Numeric vector with invalid set sizes (less than 1) is invalid
   dat <- data.frame(y = rep(c(0, 1, 5), each = 3))
-  expect_error(check_var_set_size("y", dat), "must be greater than 0")
+  expect_error(check_var_set_size("y", dat), "must be positive whole numbers")
 
   # Factor with levels less than 1 are invalid
   dat <- data.frame(y = factor(rep(c(0, 4, 5), each = 3)))
-  expect_error(check_var_set_size("y", dat), "must be greater than 0")
+  expect_error(check_var_set_size("y", dat), "must be positive whole numbers")
 
   # Character vector representing set sizes with text is invalid
   dat <- data.frame(y = rep(paste0("set_size ", c(2, 3, 8)), each = 3))
@@ -130,7 +130,7 @@ test_that("check_var_set_size rejects invalid input", {
 
   # Numeric vector with decimals is invalid
   dat <- data.frame(y = c(1:8, 1.3))
-  expect_error(check_var_set_size("y", dat), "must be whole numbers")
+  expect_error(check_var_set_size("y", dat), "must be positive whole numbers")
 
   # Setsize must be of length 1
   dat <- data.frame(y = c(1, 2, 3), z = c(1, 2, 3))

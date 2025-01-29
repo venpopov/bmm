@@ -109,23 +109,24 @@ test_that("stancode() works with formula", {
 
 test_that("stancode() works with bmmformula", {
   ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
-  sc <- stancode(ff, oberauer_lin_2017, model = mixture3p(resp_error = "dev_rad",
-                                                         nt_features = "col_nt",
-                                                         set_size = "set_size",
-                                                         regex = T)
-  )
+  model <- mixture3p("dev_rad", "col_nt", set_size = "set_size", regex = TRUE)
+  sc <- stancode(ff, oberauer_lin_2017, model = model)
   expect_equal(class(sc)[1], "character")
 })
 
 test_that("no check for with stancode function", {
-  withr::local_options('bmm.sort_data' = 'check')
-  expect_no_message(stancode(bmf(kappa ~ set_size, c ~ set_size),
-                             oberauer_lin_2017,
-                             sdm('dev_rad')))
+  withr::local_options("bmm.sort_data" = "check")
+  expect_no_message(stancode(
+    bmf(kappa ~ set_size, c ~ set_size),
+    oberauer_lin_2017,
+    sdm("dev_rad")
+  ))
 })
 
 test_that("change_constants() works", {
-  model <- sdm(resp_error = "y")
+  model1 <- sdm("y")
   formula <- bmf(mu ~ set_size, kappa = 3, c ~ 1)
-  model <- change_constants(model, formula)
+  model2 <- change_constants(model1, formula)
+  expect_equal(model1$fixed_parameters, list(mu = 0))
+  expect_equal(model2$fixed_parameters, list(kappa = 3))
 })

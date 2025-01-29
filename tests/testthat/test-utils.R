@@ -8,7 +8,7 @@ test_that("init argument is overwritten if the user supplies it", {
 test_that("user cannot overwrite the custom family", {
   config_args <- list(formula = 'a', family = 'b', data = 'd', stanvars = 'e', init = 1)
   dots <- list(family = 'c')
-  expect_error(combine_args(nlist(config_args, dots)), 'You cannot provide a family argument to bmm')
+  expect_error(combine_args(nlist(config_args, dots)), 'Unsupported argument')
 })
 
 test_that("empty dots don't crash the function", {
@@ -70,21 +70,23 @@ test_that("check_rds_file works", {
   expect_null(check_rds_file(NULL))
 })
 
-test_that("read_bmmfit works", {
+test_that("try_read_bmmfit works", {
+  withr::local_options(bmm.sort_data = FALSE)
   mock_fit <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
                   backend = "mock", mock_fit = 1, rename = F)
   file <- tempfile()
   mock_fit$file <- paste0(file, '.rds')
   saveRDS(mock_fit, paste0(file, '.rds'))
-  expect_equal(read_bmmfit(file, FALSE), mock_fit, ignore_function_env = TRUE,
+  expect_equal(try_read_bmmfit(file, FALSE), mock_fit, ignore_function_env = TRUE,
                ignore_formula_env = TRUE)
 
   x = 1
   saveRDS(x, paste0(file, '.rds'))
-  expect_error(read_bmmfit(file, FALSE), "not of class 'bmmfit'")
+  expect_error(try_read_bmmfit(file, FALSE), "not of class 'bmmfit'")
 })
 
-test_that("save_bmmfit works", {
+test_that("try_save_bmmfit works", {
+  withr::local_options(bmm.sort_data = FALSE)
   file <- tempfile()
   mock_fit <- bmm(bmf(c~1, kappa ~ 1), oberauer_lin_2017, sdm('dev_rad'),
                   backend = "mock", mock_fit = 1, rename = F,

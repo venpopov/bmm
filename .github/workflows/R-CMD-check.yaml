@@ -53,6 +53,7 @@ jobs:
           extra-packages: |
             rmarkdown
             withr
+            dplyr
             knitr
             posterior
             here

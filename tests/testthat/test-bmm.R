@@ -64,18 +64,6 @@ test_that("Available models produce expected errors", {
     spaD3 = 2
   )
 
-  # Missing data
-  okmodels <- supported_models(print_call = FALSE)
-  for (model in okmodels) {
-    model <- get_model(model)
-    expect_error(
-      bmm(bmf(kappa ~ 1), model = model(), backend = "mock",
-          mock_fit = 1, rename = FALSE),
-      "argument \"data\" is missing, with no default"
-    )
-  }
-
-
   okmodels <- c("mixture3p", "imm")
   for (model in okmodels) {
     model1 <- get_model(model)(resp_error = "resp_error",

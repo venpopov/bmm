@@ -3,7 +3,7 @@
 \name{softmax}
 \alias{softmax}
 \alias{softmaxinv}
-\title{Softmax and logsoftmax functions and their inverse functions}
+\title{Softmax function and its inverse}
 \usage{
 softmax(eta, lambda = 1)
 

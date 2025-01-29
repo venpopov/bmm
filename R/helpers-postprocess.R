@@ -12,7 +12,7 @@
 #'   skip this method, and the default method will be used (which returns the same
 #'   brmsfit object that was passed to it).
 #' @param model A model list object returned from check_model()
-#' @param fit the fitted brm model returned by `call_brm()`
+#' @param fit the fitted brm model
 #' @param ... Additional arguments passed to the method
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export
@@ -59,9 +59,8 @@ get_mu_pars <- function(object) {
     X <- get_model_matrix(dpars$mu$fe, object$data)
     return(colnames(X))
   }
-  return(NULL)
+  NULL
 }
-
 
 #' @title Generic S3 method for reverting any postprocessing of the fitted brm model
 #' @description Called by update.bmmfit() to automatically revert some of the postprocessing
@@ -76,7 +75,7 @@ get_mu_pars <- function(object) {
 #'   revert the postprocessing (if otherwise the update method would produce incorrect
 #'   results).
 #' @param model A model list object returned from check_model()
-#' @param fit the fitted brm model returned by `call_brm()`
+#' @param fit the fitted brm model
 #' @param ... Additional arguments passed to the method
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export

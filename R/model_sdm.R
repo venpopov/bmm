@@ -108,17 +108,14 @@ check_data.sdm <- function(model, data, formula) {
   NextMethod("check_data")
 }
 
-
 ############################################################################# !
 # CONFIGURE_MODEL S3 METHODS                                             ####
 ############################################################################# !
 # Each model should have a corresponding configure_model.* function. See
 # ?configure_model for more information.
 
-
 #' @export
 configure_model.sdm <- function(model, data, formula) {
-  # construct the family
   # note - c has a log link, but I've coded it manually for computational efficiency
   sdm_simple <- brms::custom_family(
     name = "sdm_simple",
@@ -148,10 +145,8 @@ configure_model.sdm <- function(model, data, formula) {
   # can cause the sampler to fail
   init <- 1
 
-  # return the list
   nlist(formula, data, stanvars, init)
 }
-
 
 ############################################################################# !
 # POSTPROCESS METHODS                                                    ####

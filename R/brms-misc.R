@@ -149,22 +149,6 @@ is_atomic_or_null <- function(x) {
   is.atomic(x) || is.null(x)
 }
 
-# checks if the formula contains an intercept
-has_intercept <- function(formula) {
-  if (is_terms(formula)) {
-    out <- as.logical(attr(formula, "intercept"))
-  } else {
-    formula <- as.formula(formula)
-    try_terms <- try(terms(formula), silent = TRUE)
-    if (is_try_error(try_terms)) {
-      out <- FALSE
-    } else {
-      out <- as.logical(attr(try_terms, "intercept"))
-    }
-  }
-  out
-}
-
 # find all namespace entries of a package, which are of
 # a particular type for instance all exported objects
 # retrieved from 'brms' source code, which in turn is retrieved from

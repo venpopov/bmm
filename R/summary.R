@@ -49,7 +49,6 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
   out$model <- bmmodel
   out$data <- object$data
 
-  # assign bmmsummary class to handle the printing
   class(out) <- "bmmsummary"
   out
 }
@@ -59,7 +58,6 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
 print.bmmsummary <- function(x, digits = 2, color = getOption("bmm.color_summary", TRUE), ...) {
   options(bmm.color_summary = color)
   pars_to_print <- select_pars(x)
-  # add check if the parameter is fixed by the user
 
   cat(style("purple1")("  Model: "))
   cat(summarise_model(x$model, newline = TRUE, wsp = 9), "\n")
@@ -155,19 +153,17 @@ summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp = 0, model
   print(formula, newline = newline, wsp = wsp)
 }
 
-
 #' @export
 print.bmmformula <- function(x, newline = TRUE, wsp = 0, ...) {
   wspace <- collapse(rep(" ", wsp))
   sep <- paste0(ifelse(newline, "\n", ","), wspace)
-  for (i in 1:length(x)) {
+  for (i in seq_along(x)) {
     if (is.numeric(x[[i]])) {
       x[[i]] <- paste0(names(x)[i], " = ", x[[i]])
     }
   }
   cat(paste0(x, collapse = sep))
 }
-
 
 summarise_model <- function(model, ...) {
   UseMethod("summarise_model")

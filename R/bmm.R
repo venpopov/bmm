@@ -111,7 +111,7 @@ bmm <- function(formula, data, model,
   dots <- list(...)
 
   # check if the model has been previously fit and return it if requested
-  x <- read_bmmfit(file, file_refit)
+  x <- try_read_bmmfit(file, file_refit)
   if (!is.null(x)) {
     return(x)
   }
@@ -139,7 +139,7 @@ bmm <- function(formula, data, model,
 
   # estimate the model
   fit_args <- combine_args(nlist(config_args, opts, dots, prior))
-  fit <- call_brm(fit_args)
+  fit <- brms::do_call(brms::brm, fit_args)
 
   # model post-processing
   fit <- postprocess_brm(
@@ -149,8 +149,8 @@ bmm <- function(formula, data, model,
     configure_opts = configure_opts
   )
 
-  # save the fitted model object if !is.null
-  save_bmmfit(fit, file, compress = file_compress)
+  # save the fitted model object if file argument provided and return the object
+  try_save_bmmfit(fit, file, compress = file_compress)
 }
 
 

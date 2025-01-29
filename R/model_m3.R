@@ -264,7 +264,7 @@ check_formula.m3 <- function(model, data, formula) {
   }
 
   formula <- apply_links(formula, model$links)
-  formula <- assign_nl(formula)
+  formula <- assign_nl_attr(formula)
 
   NextMethod("check_formula")
 }

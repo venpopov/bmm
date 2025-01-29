@@ -1,20 +1,4 @@
-#' Pipe operator
-#'
-#' See `magrittr::[\%>\%][magrittr::pipe]` for details.
-#'
-#' @name %>%
-#' @rdname pipe
-#' @keywords internal
-#' @export
-#' @importFrom magrittr %>%
-#' @usage lhs \%>\% rhs
-#' @param lhs A value or the magrittr placeholder.
-#' @param rhs A function call using the magrittr semantics.
-#' @return The result of calling `rhs(lhs)`.
-NULL
-
-
-#' Softmax and logsoftmax functions and their inverse functions
+#' Softmax function and its inverse
 #'
 #' `softmax` returns the value of the softmax function
 #' `softmaxinv` returns the value of the inverse-softmax function
@@ -42,7 +26,6 @@ NULL
 #' softmaxinv(softmax(5:7))
 softmax <- function(eta, lambda = 1) {
   stopifnot(requireNamespace("matrixStats", quietly = TRUE))
-  m <- length(eta) + 1
   denom <- matrixStats::logSumExp(c(lambda * eta, 0))
   exp(c(lambda * eta, 0) - denom)
 }
@@ -50,11 +33,11 @@ softmax <- function(eta, lambda = 1) {
 #' @rdname softmax
 #' @export
 softmaxinv <- function(p, lambda = 1) {
-  m <- length(p)
-  if (m > 1) {
-    return((log(p) - log(p[m]))[1:(m - 1)] / lambda)
+  len <- length(p)
+  if (len <= 1) {
+    return(numeric(0))
   }
-  numeric(0)
+  (log(p) - log(p[len]))[1:(len - 1)] / lambda
 }
 
 #' @title Configure local options during model fitting
@@ -72,21 +55,17 @@ softmaxinv <- function(p, lambda = 1) {
 #' @return A list of options to pass to brm()
 configure_options <- function(opts, env = parent.frame()) {
   if (isTRUE(opts$parallel)) {
+    # for backward compatibility - we depricated the parallel argument
     cores <- parallel::detectCores()
-    chains <- opts$chains
-    if (is.null(opts$chains)) {
-      chains <- 4
-    }
+    chains <- opts$chains %||% 4
   } else {
     cores <- opts$cores %||% getOption("mc.cores", 1)
   }
   if (not_in_list("silent", opts)) {
     opts$silent <- getOption("bmm.silent", 1)
   }
-  if (is.null(opts$backend)) {
-    if (requireNamespace("cmdstanr", quietly = TRUE)) {
-      opts$backend <- "cmdstanr"
-    }
+  if (is.null(opts$backend) && requireNamespace("cmdstanr", quietly = TRUE)) {
+    opts$backend <- "cmdstanr"
   }
   withr::local_options(
     list(
@@ -128,36 +107,16 @@ glue_lf <- function(..., env.frame = -1) {
   brms::lf(stats::as.formula(glue(..., .envir = sys.frame(env.frame))))
 }
 
-#' wrapper function to call brms, saving fit_args if backend is mock for testing
-#' not used directly, but called by bmm(). If bmm() is run with
-#' backend="mock", then we can perform tests on the fit_args to check if the
-#' model configuration is correct. Avoids compiling and running the model
-#' @noRd
-call_brm <- function(fit_args) {
-  fit <- brms::do_call(brms::brm, fit_args)
-}
-
 # function to ensure that if the user wants to overwrite an argument (such as
-# init), they can
+# init), they can. args$prior is NULL by default or is a user-provided prior
+# any argument in args$dots is potentially overwrite a default argument in config_args
 combine_args <- function(args) {
   config_args <- args$config_args
-  opts <- args$opts
   dots <- args$dots
-  if (!is.null(args$prior)) {
-    config_args$prior <- args$prior
-  }
-  if (is.null(dots)) {
-    return(c(config_args, opts))
-  }
-  for (i in names(dots)) {
-    if (not_in(i, c("family"))) {
-      config_args[[i]] <- dots[[i]]
-    } else {
-      stop2("You cannot provide a family argument to bmm(). \\
-             Please use the model argument instead.")
-    }
-  }
-  c(config_args, opts)
+  stopif("family" %in% names(dots), "Unsupported argument 'family'. Use the model argument instead.")
+  config_args$prior <- args$prior %||% config_args$prior
+  config_args[names(dots)] <- dots
+  c(config_args, args$opts)
 }
 
 ############################
@@ -219,13 +178,11 @@ warnif <- function(condition, message) {
   }
 }
 
-
 # function to ensure proper reading of stan files
 read_lines2 <- function(con) {
   lines <- readLines(con, n = -1L, warn = FALSE)
   paste(lines, collapse = "\n")
 }
-
 
 # for testing purposes
 install_and_load_bmm_version <- function(version, path) {
@@ -241,7 +198,6 @@ install_and_load_bmm_version <- function(version, path) {
   }
   library(bmm, lib.loc = path)
 }
-
 
 #' Extract information from a brmsfit object
 #' @param fit A brmsfit object, or a list of brmsfit objects
@@ -318,7 +274,6 @@ stop_quietly <- function() {
   stop()
 }
 
-
 # for some models it is faster to sample if the normalizing constant is calculated
 # only once for all trials that have the same value for the predictors. Currently
 # this is only used in the sdm model, and to work it requires that the
@@ -330,6 +285,10 @@ order_data_query <- function(model, data, formula) {
   predictors <- rhs_vars(formula)
   predictors <- predictors[not_in(predictors, dpars)]
   predictors <- predictors[predictors %in% colnames(data)]
+
+  if (length(predictors) == 0) {
+    return(data)
+  }
 
   if (sort_data == "check" && !is_data_ordered(data, formula)) {
     message2(
@@ -382,12 +341,12 @@ order_data_query <- function(model, data, formula) {
           "Your data has been sorted by the following predictors: ",
           paste(predictors, collapse = ", "), "\n"
         )
-        data <- dplyr::arrange_at(data, predictors)
+        data <- data[do.call(order, data[predictors]),]
       }
     }
     message("\n\n", disable_msg)
   } else if (isTRUE(sort_data)) {
-    data <- dplyr::arrange_at(data, predictors)
+    data <- data[do.call(order, data[predictors]),]
     message(
       "\nYour data has been sorted by the following predictors: ",
       paste(predictors, collapse = ", "), "\n"
@@ -432,21 +391,21 @@ print.message <- function(x, ...) {
   cat(x, ...)
 }
 
-
 # returns either x, or all variables that match the regular expression x
 # @param x character vector or regular expression
 # @param all_variables character vector of all variables within which to search
 # @param regex logical. If TRUE, x is treated as a regular expression
 get_variables <- function(x, all_variables, regex = FALSE) {
-  if (regex) {
-    variables <- all_variables[grep(x, all_variables)]
-    stopif(
-      length(variables) == 0,
-      "No variables found that match the regular expression '{x}'"
-    )
-    return(variables)
+  if (!regex) {
+    return(x)
   }
-  x
+  
+  variables <- all_variables[grep(x, all_variables)]
+  stopif(
+    length(variables) == 0,
+    "No variables found that match the regular expression '{x}'"
+  )
+  variables
 }
 
 # replace the base identical function with a S3 method
@@ -545,11 +504,11 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
   )
   stopif(
     !missing(parallel) && !is.logical(parallel),
-    "parallel must be one of TRUE or FALSE"
+    "parallel must either TRUE or FALSE"
   )
   stopif(
     !missing(default_priors) && !is.logical(default_priors),
-    "default_priors must be a TRUE or FALSE"
+    "default_priors must be either TRUE or FALSE"
   )
   stopif(
     !missing(silent) && (!is.numeric(silent) || silent < 0 || silent > 2),
@@ -557,11 +516,11 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
   )
   stopif(
     !missing(color_summary) && !is.logical(color_summary),
-    "color_summary must be a logical value"
+    "color_summary must be either TRUE or FALSE"
   )
   stopif(
     !missing(file_refit) && !is.logical(file_refit),
-    "file_refit must be a logical value"
+    "file_refit must be either TRUE or FALSE"
   )
 
   # set default options if function is called for the first time or if reset_options is TRUE
@@ -627,7 +586,6 @@ tryCatch2 <- function(expr, capture = FALSE) {
   }
 }
 
-
 # resets the environments stored within an objects
 reset_env <- function(object, env = NULL, ...) {
   UseMethod("reset_env")
@@ -645,10 +603,9 @@ reset_env.bmmfit <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.bmmformula <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.bmmformula <- function(object, env = globalenv(), ...) {
+  # we loop this way instead of lapply or map because the latter
+  # will drop the attributes and class of a bmmformula
   for (par in names(object)) {
     object[[par]] <- reset_env(object[[par]], env)
   }
@@ -656,10 +613,7 @@ reset_env.bmmformula <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.brmsformula <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.brmsformula <- function(object, env = globalenv(), ...) {
   object$formula <- reset_env(object$formula, env)
   for (par in names(object$pforms)) {
     object$pforms[[par]] <- reset_env(object$pforms[[par]], env)
@@ -671,19 +625,13 @@ reset_env.brmsformula <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.formula <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.formula <- function(object, env =  globalenv(), ...) {
   environment(object) <- env
   object
 }
 
 #' @export
-reset_env.brmsfamily <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.brmsfamily <- function(object, env = globalenv(), ...) {
   if (!is.null(object$env)) {
     object$env <- env
   }
@@ -731,10 +679,7 @@ deprecated_args <- function(...) {
   )
 }
 
-
-read_bmmfit <- function(file, file_refit) {
-  file <- check_rds_file(file)
-
+try_read_bmmfit <- function(file, file_refit) {
   if (is.character(file_refit)) {
     stopif(
       !tolower(file_refit) %in% c("never", "always", "on_change"),
@@ -745,48 +690,43 @@ read_bmmfit <- function(file, file_refit) {
 
     warnif(
       tolower(file_refit) == "on_change",
-      glue(
-        'The "on_change" option for the file_refit argument available in brms,
-        is currently not implemented for bmm.
-        To avoid overwriting an already saved bmmfit object, file_refit was set to "never".'
-      )
+      'The "on_change" option for the file_refit argument available in brms,
+      is currently not implemented for bmm.
+      To avoid overwriting an already saved bmmfit object, file_refit was set to "never".'
     )
     file_refit <- ifelse(file_refit == "always", TRUE, FALSE)
   }
+  file <- check_rds_file(file)
   if (is.null(file) || file_refit) {
     return(NULL)
   }
-  dir <- dirname(file)
-  dir <- try(fs::dir_create(dir))
+  dir <- try(fs::dir_create(dirname(file)))
   stopif(is_try_error(dir), "Cannot create directory for file.")
 
   out <- suppressWarnings(try(readRDS(file), silent = TRUE))
-  if (!is_try_error(out)) {
-    if (!is_bmmfit(out)) {
-      stop2("Object loaded via 'file' is not of class 'bmmfit'.")
-    }
-    out$file <- file
-  } else {
-    out <- NULL
+  if (is_try_error(out)) {
+    return(NULL)
   }
+  
+  stopif(!is_bmmfit(out), "Object loaded via 'file' is not of class 'bmmfit'.")
+  out$file <- file
   out
 }
 
-save_bmmfit <- function(x, file, compress) {
+try_save_bmmfit <- function(object, file, compress) {
   file <- check_rds_file(file)
-  x$file <- file
+  object$file <- file
   if (!is.null(file)) {
-    saveRDS(x, file, compress = compress)
+    saveRDS(object, file, compress = compress)
   }
-  x
+  object
 }
 
 check_rds_file <- function(file) {
   if (is.null(file)) {
     return(NULL)
   }
-  stopif(!is.character(file), "'file' must be a character string.")
-  stopif(length(file) > 1, "'file' must be a single character string.")
+  stopif(!is.character(file) || length(file) > 1, "'file' must be a single string.")
   ext <- fs::path_ext(file)
   if (ext != "rds") {
     file <- paste0(file, ".rds")
@@ -794,6 +734,12 @@ check_rds_file <- function(file) {
   file
 }
 
-`%||%` <- function(a, b) {
-  if (!is.null(a)) a else b
+`%||%` <- function(l, r) {
+  if (!is.null(l)) l else r
+}
+
+# like unlist, but keeps the final outcome a list of all
+# elements of nested lists. Only works 1-level deep
+unnest_list <- function(list_of_lists) {
+  do.call(c, list_of_lists)
 }
