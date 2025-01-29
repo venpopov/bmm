@@ -34,6 +34,34 @@ test_that('+.bmmformula method works', {
   expect_error(f1 + 1, "The second argument must be a formula or a bmmformula.")
 })
 
+describe("subsetting a bmmformula with [", {
+  f <- bmf(y ~ exp(a) + b, a ~ 1 + (1|id), b ~ 1, c = 3)
+
+  it("returns a bmmformula", {   
+    expect_s3_class(f["y"], "bmmformula")
+    expect_s3_class(f[c("y", "a")], "bmmformula")
+    expect_s3_class(f[c("b", "c")], "bmmformula")
+  })
+  
+  it("correctly resets the `nl` and `constant` attributes of each element", {
+    attributes_exist <- function(formula) {
+      ats <- c("nl", "constant")
+      all(ats %in% names(attributes(formula)))
+    }
+
+    expect_true(all(vapply(f["y"], attributes_exist, logical(1))))
+    expect_true(all(vapply(f[c("y", "b")], attributes_exist, logical(1))))
+    
+    expect_false(attr(f[c("y", "c")]$y, "nl"))
+    expect_true(attr(f[c("y", "a")]$y, "nl"))
+    expect_equal(unname(sapply(f[c("y", "c")], function(x) attr(x, "constant"))), c(FALSE, TRUE))    
+  })
+
+  it("returns the same object when subset with []", {
+    expect_identical(f, f[])
+  })
+})
+
 test_that("wrong_parameters works", {
   f <- bmf(c ~ 1, a ~ 1, s ~ 1, kappa ~ 1)
   expect_equal(length(wrong_parameters(imm(NA, NA, NA, NA), f)), 0)

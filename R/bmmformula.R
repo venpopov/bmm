@@ -127,6 +127,9 @@ bmf <- function(...) {
 # method for subsetting a bmmformula, ensuring the attributes are preserved
 #' @export
 `[.bmmformula` <- function(formula, pars) {
+  if (missing(pars)) {
+    return(formula)
+  }
   attrs <- attributes(formula)
   attrs <- attrs[names(attrs) != "names"]
   out <- unclass(formula)
