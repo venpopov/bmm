@@ -26,6 +26,7 @@ Authors:
 
 Other contributors:
 \itemize{
+  \item Chenyu Li [contributor]
   \item Paul-Christian Bürkner \email{paul.buerkner@gmail.com} (Creator of 'brms', code portions of which are used in 'bmm'.) [copyright holder]
 }
 
