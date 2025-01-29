@@ -123,10 +123,10 @@ test_that("no check for with stancode function", {
   ))
 })
 
-test_that("change_constants() works", {
+test_that("update_model_fixed_parameters() works", {
   model1 <- sdm("y")
   formula <- bmf(mu ~ set_size, kappa = 3, c ~ 1)
-  model2 <- change_constants(model1, formula)
+  model2 <- update_model_fixed_parameters(model1, formula)
   expect_equal(model1$fixed_parameters, list(mu = 0))
   expect_equal(model2$fixed_parameters, list(kappa = 3))
 })

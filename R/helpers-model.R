@@ -128,7 +128,7 @@ check_model.default <- function(model, data = NULL, formula = NULL) {
 #' @export
 check_model.bmmodel <- function(model, data = NULL, formula = NULL) {
   model <- replace_regex_variables(model, data)
-  model <- change_constants(model, formula)
+  model <- update_model_fixed_parameters(model, formula)
   NextMethod("check_model")
 }
 
@@ -162,7 +162,7 @@ replace_regex_variables <- function(model, data) {
 # if the user has provided a constant in the bmmformula, add that info to the
 # model object; if they have predicted a parameter that is constant by default,
 # remove it from the model object
-change_constants <- function(model, formula) {
+update_model_fixed_parameters <- function(model, formula) {
   constants <- names(formula)[is_constant(formula)]
   free <- names(formula)[!is_constant(formula)]
   # add new constants to the model object
