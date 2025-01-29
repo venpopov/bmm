@@ -84,10 +84,14 @@ bmmformula <- function(...) {
   duplicates <- duplicated(par_names)
   stopif(any(duplicates), "Duplicate formula for parameter(s) {par_names[duplicates]}")
   names(out) <- par_names
-  class(out) <- "bmmformula"
+  new_bmmformula(out)
+}
 
-  out <- assign_nl_attr(out)
-  assign_constants(out)
+# an internal bmmformula constructor 
+new_bmmformula <- function(x = nlist()) {
+  stopifnot(is_namedlist(x))
+  class(x) <- "bmmformula"
+  assign_nl_attr(x)
 }
 
 
@@ -119,8 +123,7 @@ bmf <- function(...) {
   }
 
   # we need to recompute which formulas are non-linear
-  f1 <- assign_nl_attr(f1)
-  assign_constants(f1)
+  assign_nl_attr(f1)
 }
 
 
@@ -418,14 +421,6 @@ is_brmsformula <- function(x) {
   inherits(x, "brmsformula")
 }
 
-# add attribute if parameter is fixed or predicted
-assign_constants <- function(formula) {
-  for (dpar in names(formula)) {
-    attr(formula[[dpar]], "constant") <- is.numeric(formula[[dpar]])
-  }
-  formula
-}
-
 is_constant <- function(x) {
   UseMethod("is_constant")
 }
@@ -437,7 +432,7 @@ is_constant.bmmformula <- function(x) {
 
 #' @export
 is_constant.default <- function(x) {
-  isTRUE(attr(x, "constant"))
+  isTRUE(attr(x, "constant")) || is.numeric(x)
 }
 
 #' @title Apply link functions for parameters in a `bmmformula`
@@ -490,6 +485,5 @@ apply_links <- function(formula, links) {
   }
 
   formula <- reset_env(formula)
-  formula <- assign_nl_attr(formula)
-  assign_constants(formula)
+  assign_nl_attr(formula)
 }

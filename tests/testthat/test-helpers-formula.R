@@ -40,9 +40,9 @@ describe("subsetting a bmmformula with [", {
     expect_s3_class(f[c("b", "c")], "bmmformula")
   })
 
-  it("correctly resets the `nl` and `constant` attributes of each element", {
+  it("correctly resets the `nl` attribute of each element", {
     attributes_exist <- function(formula) {
-      ats <- c("nl", "constant")
+      ats <- c("nl")
       all(ats %in% names(attributes(formula)))
     }
 
@@ -51,7 +51,6 @@ describe("subsetting a bmmformula with [", {
 
     expect_false(attr(f[c("y", "c")]$y, "nl"))
     expect_true(attr(f[c("y", "a")]$y, "nl"))
-    expect_equal(unname(sapply(f[c("y", "c")], function(x) attr(x, "constant"))), c(FALSE, TRUE))
   })
 
   it("returns the same object when subset with []", {
@@ -299,11 +298,11 @@ test_that("apply_links is case sensitive for link names", {
   expect_error(apply_links(form, links), "Unknown")
 })
 
-describe("assign_constants", {
-  it("sets a logical attribute 'constant' to each component of a named list of formulas or numeric values", {
-    f <- list(y = y ~ 1, x = x ~ a + b, s = 3)
-    f <- assign_constants(f)
-    att <- vapply(f, \(x) attributes(x)$constant, logical(1))
-    expect_equal(att, c(y = FALSE, x = FALSE, s = TRUE))
-  })
-})
+# describe("assign_constants", {
+#   it("sets a logical attribute 'constant' to each component of a named list of formulas or numeric values", {
+#     f <- list(y = y ~ 1, x = x ~ a + b, s = 3)
+#     f <- assign_constants(f)
+#     att <- vapply(f, \(x) attributes(x)$constant, logical(1))
+#     expect_equal(att, c(y = FALSE, x = FALSE, s = TRUE))
+#   })
+# })
