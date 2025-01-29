@@ -388,11 +388,7 @@ assign_nl_attr.bmmformula <- function(formula) {
   dpars <- names(formula)
   preds <- rhs_vars(formula, collapse = FALSE)
   for (dpar in dpars) {
-    if (any(preds[[dpar]] %in% dpars)) {
-      attr(formula[[dpar]], "nl") <- TRUE
-    } else {
-      attr(formula[[dpar]], "nl") <- FALSE
-    }
+    attr(formula[[dpar]], "nl") <- any(preds[[dpar]] %in% dpars)
   }
   formula
 }
@@ -427,11 +423,7 @@ is_brmsformula <- function(x) {
 assign_constants <- function(formula) {
   dpars <- names(formula)
   for (dpar in dpars) {
-    if (is_formula(formula[[dpar]])) {
-      attr(formula[[dpar]], "constant") <- FALSE
-    } else {
-      attr(formula[[dpar]], "constant") <- TRUE
-    }
+    attr(formula[[dpar]], "constant") <- is.numeric(formula[[dpar]])
   }
   formula
 }

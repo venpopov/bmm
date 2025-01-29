@@ -273,3 +273,12 @@ test_that("apply_links is case sensitive for link names", {
   links <- list(a = "LOG")
   expect_error(apply_links(form, links), "Unknown")
 })
+
+describe("assign_constants", {
+  it("sets a logical attribute 'constant' to each component of a named list of formulas or numeric values", {
+    f <- list(y = y ~ 1, x = x ~ a + b, s = 3)
+    f <- assign_constants(f)
+    att <- vapply(f, \(x) attributes(x)$constant, logical(1))
+    expect_equal(att, c(y = FALSE, x = FALSE, s = TRUE))
+  })
+})
