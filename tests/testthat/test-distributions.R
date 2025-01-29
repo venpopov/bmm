@@ -119,8 +119,8 @@ test_that("rimm returns values between -pi and pi", {
 
 test_that("dm3 requires custom act_funs to be specified", {
   model <- m3(
-    resp_cats = c("corr","other","dist","npl"),
-    num_options = c("n_corr","n_other","n_dist","n_npl"),
+    resp_cats = c("corr", "other", "dist", "npl"),
+    num_options = c("n_corr", "n_other", "n_dist", "n_npl"),
     choice_rule = "simple",
     version = "custom"
   )
@@ -143,7 +143,7 @@ test_that("dm3 works for a simple m3 model", {
   # compare with # compare with lgamma(size + 1) + sum(x * log(prob) - lgamma(x + 1))
   expect_equal(
     dens,
-    lgamma(41) - lgamma(21) - lgamma(11) - lgamma(11) + 
+    lgamma(41) - lgamma(21) - lgamma(11) - lgamma(11) +
       sum(log(c(1 + 1 + 2, (1 + 1) * 4, 1 * 5) / sum(c(1 + 1 + 2, (1 + 1) * 4, 1 * 5))) * c(20, 10, 10))
   )
 })
@@ -161,7 +161,7 @@ test_that("dm3 works for a complex span m3 model", {
   # compare with lgamma(size + 1) + sum(x * log(prob) - lgamma(x + 1))
   expect_equal(
     dens,
-    lgamma(51) - lgamma(21) - 2 * lgamma(11) - 2 * lgamma(6)+
+    lgamma(51) - lgamma(21) - 2 * lgamma(11) - 2 * lgamma(6) +
       sum(
         log(
           c(1 + 1 + 2, 1 * 10, (1 + 1) * 4, 1 * 10, 1 * 5)

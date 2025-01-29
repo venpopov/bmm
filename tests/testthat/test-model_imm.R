@@ -209,7 +209,7 @@ test_that("constant priors are correct for IMM_full with set_size1 RANDOM-EFFECT
     prior[prior$coef == "set_size1" & prior$nlpar == "s", "prior"],
     c("constant(0)", "constant(1e-8)")
   )
-  
+
   formula <- bmf(kappa ~ 1, c ~ 1, s ~ 0 + set_size, a ~ 0 + set_size + (0 + set_size | ID))
   fit <- bmm(formula, dat, model, backend = "mock", mock = 1, rename = FALSE)
   prior <- brms::prior_summary(fit)

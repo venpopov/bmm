@@ -13,6 +13,5 @@ test_that("restructure works", {
   old_fit <- readRDS(file)
   class(old_fit) <- c("bmmfit", class(old_fit))
   new_fit <- restructure(old_fit)
-  expect_equal(new_fit$bmm$model$links,.model_mixture2p()$links)
+  expect_equal(new_fit$bmm$model$links, .model_mixture2p()$links)
 })
-

@@ -59,7 +59,7 @@ test_that("m3 compiles for the simple_span / simple choice rule", {
     formula = formula,
     data = oberauer_lewandowsky_2019_e1,
     model = my_model,
-    backend = 'mock',
+    backend = "mock",
     mock_fit = 1,
     rename = F
   ))
@@ -82,7 +82,7 @@ test_that("m3 compiles for the simple_span / softmax choice rule", {
     formula = formula,
     data = oberauer_lewandowsky_2019_e1,
     model = my_model,
-    backend = 'mock',
+    backend = "mock",
     mock_fit = 1,
     rename = F
   ))
@@ -109,7 +109,7 @@ test_that("m3 compiles for the complex_span / simple choice rule", {
     formula = formula,
     data = data,
     model = my_model,
-    backend = 'mock',
+    backend = "mock",
     mock_fit = 1,
     rename = F
   ))
@@ -136,7 +136,7 @@ test_that("m3 compiles for the complex_span / softmax choice rule", {
     formula = formula,
     data = data,
     model = my_model,
-    backend = 'mock',
+    backend = "mock",
     mock_fit = 1,
     rename = F
   ))
@@ -173,7 +173,7 @@ test_that("m3 compiles for the custom model / simple choice rule", {
     formula = formula,
     data = oberauer_lewandowsky_2019_e1,
     model = my_model,
-    backend = 'mock',
+    backend = "mock",
     mock_fit = 1,
     rename = F
   ))
@@ -210,7 +210,7 @@ test_that("m3 compiles for the custom model / softmax choice rule", {
     formula = formula,
     data = oberauer_lewandowsky_2019_e1,
     model = my_model,
-    backend = 'mock',
+    backend = "mock",
     mock_fit = 1,
     rename = F
   ))
@@ -234,26 +234,26 @@ test_that("m3 works with num_options as a numeric vector", {
     formula = formula,
     data = oberauer_lewandowsky_2019_e1,
     model = my_model,
-    backend = 'mock',
+    backend = "mock",
     mock_fit = 1,
     rename = F
   ))
 })
 
-test_that("m3_custom version works with variables contained in data in the activation formulas",{
+test_that("m3_custom version works with variables contained in data in the activation formulas", {
   my_data <- data.frame(
-    corr = c(5,6,7,8),
-    other = c(1,2,3,4),
-    npl = c(1,2,3,4),
-    time = c(1,2,1,2),
-    id = c(1,1,2,2)
+    corr = c(5, 6, 7, 8),
+    other = c(1, 2, 3, 4),
+    npl = c(1, 2, 3, 4),
+    time = c(1, 2, 1, 2),
+    id = c(1, 1, 2, 2)
   )
 
   formula <- bmf(
     corr ~ b + a + cstart + cslope * time,
     other ~ b + a,
     npl ~ b,
-    a ~ 1 ,
+    a ~ 1,
     cstart ~ 1,
     cslope ~ 1
   )
@@ -281,7 +281,7 @@ test_that("m3_custom version works with variables contained in data in the activ
     formula = formula,
     data = my_data,
     model = my_model,
-    backend = 'mock',
+    backend = "mock",
     mock_fit = 1,
     rename = F
   ))

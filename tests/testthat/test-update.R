@@ -23,7 +23,8 @@ test_that("update.bmmfit works", {
   # prior is replaced
   up <- suppressMessages(
     update(
-      fit1, formula. = bmf(c ~ 1, kappa ~ 1), testmode = TRUE,
+      fit1,
+      formula. = bmf(c ~ 1, kappa ~ 1), testmode = TRUE,
       prior = brms::set_prior("normal(0,0.1)", class = "Intercept", dpar = "kappa")
     )
   )
