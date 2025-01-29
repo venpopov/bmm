@@ -187,9 +187,9 @@ check_formula.default <- function(model, data, formula) {
 check_formula.non_targets <- function(model, data, formula) {
   set_size_var <- model$other_vars$set_size
   pred_list <- rhs_vars(formula, collapse = FALSE)
-  has_set_size <- sapply(pred_list, function(x) set_size_var %in% x)
+  has_set_size <- vapply(pred_list, function(x) set_size_var %in% x, logical(1))
   ss_forms <- formula[has_set_size]
-  intercepts <- sapply(ss_forms, has_intercept)
+  intercepts <- vapply(ss_forms, has_intercept, logical(1))
   stopif(
     any(intercepts),
     "The formula for parameter(s) {names(ss_forms)[intercepts]} contains \\
@@ -233,11 +233,8 @@ bmf2bf.bmmodel <- function(model, formula) {
   # for each dependent parameter, check if it is used as a non-linear predictor of
   # another parameter and add the corresponding brms function
   for (pform in formula) {
-    if (is_nl(pform)) {
-      brms_formula <- brms_formula + brms::nlf(pform)
-    } else {
-      brms_formula <- brms_formula + brms::lf(pform)
-    }
+    component <- if (is_nl(pform)) brms::nlf(pform) else brms::lf(pform)
+    brms_formula <- brms_formula + component
   }
   brms_formula
 }
@@ -399,7 +396,7 @@ is_nl <- function(object, ...) {
 
 #' @export
 is_nl.bmmformula <- function(object, ...) {
-  unlist(sapply(object, is_nl))
+  vapply(object, is_nl, logical(1))
 }
 
 #' @export
@@ -421,8 +418,7 @@ is_brmsformula <- function(x) {
 
 # add attribute if parameter is fixed or predicted
 assign_constants <- function(formula) {
-  dpars <- names(formula)
-  for (dpar in dpars) {
+  for (dpar in names(formula)) {
     attr(formula[[dpar]], "constant") <- is.numeric(formula[[dpar]])
   }
   formula
@@ -434,7 +430,7 @@ is_constant <- function(x) {
 
 #' @export
 is_constant.bmmformula <- function(x) {
-  unlist(sapply(x, is_constant))
+  vapply(x, is_constant, logical(1))
 }
 
 #' @export
