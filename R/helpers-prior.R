@@ -124,7 +124,7 @@ configure_prior.default <- function(model, data, formula, user_prior, ...) {
 }
 
 #' @export
-configure_prior.bmmodel <- function(model, data, formula, user_prior, ...) {
+configure_prior.bmmodel <- function(model, data, formula, user_prior = NULL, ...) {
   prior <- fixed_pars_priors(model, formula)
   default_prior <- set_default_prior(model, data, formula)
   prior <- combine_prior(default_prior, prior)

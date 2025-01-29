@@ -273,11 +273,25 @@ add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
 }
 
 wrong_parameters <- function(model, formula) {
-  fpars <- names(formula)
-  mpars <- names(model$parameters)
-  rhs_vars <- rhs_vars(formula)
-  wpars <- not_in(fpars, mpars) & not_in(fpars, rhs_vars)
-  fpars[wpars]
+  predicted_pars <- names(formula)
+  possible_pars <- c(names(model$parameters), rhs_vars(formula), get_resp_vars(model))
+  mismatched <- not_in(predicted_pars, possible_pars)
+  predicted_pars[mismatched]
+}
+
+
+get_resp_vars <- function(object, ...) {
+  UseMethod("get_resp_vars")
+}
+
+#' @export
+get_resp_vars.bmmodel <- function(object, ...) {
+  vars <- object$resp_vars
+  if (is.list(vars)) {
+    vars <- unlist(vars, use.names = FALSE)
+  }
+  stopif(!is.character(vars) && !is.na(vars), "`resp_vars` cannot be coerced to a character vector")
+  vars
 }
 
 has_intercept <- function(object) {
@@ -434,4 +448,58 @@ is_constant.bmmformula <- function(x) {
 #' @export
 is_constant.default <- function(x) {
   isTRUE(attr(x, "constant"))
+}
+
+#' @title Apply link functions for parameters in a `bmmformula`
+#' @description
+#'   This function applies the specified link functions in the list of `links` to the
+#'   `bmmformula` that is passed to it. This function is mostly used internally for configuring
+#'   `bmmodels`.
+#' @param formula A `bmmformula` that the links should be applied to
+#' @param links A list of `links` that should be applied to the formula. Each element in this list
+#'   should be named using the parameter labels the links should be applied for and contain
+#'   a character variable specifying the link to be applied. Currently implemented links are:
+#'   "log", "logit", "probit", and "identity".
+#' @return The `bmmformula` the links have been applied to
+#'
+#' @examples
+#' # specify a bmmformula
+#' form <- bmf(x ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
+#' links <- list(a = "log", c = "logit")
+#'
+#' apply_links(form, links)
+#' @keywords developer
+#' @export
+apply_links <- function(formula, links) {
+  stopifnot(is_bmmformula(formula))
+  stopifnot(is.list(links) || is.null(links), all(sapply(links, is.character)))
+  if (length(links) == 0) {
+    return(formula)
+  }
+
+  pars_with_links <- names(links)
+  replacements <- sapply(pars_with_links, function(par) {
+    switch(links[[par]],
+      log = glue("exp({par})"),
+      logit = glue("inv_logit({par})"),
+      probit = glue("Phi({par})"),
+      identity = par,
+      stop2("Unknown link type {links[[par]]}. Check ?apply_links for supported types")
+    )
+  })
+
+  tbr_patterns <- paste0("\\b", pars_with_links, "\\b") # match whole word only
+  names(tbr_patterns) <- pars_with_links
+
+  for (dpar in names(formula)[is_nl(formula)]) {
+    formula_str <- deparse(formula[[dpar]], width.cutoff = 500L)
+    for (par in pars_with_links) {
+      formula_str <- gsub(tbr_patterns[par], replacements[par], formula_str)
+    }
+    formula[[dpar]] <- stats::as.formula(formula_str)
+  }
+
+  formula <- reset_env(formula)
+  formula <- assign_nl(formula)
+  assign_constants(formula)
 }

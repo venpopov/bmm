@@ -23,7 +23,7 @@
 #'   sampling will be slower. If "check" (the default), [bmm()] will check if
 #'   the data is sorted, and ask you via a console prompt if it should be
 #'   sorted. You can set the default value for this option using global
-#'   `options(bmm.sort_data = TRUE/FALSE/"check)`)` or via `bmm_options(sort_data)`
+#'   `options(bmm.sort_data = TRUE/FALSE/"check"))` or via `bmm_options(sort_data)`
 #' @param silent Verbosity level between 0 and 2. If 1 (the default), most of the
 #'   informational messages of compiler and sampler are suppressed. If 2, even
 #'   more messages are suppressed. The actual sampling progress is still
@@ -36,7 +36,7 @@
 #'  set the default backend using global `options(brms.backend = "rstan"/"cmdstanr")`
 #' @param file Either `NULL` or a character string. If a string, the fitted
 #'   model object is saved via [saveRDS] in a file named after the string. The
-#'   `.rds extension is added automatically. If the file already exists, `bmm`
+#'   .rds extension is added automatically. If the file already exists, `bmm`
 #'   will load and return the saved model object. Unless you specify the
 #'   `file_refit` argument as well, the existing files won't be overwritten, you
 #'   have to manually remove the file in order to refit and save the model under
@@ -46,7 +46,7 @@
 #'   compression algorithms supported by [saveRDS] when saving
 #'   the fitted model object.
 #' @param file_refit Logical or character string. Modifies when the fit stored via the `file` argument is
-#'   re-used. Can be set globally for the current \R session via the
+#'   re-used. Can be set globally for the current R session via the
 #'   `"bmm.file_refit"` option (see [options]). If `TRUE` or "always", the
 #'   model is fitted again. If `FALSE` or "never" (the default), the model saved under the name specified in `file`
 #'   will be re-used. Note that unlike in `brms`, there is no "on_change" option
