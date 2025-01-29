@@ -276,7 +276,6 @@ wrong_parameters <- function(model, formula) {
   predicted_pars[mismatched]
 }
 
-
 get_resp_vars <- function(object, ...) {
   UseMethod("get_resp_vars")
 }
@@ -317,11 +316,11 @@ rhs_vars <- function(object, ...) {
 #  or a list with the variables for each parameter?
 #' @export
 rhs_vars.bmmformula <- function(object, collapse = TRUE, ...) {
-  rhs_vars <- lapply(object, function(x) rhs_vars(x))
+  vars <- lapply(object, rhs_vars)
   if (!collapse) {
-    return(rhs_vars)
+    return(vars)
   }
-  out <- unlist(rhs_vars, use.names = F)
+  out <- unlist(vars, use.names = F)
   unique(out)
 }
 
