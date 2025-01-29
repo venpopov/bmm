@@ -6,6 +6,7 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-8073-4199")),
     person("Gidon T.", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph"),
            comment = c(ORCID = "0000-0002-5055-9764")),
+    person("Chenyu", "Li", role = c("ctb")),
     person("Paul-Christian", "Bürkner", , "paul.buerkner@gmail.com", role = "cph",
            comment = "Creator of 'brms', code portions of which are used in 'bmm'.")
   )
