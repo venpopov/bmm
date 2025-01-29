@@ -128,7 +128,7 @@ bmf <- function(...) {
 #' @export
 `[.bmmformula` <- function(formula, pars) {
   attrs <- attributes(formula)
-  attrs <- attrs[sapply(attrs, length) == 1]
+  attrs <- attrs[names(attrs) != "names"]
   out <- unclass(formula)
   out <- out[pars]
   attributes(out) <- attrs
@@ -500,6 +500,6 @@ apply_links <- function(formula, links) {
   }
 
   formula <- reset_env(formula)
-  formula <- assign_nl(formula)
+  formula <- assign_nl_attr(formula)
   assign_constants(formula)
 }

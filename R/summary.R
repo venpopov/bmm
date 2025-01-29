@@ -157,7 +157,7 @@ summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp = 0, model
 print.bmmformula <- function(x, newline = TRUE, wsp = 0, ...) {
   wspace <- collapse(rep(" ", wsp))
   sep <- paste0(ifelse(newline, "\n", ","), wspace)
-  for (i in 1:length(x)) {
+  for (i in seq_along(x)) {
     if (is.numeric(x[[i]])) {
       x[[i]] <- paste0(names(x)[i], " = ", x[[i]])
     }
