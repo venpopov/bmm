@@ -216,23 +216,27 @@ add_missing_parameters <- function(model, formula = bmmformula(), replace_fixed 
   formula_pars <- names(formula)
   model_pars <- names(model$parameters)
   fixed_pars <- names(model$fixed_parameters)
-  # remove constants
+
+  # Replace fixed parameters with `par ~ 1`?
   if (replace_fixed) {
     formula_pars <- setdiff(formula_pars, fixed_pars)
   }
+
   missing_pars <- setdiff(model_pars, formula_pars)
-  is_fixed <- setNames(missing_pars %in% fixed_pars, missing_pars)
+
   for (mpar in missing_pars) {
     add <- stats::as.formula(paste(mpar, "~ 1"))
-    if (is_fixed[mpar]) {
+    if (mpar %in% fixed_pars) {
       attr(add, "constant") <- TRUE
     } else {
       message2("No formula for parameter {mpar} provided. Only a fixed intercept will be estimated.")
     }
     formula[mpar] <- add
   }
+
+  # Ensure formula list matches model parameters order
   all_pars <- unique(c(model_pars, formula_pars))
-  formula[all_pars] # reorder formula to match model parameters order
+  formula[all_pars]
 }
 
 unrecognized_parameters <- function(model, formula) {
@@ -442,7 +446,7 @@ apply_links.formula <- function(formula, links = nlist()) {
 #' @param link A character string specifying the link function. Options are "log", "logit", "probit", and "identity".
 #' @return An expression representing the inverse link function applied to the parameter.
 #' @examples
-#' inv_link("x", "log") 
+#' inv_link("x", "log")
 #' identical(inv_link("x", "log"), quote(exp(x))) # TRUE
 #' @noRd
 inv_link <- function(par = character(0), link = c("log", "logit", "probit", "identity")) {
