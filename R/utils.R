@@ -260,6 +260,11 @@ is_bmmfit <- function(x) {
   inherits(x, "bmmfit")
 }
 
+is_namedlist <- function(x) {
+  nms <- names(x)
+  is.list(x) && !is.null(nms) && all(nzchar(nms))
+}
+
 as_numeric_vector <- function(x) {
   out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
   if (is_try_warning(out)) {
@@ -592,10 +597,7 @@ reset_env <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.bmmfit <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.bmmfit <- function(object, env = globalenv(), ...) {
   object$formula <- reset_env(object$formula, env)
   object$family <- reset_env(object$family, env)
   object$bmm$user_formula <- reset_env(object$bmm$user_formula, env)

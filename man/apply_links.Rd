@@ -2,12 +2,12 @@
 % Please edit documentation in R/bmmformula.R
 \name{apply_links}
 \alias{apply_links}
-\title{Apply link functions for parameters in a \code{bmmformula}}
+\title{Apply link functions for parameters in a formula or bmmformula}
 \usage{
-apply_links(formula, links)
+apply_links(formula, links = nlist())
 }
 \arguments{
-\item{formula}{A \code{bmmformula} that the links should be applied to}
+\item{formula}{A \code{formula} or \code{bmmformula} that the links should be applied to}
 
 \item{links}{A list of \code{links} that should be applied to the formula. Each element in this list
 should be named using the parameter labels the links should be applied for and contain
@@ -15,11 +15,11 @@ a character variable specifying the link to be applied. Currently implemented li
 "log", "logit", "probit", and "identity".}
 }
 \value{
-The \code{bmmformula} the links have been applied to
+The \code{formula} or \code{bmmformula} the links have been applied to
 }
 \description{
 This function applies the specified link functions in the list of \code{links} to the
-\code{bmmformula} that is passed to it. This function is mostly used internally for configuring
+\code{formula} or \code{bmmformula} that is passed to it. This function is mostly used internally for configuring
 \code{bmmodels}.
 }
 \examples{

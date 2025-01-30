@@ -40,11 +40,7 @@ postprocess_brm.bmmodel <- function(model, fit, ...) {
 
   # add bmm version to the stancode
   fit$model <- add_bmm_version_to_stancode(fit$model)
-
-  fit <- NextMethod("postprocess_brm")
-
-  # clean up environments stored in the fit object
-  reset_env(fit)
+  reset_env(NextMethod("postprocess_brm"))
 }
 
 #' @export

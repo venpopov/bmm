@@ -1,5 +1,4 @@
 #' @title Create formula for predicting parameters of a `bmmodel`
-#'
 #' @description This function is used to specify the formulas predicting the
 #' different parameters of a `bmmodel`.
 #'
@@ -28,14 +27,10 @@
 #' the first line corresponds to the drift rate parameter, but this is not
 #' explicitely stated.
 #'
-#'
 #'           brmsformula(rt | dec(response) ~ condition + (condition | id),
 #'                       bs ~ 1 + (1 | id),
 #'                       ndt ~ 1 + (1 | id),
 #'                       bias ~ 1 + (1 | id))
-#'
-#'
-#'
 #'
 #' In `bmm`, the same formula would be written as:
 #'
@@ -53,6 +48,14 @@
 #'
 #' You can also use the `bmf()` function as a shorthand for `bmmformula()`.
 #'
+#' You can also set parameters to a constant value by using par = value syntax:
+#'
+#'           bmf(drift ~ condition + (condition | id),
+#'               bs ~ 1 + (1 | id),
+#'               ndt ~ 1 + (1 | id),
+#'               bias = 0.5)
+#'
+#' in which case the bias parameter will not be estimated but it will be fixed to 0.5
 #'
 #' @param ... Formulas for predicting a `bmmodel` parameter. Each formula for a
 #' parameter should be specified as a separate argument, separated by commas
@@ -78,85 +81,50 @@ bmmformula <- function(...) {
   stopif(!all(sapply(out, is_form_or_num)), "Arguments must be formulas or numeric assignments.")
 
   par_names <- sapply(seq_along(out), function(i) {
-    ifelse(is_formula(out[[i]]), all.vars(out[[i]])[1], names(out[i]))
+    if (is_formula(out[[i]])) lhs_vars(out[[i]]) else names(out)[i]
   })
 
   duplicates <- duplicated(par_names)
   stopif(any(duplicates), "Duplicate formula for parameter(s) {par_names[duplicates]}")
-  names(out) <- par_names
-  new_bmmformula(out)
+  new_bmmformula(setNames(out, par_names))
 }
 
-# an internal bmmformula constructor 
+#' @rdname bmmformula
+#' @export
+bmf <- bmmformula
+
+# an internal bmmformula constructor
 new_bmmformula <- function(x = nlist()) {
   stopifnot(is_namedlist(x))
   class(x) <- "bmmformula"
   assign_nl_attr(x)
 }
 
-
-# alias of bmmformula
-#' @rdname bmmformula
 #' @export
-bmf <- function(...) {
-  bmmformula(...)
+`[.bmmformula` <- function(object, pars) {
+  new_bmmformula(NextMethod())
 }
 
+#' @export
+`[<-.bmmformula` <- function(object, pars, value) {
+  if (!is.list(value)) value <- list(value)
+  new_bmmformula(NextMethod())
+}
 
-# method for adding formulas to a bmmformula
 #' @export
 "+.bmmformula" <- function(f1, f2) {
   stopif(!is_bmmformula(f1), "The first argument must be a bmmformula.")
   f2_not_a_formula <- !(is_formula(f2) || is_bmmformula(f2)) && !is.null(f2)
   stopif(f2_not_a_formula, "The second argument must be a formula or a bmmformula.")
 
-  if (is_formula(f2)) {
-    dvar <- all.vars(f2)[1]
-    f2 <- setNames(list(f2), dvar)
+  if (is_formula(f2)) f2 <- setNames(list(f2), lhs_vars(f2))
+
+  duplicates <- intersect(names(f1), names(f2))
+  if (length(duplicates) > 0) {
+    message2("Duplicate parameter(s): {collapse_comma(duplicates)}. Overwriting the initial formula.")
   }
-
-  for (par in names(f2)) {
-    if (par %in% names(f1)) {
-      message2("Duplicate parameter: {par}. Overwriting the initial formula.")
-    }
-    f1[[par]] <- f2[[par]]
-  }
-
-  # we need to recompute which formulas are non-linear
-  assign_nl_attr(f1)
-}
-
-
-# method for subsetting a bmmformula, ensuring the attributes are preserved
-#' @export
-`[.bmmformula` <- function(formula, pars) {
-  if (missing(pars)) {
-    return(formula)
-  }
-  attrs <- attributes(formula)
-  attrs <- attrs[names(attrs) != "names"]
-  out <- unclass(formula)
-  out <- out[pars]
-  attributes(out) <- attrs
-  if (is.character(pars)) {
-    names(out) <- pars
-  } else if (is.numeric(pars) | is.logical(pars)) {
-    names(out) <- names(formula)[pars]
-  }
-
-  # reassign attribute nl to each component of the formula
-  assign_nl_attr(out)
-}
-
-#' @export
-`[<-.bmmformula` <- function(formula, pars, value) {
-  if (!is.list(value)) {
-    values <- list(value)
-  }
-  out <- unclass(formula)
-  out[pars] <- value
-  class(out) <- "bmmformula"
-  assign_nl_attr(out)
+  f1[names(f2)] <- f2
+  f1
 }
 
 #' Generic S3 method for checking if the formula is valid for the specified model
@@ -177,7 +145,7 @@ check_formula.bmmodel <- function(model, data, formula) {
     bmmformula(kappa ~ 1, thetat ~ 1) or bmf(kappa ~ 1, thetat ~ 1)"
   )
 
-  wpar <- wrong_parameters(model, formula)
+  wpar <- unrecognized_parameters(model, formula)
   stopif(length(wpar), "Unrecognized model parameters: {collapse_comma(wpar)}")
 
   formula <- add_missing_parameters(model, formula)
@@ -230,38 +198,30 @@ bmf2bf <- function(model, formula) {
   UseMethod("bmf2bf")
 }
 
-# default method to paste the full brms formula for all bmmodels
+# If no model specific methods exist, it will construct a base brms formula from the first resp_vars
+# We do it this way because most models require just one response variable
 #' @export
-bmf2bf.bmmodel <- function(model, formula) {
-  # check if the model has only one response variable and extract if TRUE
-  brms_formula <- NextMethod("bmf2bf")
-
-  # for each dependent parameter, check if it is used as a non-linear predictor of
-  # another parameter and add the corresponding brms function
-  for (pform in formula) {
-    component <- if (is_nl(pform)) brms::nlf(pform) else brms::lf(pform)
-    brms_formula <- brms_formula + component
-  }
-  brms_formula
+bmf2bf.bmmodel <- function(model, formula = bmmformula()) {
+  brms_formula <- NextMethod("bmf2bf") %||% brms::bf(glue("{model$resp_vars[[1]]} ~ 1"))
+  components <- lapply(formula, function(x) if (is_nl(x)) brms::nlf(x) else brms::lf(x))
+  Reduce(`+`, components, init = brms_formula)
 }
 
-# paste first line of the brms formula for all bmmodels with 1 response variable
 #' @export
 bmf2bf.default <- function(model, formula) {
-  brms::bf(paste0(model$resp_vars[[1]], "~ 1"))
+  NULL
 }
 
-add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
+add_missing_parameters <- function(model, formula = bmmformula(), replace_fixed = TRUE) {
   formula_pars <- names(formula)
   model_pars <- names(model$parameters)
   fixed_pars <- names(model$fixed_parameters)
   # remove constants
   if (replace_fixed) {
-    formula_pars <- formula_pars[!formula_pars %in% fixed_pars]
+    formula_pars <- setdiff(formula_pars, fixed_pars)
   }
   missing_pars <- setdiff(model_pars, formula_pars)
-  is_fixed <- missing_pars %in% fixed_pars
-  names(is_fixed) <- missing_pars
+  is_fixed <- setNames(missing_pars %in% fixed_pars, missing_pars)
   for (mpar in missing_pars) {
     add <- stats::as.formula(paste(mpar, "~ 1"))
     if (is_fixed[mpar]) {
@@ -269,17 +229,16 @@ add_missing_parameters <- function(model, formula, replace_fixed = TRUE) {
     } else {
       message2("No formula for parameter {mpar} provided. Only a fixed intercept will be estimated.")
     }
-    formula[mpar] <- list(add)
+    formula[mpar] <- add
   }
   all_pars <- unique(c(model_pars, formula_pars))
   formula[all_pars] # reorder formula to match model parameters order
 }
 
-wrong_parameters <- function(model, formula) {
+unrecognized_parameters <- function(model, formula) {
   predicted_pars <- names(formula)
   possible_pars <- c(names(model$parameters), rhs_vars(formula), get_resp_vars(model))
-  mismatched <- not_in(predicted_pars, possible_pars)
-  predicted_pars[mismatched]
+  setdiff(predicted_pars, possible_pars)
 }
 
 get_resp_vars <- function(object, ...) {
@@ -288,10 +247,7 @@ get_resp_vars <- function(object, ...) {
 
 #' @export
 get_resp_vars.bmmodel <- function(object, ...) {
-  vars <- object$resp_vars
-  if (is.list(vars)) {
-    vars <- unlist(vars, use.names = FALSE)
-  }
+  vars <- unlist(object$resp_vars, use.names = FALSE)
   stopif(!is.character(vars) && !is.na(vars), "`resp_vars` cannot be coerced to a character vector")
   vars
 }
@@ -355,10 +311,9 @@ lhs_vars.bmmformula <- function(object, ...) {
   names(object)
 }
 
-#' @export 
+#' @export
 lhs_vars.brmsformula <- function(object, ...) {
-  bterms <- brms::brmsterms(object)
-  lhs_vars(bterms)
+  lhs_vars(brms::brmsterms(object), ...)
 }
 
 #' @export
@@ -366,7 +321,7 @@ lhs_vars.brmsterms <- function(object, resp = FALSE, ...) {
   names(c(object$dpars, object$nlpars))
 }
 
-#' @export 
+#' @export
 lhs_vars.formula <- function(object, ...) {
   if (length(object) == 3) {
     return(as.character(object[[2]]))
@@ -376,23 +331,23 @@ lhs_vars.formula <- function(object, ...) {
 
 # adds an attribute nl to each component of the the formula indicating if the
 # any of the predictors of the component are also predicted in another component
-assign_nl_attr <- function(formula) {
+assign_nl_attr <- function(object) {
   UseMethod("assign_nl_attr")
 }
 
 #' @export
-assign_nl_attr.default <- function(formula) {
+assign_nl_attr.default <- function(object) {
   stop2("Don't know how to assign nl attributes to a {class(formula)[1]} object")
 }
 
 #' @export
-assign_nl_attr.bmmformula <- function(formula) {
-  dpars <- names(formula)
-  preds <- rhs_vars(formula, collapse = FALSE)
-  for (dpar in dpars) {
-    attr(formula[[dpar]], "nl") <- any(preds[[dpar]] %in% dpars)
+assign_nl_attr.bmmformula <- function(object) {
+  lhs <- lhs_vars(object)
+  predictors <- rhs_vars(object, collapse = FALSE)
+  for (dpar in lhs) {
+    attr(object[[dpar]], "nl") <- any(predictors[[dpar]] %in% lhs)
   }
-  formula
+  object
 }
 
 is_nl <- function(object, ...) {
@@ -435,17 +390,17 @@ is_constant.default <- function(x) {
   isTRUE(attr(x, "constant")) || is.numeric(x)
 }
 
-#' @title Apply link functions for parameters in a `bmmformula`
+#' @title Apply link functions for parameters in a formula or bmmformula
 #' @description
 #'   This function applies the specified link functions in the list of `links` to the
-#'   `bmmformula` that is passed to it. This function is mostly used internally for configuring
+#'   `formula` or `bmmformula` that is passed to it. This function is mostly used internally for configuring
 #'   `bmmodels`.
-#' @param formula A `bmmformula` that the links should be applied to
+#' @param formula A `formula` or `bmmformula` that the links should be applied to
 #' @param links A list of `links` that should be applied to the formula. Each element in this list
 #'   should be named using the parameter labels the links should be applied for and contain
 #'   a character variable specifying the link to be applied. Currently implemented links are:
 #'   "log", "logit", "probit", and "identity".
-#' @return The `bmmformula` the links have been applied to
+#' @return The `formula` or `bmmformula` the links have been applied to
 #'
 #' @examples
 #' # specify a bmmformula
@@ -455,35 +410,49 @@ is_constant.default <- function(x) {
 #' apply_links(form, links)
 #' @keywords developer
 #' @export
-apply_links <- function(formula, links) {
-  stopifnot(is_bmmformula(formula))
-  stopifnot(is.list(links) || is.null(links), all(sapply(links, is.character)))
+apply_links <- function(formula, links = nlist()) {
   if (length(links) == 0) {
     return(formula)
   }
+  stopifnot(is_namedlist(links) || is.null(links), all(vapply(links, is.character, logical(1))))
+  UseMethod("apply_links")
+}
 
-  pars_with_links <- names(links)
-  replacements <- sapply(pars_with_links, function(par) {
-    switch(links[[par]],
-      log = glue("exp({par})"),
-      logit = glue("inv_logit({par})"),
-      probit = glue("Phi({par})"),
-      identity = par,
-      stop2("Unknown link type {links[[par]]}. Check ?apply_links for supported types")
-    )
-  })
+#' @export
+apply_links.bmmformula <- function(formula, links = nlist()) {
+  which_nl <- is_nl(formula)
+  formula[which_nl] <- lapply(formula[which_nl], function(f) apply_links(f, links))
+  formula
+}
 
-  tbr_patterns <- paste0("\\b", pars_with_links, "\\b") # match whole word only
-  names(tbr_patterns) <- pars_with_links
-
-  for (dpar in names(formula)[is_nl(formula)]) {
-    formula_str <- deparse(formula[[dpar]], width.cutoff = 500L)
-    for (par in pars_with_links) {
-      formula_str <- gsub(tbr_patterns[par], replacements[par], formula_str)
-    }
-    formula[[dpar]] <- stats::as.formula(formula_str)
+#' @export
+apply_links.formula <- function(formula, links = nlist()) {
+  shared_parameters <- names(links) %in% rhs_vars(formula)
+  if (!any(shared_parameters)) {
+    return(formula)
   }
+  inv_list <- links[shared_parameters]
+  inv_list[] <- lapply(names(inv_list), function(nm) inv_link(nm, inv_list[[nm]]))
+  eval(methods::substituteDirect(formula, inv_list), envir = environment(formula))
+}
 
-  formula <- reset_env(formula)
-  assign_nl_attr(formula)
+#' The inverse of a specified link function applied to a parameter.
+#'
+#' @param par A character string representing the parameter to which the inverse link function will be applied.
+#' @param link A character string specifying the link function. Options are "log", "logit", "probit", and "identity".
+#' @return An expression representing the inverse link function applied to the parameter.
+#' @examples
+#' inv_link("x", "log") 
+#' identical(inv_link("x", "log"), quote(exp(x))) # TRUE
+#' @noRd
+inv_link <- function(par = character(0), link = c("log", "logit", "probit", "identity")) {
+  stopifnot(is.character(par), length(par) == 1)
+  par <- as.symbol(par)
+  link <- match.arg(link)
+  switch(link,
+    log = substitute(exp(par)),
+    logit = substitute(inv_logit(par)),
+    probit = substitute(Phi(par)),
+    identity = par
+  )
 }

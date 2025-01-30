@@ -56,20 +56,59 @@ describe("subsetting a bmmformula with [", {
   it("returns the same object when subset with []", {
     expect_identical(f, f[])
   })
+
+  it("can reassign elements of a bmmformula", {
+    f_new <- f
+    f_new["y"] <- y ~ 1
+    expect_s3_class(f_new, "bmmformula")
+    expect_length(f_new, length(f))
+    expect_equal(names(f_new), names(f))
+    expect_equal(f_new["y"], bmf(y ~ 1))
+    expect_false(is_nl(f_new)["y"])
+
+    f_new <- f
+    f_new["y"] <- bmf(y ~ exp(b))
+    expect_s3_class(f_new, "bmmformula")
+    expect_length(f_new, length(f))
+    expect_equal(names(f_new), names(f))
+    expect_equal(f_new["y"], bmf(y ~ exp(b)))
+    expect_true(is_nl(f_new)["y"])
+
+    f_new <- f
+    f_rep <- bmf(y ~ 1, c = 1)
+    f_new[names(f_rep)] <- f_rep
+    expect_s3_class(f_new, "bmmformula")
+    expect_length(f_new, length(f))
+    expect_equal(names(f_new), names(f))
+    expect_equal(f_new["y"], bmf(y ~ 1))
+
+    f_new <- f
+    f_rep <- bmf(y ~ 1, c = 1, new ~ 1 + (1|id))
+    f_new[names(f_rep)] <- f_rep
+    expect_s3_class(f_new, "bmmformula")
+    expect_length(f_new, length(f)+1)
+    expect_true(all(names(f) %in% names(f_new)))
+    expect_equal(f_new["new"], f_rep["new"])
+  })
+
+  it("reconstructs correctly when adding all elements", {
+    f <- bmf(y ~ exp(a) + b, a ~ 1 + (1 | id), b ~ 1, c = 3)
+    expect_equal(f, f[1]+f[2]+f[3]+f[4])
+  })
 })
 
-test_that("wrong_parameters works", {
+test_that("unrecognized_parameters works", {
   f <- bmf(c ~ 1, a ~ 1, s ~ 1, kappa ~ 1)
-  expect_equal(length(wrong_parameters(imm(NA, NA, NA, NA), f)), 0)
-  expect_equal(wrong_parameters(imm(NA, NA, NA, NA, version = "bsc"), f), "a")
-  expect_equal(wrong_parameters(sdm(NA), f), c("a", "s"))
+  expect_equal(length(unrecognized_parameters(imm(NA, NA, NA, NA), f)), 0)
+  expect_equal(unrecognized_parameters(imm(NA, NA, NA, NA, version = "bsc"), f), "a")
+  expect_equal(unrecognized_parameters(sdm(NA), f), c("a", "s"))
 })
 
-test_that("wrong_parameters doesnt reject non-linear transformations", {
+test_that("unrecognized_parameters doesnt reject non-linear transformations", {
   f <- bmf(c ~ 1, a ~ 1, s ~ 1, kappa ~ exp(logkappa), logkappa ~ 1)
-  expect_equal(length(wrong_parameters(imm(NA, NA, NA, NA), f)), 0)
-  expect_equal(wrong_parameters(imm(NA, NA, NA, NA, version = "bsc"), f), "a")
-  expect_equal(wrong_parameters(sdm(NA), f), c("a", "s"))
+  expect_equal(length(unrecognized_parameters(imm(NA, NA, NA, NA), f)), 0)
+  expect_equal(unrecognized_parameters(imm(NA, NA, NA, NA, version = "bsc"), f), "a")
+  expect_equal(unrecognized_parameters(sdm(NA), f), c("a", "s"))
 })
 
 test_that("add_missing_parameters works", {
@@ -235,77 +274,68 @@ test_that("apply_links matches a directly written formula", {
   form <- bmf(x ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
   links <- list(a = "log", c = "logit")
   reform <- apply_links(form, links)
-  expect_equal(reform, reset_env(bmf(x ~ exp(a) + inv_logit(c), kappa ~ 1, a ~ 1, c ~ 1)))
+  expect_equal(reform, bmf(x ~ exp(a) + inv_logit(c), kappa ~ 1, a ~ 1, c ~ 1))
 })
 
 test_that("apply_links works with different spacing formula formatting", {
   form <- bmf(x ~ a + car, kappa ~ 1, a ~ 1, car ~ 1)
   links <- list(a = "log", car = "logit")
   reform <- apply_links(form, links)
-  expect_equal(reform, reset_env(bmf(x ~ exp(a) + inv_logit(car), kappa ~ 1, a ~ 1, car ~ 1)))
+  expect_equal(reform, bmf(x ~ exp(a) + inv_logit(car), kappa ~ 1, a ~ 1, car ~ 1))
 })
 
 test_that("apply_links works with links for multiple predicted parameters", {
   form <- bmf(x ~ a + c, kappa ~ b + d, a ~ 1, c ~ 1, b ~ 1, d ~ 1)
   links <- list(a = "log", c = "identity", d = "probit")
   reform <- apply_links(form, links)
-  expect_equal(reform, reset_env(bmf(x ~ exp(a) + c, kappa ~ b + Phi(d), a ~ 1, c ~ 1, b ~ 1, d ~ 1)))
+  expect_equal(reform, bmf(x ~ exp(a) + c, kappa ~ b + Phi(d), a ~ 1, c ~ 1, b ~ 1, d ~ 1))
 })
 
 test_that("apply_links works when parameter is already part of a transformation", {
   form <- bmf(x ~ log(a) + c^2, kappa ~ 1, a ~ 1, c ~ 1)
   links <- list(a = "probit", c = "log")
   reform <- apply_links(form, links)
-  expect_equal(reform, reset_env(bmf(x ~ log(Phi(a)) + exp(c)^2, kappa ~ 1, a ~ 1, c ~ 1)))
+  expect_equal(reform, bmf(x ~ log(Phi(a)) + exp(c)^2, kappa ~ 1, a ~ 1, c ~ 1))
 })
 
 test_that("apply_links works when parameter appears in to parts of a formula", {
   form <- bmf(x ~ log(a^c) + c^2, kappa ~ 1, a ~ 1, c ~ 1)
   links <- list(a = "probit", c = "log")
   reform <- apply_links(form, links)
-  expect_equal(reform, reset_env(bmf(x ~ log(Phi(a)^exp(c)) + exp(c)^2, kappa ~ 1, a ~ 1, c ~ 1)))
+  expect_equal(reform, bmf(x ~ log(Phi(a)^exp(c)) + exp(c)^2, kappa ~ 1, a ~ 1, c ~ 1))
 })
 
 test_that("apply_links gives error when unknown link type is given", {
   form <- bmf(x ~ log(a^c) + c^2, kappa ~ 1, a ~ 1, c ~ 1)
   links <- list(a = "probit", c = "logggg")
-  expect_error(apply_links(form, links), "Unknown")
+  expect_error(apply_links(form, links), "should be one of")
 })
 
 test_that("apply_links works with identity link", {
   form <- bmf(x ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
   links <- list(a = "identity", c = "log")
   reform <- apply_links(form, links)
-  expect_equal(reform, reset_env(bmf(x ~ a + exp(c), kappa ~ 1, a ~ 1, c ~ 1)))
+  expect_equal(reform, bmf(x ~ a + exp(c), kappa ~ 1, a ~ 1, c ~ 1))
 })
 
 test_that("apply_links handles empty links list", {
   form <- bmf(x ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
   links <- list()
   reform <- apply_links(form, links)
-  expect_equal(reform, form, ignore_formula_env = TRUE)
+  expect_equal(reform, form)
 })
 
 test_that("apply_links handles NULL links input", {
   form <- bmf(x ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
   links <- NULL
   reform <- apply_links(form, links)
-  expect_equal(reform, form, ignore_formula_env = TRUE)
+  expect_equal(reform, form)
 })
 
 test_that("apply_links is case sensitive for link names", {
   form <- bmf(x ~ a + c, kappa ~ 1, a ~ 1, c ~ 1)
   links <- list(a = "LOG")
-  expect_error(apply_links(form, links), "Unknown")
+  expect_error(apply_links(form, links), "should be one of")
 })
-
-# describe("assign_constants", {
-#   it("sets a logical attribute 'constant' to each component of a named list of formulas or numeric values", {
-#     f <- list(y = y ~ 1, x = x ~ a + b, s = 3)
-#     f <- assign_constants(f)
-#     att <- vapply(f, \(x) attributes(x)$constant, logical(1))
-#     expect_equal(att, c(y = FALSE, x = FALSE, s = TRUE))
-#   })
-# })
 
 

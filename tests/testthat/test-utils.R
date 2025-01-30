@@ -119,3 +119,18 @@ test_that("try_save_bmmfit works", {
   )
   expect_error(expect_equal(mock_fit, mock_fit3))
 })
+
+test_that("is_namedlist works", {
+  expect_true(is_namedlist(list(a = 1)))
+  expect_true(is_namedlist(list(a = 1, b = 2)))
+  expect_true(is_namedlist(nlist()))
+  expect_true(is_namedlist(nlist(y ~ 1)))
+  arg <- "hello"
+  expect_true(is_namedlist(nlist(arg)))
+  
+  expect_false(is_namedlist(list(a = 1, 2)))
+  expect_false(is_namedlist(list(1, 2)))
+  expect_false(is_namedlist(list()))
+  expect_false(is_namedlist(list(y ~ 1)))
+  
+})

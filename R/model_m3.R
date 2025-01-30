@@ -440,5 +440,5 @@ construct_m3_act_funs <- function(model = NULL, warnings = TRUE) {
     )
   }
 
-  reset_env(act_funs)
+  act_funs
 }
