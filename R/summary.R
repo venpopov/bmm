@@ -145,7 +145,7 @@ summarise_links <- function(links) {
 summarise_formula.bmmformula <- function(formula, newline = TRUE, wsp = 0, model = NULL) {
   fixpars <- NULL
   if (!is.null(model)) {
-    formula <- suppressMessages(add_missing_parameters(model, formula, replace_fixed = FALSE))
+    formula <- suppressMessages(add_missing_parameters(model, formula))
     fixpars <- model$fixed_parameters
     fixpars <- fixpars[names(fixpars) %in% names(model$parameters)]
     formula[names(fixpars)] <- fixpars

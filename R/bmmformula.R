@@ -212,17 +212,13 @@ bmf2bf.default <- function(model, formula) {
   NULL
 }
 
-add_missing_parameters <- function(model, formula = bmmformula(), replace_fixed = TRUE) {
+add_missing_parameters <- function(model, formula = bmmformula()) {
   formula_pars <- names(formula)
   model_pars <- names(model$parameters)
   fixed_pars <- names(model$fixed_parameters)
 
-  # Replace fixed parameters with `par ~ 1`?
-  if (replace_fixed) {
-    formula_pars <- setdiff(formula_pars, fixed_pars)
-  }
-
-  missing_pars <- setdiff(model_pars, formula_pars)
+  estimable_formula_pars <- setdiff(formula_pars, fixed_pars)
+  missing_pars <- setdiff(model_pars, estimable_formula_pars)
 
   for (mpar in missing_pars) {
     add <- stats::as.formula(paste(mpar, "~ 1"))
