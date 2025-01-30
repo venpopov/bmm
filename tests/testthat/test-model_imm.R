@@ -173,6 +173,7 @@ test_that("constant priors are correct for IMM_bsc with set_size1 fixed effect p
 })
 
 test_that("constant priors are correct for IMM_full with set_size1 fixed effect predictor", {
+  withr::local_options(bmm.silent = 2)
   model <- imm(
     resp_error = "dev_rad",
     nt_features = paste0("col_nt", 1:7),
@@ -194,6 +195,7 @@ test_that("constant priors are correct for IMM_full with set_size1 fixed effect 
 })
 
 test_that("constant priors are correct for IMM_full with set_size1 RANDOM-EFFECT predictor", {
+  withr::local_options(bmm.silent = 2)
   model <- imm(
     resp_error = "dev_rad",
     nt_features = paste0("col_nt", 1:7),

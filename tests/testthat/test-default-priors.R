@@ -199,6 +199,7 @@ test_that("default priors work when there are no fixed parameters", {
 })
 
 test_that("default priors work when there are non-linear transformations of default parameters", {
+  withr::local_options(bmm.silent = 2)
   expect_warning(
     dp <- default_prior(
       object = bmmformula(c ~ exp(nlc), nlc ~ 1),

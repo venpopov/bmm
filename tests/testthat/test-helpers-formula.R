@@ -111,6 +111,7 @@ test_that("check_formula gives expected errors", {
 })
 
 test_that("check_formula works", {
+  withr::local_options(bmm.silent = 2)
   expect_equal(
     names(check_formula(sdm("dev_rad"),
       data = NULL,
@@ -306,3 +307,5 @@ test_that("apply_links is case sensitive for link names", {
 #     expect_equal(att, c(y = FALSE, x = FALSE, s = TRUE))
 #   })
 # })
+
+
