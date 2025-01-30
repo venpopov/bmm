@@ -44,6 +44,15 @@ restructure.bmmfit <- function(x, ...) {
     info <- x$bmm$model$info
     x$bmm$model$info <- NULL
     x$bmm$model[names(info)] <- info
+    class(x$bmm$model)[1] <- "bmmodel"
+    cl_len <- length(class(x$bmm$model))
+    class(x$bmm$model)[cl_len] <- switch(class(x$bmm$model)[cl_len],
+       sdmSimple = "sdm",
+       IMMfull = "imm",
+       IMMabc = "imm",
+       IMMbsc = "imm",
+       class(x$bmm$model)[cl_len]
+    )
     x <- add_links(x)
     x$bmm$user_formula <- assign_nl_attr(x$bmm$user_formula)
   }
