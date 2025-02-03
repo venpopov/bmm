@@ -41,12 +41,9 @@ summary.bmmfit <- function(object, priors = FALSE, prob = 0.95, robust = FALSE, 
 
   out <- rename_mu_smry(out, get_mu_pars(object))
 
-  # get the bmm specific information
-  bmmodel <- object$bmm$model
-  bmmform <- object$bmm$user_formula
-
-  out$formula <- bmmform
-  out$model <- bmmodel
+  # add bmm-specific info to smry object
+  out$formula <- object$bmm$user_formula
+  out$model <- object$bmm$model
   out$data <- object$data
 
   class(out) <- "bmmsummary"
@@ -184,15 +181,12 @@ construct_model_call <- function(model, newline = FALSE, wsp = 1, ...) {
     model_name <- classes[length(classes)]
 
     # construct the inner part of the call
-    rvars <- model$resp_vars
-    ovars <- model$other_vars
-    allvars <- c(rvars, ovars)
-    vnames <- names(allvars)
+    allvars <- c(model$resp_vars, model$other_vars)
   } else {
     model_name <- deparse(call[[1]])
     allvars <- as.list(call)[-1]
-    vnames <- names(allvars)
   }
+  vnames <- names(allvars)
 
   # create necessary padding
   wspace <- collapse(rep(" ", wsp + nchar(model_name) + 1))
