@@ -197,7 +197,7 @@ check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
       stop2("Invalid link function provided! Please use one of the following link functions: identity, log, logit")
     )
   })
-  model$default_priors <- c(model$default_priors, additional_priors)
+  model$default_priors <- c(model$default_priors, setNames(additional_priors, missing_priors))
 
   NextMethod("check_model")
 }
