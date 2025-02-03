@@ -3,20 +3,25 @@
 # bmm 1.1.0
 
 ### New models
-* Add the Memory Measurement Model (Oberauer & Lewandwosky, 2019) as new model class **m3** to the package. This has three versions, a simple span versions **ss**, a complex span version **cs**, and a **custom** version that allows to provide custom activation functions, for all response categories. For details for the memory measurement model, see the [article](https://venpopov.github.io/bmm/articles/bmm_m3.html) on the `bmm` website.
-
+* Add the Memory Measurement Model (Oberauer & Lewandowsky, 2019) as new model class **m3** with three versions: simple span (**ss**), complex span (**cs**), and **custom**. For details, see the [article](https://venpopov.github.io/bmm/articles/bmm_m3.html) on the `bmm` website (#237).
 
 ### New features
-* Updates to the `bmf2bf` S3 methods to more flexibly accommodate the translation of `bmmformulas` into `brmsformulas`
-* New functions **apply_links** will add link functions to all non-linear formulas in a **bmmformula** object.
-* A new example data set **oberauer_lewandowsky_2019_e1** was added to the package, so that users can explore applications of the newly implemented **m3** model with this data set.
-* the `file_refit` argument of the `bmm` function now accepts character string like `brms`. A warning is given when "on_change" is specified, as this is not currently implemented for `bmmodels`.
+* Updates to the `bmf2bf` S3 methods for more flexible translation of `bmmformulas` into `brmsformulas` (#227).
+* New function **apply_links** adds link functions to all non-linear formulas in a **bmmformula** object.
+* New example data set **oberauer_lewandowsky_2019_e1** for exploring the **m3** model.
+* The `file_refit` argument of the `bmm` function now accepts character strings like `brms`. A warning is given when "on_change" is specified, as this is not currently implemented for `bmmodels` (#228).
 
 ### Bug fixes
-* Fix a conflict in setting default priors when model parameters were transformed in a non-linear formula.
+* Fix conflict in setting default priors when model parameters were transformed in a non-linear formula (#232).
 
 ### Documentation
-* add documentation to the article of the [continuous reproduction task](https://venpopov.github.io/bmm/articles/bmm_vwm_crt.html) for how to pre-process half-circular stimulus spaces when using `bmmodels` of the `circular` model class
+* Add documentation to the [continuous reproduction task](https://venpopov.github.io/bmm/articles/bmm_vwm_crt.html) article for pre-processing half-circular stimulus spaces when using `bmmodels` of the `circular` model class (#229, #233).
+* New online [article](https://venpopov.github.io/bmm/articles/bmm_m3.html) to accompany the m3 model
+
+### Other changes
+* vectorize `k2sd()` function for improved performance
+* various internal refactorings (#246, #242)
+* dplyr, magrittr and tidyr dependencies are now optional (#240)
 
 # bmm 1.0.0
 
