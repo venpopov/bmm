@@ -192,7 +192,7 @@ check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
   additional_priors <- lapply(missing_priors, function(m) {
     switch(model$links[[m]],
       log = list(main = "normal(1,1)", effect = "normal(0,0.5)"),
-      identitiy = list(main = "normal(0,1)", effect = "normal(0,1)"),
+      identity = list(main = "normal(0,1)", effect = "normal(0,1)"),
       logit = list(main = "normal(0,1)", effect = "normal(0,1)"),
       stop2("Invalid link function provided! Please use one of the following link functions: identity, log, logit")
     )
