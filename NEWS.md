@@ -3,7 +3,7 @@
 # bmm 1.1.0
 
 ### New models
-* Add the Memory Measurement Model (Oberauer & Lewandowsky, 2019) as new model class **m3** with three versions: simple span (**ss**), complex span (**cs**), and **custom**. For details, see the [article](https://venpopov.github.io/bmm/articles/bmm_m3.html) on the `bmm` website (#237).
+* Add the Memory Measurement Model (Oberauer & Lewandowsky, 2019) as new model class **m3** with three versions: simple span (**ss**), complex span (**cs**), and **custom**. For details, see the [article](https://venpopov.github.io/bmm/articles/bmm_m3.html) on the `bmm` website (#237). Thanks to @GidonFrischkorn and @chenyu-psy
 
 ### New features
 * Updates to the `bmf2bf` S3 methods for more flexible translation of `bmmformulas` into `brmsformulas` (#227).
@@ -22,6 +22,7 @@
 * vectorize `k2sd()` function for improved performance
 * various internal refactorings (#246, #242)
 * dplyr, magrittr and tidyr dependencies are now optional (#240)
+* new contributor - Chenyun Li (chenyu-psy) for his work on the m3 model
 
 # bmm 1.0.0
 
