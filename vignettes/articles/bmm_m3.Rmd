@@ -1,5 +1,5 @@
 ---
-title: "The Memory Measurement Model (M3)"
+title: "The Multinomial / Memory Measurement Model (M3)"
 output: bookdown::html_document2
 author: 
   - Gidon Frischkorn
@@ -48,23 +48,25 @@ fansi::set_knit_hooks(knitr::knit_hooks, which = c("output","message","error"))
 
 # Introduction to the model
 
-The memory measurement model (`m3`) is a computational measurement model for working memory tasks with categorical responses. Such materials include letters, words, objects, and digits. The only prerequisite for using the `m3` is that the responses can be grouped into separate response categories. For each of these response categories the model predicts the frequency of selecting one item of a category as a function of continuous activation strengths. Most commonly the `m3` distinguishes two different activation dimensions:
+The multinomial / memory measurement model (`m3`) is a computational measurement model that was introduced for working memory tasks with categorical responses [@oberauerSimpleMeasurementModels2019]. Such task typically use verbal and visual materials, for example: letters, words, objects, and digits. The only prerequisite for using the `m3` is that the responses can be grouped into separate response categories. For each of these response categories the model predicts the frequency of selecting one item of a category as a function of continuous activation strengths. 
 
-1.  Memory strength of individual elements or items, often labelled item memory
+Withing the domain of working memory, the `m3` most commonly distinguishes two different activation dimensions:
+
+1.  Memory strength of individual elements or items presented during a single trial, often labelled item memory
 2.  Memory strength of relations, relying on temporary bindings, often labelled binding or source memory
 
-The `m3` also allows to include additional hypothetical processes that might increase or diminishing these activation strengths due to experimental manipulations, such as manipulating encoding time or distraction.
+The `m3` also allows to include additional hypothetical processes that might increase or diminishing these activation strengths due to experimental manipulations, such as manipulating encoding time or distraction in the domain of memory.
 
 ## Basic assumptions of the `m3`
 
 The `m3` builds on two general assumptions:
 
-1.  Memory recall represents a competitive selection from a set of response candidates
+1.  Choosing a response (in memory tasks = memory recall) represents a competitive selection from a set of response candidates
 2.  Selection from the candidate set is a function of the relative activation of each candidate representation at test
 
-The set of response candidates can either a) follow naturally from the stimulus material, for example all digits from 1 to 9 or all letters from the alphabet, b) be given in the experimental procedure implementing recall as the selection from `n` response alternatives (n-AFC), or c) be constructed by the individual performing the task. Generally, we recommend focusing on the first and the second use case, as these provide the simpler implementations of the `m3`.
+The set of response candidates can either a) follow naturally from the stimulus material, for example all digits from 1 to 9 or all letters from the alphabet, b) be given in the experimental procedure implementing recall as the selection from `n` response alternatives (n-AFC), or c) be constructed by the individual performing the task. Generally, we recommend focusing on the first and the second use case, as these provide pretty simple and straightforward implementations of the `m3`.
 
-To simplify the use of the `m3`, we do not model the activation of each response candidate, but we group the response candidates into categories that all share the same sources of activation. For example, consider a simple short term memory task (simple span task) in which subjects are asked to remember digits in their serial order and are then cued with a random serial position to retrieve the respective digit. In this task, participants can either recall the correct digit that was associated with the cued position, often labelled the item-in-position. But they could also recall any of the other digits they had to remember, often labelled items from other list positions. Finally, they could also recall a digit that was not part of the memory set at all, usually labelled not-presented items or lures. Thus, we have three categories of responses in this task: correct responses or items-in position (labelled $correct$), other list items (labelled $other$), and not presented items (labelled $npl$).
+To simplify the use of the `m3`, we do not model the activation of each response candidate seperately, but we group the response candidates into categories that all share the same sources of activation. For example, consider a simple short term memory task (simple span task) in which subjects are asked to remember digits in their serial order and are then cued with a random serial position to retrieve the respective digit. In this task, participants can either recall the correct digit that was associated with the cued position, often labelled the item-in-position. But they could also recall any of the other digits they had to remember, often labelled items from other list positions. Finally, they could also recall a digit that was not part of the memory set at all, usually labelled not-presented items or lures. Thus, we have three categories of responses in this task: correct responses or items-in position (labelled $correct$), other list items (labelled $other$), and not presented items (labelled $npl$).
 
 After we have decided on the relevant response categories, we need to specify which activation sources contribute towards each category. For the above simple short term memory tasks, these would most reasonably be:
 
@@ -80,7 +82,7 @@ In this case, $b$ is the baseline activation or background noise, that can be un
 
 ## Choice Rules in the `m3`
 
-The activation for each category is then translated into probabilities of recalling one item from each category with a normalization function as a choice rule. In `bmm` we have implemented two choice rules, that are different implementations of Luce's choice axiom:
+The activation for each category is then translated into probabilities of recalling one item or response from each category with a normalization function as a choice rule. In `bmm` we have implemented two choice rules, that are different implementations of Luce's choice axiom:
 
 1.  Simple normalization (`"simple"`)
 
@@ -92,6 +94,8 @@ $$
 
 In this normalization the probability $p_i$ of recalling an item from the category $i$ results from the number of candidates in the category $n_i$ times the activation of the category $A_i$ as specified in the activation formulas above. This total activation of the category $i$ then gets divided by the sum of all categories $n$ and their activation that arises as the product of the number of items in the category $n_j$ times the activation of that category $A_j$.
 
+The rationale underlying this choice rule is that it provides a meaningful zero point. That is, if any category has zero activation the probability for choosing this category will be zero.
+
 2.  Softmax
 
 The `softmax` choice rule normalizes the exponentiated activation of each category over the sum of all exponentiated activations:
@@ -102,7 +106,7 @@ $$
 
 This choice rule can be interpreted as an n-alternative SDT model over the different response candidates with a Gumbel (or double-exponential) noise distribution.
 
-The model links the response frequencies $Y$ to the probabilities $p$ using a Multinomial distribution with the total number of trials:
+Finally, the model then links the response frequencies $Y$ for each response category to the probabilities $p$ using a multinomial distribution with the total number of trials:
 
 $$
 Y \sim multinomial(p, trials)
@@ -110,7 +114,7 @@ $$
 
 # Parametization of the `m3` in `bmm`
 
-There are three versions of the `m3` model implemented in `bmm`:
+Given its introduction in the domain of working memory, there are currently three versions of the `m3` model implemented in `bmm`:
 
 -  the `m3` for simple span tasks (`version = "ss"`)
 -  the `m3` for complex span tasks (`version = "cs"`)
@@ -122,7 +126,7 @@ The simple and complex span versions of the `m3` implement the activation functi
 
 [^1]: Traditional complex span tasks, such as the operation span or reading span task are thus not suited for the `m3`, as the distractors are different from the to-be-remembered items. For example, in the operation span task, participants are instructed to-remember a set of letters in order while judging math equations to be correct or incorrect in-between the letters. As it is unlikely, that participants would recall digits that are part of the math equations instead of letters, such tasks are not suited to distinguish processes related to the distractor processing. You could still fit the `m3` for simple span tasks to these data, this model would however not provide any insight on the way distractors are encoded and processed in working memory.
 
-The activation equation for the `m3` for complex span tasks are as follows:
+The activation equation for the `m3` for complex span tasks are as follows[^2]:
 
 $$
 \begin{align}
@@ -134,13 +138,15 @@ npi & = b
 \end{align}
 $$
 
+[^2]: Please note that assuming that item and context activation are filtered equally for the distractors is just one way that filtering might reduce the activation of distractors. More recent research on the removal of information from working memory suggests that item and binding memory might not be reduced equally. This would require assuming different filtering parameter $f_a$ for the general activation, and $f_c$ for the context activation. This would require specifying a `custom` M3.
+
 For both the simple and complex span `m3` you do not have to specify the activation formulas for the different categories. You only need to provide linear or non-linear predictor formulas for the different parameters of the respective `m3` version. Using these models you can investigate how different activation sources vary over experimental manipulations or get theoretically grounded indicators of individual differences of the different activation sources.
 
 ## Custom `m3` for tasks with categorical responses
 
-The `version = "custom"` of the `m3` allows you to specify custom activation functions for memory tasks beyond simple and complex span tasks.[^2] For example, you could use a custom `m3` to dissociate different activation sources and cognitive processes contributing to memory performance in memory updating tasks. In addition, to recalling the correct item, items from other positions, or items not presented at all during the current trial, participants can also recall *outdated items* that have been updated during the trial in such tasks. The frequency of recalling such items, can inform us of the processes contributing towards replacing the initially encoded item with the new item. One such model is discussed in @oberauerSimpleMeasurementModels2019.
+The `version = "custom"` of the `m3` allows you to specify custom activation functions for memory tasks beyond simple and complex span tasks. Although the `m3` was conceived as a measurement model for working memory. The `m3` framework can be generalized towards any decision paradigm involving categorical decision that could be explained by continuous activation for difference categorical responses. Therefore, we have relabeled the model from "memory measurement model" to "multinomial measurement model" to reflect the broader application beyond the domain of working memory.
 
-[^2]: Although the `m3` was conceived as a measurement model for working memory. The `m3` framework can be generalized towards any decision paradigm involving categorical decision that could be explained by continuous activation for difference categorical responses.
+For example, you could use a custom `m3` to dissociate different activation sources and cognitive processes contributing to memory performance in memory updating tasks. In addition, to recalling the correct item, items from other positions, or items not presented at all during the current trial, participants can also recall *outdated items* that have been updated during the trial in such tasks. The frequency of recalling such items, can inform us of the processes contributing towards replacing the initially encoded item with the new item. One such model is discussed in @oberauerSimpleMeasurementModels2019.
 
 For the `version = "custom"` of the `m3` you have to provide the activation functions for all response categories. Apart from that you then still provide linear prediction formulas for predicting the different parameters by experimental conditions. For details, please see the section [Fitting the `m3`](#fitting)
 
@@ -272,11 +278,9 @@ my_model <- m3(resp_cats = c("corr","other","dist","npl"),
                version = "custom")
 ```
 
-For the `custom` version, you additionally need to provide the `links` that should be used for each of the model parameters. We also recommend that you provide `default_priors` for each model parameter Otherwise, they will be set based on the provided `links`.
+For the `custom` version, you additionally need to provide the `links` that should be used for each of the model parameters.The `links` ensure that model parameters stay in the correct value range. In particular for the `simple` choice rule it is essential, that all activation are positive. Thus, we recommend using `log` link functions for all parameters that represent activation sources, such as general or context activation, especially when using the `simple` choice rule.
 
-The `links` ensure that model parameters stay in the correct value range. In particular for the `simple` choice rule it is essential, that all activation are positive. Thus, we recommend using `log` link functions for all parameters that represent activation sources, such as general or context activation, especially when using the `simple` choice rule.
-
-The `default_priors` are less critical, but still, we recommend that you consider what parameter ranges are reasonable for the different model parameters and provide `default_priors` for all of them. For detailed information on priors in `bmm` please see the `vignette("extract_info")`. In short, you can provide priors for intercepts as `main` and for effects as `effects`.
+Based on the provided links for the model parameters, `bmm` will set `default_priors` that aim at a reasonable parameter range. We recommend that you check the priors set for the `custom` version of the `m3` andconsider what parameter ranges are reasonable for the different model parameters and provide `default_priors` for all of them. For detailed information on priors in `bmm` please see the `vignette("extract_info")`. In short, you can provide priors for intercepts as `main` and for effects as `effects`.
 
 Setting up a `m3` object including these info looks like this:
 
@@ -285,17 +289,13 @@ my_links <- list(
   c = "log", a = "log", d = "log"
 )
 
-my_priors <- list(
-  c = list(main = "normal(2, 0.5)", effects = "normal(0, 0.5)"),
-  a = list(main = "normal(0, 0.5)", effects = "normal(0, 0.5)"),
-  d = list(main = "normal(0, 0.5)", effects = "normal(0, 0.5)")
-)
-
 my_model <- m3(resp_cats = c("corr","other","dist","npl"),
                num_options = c("n_corr","n_other","n_dist","n_npl"),
                choice_rule = "simple",
-               links = my_links,
-               default_priors = my_priors)
+               links = my_links)
+
+# print default priors determined based on link functions
+default_prior(full_formula, data, my_model)
 ```
 
 ## Running `bmm` to estimate parameters
@@ -311,7 +311,8 @@ m3_fit <- bmm(
   cores = 4,
   init = 0,
   warmup = 2000, iter = 2000 + 5000,
-  backend = 'cmdstanr'
+  backend = 'cmdstanr',
+  refresh = 0
 )
 ```
 

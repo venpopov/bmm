@@ -158,7 +158,44 @@ of choosing a response category is determined by the activation of the candidate
 }
 \examples{
 \dontrun{
-# put a full example here (see 'R/bmm_model_mixture3p.R' for an example)
+data <- oberauer_lewandowsky_2019_e1
+
+# initiate the model object
+m3_model <- m3(resp_cats = c("corr","other","dist","npl"),
+  num_options = c("n_corr","n_other","n_dist","n_npl"),
+  choice_rule = "simple")
+
+# specify the model formula including the activation formulas for each response category
+m3_formula <- bmf(
+ corr ~ b + a + c,
+ other ~ b + a,
+ dist ~ b + d,
+ npl ~ b,
+ c ~ 1 + cond + (1 + cond | ID),
+ a ~ 1 + cond + (1 + cond | ID),
+ d ~ 1 + (1 | ID)
+)
+
+# specify links for the model parameters
+m3_model$links <- list(
+ c = "log",
+ a = "log",
+ d = "log"
+)
+
+# check if the default priors are applied correctly
+brms::default_prior(m3_formula, data = data, model = m3_model)
+
+# fit the model
+m3_fit <- bmm(
+  formula = m3_formula,
+  data = data,
+  model = m3_model,
+  cores = 4,
+)
+
+# print summary of the model
+summary(m3_fit)
 }
 
 }
