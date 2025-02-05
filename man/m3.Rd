@@ -35,11 +35,12 @@ An object of class \code{bmmodel}
 The Multinomial / Memory Measurement Model (M3) is a measurement model that was originally introduced
 for working memory tasks with categorical responses. It assumes that each candidate in each response
 category is activated by a combination of sources of activation. The probability of choosing a response
-category is determined by the activation of the candidates.
+category is determined by the activation of the candidates. The model can be used for any n-AFC categorical
+decision task.
 }
 \details{
 \itemize{
-\item \strong{Domain:} Working Memory (categorical)
+\item \strong{Domain:} Working Memory (categorical), Categorical Decision Making
 \item \strong{Task:} n-AFC retrieval
 \item \strong{Name:} The Multinomial / Memory Measurement Model
 \item \strong{Citation:}
@@ -157,46 +158,47 @@ category is determined by the activation of the candidates.
 }
 }
 \examples{
-\dontrun{
+\dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 data <- oberauer_lewandowsky_2019_e1
 
 # initiate the model object
-m3_model <- m3(resp_cats = c("corr","other","dist","npl"),
-  num_options = c("n_corr","n_other","n_dist","n_npl"),
-  choice_rule = "simple")
+m3_model <- m3(
+  resp_cats = c("corr", "other", "dist", "npl"),
+  num_options = c("n_corr", "n_other", "n_dist", "n_npl"),
+  choice_rule = "simple"
+)
 
 # specify the model formula including the activation formulas for each response category
 m3_formula <- bmf(
- corr ~ b + a + c,
- other ~ b + a,
- dist ~ b + d,
- npl ~ b,
- c ~ 1 + cond + (1 + cond | ID),
- a ~ 1 + cond + (1 + cond | ID),
- d ~ 1 + (1 | ID)
+  corr ~ b + a + c,
+  other ~ b + a,
+  dist ~ b + d,
+  npl ~ b,
+  c ~ 1 + cond + (1 + cond | ID),
+  a ~ 1 + cond + (1 + cond | ID),
+  d ~ 1 + (1 | ID)
 )
 
 # specify links for the model parameters
 m3_model$links <- list(
- c = "log",
- a = "log",
- d = "log"
+  c = "log",
+  a = "log",
+  d = "log"
 )
 
 # check if the default priors are applied correctly
-brms::default_prior(m3_formula, data = data, model = m3_model)
+default_prior(m3_formula, data = data, model = m3_model)
 
 # fit the model
 m3_fit <- bmm(
   formula = m3_formula,
   data = data,
   model = m3_model,
-  cores = 4,
+  cores = 4
 )
 
 # print summary of the model
 summary(m3_fit)
-}
-
+\dontshow{\}) # examplesIf}
 }
 \keyword{bmmodel}
