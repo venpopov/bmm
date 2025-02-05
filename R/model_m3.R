@@ -102,7 +102,8 @@
 #' The Multinomial / Memory Measurement Model (M3) is a measurement model that was originally introduced
 #' for working memory tasks with categorical responses. It assumes that each candidate in each response
 #' category is activated by a combination of sources of activation. The probability of choosing a response
-#' category is determined by the activation of the candidates.
+#' category is determined by the activation of the candidates. The model can be used for any n-AFC categorical
+#' decision task.
 #'
 #' @param resp_cats The variable names that contain the number of responses for each of the
 #'   response categories used for the M3.
@@ -132,47 +133,47 @@
 #'
 #' @keywords bmmodel
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' data <- oberauer_lewandowsky_2019_e1
 #'
 #' # initiate the model object
-#' m3_model <- m3(resp_cats = c("corr","other","dist","npl"),
-#'   num_options = c("n_corr","n_other","n_dist","n_npl"),
-#'   choice_rule = "simple")
+#' m3_model <- m3(
+#'   resp_cats = c("corr", "other", "dist", "npl"),
+#'   num_options = c("n_corr", "n_other", "n_dist", "n_npl"),
+#'   choice_rule = "simple"
+#' )
 #'
 #' # specify the model formula including the activation formulas for each response category
 #' m3_formula <- bmf(
-#'  corr ~ b + a + c,
-#'  other ~ b + a,
-#'  dist ~ b + d,
-#'  npl ~ b,
-#'  c ~ 1 + cond + (1 + cond | ID),
-#'  a ~ 1 + cond + (1 + cond | ID),
-#'  d ~ 1 + (1 | ID)
+#'   corr ~ b + a + c,
+#'   other ~ b + a,
+#'   dist ~ b + d,
+#'   npl ~ b,
+#'   c ~ 1 + cond + (1 + cond | ID),
+#'   a ~ 1 + cond + (1 + cond | ID),
+#'   d ~ 1 + (1 | ID)
 #' )
 #'
 #' # specify links for the model parameters
 #' m3_model$links <- list(
-#'  c = "log",
-#'  a = "log",
-#'  d = "log"
+#'   c = "log",
+#'   a = "log",
+#'   d = "log"
 #' )
 #'
 #' # check if the default priors are applied correctly
-#' brms::default_prior(m3_formula, data = data, model = m3_model)
+#' default_prior(m3_formula, data = data, model = m3_model)
 #'
 #' # fit the model
 #' m3_fit <- bmm(
 #'   formula = m3_formula,
 #'   data = data,
 #'   model = m3_model,
-#'   cores = 4,
+#'   cores = 4
 #' )
 #'
 #' # print summary of the model
 #' summary(m3_fit)
-#' }
 #'
 #' @export
 m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custom", ...) {
@@ -226,22 +227,21 @@ check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
     Please check if the used priors are reasonable for your application"
   )
   additional_priors <- lapply(missing_priors, function(m) {
-    if(model$other_vars$choice_rule == "simple"){
+    if (model$other_vars$choice_rule == "simple") {
       switch(model$links[[m]],
-             log = list(main = "normal(1,1)", effects = "normal(0,0.5)"),
-             identity = list(main = "normal(10,4)", effects = "normal(0,1)"),
-             logit = list(main = "logistic(0,1)", effects = "normal(0,0.5)"),
+             log = list(main = "normal(1, 1)", effects = "normal(0, 0.5)"),
+             identity = list(main = "normal(10, 4)", effects = "normal(0, 1)"),
+             logit = list(main = "logistic(0, 1)", effects = "normal(0, 0.5)"),
              stop2("Invalid link function provided! Please use one of the following link functions: identity, log, logit")
       )
-    } else if(model$other_vars$choice_rule == "softmax") {
+    } else if (model$other_vars$choice_rule == "softmax") {
       switch(model$links[[m]],
-             log = list(main = "normal(0,1)", effects = "normal(0,0.5)"),
-             identity = list(main = "normal(1,1)", effects = "normal(0,1)"),
-             logit = list(main = "logistic(0,1)", effects = "normal(0,0.5)"),
+             log = list(main = "normal(0, 1)", effects = "normal(0, 0.5)"),
+             identity = list(main = "normal(1, 1)", effects = "normal(0, 1)"),
+             logit = list(main = "logistic(0, 1)", effects = "normal(0, 0.5)"),
              stop2("Invalid link function provided! Please use one of the following link functions: identity, log, logit")
       )
     }
-
   })
   model$default_priors <- c(model$default_priors, setNames(additional_priors, missing_priors))
 
@@ -376,6 +376,19 @@ bmf2bf.m3 <- function(model, formula) {
   brms_formula
 }
 
+#' @title glue the activation functions for the different choice rules
+#'
+#' @param choice_rule The choice rule that should be used for the M3. The options are "softmax" and "simple"
+#' @param cat The name of the response category for which the activation function should be generated
+#' @param options_vars The variable names that contain the number of candidates in each response category
+#' @noRd
+glue_choice_rule_functions <- function(choice_rule, cat, options_vars) {
+  switch(
+    choice_rule,
+    simple = glue("log({cat} * {options_vars[cat]})"),
+    softmax = glue("({cat} + log({options_vars[cat]}))")
+  )
+}
 
 ############################################################################# !
 # CONFIGURE_MODEL S3 METHODS                                             ####
@@ -487,17 +500,4 @@ construct_m3_act_funs <- function(model = NULL, warnings = TRUE) {
   act_funs
 }
 
-#' @title glue the activation functions for the different choice rules
-#'
-#' @param choice_rule The choice rule that should be used for the M3. The options are "softmax" and "simple"
-#' @param cat The name of the response category for which the activation function should be generated
-#' @param options_vars The variable names that contain the number of candidates in each response category
-glue_choice_rule_functions <- function(choice_rule, cat, options_vars) {
-  act_function <- switch(
-    choice_rule,
-    simple = glue("log({cat} * {options_vars[cat]})"),
-    softmax = glue("({cat} + log({options_vars[cat]}))")
-  )
 
-  act_function
-}
