@@ -2,7 +2,7 @@
 % Please edit documentation in R/model_m3.R
 \name{m3}
 \alias{m3}
-\title{The Memory Measurement Model by Oberauer & Lewandowsky (2019)}
+\title{The Multinomial / Memory Measurement Model}
 \usage{
 m3(resp_cats, num_options, choice_rule = "softmax", version = "custom", ...)
 }
@@ -32,16 +32,16 @@ on the differences of these choice rules please see the appendix of Oberauer & L
 An object of class \code{bmmodel}
 }
 \description{
-The Memory Measurement Model (M3) is a measurement model for working memory
-tasks with categorical responses. It assumes that each candidate in each response
-category is activated by a combination of sources of activation. The probability
-of choosing a response category is determined by the activation of the candidates.
+The Multinomial / Memory Measurement Model (M3) is a measurement model that was originally introduced
+for working memory tasks with categorical responses. It assumes that each candidate in each response
+category is activated by a combination of sources of activation. The probability of choosing a response
+category is determined by the activation of the candidates.
 }
 \details{
 \itemize{
 \item \strong{Domain:} Working Memory (categorical)
 \item \strong{Task:} n-AFC retrieval
-\item \strong{Name:} The Memory Measurement Model by Oberauer & Lewandowsky (2019)
+\item \strong{Name:} The Multinomial / Memory Measurement Model
 \item \strong{Citation:}
 \itemize{
 \item Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models for complex working-memory tasks. Psychological Review, 126.

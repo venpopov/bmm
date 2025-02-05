@@ -56,9 +56,9 @@
     list(
       resp_vars = nlist(resp_cats),
       other_vars = nlist(num_options, choice_rule),
-      domain = "Working Memory (categorical)",
+      domain = "Working Memory (categorical), Categorical Decision Making",
       task = "n-AFC retrieval",
-      name = "The Memory Measurement Model by Oberauer & Lewandowsky (2019)",
+      name = "The Multinomial / Memory Measurement Model",
       citation = glue(
         "Oberauer, K., & Lewandowsky, S. (2019). Simple measurement models \\
         for complex working-memory tasks. Psychological Review, 126."
@@ -99,10 +99,10 @@
 #' @name m3
 #'
 #' @description
-#' The Memory Measurement Model (M3) is a measurement model for working memory
-#' tasks with categorical responses. It assumes that each candidate in each response
-#' category is activated by a combination of sources of activation. The probability
-#' of choosing a response category is determined by the activation of the candidates.
+#' The Multinomial / Memory Measurement Model (M3) is a measurement model that was originally introduced
+#' for working memory tasks with categorical responses. It assumes that each candidate in each response
+#' category is activated by a combination of sources of activation. The probability of choosing a response
+#' category is determined by the activation of the candidates.
 #'
 #' @param resp_cats The variable names that contain the number of responses for each of the
 #'   response categories used for the M3.
