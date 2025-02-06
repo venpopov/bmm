@@ -410,8 +410,6 @@ configure_model.m3 <- function(model, data, formula) {
   # link functions are used
   if(model$other_vars$choice_rule == "simple" && any(model$links == "identity")){
     init <- 0
-    warnif(TRUE,
-           "Initial values for all parameters are set to zero to ensure sampling starts without errors.")
   } else {
     init <- NULL
   }
