@@ -1,3 +1,13 @@
+rejection_sampling <- function(n, f, max_f, proposal_fun, ..., acc = c()) {
+  if (length(acc) > n) {
+    return(acc[seq_len(n)])
+  }
+  x <- proposal_fun(n)
+  y <- stats::runif(n) * max_f
+  accept <- y < f(x, ...)
+  rejection_sampling(n, f, max_f, proposal_fun, ..., acc = c(acc, x[accept]))
+}
+
 #' @title Distribution functions for the Signal Discrimination Model (SDM)
 #'
 #' @description Density, distribution function, and random generation for the
@@ -172,30 +182,24 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
   stopif(isTRUE(any(c < 0)), "c must be non-negative")
   stopif(length(n) > 1, "n must be a single integer")
 
-  max_y <- dsdm(0, 0, c, kappa)
-  xa <- c()
+  .dsdm_numer <- switch(parametrization,
+    bessel = .dsdm_numer_bessel,
+    sqrtexp = .dsdm_numer_sqrtexp,
+    stop("Parametrization must be one of 'bessel' or 'sqrtexp'")
+  )
 
-  .rsdm_inner <- function(n, mu, c, kappa, parametrization, xa) {
-    x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, 1) * max_y
-    accept <- y < dsdm(x, mu, c, kappa, parametrization = parametrization)
-    xa <- c(xa, x[accept])
-
-    if (length(xa) < n) {
-      return(.rsdm_inner(n, mu, c, kappa, parametrization, xa))
-    }
-
-    xa[1:n]
-  }
-
-  .rsdm_inner(n, mu, c, kappa, parametrization, xa)
+  rejection_sampling(
+    n = n,
+    f = function(x) .dsdm_numer(x, mu, c, kappa),
+    max_f = .dsdm_numer(0, 0, c, kappa),
+    proposal_fun = function(n) stats::runif(n, -pi, pi)
+  )
 }
+
+
 
 # helper functions for calculating the density of the SDM distribution
 .dsdm_numer_bessel <- function(x, mu, c, kappa, log = FALSE) {
-  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(isTRUE(any(c < 0)), "c must be non-negative")
-
   be <- besselI(kappa, nu = 0, expon.scaled = TRUE)
   out <- c * exp(kappa * (cos(x - mu) - 1)) / (2 * pi * be)
   if (!log) {
@@ -205,9 +209,6 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 }
 
 .dsdm_numer_sqrtexp <- function(x, mu, c, kappa, log = FALSE) {
-  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(isTRUE(any(c < 0)), "c must be non-negative")
-
   out <- c * exp(kappa * (cos(x - mu) - 1)) * sqrt(kappa) / sqrt(2 * pi)
   if (!log) {
     out <- exp(out)
