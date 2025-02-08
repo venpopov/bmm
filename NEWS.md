@@ -10,6 +10,7 @@
 * New function **apply_links** adds link functions to all non-linear formulas in a **bmmformula** object.
 * New example data set **oberauer_lewandowsky_2019_e1** for exploring the **m3** model.
 * The `file_refit` argument of the `bmm` function now accepts character strings like `brms`. A warning is given when "on_change" is specified, as this is not currently implemented for `bmmodels` (#228).
+* New function **rejection_sampling**
 
 ### Bug fixes
 * Fix conflict in setting default priors when model parameters were transformed in a non-linear formula (#232).
