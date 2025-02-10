@@ -1,3 +1,40 @@
+#' Rejection Sampling
+#'
+#' Performs rejection sampling to generate samples from a target distribution.
+#'
+#' @param n Integer. The number of samples to generate.
+#' @param f Function. The target density function from which to sample.
+#' @param max_f Numeric. The maximum value of the target density function `f`.
+#' @param proposal_fun Function. A function that generates samples from the proposal distribution.
+#' @param ... Additional arguments to be passed to the target density function `f`.
+#'
+#' @return A numeric vector of length `n` containing samples from the target distribution.
+#' @export
+#' @keywords distribution
+#'
+#' @examples
+#' target_density <- function(x) brms::dvon_mises(x, mu = 0, kappa = 10)
+#' proposal <- function(n) runif(n, min = -pi, max = pi)
+#' samples <- rejection_sampling(10000, target_density, max_f = target_density(0), proposal)
+#' hist(samples, freq = FALSE)
+#' curve(target_density, col = "red", add = TRUE)
+rejection_sampling <- function(n, f, max_f, proposal_fun, ...) {
+  stopifnot(is.numeric(n), length(n) == 1, n > 0)
+  stopifnot(is.numeric(max_f), length(max_f) == 1 | length(max_f) == n, max_f > 0)
+
+  inner <- function(n, f, max_f, proposal_fun, ..., acc = c()) {
+    if (length(acc) > n) {
+      return(acc[seq_len(n)])
+    }
+    x <- proposal_fun(n)
+    y <- stats::runif(n) * max_f
+    accept <- y < f(x, ...)
+    inner(n, f, max_f, proposal_fun, ..., acc = c(acc, x[accept]))
+  }
+
+  inner(n, f, max_f, proposal_fun, ...)
+}
+
 #' @title Distribution functions for the Signal Discrimination Model (SDM)
 #'
 #' @description Density, distribution function, and random generation for the
@@ -90,21 +127,16 @@ dsdm <- function(x, mu = 0, c = 3, kappa = 3.5, log = FALSE,
 
   .dsdm_numer <- switch(parametrization,
     bessel = .dsdm_numer_bessel,
-    sqrtexp = .dsdm_numer_sqrtexp
+    sqrtexp = .dsdm_numer_sqrtexp,
+    stop("Parametrization must be one of 'bessel' or 'sqrtexp'")
   )
 
   lnumerator <- .dsdm_numer(x, mu, c, kappa, log = TRUE)
 
-  if (any(length(mu) > 1, length(c) > 1, length(kappa) > 1)) {
-    denom <- .dsdm_integrate_numer_v(.dsdm_numer, mu, c, kappa,
-      lower = mu,
-      upper = mu + pi
-    )
+  denom <- if (any(length(mu) > 1, length(c) > 1, length(kappa) > 1)) {
+    .dsdm_integrate_numer_v(.dsdm_numer, mu, c, kappa, lower = mu, upper = mu + pi)
   } else {
-    denom <- .dsdm_integrate_numer(.dsdm_numer, mu, c, kappa,
-      lower = mu,
-      upper = mu + pi
-    )
+    .dsdm_integrate_numer(.dsdm_numer, mu, c, kappa, lower = mu, upper = mu + pi)
   }
 
   denom <- 2 * denom
@@ -172,30 +204,22 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
   stopif(isTRUE(any(c < 0)), "c must be non-negative")
   stopif(length(n) > 1, "n must be a single integer")
 
-  max_y <- dsdm(0, 0, c, kappa)
-  xa <- c()
+  .dsdm_numer <- switch(parametrization,
+    bessel = .dsdm_numer_bessel,
+    sqrtexp = .dsdm_numer_sqrtexp,
+    stop("Parametrization must be one of 'bessel' or 'sqrtexp'")
+  )
 
-  .rsdm_inner <- function(n, mu, c, kappa, parametrization, xa) {
-    x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, 1) * max_y
-    accept <- y < dsdm(x, mu, c, kappa, parametrization = parametrization)
-    xa <- c(xa, x[accept])
-
-    if (length(xa) < n) {
-      return(.rsdm_inner(n, mu, c, kappa, parametrization, xa))
-    }
-
-    xa[1:n]
-  }
-
-  .rsdm_inner(n, mu, c, kappa, parametrization, xa)
+  rejection_sampling(
+    n = n,
+    f = function(x) .dsdm_numer(x, mu, c, kappa),
+    max_f = .dsdm_numer(0, 0, c, kappa),
+    proposal_fun = function(n) stats::runif(n, -pi, pi)
+  )
 }
 
 # helper functions for calculating the density of the SDM distribution
 .dsdm_numer_bessel <- function(x, mu, c, kappa, log = FALSE) {
-  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(isTRUE(any(c < 0)), "c must be non-negative")
-
   be <- besselI(kappa, nu = 0, expon.scaled = TRUE)
   out <- c * exp(kappa * (cos(x - mu) - 1)) / (2 * pi * be)
   if (!log) {
@@ -205,17 +229,12 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 }
 
 .dsdm_numer_sqrtexp <- function(x, mu, c, kappa, log = FALSE) {
-  stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
-  stopif(isTRUE(any(c < 0)), "c must be non-negative")
-
   out <- c * exp(kappa * (cos(x - mu) - 1)) * sqrt(kappa) / sqrt(2 * pi)
   if (!log) {
     out <- exp(out)
   }
   out
 }
-
-
 
 .dsdm_integrate_numer <- function(fun, mu, c, kappa, lower, upper) {
   stats::integrate(fun, lower = lower, upper = upper, mu, c, kappa)$value
@@ -224,7 +243,6 @@ rsdm <- function(n, mu = 0, c = 3, kappa = 3.5, parametrization = "sqrtexp") {
 .dsdm_integrate_numer_v <- Vectorize(.dsdm_integrate_numer,
   vectorize.args = c("mu", "c", "kappa", "lower", "upper")
 )
-
 
 
 #' @title Distribution functions for the two-parameter mixture model (mixture2p)
@@ -304,25 +322,13 @@ rmixture2p <- function(n, mu = 0, kappa = 5, p_mem = 0.6) {
   stopif(isTRUE(any(p_mem < 0)), "p_mem must be larger than zero.")
   stopif(isTRUE(any(p_mem > 1)), "p_mem must be smaller than one.")
 
-  max_y <- dmixture2p(0, 0, kappa, p_mem)
-  xa <- c()
-
-  .rmixture2p_inner <- function(n, mu, c, kappa, p_mem, xa) {
-    x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, 1) * max_y
-    accept <- y < dmixture2p(x, mu, kappa, p_mem)
-    xa <- c(xa, x[accept])
-
-    if (length(xa) < n) {
-      return(.rmixture2p_inner(n, mu, c, kappa, p_mem, xa))
-    }
-
-    xa[1:n]
-  }
-
-  .rmixture2p_inner(n, mu, c, kappa, p_mem, xa)
+  rejection_sampling(
+    n = n,
+    f = function(x) dmixture2p(x, mu, kappa, p_mem),
+    max_f = dmixture2p(0, 0, kappa, p_mem),
+    proposal_fun = function(n) stats::runif(n, -pi, pi)
+  )
 }
-
 
 #' @title Distribution functions for the three-parameter mixture model (mixture3p)
 #'
@@ -417,24 +423,15 @@ rmixture3p <- function(n, mu = c(0, 2, -1.5), kappa = 5, p_mem = 0.6, p_nt = 0.2
   stopif(isTRUE(any(p_nt < 0)), "p_nt must be larger than zero.")
   stopif(isTRUE(any(p_mem + p_nt > 1)), "The sum of p_mem and p_nt must be smaller than one.")
 
-  x <- seq(-pi, pi, length.out = 361)
-  max_y <- max(dmixture3p(x, mu, kappa, p_mem, p_nt))
-  xa <- c()
+  xm <- seq(-pi, pi, length.out = 361)
+  max_y <- max(dmixture3p(xm, mu, kappa, p_mem, p_nt))
 
-  .rmixture3p_inner <- function(n, mu, c, kappa, p_mem, p_nt, xa) {
-    x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, 1) * max_y
-    accept <- y < dmixture3p(x, mu, kappa, p_mem, p_nt)
-    xa <- c(xa, x[accept])
-
-    if (length(xa) < n) {
-      return(.rmixture3p_inner(n, mu, c, kappa, p_mem, p_nt, xa))
-    }
-
-    xa[1:n]
-  }
-
-  .rmixture3p_inner(n, mu, c, kappa, p_mem, p_nt, xa)
+  rejection_sampling(
+    n = n,
+    f = function(x) dmixture3p(x, mu, kappa, p_mem, p_nt),
+    max_f = max_y,
+    proposal_fun = function(n) stats::runif(n, -pi, pi)
+  )
 }
 
 #' @title Distribution functions for the Interference Measurement Model (IMM)
@@ -552,24 +549,15 @@ rimm <- function(n, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
     "The number of items does not match the distances provided from the cued location."
   )
 
-  x <- seq(-pi, pi, length.out = 361)
-  max_y <- max(dimm(x, mu, dist, c, a, b, s, kappa))
-  xa <- c()
+  xm <- seq(-pi, pi, length.out = 361)
+  max_y <- max(dimm(xm, mu, dist, c, a, b, s, kappa))
 
-  .rimm_inner <- function(n, mu, dist, c, a, b, s, kappa, xa) {
-    x <- stats::runif(n, -pi, pi)
-    y <- stats::runif(n, 0, 1) * max_y
-    accept <- y < dimm(x, mu, dist, c, a, b, s, kappa)
-    xa <- c(xa, x[accept])
-
-    if (length(xa) < n) {
-      return(.rimm_inner(n, mu, dist, c, a, b, s, kappa, xa))
-    }
-
-    xa[1:n]
-  }
-
-  .rimm_inner(n, mu, dist, c, a, b, s, kappa, xa)
+  rejection_sampling(
+    n = n,
+    f = function(x) dimm(x, mu, dist, c, a, b, s, kappa),
+    max_f = max_y,
+    proposal_fun = function(n) stats::runif(n, -pi, pi)
+  )
 }
 
 #' @title Distribution functions for the Memory Measurement Model (M3)
