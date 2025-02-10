@@ -272,27 +272,36 @@ check_data.m3 <- function(model, data, formula) {
     # If the number of options is a string, then it is the name of the column in the data
     missing_options <- setdiff(n_opt_vect, col_names)
     stopif(length(missing_options), "The variable(s) {paste0(missing_options, collapse = ', ')} missing in the data")
+
+    # create index variables for any number of Option being zero in one row
+    n_opt_idx_vars <- paste0("Idx_", resp_name)
+    for (i in 1:length(n_opt_vect)) {
+      stopif(
+        sum(data[[n_opt_vect[i]]]) == 0,
+        "At least one of the specified number of candidates in the response categories is zero for all oberservations.
+      Please remove this category from the model, as it is not identified."
+      )
+
+      data[[n_opt_idx_vars[i]]] <- ifelse(data[[n_opt_vect[i]]] > 0, 1, 0)
+      data[[n_opt_vect[i]]] <- ifelse(data[[n_opt_vect[i]]] == 0, 0.0001, data[[n_opt_vect[i]]])
+    }
   } else if (is.numeric(n_opt_vect)) {
     # If the number of options is numeric, then it represents the number of options for each response variable
     for (opt in names(n_opt_vect)) {
       stopif(opt %in% names(data), "The variable {opt} already exists in the data. Give explicit names to your num_options vector")
       data[opt] <- n_opt_vect[opt]
     }
-  } else {
-    stop2("The number of options should be a string or a numeric vector.")
-  }
 
-  # create index variables for any number of Option being zero in one row
-  n_opt_idx_vars <- paste0("Idx_", resp_name)
-  for (i in 1:length(n_opt_vect)) {
+    # create index variables for any number of Option being zero in one row
+    n_opt_idx_vars <- paste0("Idx_", resp_name)
     stopif(
-      sum(data[[n_opt_vect[i]]]) == 0,
-      "At least one of the specified number of candidates in the response categories is zero for all oberservations.
+      any(n_opt_vect == 0),
+      "At least one of the specified number of candidates in the response categories is zero.
       Please remove this category from the model, as it is not identified."
     )
-
-    data[[n_opt_idx_vars[i]]] <- ifelse(data[[n_opt_vect[i]]] > 0, 1, 0)
-    data[[n_opt_vect[i]]] <- ifelse(data[[n_opt_vect[i]]] == 0, 0.0001, data[[n_opt_vect[i]]])
+    data[,n_opt_idx_vars] <- 1
+  } else {
+    stop2("The number of options should be a string or a numeric vector.")
   }
 
   NextMethod("check_data")

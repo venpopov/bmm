@@ -286,3 +286,27 @@ test_that("m3_custom version works with variables contained in data in the activ
     rename = F
   ))
 })
+
+
+test_that("m3 with numerical vector as num_options containing 0 returns error", {
+  formula <- bmf(
+    c ~ 1 + (1 | ID),
+    a ~ 1 + (1 | ID)
+  )
+
+  my_model <- m3(
+    resp_cats = c("corr", "other", "npl"),
+    num_options = c(1, 0, 5),
+    choice_rule = "simple",
+    version = "ss"
+  )
+
+  expect_error(bmm(
+    formula = formula,
+    data = oberauer_lewandowsky_2019_e1,
+    model = my_model,
+    backend = "mock",
+    mock_fit = 1,
+    rename = F
+  ))
+})
