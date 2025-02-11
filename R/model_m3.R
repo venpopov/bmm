@@ -52,6 +52,7 @@
 .model_m3 <- function(resp_cats = NULL, num_options = NULL,
                       choice_rule = "softmax", version = "custom", links = NULL,
                       default_priors = NULL, call = NULL, ...) {
+  if(!is.null(num_options)) names(num_options) <- names(num_options) %||% paste0("n_opt_",resp_cats)
   out <- structure(
     list(
       resp_vars = nlist(resp_cats),
@@ -191,7 +192,6 @@ m3 <- function(resp_cats, num_options, choice_rule = "softmax", version = "custo
     length(num_options) != length(resp_cats),
     "The option variables should have the same length as the response variables."
   )
-  names(num_options) <- names(num_options) %||% paste0("n_opt_",resp_cats)
 
   .model_m3(
     resp_cats = resp_cats, num_options = num_options,
@@ -262,38 +262,39 @@ check_data.m3 <- function(model, data, formula) {
   stopif(length(missing_variables), "The response variable(s) {paste0(missing_variables, collapse = ', ')} missing in the data")
 
   # Transfer all of the response variables to a matrix and name it 'Y'
-  resp_matrix <- as.matrix(data[, resp_name])
+  resp_matrix <- as.matrix(data[resp_name])
   resp_matrix[is.na(resp_matrix)] <- 0
-  data <- data[not_in(col_names, resp_name)]
+  data <- data[!col_names %in% resp_name]
   data$nTrials <- rowSums(resp_matrix)
   data$Y <- resp_matrix
 
   if (is.character(n_opt_vect)) {
-    # If the number of options is a string, then it is the name of the column in the data
+    # n_opt_vect is the *name* of the column in the data
     missing_options <- setdiff(n_opt_vect, col_names)
     stopif(length(missing_options), "The variable(s) {paste0(missing_options, collapse = ', ')} missing in the data")
+    opt_vars <- n_opt_vect
   } else if (is.numeric(n_opt_vect)) {
-    # If the number of options is numeric, then it represents the number of options for each response variable
-    for (opt in names(n_opt_vect)) {
-      stopif(opt %in% names(data), "The variable {opt} already exists in the data. Give explicit names to your num_options vector")
-      data[opt] <- n_opt_vect[opt]
-    }
+    # n_opt_vect is the *number* of options for each response variable
+    opt_vars <- names(n_opt_vect)
+    stopif(
+      any(opt_vars %in% names(data)), 
+      "One of the variables {paste0(opt_vars, collapse = ', ')} already exists in the data. Give explicit names to your num_options vector"
+    )
+    data[opt_vars] <- rep(n_opt_vect, each = nrow(data))
   } else {
     stop2("The number of options should be a string or a numeric vector.")
   }
 
+  stopif(
+    any(colSums(data[opt_vars]) == 0),
+    "At least one of the specified number of candidates in the response categories is zero for all oberservations.
+    Please remove this category from the model, as it is not identified."
+  )
+
   # create index variables for any number of Option being zero in one row
   n_opt_idx_vars <- paste0("Idx_", resp_name)
-  for (i in 1:length(n_opt_vect)) {
-    stopif(
-      sum(data[[n_opt_vect[i]]]) == 0,
-      "At least one of the specified number of candidates in the response categories is zero for all oberservations.
-      Please remove this category from the model, as it is not identified."
-    )
-
-    data[[n_opt_idx_vars[i]]] <- ifelse(data[[n_opt_vect[i]]] > 0, 1, 0)
-    data[[n_opt_vect[i]]] <- ifelse(data[[n_opt_vect[i]]] == 0, 0.0001, data[[n_opt_vect[i]]])
-  }
+  data[n_opt_idx_vars] <- as.integer(data[opt_vars] > 0)
+  data[opt_vars][data[opt_vars] == 0] <- 0.0001
 
   NextMethod("check_data")
 }

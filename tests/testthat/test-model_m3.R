@@ -225,19 +225,23 @@ test_that("m3 works with num_options as a numeric vector", {
 
   my_model <- m3(
     resp_cats = c("corr", "other", "npl"),
-    num_options = c(1, 4, 5),
+    num_options = c(1, 2, 5),
     choice_rule = "simple",
     version = "ss"
   )
 
-  expect_silent(bmm(
+  fit <- bmm(
     formula = formula,
     data = oberauer_lewandowsky_2019_e1,
     model = my_model,
     backend = "mock",
     mock_fit = 1,
     rename = F
-  ))
+  )
+
+  nopts <- my_model$other_vars$num_options
+  expect_named(nopts, paste0("n_opt_", my_model$resp_vars$resp_cats))
+  expect_equal(unlist(unique(fit$data[names(nopts)])), nopts)
 })
 
 test_that("m3_custom version works with variables contained in data in the activation formulas", {
@@ -285,4 +289,28 @@ test_that("m3_custom version works with variables contained in data in the activ
     mock_fit = 1,
     rename = F
   ))
+})
+
+
+test_that("m3 with numerical vector as num_options containing 0 returns error", {
+  formula <- bmf(
+    c ~ 1 + (1 | ID),
+    a ~ 1 + (1 | ID)
+  )
+
+  my_model <- m3(
+    resp_cats = c("corr", "other", "npl"),
+    num_options = c(1, 0, 5),
+    choice_rule = "simple",
+    version = "ss"
+  )
+
+  expect_error(bmm(
+    formula = formula,
+    data = oberauer_lewandowsky_2019_e1,
+    model = my_model,
+    backend = "mock",
+    mock_fit = 1,
+    rename = F
+  ), "not identified")
 })
