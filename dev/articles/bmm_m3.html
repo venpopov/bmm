@@ -311,6 +311,7 @@ npi &amp; = b
 <span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/m3.html">m3</a></span><span class="op">(</span>resp_cats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"corr"</span>,<span class="st">"other"</span>,<span class="st">"dist"</span>,<span class="st">"npl"</span><span class="op">)</span>,</span>
 <span>               num_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n_corr"</span>,<span class="st">"n_other"</span>,<span class="st">"n_dist"</span>,<span class="st">"n_npl"</span><span class="op">)</span>,</span>
 <span>               choice_rule <span class="op">=</span> <span class="st">"simple"</span>,</span>
+<span>               version <span class="op">=</span> <span class="st">"custom"</span>,</span>
 <span>               links <span class="op">=</span> <span class="va">my_links</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># print default priors determined based on link functions</span></span>
@@ -382,9 +383,9 @@ npi &amp; = b
 <span>  model <span class="op">=</span> <span class="va">my_model</span>,</span>
 <span>  sample_prior <span class="op">=</span> <span class="st">"yes"</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  init <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  warmup <span class="op">=</span> <span class="fl">2000</span>, iter <span class="op">=</span> <span class="fl">2000</span> <span class="op">+</span> <span class="fl">5000</span>,</span>
+<span>  warmup <span class="op">=</span> <span class="fl">1000</span>, iter <span class="op">=</span> <span class="fl">2000</span>,</span>
 <span>  backend <span class="op">=</span> <span class="st">'cmdstanr'</span>,</span>
+<span>  file <span class="op">=</span> <span class="st">"assets/bmmfit_m3_vignette"</span>,</span>
 <span>  refresh <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Running this model takes about 20 to 40 seconds (depending on the speed of your computer). Using the <code>bmmfit</code> object we can have a quick look at the summary of the fitted model:</p>
@@ -393,6 +394,7 @@ npi &amp; = b
 <pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">m3</span>(resp_cats = c("corr", "other", "dist", "npl"),
             num_options = c("n_corr", "n_other", "n_dist", "n_npl"),
             choice_rule = "simple",
+            version = "custom",
             links = my_links) 
 <span style="color: #AF5FFF;">  Links: </span>c = log; a = log; d = log 
 <span style="color: #AF5FFF;">Formula: </span>b = 0.1
@@ -404,37 +406,37 @@ npi &amp; = b
          dist ~ b + d
          npl ~ b 
 <span style="color: #AF5FFF;">   Data:</span> (Number of observations: 120)
-<span style="color: #AF5FFF;">  Draws: </span>4 chains, each with iter = 7000; warmup = 2000; thin = 1;
-         total post-warmup draws = 20000
+<span style="color: #AF5FFF;">  Draws: </span>4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
 
 <span style="color: #00BB00;">Multilevel Hyperparameters:
 </span>~ID (Number of levels: 40) 
                        Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-sd(a_Intercept)            0.67      0.11     0.48     0.91 1.00     8077
-sd(a_condoldreordered)     0.55      0.12     0.33     0.80 1.00     7502
-sd(a_condoldsame)          0.27      0.15     0.02     0.59 1.00     3476
-sd(c_Intercept)            1.62      0.22     1.26     2.11 1.00     5920
-sd(c_condoldreordered)     0.23      0.13     0.01     0.49 1.00     4751
-sd(c_condoldsame)          0.55      0.12     0.34     0.79 1.00     7338
-sd(d_Intercept)            0.69      0.12     0.48     0.95 1.00     7716
+sd(a_Intercept)            0.67      0.11     0.48     0.91 1.00     1744
+sd(a_condoldreordered)     0.55      0.12     0.33     0.80 1.00     1662
+sd(a_condoldsame)          0.27      0.16     0.02     0.59 1.00      864
+sd(c_Intercept)            1.62      0.22     1.25     2.10 1.00     1299
+sd(c_condoldreordered)     0.23      0.13     0.02     0.49 1.00      795
+sd(c_condoldsame)          0.55      0.12     0.34     0.80 1.00     1586
+sd(d_Intercept)            0.69      0.12     0.48     0.97 1.00     1623
                        Tail_ESS
-sd(a_Intercept)           12263
-sd(a_condoldreordered)    10831
-sd(a_condoldsame)          7434
-sd(c_Intercept)           10092
-sd(c_condoldreordered)     7561
-sd(c_condoldsame)          9264
-sd(d_Intercept)           12606
+sd(a_Intercept)            2269
+sd(a_condoldreordered)     2655
+sd(a_condoldsame)          1925
+sd(c_Intercept)            2410
+sd(c_condoldreordered)     1452
+sd(c_condoldsame)          2121
+sd(d_Intercept)            2530
 
 <span style="color: #00BB00;">Regression Coefficients:
 </span>                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-a_Intercept           -0.30      0.15    -0.59    -0.01 1.00     9214    12280
-a_condoldreordered     0.68      0.15     0.39     0.97 1.00    13949    15259
-a_condoldsame          0.10      0.13    -0.16     0.36 1.00    15377    15786
-c_Intercept            1.60      0.27     1.07     2.12 1.00     2614     4939
-c_condoldreordered     0.03      0.12    -0.22     0.27 1.00    16604    16378
-c_condoldsame          0.54      0.14     0.26     0.81 1.00    12585    14864
-d_Intercept           -0.45      0.15    -0.75    -0.15 1.00     9809    13431
+a_Intercept           -0.30      0.15    -0.60    -0.00 1.00     2112     2304
+a_condoldreordered     0.68      0.15     0.37     0.97 1.00     2948     3032
+a_condoldsame          0.10      0.14    -0.17     0.36 1.00     3607     3301
+c_Intercept            1.60      0.28     1.05     2.14 1.01      466      989
+c_condoldreordered     0.03      0.12    -0.22     0.26 1.00     2768     3094
+c_condoldsame          0.54      0.14     0.27     0.81 1.00     2887     3132
+d_Intercept           -0.45      0.15    -0.75    -0.15 1.00     2203     2615
 
 <span style="color: #00BB00;">Constant Parameters:
 </span>                Value
@@ -452,22 +454,26 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <span><span class="co"># print posterior means for the c parameter</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span>,<span class="st">"c_"</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                    Estimate Est.Error      Q2.5    Q97.5</span></span>
-<span><span class="co">#&gt; c_Intercept        4.963452  1.306693 2.9235430 8.348038</span></span>
-<span><span class="co">#&gt; c_condoldreordered 1.027151  1.131168 0.8049019 1.307108</span></span>
-<span><span class="co">#&gt; c_condoldsame      1.715279  1.151231 1.3000407 2.258588</span></span>
+<span><span class="co">#&gt; c_Intercept        4.930903  1.320092 2.8541063 8.515983</span></span>
+<span><span class="co">#&gt; c_condoldreordered 1.025825  1.131547 0.8046311 1.300896</span></span>
+<span><span class="co">#&gt; c_condoldsame      1.712454  1.150015 1.3079862 2.251764</span></span>
 <span></span>
 <span><span class="co"># print posterior means for the a parameter</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span>,<span class="st">"a_"</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                     Estimate Est.Error      Q2.5    Q97.5</span></span>
-<span><span class="co">#&gt; a_Intercept        0.7399691  1.158481 0.5556827 0.992053</span></span>
-<span><span class="co">#&gt; a_condoldreordered 1.9761288  1.158589 1.4821486 2.639419</span></span>
-<span><span class="co">#&gt; a_condoldsame      1.1063905  1.143183 0.8510254 1.437880</span></span>
+<span><span class="co">#&gt;                     Estimate Est.Error      Q2.5     Q97.5</span></span>
+<span><span class="co">#&gt; a_Intercept        0.7431726  1.161537 0.5494346 0.9965668</span></span>
+<span><span class="co">#&gt; a_condoldreordered 1.9699622  1.162509 1.4450414 2.6462022</span></span>
+<span><span class="co">#&gt; a_condoldsame      1.1053008  1.146248 0.8457697 1.4306108</span></span>
 <span></span>
 <span><span class="co"># print posterior means for the d parameter</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">fixedFX</span><span class="op">)</span>,<span class="st">"d_"</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Estimate Est.Error      Q2.5     Q97.5 </span></span>
-<span><span class="co">#&gt; 0.6364365 1.1638944 0.4719413 0.8577438</span></span></code></pre></div>
+<span><span class="co">#&gt; 0.6353230 1.1666323 0.4732908 0.8628526</span></span></code></pre></div>
 <p>These estimates differ from the estimates reported by <span class="citation">Oberauer and Lewandowsky (2019)</span>, because we used a <code>log</code> link function, whereas in the original publication an <code>identity</code> link was used. This was done with adding truncation arguments to the priors, to ensure that all activations are positive. In principle, this is possible in <code>bmm</code>, too. However, such an estimation is less numerically stable and efficient. Therefore, we recommend using <code>log</code> links for activation parameters that should be positive.</p>
+<div class="section level4" number="3.4.1">
+<h4 id="testing-hypothesis">
+<span class="header-section-number">3.4.1</span> Testing Hypothesis<a class="anchor" aria-label="anchor" href="#testing-hypothesis"></a>
+</h4>
 <p>When comparing the differences between the different conditions, the results from <code>bmm</code> converge with those in <span class="citation">Oberauer and Lewandowsky (2019)</span>. The goal of this first experiment was to show a selective influence of different conditions on the <code>c</code> and <code>a</code> parameter. This replicated using the <code>bmm</code> implementation of the proposed <code>m3</code>. To evaluate the posterior differences between the conditions, we can use the <code>hypothesis</code> function from <code>brms</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">post_diff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -483,12 +489,12 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <span><span class="va">hyp</span></span>
 <span><span class="co">#&gt; Hypothesis Tests for class b:</span></span>
 <span><span class="co">#&gt;    Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio Post.Prob Star</span></span>
-<span><span class="co">#&gt; 1  c_newVoldR     0.03      0.12    -0.22     0.27       3.98      0.80     </span></span>
-<span><span class="co">#&gt; 2  c_newVoldS     0.54      0.14     0.26     0.81       0.00      0.00    *</span></span>
-<span><span class="co">#&gt; 3 c_oldRVolds    -0.51      0.14    -0.79    -0.23       0.01      0.01    *</span></span>
-<span><span class="co">#&gt; 4  a_newVoldR     0.68      0.15     0.39     0.97       0.00      0.00    *</span></span>
-<span><span class="co">#&gt; 5  a_newVoldS     0.10      0.13    -0.16     0.36       2.79      0.74     </span></span>
-<span><span class="co">#&gt; 6 a_oldRVolds     0.58      0.15     0.29     0.87       0.01      0.01    *</span></span>
+<span><span class="co">#&gt; 1  c_newVoldR     0.03      0.12    -0.22     0.26       3.90      0.80     </span></span>
+<span><span class="co">#&gt; 2  c_newVoldS     0.54      0.14     0.27     0.81       0.01      0.01    *</span></span>
+<span><span class="co">#&gt; 3 c_oldRVolds    -0.51      0.14    -0.79    -0.23       0.03      0.02    *</span></span>
+<span><span class="co">#&gt; 4  a_newVoldR     0.68      0.15     0.37     0.97       0.00      0.00    *</span></span>
+<span><span class="co">#&gt; 5  a_newVoldS     0.10      0.14    -0.17     0.36       2.81      0.74     </span></span>
+<span><span class="co">#&gt; 6 a_oldRVolds     0.58      0.15     0.28     0.87       0.00      0.00    *</span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; 'CI': 90%-CI for one-sided and 95%-CI for two-sided hypotheses.</span></span>
 <span><span class="co">#&gt; '*': For one-sided hypotheses, the posterior probability exceeds 95%;</span></span>
@@ -496,6 +502,61 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 <span><span class="co">#&gt; Posterior probabilities of point hypotheses assume equal prior probabilities.</span></span></code></pre></div>
 <p>These hypothesis will compute the difference between the specified parameters. You can see that the <code>c</code> parameter in the condition <code>oldsame</code> differs from both the <code>new</code> and <code>oldreorderd</code> condition. In contrast the <code>a</code> parameter in the condition <code>oldreordered</code> differs from both the <code>new</code> and the <code>oldsame</code> condition. For these differences the 95% CI does not include zero as indicated by the <code>*</code> at the end of the line.</p>
 <p>As we included a statement to also sample the priors using the <code>sample_prior = TRUE</code> option from <code>brms</code> when running the <code>bmm</code>, the <code>Evid.Ratio</code> and <code>Post.Prob</code> column given us the Bayes Factor in favor of the specified hypothesis and the posterior probability for the hypothesis being true.</p>
+</div>
+<div class="section level4" number="3.4.2">
+<h4 id="assessing-model-fit">
+<span class="header-section-number">3.4.2</span> Assessing model fit<a class="anchor" aria-label="anchor" href="#assessing-model-fit"></a>
+</h4>
+<p>For most models implemented in <code>bmm</code> you can easily assess model fit by visually inspecting posterior predictive plots provided by the <code>pp_check</code> function. Unfortunately this function is not yet implemented for multinomial distributional models, such as the <code>m3</code> model.</p>
+<p>Nevertheless, there is a pretty simple way to assess model fit for the <code>m3</code> model by obtaining posterior predictions using the <code>tidybayes</code> package. Using the posterior predictive draws for the frequency of selecting each response category, we can compare the observed frequencies to the predicted frequencies. If the model fits the data well, the observed frequencies should be within the 95% credible interval of the predicted frequencies.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mjskay.github.io/tidybayes/" class="external-link">tidybayes</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pp_m3</span> <span class="op">&lt;-</span> <span class="va">m3_fit</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="co"># obtain expected predicted draws</span></span>
+<span>  <span class="fu">tidybayes</span><span class="fu">::</span><span class="fu"><a href="https://mjskay.github.io/tidybayes/reference/add_predicted_draws.html" class="external-link">epred_draws</a></span><span class="op">(</span></span>
+<span>    newdata <span class="op">=</span> <span class="va">.</span><span class="op">$</span><span class="va">data</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="co"># select only relevant variables</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ID</span>, <span class="va">cond</span>, <span class="va">nTrials</span>, <span class="va">.draw</span>, <span class="va">.category</span>, <span class="va">.epred</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="co"># calculate the mean predicted values in each condition for each response category</span></span>
+<span>  <span class="co"># and each draw</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>.epred <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">.epred</span><span class="op">/</span><span class="va">nTrials</span><span class="op">)</span>,</span>
+<span>            .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cond</span>, <span class="va">.category</span>, <span class="va">.draw</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># reshape data to match the format of the posterior predictives</span></span>
+<span><span class="va">data</span><span class="op">$</span><span class="va">n_trials</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">data</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"corr"</span>,<span class="st">"other"</span>,<span class="st">"dist"</span>,<span class="st">"npl"</span><span class="op">)</span><span class="op">]</span>, na.rm <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">data_pp</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ID</span>, <span class="va">n_trials</span>, <span class="va">cond</span>, <span class="va">corr</span>, <span class="va">other</span>, <span class="va">dist</span>, <span class="va">npl</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">corr</span>, <span class="va">other</span>, <span class="va">dist</span>, <span class="va">npl</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">".category"</span>, values_to <span class="op">=</span> <span class="st">".value"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>.value <span class="op">=</span> <span class="va">.value</span><span class="op">/</span><span class="va">n_trials</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># some responses were not possible in some conditions, so we set them to zero</span></span>
+<span><span class="va">data_pp</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">data_pp</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span></span>
+<span><span class="co"># relabel condition factor for better readability</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">pp_m3</span><span class="op">$</span><span class="va">cond</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"new"</span>, <span class="st">"old shuffled"</span>, <span class="st">"old same"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">data_pp</span><span class="op">$</span><span class="va">cond</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"new"</span>, <span class="st">"old shuffled"</span>, <span class="st">"old same"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># plot the posterior predictive draws against the observed data</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pp_m3</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">.epred</span>, x <span class="op">=</span> <span class="va">cond</span>, fill <span class="op">=</span> <span class="va">cond</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="va">.category</span> <span class="op">~</span> <span class="va">cond</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">gghalves</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gghalves/man/geom_half_violin.html" class="external-link">geom_half_violin</a></span><span class="op">(</span></span>
+<span>    side <span class="op">=</span> <span class="st">"r"</span>, nudge <span class="op">=</span> <span class="fl">0.1</span>, trim <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/stat_summary.html" class="external-link">stat_summary</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_pp</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span> <span class="op">(</span>y <span class="op">=</span> <span class="va">.value</span><span class="op">)</span>,</span>
+<span>               fun.data <span class="op">=</span> <span class="va">mean_se</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Response proportions"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Condition"</span>,</span>
+<span>       fill <span class="op">=</span> <span class="st">"Condition"</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"Model Fit"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Posterior Predicitve vs. Observed Response Proportions"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="bmm_m3_files/figure-html/model_fit-1.jpeg" width="80%" style="display: block; margin: auto;"></p>
+<p>The generated plot illustrates that the distribution of posterior predictive response distributions is in line with the observed response distributions. This indicates that the model fits the data well. For this particular model, this is unsurprising as it is saturated with respect to the number of parameters and the number of observations.</p>
+</div>
 </div>
 </div>
 <div class="section level2">
