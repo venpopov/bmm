@@ -52,6 +52,7 @@ jobs:
             remotes
             waldo
             fansi
+            gghalves
             any::pkgdown
             local::.
 
