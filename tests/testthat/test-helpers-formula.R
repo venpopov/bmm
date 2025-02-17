@@ -29,6 +29,10 @@ test_that("+.bmmformula method works", {
 
   expect_error(f6 + f1, "The first argument must be a bmmformula.")
   expect_error(f1 + 1, "The second argument must be a formula or a bmmformula.")
+
+  # adding a null formula to a bmmformula returns the same bmmformula (#264)
+  base_f <- bmf(y ~ 1)
+  expect_equal(base_f, base_f + formula(NULL))
 })
 
 describe("subsetting a bmmformula with [", {
