@@ -213,9 +213,13 @@ check_model.m3_custom <- function(model, data = NULL, formula = NULL) {
     model$parameters <- c(model$parameters, setNames(user_pars, user_pars))
   }
 
+  missing_links <- setdiff(names(model$parameters), names(model$links))
+  missing_links <- setdiff(missing_links, names(model$fixed_parameters))
   stopif(
-    length(model$links) < length(model$parameters) - 1,
-    "Please provide link functions for all model parameters to ensure proper identification of your model"
+    length(missing_links) > 0,
+    "Please provide link functions for all model parameters via the `link` argument of `m3()` \\
+     to ensure proper identification of your model.
+     The following parameters are missing link functions: {paste0(missing_links, ' ', collapse = '')}"
   )
 
   # add default priors if missing
