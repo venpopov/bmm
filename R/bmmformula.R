@@ -84,6 +84,8 @@ bmmformula <- function(...) {
     if (is_formula(out[[i]])) lhs_vars(out[[i]]) else names(out)[i]
   })
 
+  stopif(any(sapply(par_names, length) == 0), "Formulas must have a left-hand-side variable")
+
   duplicates <- duplicated(par_names)
   stopif(any(duplicates), "Duplicate formula for parameter(s) {par_names[duplicates]}")
   new_bmmformula(setNames(out, par_names))
@@ -116,8 +118,11 @@ new_bmmformula <- function(x = nlist()) {
   stopif(!is_bmmformula(f1), "The first argument must be a bmmformula.")
   f2_not_a_formula <- !(is_formula(f2) || is_bmmformula(f2)) && !is.null(f2)
   stopif(f2_not_a_formula, "The second argument must be a formula or a bmmformula.")
+  stopif(length(f2) != 0 && length(lhs_vars(f2)) == 0, "Formulas must have a left-hand-side variable") 
 
-  if (is_formula(f2)) f2 <- setNames(list(f2), lhs_vars(f2))
+  if (is_formula(f2) && length(f2) > 0) {
+    f2 <- setNames(list(f2), lhs_vars(f2))
+  }
 
   duplicates <- intersect(names(f1), names(f2))
   if (length(duplicates) > 0) {
@@ -126,6 +131,8 @@ new_bmmformula <- function(x = nlist()) {
   f1[names(f2)] <- f2
   f1
 }
+
+
 
 #' Generic S3 method for checking if the formula is valid for the specified model
 #' @param model a model list object returned from check_model()
