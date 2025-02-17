@@ -33,6 +33,7 @@ test_that("+.bmmformula method works", {
   # adding a null formula to a bmmformula returns the same bmmformula (#264)
   base_f <- bmf(y ~ 1)
   expect_equal(base_f, base_f + formula(NULL))
+  expect_equal(base_f, bmf(base_f[[1]], as.formula(NULL)))
 
   # the second formula must have a lhs variable
   expect_error(base_f + bmf(~ 1), "Formulas must have a left-hand-side variable")

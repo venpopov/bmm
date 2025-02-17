@@ -77,17 +77,15 @@
 #' identical(imm_formula, imm_formula2)
 bmmformula <- function(...) {
   out <- list(...)
-  is_form_or_num <- function(x) is_formula(x) || (is.numeric(x) && length(x) == 1)
-  stopif(!all(sapply(out, is_form_or_num)), "Arguments must be formulas or numeric assignments.")
+  stopif(!all(vapply(out, is_form_or_num, logical(1))), "Arguments must be formulas or numeric assignments.")
+  out <- out[!vapply(out, is_null_formula, logical(1))]
 
   par_names <- sapply(seq_along(out), function(i) {
-    if (is_formula(out[[i]])) lhs_vars(out[[i]]) else names(out)[i]
+    if (is_formula(out[[i]])) lhs_vars(out[[i]]) else names(out[i])
   })
 
-  stopif(any(sapply(par_names, length) == 0), "Formulas must have a left-hand-side variable")
-
-  duplicates <- duplicated(par_names)
-  stopif(any(duplicates), "Duplicate formula for parameter(s) {par_names[duplicates]}")
+  stopif(any(vapply(par_names, length, integer(1)) == 0), "Formulas must have a left-hand-side variable")
+  stopif(any(duplicated(par_names)), "Duplicate formula for parameter(s) {par_names[duplicates]}")
   new_bmmformula(setNames(out, par_names))
 }
 
@@ -131,7 +129,6 @@ new_bmmformula <- function(x = nlist()) {
   f1[names(f2)] <- f2
   f1
 }
-
 
 
 #' Generic S3 method for checking if the formula is valid for the specified model
@@ -295,6 +292,10 @@ rhs_vars.bmmformula <- function(object, collapse = TRUE, ...) {
 
 #' @export
 rhs_vars.formula <- function(object, ...) {
+  if (length(object) == 0) {
+    warning2("The formula contains no predictors")
+    return(character(0))
+  }
   rhs <- object[[length(object)]]
   all.vars(rhs)
 }
@@ -371,17 +372,11 @@ is_nl.default <- function(object, ...) {
   isTRUE(attr(object, "nl"))
 }
 
-is_formula <- function(x) {
-  inherits(x, "formula")
-}
-
-is_bmmformula <- function(x) {
-  inherits(x, "bmmformula")
-}
-
-is_brmsformula <- function(x) {
-  inherits(x, "brmsformula")
-}
+is_formula <- function(x) inherits(x, "formula")
+is_bmmformula <- function(x) inherits(x, "bmmformula")
+is_brmsformula <- function(x) inherits(x, "brmsformula")
+is_form_or_num <- function(x) is_formula(x) || (is.numeric(x) && length(x) == 1)
+is_null_formula <- function(x) is_formula(x) && length(x) == 0
 
 is_constant <- function(x) {
   UseMethod("is_constant")
