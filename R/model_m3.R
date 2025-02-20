@@ -53,6 +53,7 @@
                       choice_rule = "softmax", version = "custom", links = NULL,
                       default_priors = NULL, call = NULL, ...) {
   if(!is.null(num_options)) names(num_options) <- names(num_options) %||% paste0("n_opt_",resp_cats)
+  if(!is.character(choice_rule)) choice_rule <- as.character(choice_rule)
   out <- structure(
     list(
       resp_vars = nlist(resp_cats),
@@ -281,7 +282,7 @@ check_data.m3 <- function(model, data, formula) {
     # n_opt_vect is the *number* of options for each response variable
     opt_vars <- names(n_opt_vect)
     stopif(
-      any(opt_vars %in% names(data)), 
+      any(opt_vars %in% names(data)),
       "One of the variables {paste0(opt_vars, collapse = ', ')} already exists in the data. Give explicit names to your num_options vector"
     )
     data[opt_vars] <- rep(n_opt_vect, each = nrow(data))
