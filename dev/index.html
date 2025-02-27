@@ -65,8 +65,8 @@
 </h2>
 <p>See the following sections for more information on the <code>bmm</code> package:</p>
 <ul>
-<li><a href="#available-models">Available models</a></li>
 <li><a href="#how-to-install-bmm">How to install bmm</a></li>
+<li><a href="#available-models">Available models</a></li>
 <li><a href="#fitting-models-using-bmm">Fitting models using bmm</a></li>
 <li><a href="#exploring-cogntive-measurement-models">Exploring cogntive measurement models</a></li>
 <li><a href="#the-general-structure-of-the-bmm-package">The general structure of the bmm package</a></li>
@@ -74,45 +74,10 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="available-models">Available models<a class="anchor" aria-label="anchor" href="#available-models"></a>
-</h2>
-<p>Currently the bmm package implements mainly models used in the domain of visual working memory research:</p>
-<p><strong>Visual working memory</strong></p>
-<ul>
-<li>Interference measurement model by Oberauer and Lin (2017).</li>
-<li>Two-parameter mixture model by Zhang and Luck (2008).</li>
-<li>Three-parameter mixture model by Bays et al (2009).</li>
-<li>Signal Discrimination Model (SDM) by Oberauer (2023)</li>
-</ul>
-<p><strong>Working Memory (categorical)</strong></p>
-<ul>
-<li>The Memory Measurement Model by Oberauer &amp; Lewandowsky (2019)</li>
-</ul>
-<p>However, the setup of the bmm package provides the foundation for the implementation of a broad range of cognitive measurement models. In fact, we are already working on implementing additional models, such as:</p>
-<ul>
-<li>Signal-Detection Models</li>
-<li>Evidence Accumulation Models</li>
-<li>Memory Models for categorical response</li>
-</ul>
-<p>If you have suggestions for models that should be added to the package, feel free to create an issue. Ideally this should describe the model, point towards literature that gives details on the model, and if possible link to code that has already implemented the model.</p>
-<p>Given the dynamic nature the bmm package is currently in, you can always view the latest list of supported models by running:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">bmm</span><span class="fu">::</span><span class="fu"><a href="reference/supported_models.html">supported_models</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; The following models are supported:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; -  imm(resp_error, nt_features, nt_distances, set_size, regex, version) </span></span>
-<span><span class="co">#&gt; -  m3(resp_cats, num_options, choice_rule, version) </span></span>
-<span><span class="co">#&gt; -  mixture2p(resp_error) </span></span>
-<span><span class="co">#&gt; -  mixture3p(resp_error, nt_features, set_size, regex) </span></span>
-<span><span class="co">#&gt; -  sdm(resp_error, version) </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Type  ?modelname  to get information about a specific model, e.g.  ?imm</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="how-to-install-bmm">How to install bmm<a class="anchor" aria-label="anchor" href="#how-to-install-bmm"></a>
 </h2>
 <p>You can install the latest version of the <code>bmm</code> package from CRAN:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"bmm"</span><span class="op">)</span></span></code></pre></div>
 <p>Because <code>bmm</code> is based on <code>brms</code> and <code>stan</code> it requires a working C++ compiler. If you have not used <code>brms</code> before, you will need to first install the dependencies. If you are already using <code>brms</code>, you can skip this step.</p>
 <details><summary><b> Install dependencies</b>
@@ -126,7 +91,7 @@
 </ul></details><p> Alternatively, you can install the development version of the package or a specific version of the package from GitHub:</p>
 <details><summary><b>Install the latest development version of bmm</b>
 </summary><p></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -134,7 +99,7 @@
 </details><details><summary><b>Install the 0.0.1 version of bmm (if following version 6 of the tutorial paper on OSF)</b>
 </summary><p></p>
 <p>The package was significantly updated on Feb 03, 2024. If you are following older versions (earlier than Version 6) of the <a href="https://osf.io/preprints/psyarxiv/umt57" class="external-link">Tutorial preprint</a>, you need to install the 0.0.1 version of the bmm package with:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -142,18 +107,54 @@
 </details>
 </div>
 <div class="section level2">
-<h2 id="fitting-models-using-bmm">Fitting models using bmm<a class="anchor" aria-label="anchor" href="#fitting-models-using-bmm"></a>
+<h2 id="available-models">Available models<a class="anchor" aria-label="anchor" href="#available-models"></a>
 </h2>
-<p>The core function of the bmm package is the <code><a href="reference/bmm.html">bmm()</a></code> function. This function takes:</p>
+<p>Currently the <code>bmm</code> package implements mainly models used in the domain of working memory research, such as:</p>
+<p><strong>Visual working memory</strong></p>
+<ul>
+<li>Interference measurement model by Oberauer and Lin (2017).</li>
+<li>Two-parameter mixture model by Zhang and Luck (2008).</li>
+<li>Three-parameter mixture model by Bays et al (2009).</li>
+<li>Signal Discrimination Model (SDM) by Oberauer (2023)</li>
+</ul>
+<p><strong>Working Memory (categorical), Categorical Decision Making</strong></p>
+<ul>
+<li>The Multinomial / Memory Measurement Model</li>
+</ul>
+<p>However, the <code>bmm</code> package is setup to provide the foundation for the implementation of a broad range of cognitive measurement models. In fact, we are already working on implementing additional models, such as:</p>
+<ul>
+<li>Signal-Detection Models</li>
+<li>Evidence Accumulation Models</li>
+</ul>
+<p>If you have suggestions for models that should be added to the package or additional functionality that would improve the usability of the pacakge, feel free to create an <a href="https://github.com/venpopov/bmm/issues" class="external-link">issue</a>. Ideally this should describe the model, point towards literature that gives details on the model, and if possible link to code that has already implemented the model.</p>
+<p>Given the dynamic nature the <code>bmm</code> package is currently in, you can always view the latest list of supported models by running:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">bmm</span><span class="fu">::</span><span class="fu"><a href="reference/supported_models.html">supported_models</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; The following models are supported:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; -  imm(resp_error, nt_features, nt_distances, set_size, regex, version) </span></span>
+<span><span class="co">#&gt; -  m3(resp_cats, num_options, choice_rule, version) </span></span>
+<span><span class="co">#&gt; -  mixture2p(resp_error) </span></span>
+<span><span class="co">#&gt; -  mixture3p(resp_error, nt_features, set_size, regex) </span></span>
+<span><span class="co">#&gt; -  sdm(resp_error, version) </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Type  ?modelname  to get information about a specific model, e.g.  ?imm</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="fitting-models-using-bmm">Fitting models using <code>bmm</code>
+<a class="anchor" aria-label="anchor" href="#fitting-models-using-bmm"></a>
+</h2>
+<p>The core function of the <code>bmm</code> package is the <code><a href="reference/bmm.html">bmm()</a></code> function. This function takes:</p>
 <ol style="list-style-type: decimal">
-<li>a linear model formula specifying how parameters of the model should vary as a function of experimental conditions</li>
-<li>data containing the dependent variables, the variables predicting model parameters, and potentially additional variables providing information to identify the model</li>
-<li>the model that should be fit</li>
+<li>a <em>linear model formula</em> specifying how parameters of the model should vary as a function of experimental conditions</li>
+<li>
+<em>data</em> containing the dependent variables, the variables predicting model parameters, and potentially additional variables providing information to identify the model</li>
+<li>the <em>model object</em> defining the model that should be fit</li>
 </ol>
-<p>You can get more detailed information on the models implemented in bmm by invoking the documentation of each model typing <code>?bmmodel</code> into your console. For example, calling the information on the full version of the Interference Measurement Model would look like this:</p>
+<p>You can get more detailed information on the models implemented in <code>bmm</code> by invoking the documentation of each model typing <code>?bmmodel</code> into your console. For example, calling the information on Interference Measurement Model <code>imm</code> would look like this:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="va">imm</span></span></code></pre></div>
-<p>A complete call to fit a model using bmm could look like this. For this example, we are using the <code>oberauer_lin_2017</code> data that is provided with the package and we will show how to fit the Interference Measurement Model to this data. If you want a detailed description of this model and and in depth explanation of the parameters estimated in the model, please have a look at <a href="https://venpopov.github.io/bmm/articles/bmm_imm.html">the IMM article</a>.</p>
+<p>A complete call to fit a model using <code>bmm</code> could look like this. For this example, we are using the <code>oberauer_lin_2017</code> data that is provided with the package and we will show how to fit the Interference Measurement Model to this data. If you want a detailed description of this model and and in depth explanation of the parameters estimated in the model, please have a look at <a href="https://venpopov.github.io/bmm/articles/bmm_imm.html">the IMM article</a>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/venpopov/bmm" class="external-link">bmm</a></span><span class="op">)</span></span>
 <span></span>
@@ -205,14 +206,14 @@
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="400"></p>
 </div>
 <div class="section level2">
-<h2 id="the-general-structure-of-the-bmm-package">The general structure of the bmm package<a class="anchor" aria-label="anchor" href="#the-general-structure-of-the-bmm-package"></a>
+<h2 id="the-general-structure-of-the-bmm-package">The general structure of the <code>bmm</code> package<a class="anchor" aria-label="anchor" href="#the-general-structure-of-the-bmm-package"></a>
 </h2>
-<p>The main building block of the bmm package is that cognitive measurement models can often be specified as distributional models for which the distributional parameters of the generalized linear mixed model are a function of cognitive measurement model parameters. These functions that translate the cognitive measurement model parameters into distributional parameters is what we implement in the bmm package.</p>
+<p>The main building block of the <code>bmm</code> package is that cognitive measurement models can often be specified as distributional models for which the distributional parameters of the generalized linear mixed model are a function of cognitive measurement model parameters. These functions that translate the cognitive measurement model parameters into distributional parameters is what we implement in the <code>bmm</code> package.</p>
 <p><img src="reference/figures/README-bmmLogic.png" width="600" style="display: block; margin: auto;"></p>
-<p>As these function can become complicated and their implementation changes with differences in experimental designs, the bmm package provides general translation functions that eases the use of the cognitive measurement models for end users. This way researchers that face challenges in writing their own STAN code to implement such models themselves can still use these models in almost any experimental design.</p>
+<p>As these function can become complicated and their implementation changes with differences in experimental designs, the <code>bmm</code> package provides general translation functions that ease the use of the cognitive measurement models for end users. This way researchers that face challenges in writing their own STAN code to implement such models themselves can still use these models in almost any experimental design.</p>
 <p>Under the hood, the main <code><a href="reference/bmm.html">bmm()</a></code> function will then call the appropriate functions for the specified model and will perform several steps:</p>
 <ol style="list-style-type: decimal">
-<li>Configure the Sample (e.g., set up prallelization)</li>
+<li>Configure the sampler (e.g., set up prallelization &amp; additional settings)</li>
 <li>Check the information passed to the <code><a href="reference/bmm.html">bmm()</a></code> function:
 <ul>
 <li>if the model is installed and all required arguments were provided</li>
@@ -222,7 +223,7 @@
 </li>
 <li>Configure the called model (including specifying priors were necessary)</li>
 <li>Calling <code>brms</code> and passing the specified arguments</li>
-<li>Posprocessing the output and passing it to the user</li>
+<li>Post-processing the output and passing it to the user</li>
 </ol>
 <p>This process is illustrated in the Figure below:</p>
 <p><img src="reference/figures/README-fitModel_process.png" width="600" style="display: block; margin: auto;"></p>
