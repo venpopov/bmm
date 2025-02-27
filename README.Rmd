@@ -26,17 +26,19 @@ set.seed(1152)
 
 The goal of the `bmm` (Bayesian Measurement Models) package is to make it easier
 to estimate common cognitive measurement models for behavioral research. It
-achieves this by combining the flexibility of the ‘brms’ package for specifying
-linear model syntax with custom functions that translate cognitive measurement
-model into distributional families that can be estimated using Bayesian
-hierarchical estimation. Cognitive measurement models provide a more refined
-representation of the cognitive processes underlying observed behavior, because
-they decompose observed behavior into several theoretically meaningful
-parameters that each represent distinct cognitive processes.
+achieves this by combining the flexibility of the `brms` (Bayesian Regression Models using Stan) 
+package for specifying linear model syntax with custom functions that translate cognitive measurement
+model into distributional families that can be estimated using Bayesian hierarchical estimation. 
+
+Cognitive measurement models provide a more refined representation of the cognitive 
+processes underlying observed behavior, because they decompose observed behavior 
+into several theoretically meaningful parameters that each represent distinct 
+cognitive processes. Therefore, researchers can use these models to test specific 
+hypotheses about the cognitive processes underlying behavioral data.
 
 ## Getting started
 
-See the following sections for more information on the `bmm` package:
+In the following sections you find more information on the `bmm` package:
 
 - [How to install bmm](#how-to-install-bmm)
 - [Available models](#available-models)
@@ -107,8 +109,6 @@ remotes::install_github("venpopov/bmm@v0.0.1")
 ```
 
 </details>
-
-
 
 ## Available models
 
