@@ -32,59 +32,14 @@ each represent distinct cognitive processes.
 
 See the following sections for more information on the `bmm` package:
 
-- [Available models](#available-models)
 - [How to install bmm](#how-to-install-bmm)
+- [Available models](#available-models)
 - [Fitting models using bmm](#fitting-models-using-bmm)
 - [Exploring cogntive measurement
   models](#exploring-cogntive-measurement-models)
 - [The general structure of the bmm
   package](#the-general-structure-of-the-bmm-package)
 - [Contributing to the `bmm` package](#contributing-to-the-bmm-package)
-
-## Available models
-
-Currently the bmm package implements mainly models used in the domain of
-visual working memory research:
-
-**Visual working memory**
-
-- Interference measurement model by Oberauer and Lin (2017).
-- Two-parameter mixture model by Zhang and Luck (2008).
-- Three-parameter mixture model by Bays et al (2009).
-- Signal Discrimination Model (SDM) by Oberauer (2023)
-
-**Working Memory (categorical)**
-
-- The Memory Measurement Model by Oberauer & Lewandowsky (2019)
-
-However, the setup of the bmm package provides the foundation for the
-implementation of a broad range of cognitive measurement models. In
-fact, we are already working on implementing additional models, such as:
-
-- Signal-Detection Models
-- Evidence Accumulation Models
-- Memory Models for categorical response
-
-If you have suggestions for models that should be added to the package,
-feel free to create an issue. Ideally this should describe the model,
-point towards literature that gives details on the model, and if
-possible link to code that has already implemented the model.
-
-Given the dynamic nature the bmm package is currently in, you can always
-view the latest list of supported models by running:
-
-``` r
-bmm::supported_models()
-#> The following models are supported:
-#> 
-#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, version) 
-#> -  m3(resp_cats, num_options, choice_rule, version) 
-#> -  mixture2p(resp_error) 
-#> -  mixture3p(resp_error, nt_features, set_size, regex) 
-#> -  sdm(resp_error, version) 
-#> 
-#> Type  ?modelname  to get information about a specific model, e.g.  ?imm
-```
 
 ## How to install bmm
 
@@ -100,9 +55,7 @@ install the dependencies. If you are already using `brms`, you can skip
 this step.
 
 <details>
-
 <summary>
-
 <b> Install dependencies</b>
 </summary>
 
@@ -123,9 +76,7 @@ this step.
 package or a specific version of the package from GitHub:
 
 <details>
-
 <summary>
-
 <b>Install the latest development version of bmm</b>
 </summary>
 
@@ -139,11 +90,8 @@ remotes::install_github("venpopov/bmm")
 ```
 
 </details>
-
 <details>
-
 <summary>
-
 <b>Install the 0.0.1 version of bmm (if following version 6 of the
 tutorial paper on OSF)</b>
 </summary>
@@ -164,33 +112,80 @@ remotes::install_github("venpopov/bmm@v0.0.1")
 
 </details>
 
-## Fitting models using bmm
+## Available models
 
-The core function of the bmm package is the `bmm()` function. This
+Currently the `bmm` package implements mainly models used in the domain
+of working memory research, such as:
+
+**Visual working memory**
+
+- Interference measurement model by Oberauer and Lin (2017).
+- Two-parameter mixture model by Zhang and Luck (2008).
+- Three-parameter mixture model by Bays et al (2009).
+- Signal Discrimination Model (SDM) by Oberauer (2023)
+
+**Working Memory (categorical), Categorical Decision Making**
+
+- The Multinomial / Memory Measurement Model
+
+However, the `bmm` package is setup to provide the foundation for the
+implementation of a broad range of cognitive measurement models. In
+fact, we are already working on implementing additional models, such as:
+
+- Signal-Detection Models
+- Evidence Accumulation Models
+
+If you have suggestions for models that should be added to the package
+or additional functionality that would improve the usability of the
+pacakge, feel free to create an
+[issue](https://github.com/venpopov/bmm/issues). Ideally this should
+describe the model, point towards literature that gives details on the
+model, and if possible link to code that has already implemented the
+model.
+
+Given the dynamic nature the `bmm` package is currently in, you can
+always view the latest list of supported models by running:
+
+``` r
+bmm::supported_models()
+#> The following models are supported:
+#> 
+#> -  imm(resp_error, nt_features, nt_distances, set_size, regex, version) 
+#> -  m3(resp_cats, num_options, choice_rule, version) 
+#> -  mixture2p(resp_error) 
+#> -  mixture3p(resp_error, nt_features, set_size, regex) 
+#> -  sdm(resp_error, version) 
+#> 
+#> Type  ?modelname  to get information about a specific model, e.g.  ?imm
+```
+
+## Fitting models using `bmm`
+
+The core function of the `bmm` package is the `bmm()` function. This
 function takes:
 
-1.  a linear model formula specifying how parameters of the model should
-    vary as a function of experimental conditions
-2.  data containing the dependent variables, the variables predicting
+1.  a *linear model formula* specifying how parameters of the model
+    should vary as a function of experimental conditions
+2.  *data* containing the dependent variables, the variables predicting
     model parameters, and potentially additional variables providing
     information to identify the model
-3.  the model that should be fit
+3.  the *model object* defining the model that should be fit
 
-You can get more detailed information on the models implemented in bmm
+You can get more detailed information on the models implemented in `bmm`
 by invoking the documentation of each model typing `?bmmodel` into your
-console. For example, calling the information on the full version of the
-Interference Measurement Model would look like this:
+console. For example, calling the information on Interference
+Measurement Model `imm` would look like this:
 
 ``` r
 ?imm
 ```
 
-A complete call to fit a model using bmm could look like this. For this
-example, we are using the `oberauer_lin_2017` data that is provided with
-the package and we will show how to fit the Interference Measurement
-Model to this data. If you want a detailed description of this model and
-and in depth explanation of the parameters estimated in the model,
-please have a look at [the IMM
+A complete call to fit a model using `bmm` could look like this. For
+this example, we are using the `oberauer_lin_2017` data that is provided
+with the package and we will show how to fit the Interference
+Measurement Model to this data. If you want a detailed description of
+this model and and in depth explanation of the parameters estimated in
+the model, please have a look at [the IMM
 article](https://venpopov.github.io/bmm/articles/bmm_imm.html).
 
 ``` r
@@ -270,20 +265,20 @@ curve(
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="400" />
 
-## The general structure of the bmm package
+## The general structure of the `bmm` package
 
-The main building block of the bmm package is that cognitive measurement
-models can often be specified as distributional models for which the
-distributional parameters of the generalized linear mixed model are a
-function of cognitive measurement model parameters. These functions that
-translate the cognitive measurement model parameters into distributional
-parameters is what we implement in the bmm package.
+The main building block of the `bmm` package is that cognitive
+measurement models can often be specified as distributional models for
+which the distributional parameters of the generalized linear mixed
+model are a function of cognitive measurement model parameters. These
+functions that translate the cognitive measurement model parameters into
+distributional parameters is what we implement in the `bmm` package.
 
 <img src="man/figures/README-bmmLogic.png" width="600" style="display: block; margin: auto;" />
 
 As these function can become complicated and their implementation
-changes with differences in experimental designs, the bmm package
-provides general translation functions that eases the use of the
+changes with differences in experimental designs, the `bmm` package
+provides general translation functions that ease the use of the
 cognitive measurement models for end users. This way researchers that
 face challenges in writing their own STAN code to implement such models
 themselves can still use these models in almost any experimental design.
@@ -291,7 +286,8 @@ themselves can still use these models in almost any experimental design.
 Under the hood, the main `bmm()` function will then call the appropriate
 functions for the specified model and will perform several steps:
 
-1.  Configure the Sample (e.g., set up prallelization)
+1.  Configure the sampler (e.g., set up prallelization & additional
+    settings)
 2.  Check the information passed to the `bmm()` function:
     - if the model is installed and all required arguments were provided
     - if a valid formula was passed
@@ -299,7 +295,7 @@ functions for the specified model and will perform several steps:
 3.  Configure the called model (including specifying priors were
     necessary)
 4.  Calling `brms` and passing the specified arguments
-5.  Posprocessing the output and passing it to the user
+5.  Post-processing the output and passing it to the user
 
 This process is illustrated in the Figure below:
 
