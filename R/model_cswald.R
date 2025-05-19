@@ -3,42 +3,48 @@
 #############################################################################!
 # see file 'R/model_mixture3p.R' for an example
 
-.model_cs_wald <- function(resp_var1 = NULL, required_arg1 = NULL, required_arg2 = NULL, links = NULL, version = NULL, call = NULL, ...) {
+.model_cswald <- function(rt = NULL, response = NULL, links = NULL, version = "", call = NULL, ...) {
   out <- structure(
     list(
-      resp_vars = nlist(resp_var1),
-      other_vars = nlist(required_arg1, required_arg2),
-      domain = "",
-      task = "",
-      name = "",
-      citation = "",
+      resp_vars = nlist(rt, response),
+      other_vars = nlist(),
+      domain = "Processing Speed, Decision Making",
+      task = "Choice Reaction Time tasks (with few errors)",
+      name = "Censored-Shifted Wald Model",
+      citation = "Miller, R., Scherbaum, S., Heck, D. W., Goschke, T., & Enge, S. (2017).
+        On the Relation Between the (Censored) Shifted Wald and the Wiener Distribution as Measurement Models
+        for Choice Response Times. Applied Psychological Measurement, 42(2), 116-135. https://doi.org/10.1177/0146621617710465",
       version = version,
       requirements = "",
-      parameters = list(),
-      links = list(),
-      fixed_parameters = list(),
-      default_priors = list(par1 = list(), par2 = list()),
-      void_mu = FALSE
+      parameters = list(drift = "drift rate",boundary = "boundary seperation", ndt = "non-decision time"),
+      links = list(drift = "log", boundary = "log", ndt = "log"),
+      fixed_parameters = list(mu = 0),
+      default_priors = list(
+        drift = list(),
+        boundary = list(),
+        ndt = list()),
+      void_mu = TRUE
     ),
     class = c("bmmodel", "cs_wald"),
     call = call
   )
+
   if(!is.null(version)) class(out) <- c(class(out), paste0("cs_wald_",version))
+
   out$links[names(links)] <- links
   out
 }
+
 # user facing alias
 # information in the title and details sections will be filled in
-# automatically based on the information in the .model_cs_wald()$info
- 
-#' @title `r .model_cs_wald()$name`
+# automatically based on the information in the .model_cswald()$info
+
+#' @title `r .model_cswald()$name`
 #' @name Model Name,
-#' @details `r model_info(.model_cs_wald())`
-#' @param resp_var1 A description of the response variable
-#' @param required_arg1 A description of the required argument
-#' @param required_arg2 A description of the required argument
+#' @details `r model_info(.model_cswald())`
+#' @param rt A description of the response variable
+#' @param response A description of the response variable
 #' @param links A list of links for the parameters.
-#' @param version A character label for the version of the model. Can be empty or NULL if there is only one version. 
 #' @param ... used internally for testing, ignore it
 #' @return An object of class `bmmodel`
 #' @export
@@ -46,11 +52,10 @@
 #' \dontrun{
 #' # put a full example here (see 'R/model_mixture3p.R' for an example)
 #' }
-cs_wald <- function(resp_var1, required_arg1, required_arg2, links = NULL, version = NULL, ...) {
+cswald <- function(rt, response, links = NULL, ...) {
    call <- match.call()
    stop_missing_args()
-   .model_cs_wald(resp_var1 = resp_var1, required_arg1 = required_arg1, required_arg2 = required_arg2,
-                links = links, version = version,call = call, ...)
+   .model_cs_wald(rt = rt, response = response, links = links, call = call, ...)
 }
 
 #############################################################################!
@@ -92,7 +97,7 @@ bmf2bf.cs_wald <- function(model, formula) {
    resp_var1 <- model$resp_vars$resp_var1
    resp_var2 <- model$resp_vars$resp_arg2
 
-   # set the base brmsformula based 
+   # set the base brmsformula based
    brms_formula <- brms::bf(paste0(resp_var1, " | ", vreal(resp_var2), " ~ 1"))
 
    # return the brms_formula to add the remaining bmmformulas to it.
