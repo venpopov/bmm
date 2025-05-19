@@ -16,9 +16,9 @@
         for Choice Response Times. Applied Psychological Measurement, 42(2), 116-135. https://doi.org/10.1177/0146621617710465",
       version = version,
       requirements = "",
-      parameters = list(drift = "drift rate",boundary = "boundary seperation", ndt = "non-decision time"),
-      links = list(drift = "log", boundary = "log", ndt = "log"),
-      fixed_parameters = list(mu = 0),
+      parameters = list(drift = "drift rate",boundary = "boundary seperation", ndt = "non-decision time", s = "diffusion constant"),
+      links = list(drift = "log", boundary = "log", ndt = "log", s = "log"),
+      fixed_parameters = list(mu = 0, s = 1),
       default_priors = list(
         drift = list(),
         boundary = list(),
