@@ -1,5 +1,5 @@
 // log-PDF of the shifted Wald distribution
-real swald_lpdf(real rt, real drift, real bound, real ndt, real sigma) {
+real swald_lpdf(real rt, real mu, real drift, real bound, real ndt, real sigma) {
   // compute shifted response time
   real t_shifted = rt - ndt;
 
@@ -17,7 +17,7 @@ real swald_lpdf(real rt, real drift, real bound, real ndt, real sigma) {
 }
 
 // log shifted Wald survivor function
-real swald_lccdf(real rt, real drift, real bound, real ndt, real sigma) {
+real swald_lccdf(real rt, real mu, real drift, real bound, real ndt, real sigma) {
   // compute shifted response time
   real t_shifted = rt - ndt;
 
