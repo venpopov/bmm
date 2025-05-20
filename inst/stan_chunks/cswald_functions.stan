@@ -38,7 +38,16 @@ real swald_lccdf(real rt, real mu, real drift, real bound, real ndt, real sigma)
   return log(1 - term1 - (term2 * term3));
 }
 
-// log-PDF of the censored shiften Wald model
+// log-PDF of the censored shifted Wald model
 real cswald_lpdf(real rt, int response, real drift, real, bound, real ndt, real s) {
   return response * swald_lpdf(rt, drift, bound, ndt, s) + (1-response) * swald_lccdf(rt, drift, bound, ndt, s)
+}
+
+// log-PDF of competing risks shifted Wald model
+real cswald_crisk_lpdf(real rt, int response, real drift, real, bound, real zr, real ndt, real s) {
+  real bound_upper = bound - zr * bound
+  real bound_lower = bound + zr * bound
+  real lpdf_correct = response * swald_lpdf(rt, drift, bound_upper, ndt, s) + (1-response) * swald_lccdf(rt, drift, bound_upper, ndt, s);
+  real lpdf_incorrect = (response -1) * swald_lpdf(rt, -drift, bound_lower, ndt, s) + (response) * swald_lccdf(rt, -drift, bound_lower, ndt, s)
+  return lpdf_correct + lpdf_incorrect
 }
