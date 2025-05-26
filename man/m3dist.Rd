@@ -42,7 +42,8 @@ act_funs argument manually}
 \item{log}{Logical; if \code{TRUE} (default), values are returned on the log scale.}
 
 \item{...}{can be used to pass additional variables that are used in the
-activation functions, but not parameters of the model}
+activation functions. If needed you can also pass the model parameters to the function
+via these additional arugments.}
 
 \item{n}{Integer. Number of observations to generate data for}
 

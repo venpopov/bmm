@@ -568,21 +568,22 @@ rimm <- function(n, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
 #'
 #' @name m3dist
 #'
-#' @param x Integer vector of length `K` where K is the number of response categories 
+#' @param x Integer vector of length `K` where K is the number of response categories
 #'   and each value is the number of observed responses per category
 #' @param n Integer. Number of observations to generate data for
-#' @param size The total number of observations in all categories 
+#' @param size The total number of observations in all categories
 #' @param pars A named vector of parameters of the memory measurement model
 #' @param m3_model A `bmmodel` object specifying the m3 model that densities or
 #'   random samples should be generated for
 #' @param act_funs A `bmmformula` object specifying the activation functions for
-#'   the different response categories for the "custom" version of the M3. The 
-#'   default will attempt to construct the standard activation functions for the 
+#'   the different response categories for the "custom" version of the M3. The
+#'   default will attempt to construct the standard activation functions for the
 #'   "ss" and "cs" model version. For a custom m3 model you need to specify the
 #'   act_funs argument manually
 #' @param log Logical; if `TRUE` (default), values are returned on the log scale.
 #' @param ... can be used to pass additional variables that are used in the
-#'   activation functions, but not parameters of the model
+#'   activation functions. If needed you can also pass the model parameters to the function
+#'   via these additional arugments.
 #'
 #' @keywords distribution
 #'
@@ -602,7 +603,7 @@ rimm <- function(n, mu = c(0, 2, -1.5), dist = c(0, 0.5, 2),
 #'  )
 #'  dm3(x = c(20, 10, 10), pars = c(a = 1, b = 1, c = 2), m3_model = model)
 #' @export
-dm3 <- function(x, pars, m3_model, act_funs = construct_m3_act_funs(m3_model, warnings = FALSE), 
+dm3 <- function(x, pars, m3_model, act_funs = construct_m3_act_funs(m3_model, warnings = FALSE),
                 log = TRUE, ...) {
   probs <- .compute_m3_probability_vector(pars, m3_model, act_funs, ...)
   dmultinom(x, prob = probs, log = log)
@@ -612,7 +613,7 @@ dm3 <- function(x, pars, m3_model, act_funs = construct_m3_act_funs(m3_model, wa
 #' @export
 rm3 <- function(n, size, pars, m3_model, act_funs = construct_m3_act_funs(m3_model, warnings = FALSE),
                 ...) {
-  probs <- .compute_m3_probability_vector(pars, m3_model, act_funs, ...)
+  probs <- .compute_m3_probability_vector(pars = pars, m3_model = m3_model, act_funs = act_funs, ...)
   t(rmultinom(n, size = size, prob = probs))
 }
 
