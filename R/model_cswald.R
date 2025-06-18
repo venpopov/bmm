@@ -15,6 +15,10 @@
       ndt = "log",
       s = "log"
     ),
+    fixed_parameters = list(
+      mu = 0,
+      s = 0
+    ),
     priors = list(
       drift = list(main = "normal(0,1)", effects = "normal(0,0.3)"),
       bound = list(main = "normal(0,0.3)", effects = "normal(0,0.3)"),
@@ -36,6 +40,11 @@
       ndt = "log",
       zr = "logit",
       s = "log"
+    ),
+    fixed_parameters = list(
+      mu = 0,
+      zr = 0,
+      s = 0
     ),
     priors = list(
       drift = list(main = "normal(0,1)", effects = "normal(0,0.3)"),
@@ -63,8 +72,15 @@
       requirements = "",
       parameters = .cswald_version_table[[version]][["parameters"]],
       links = .cswald_version_table[[version]][["links"]],
-      fixed_parameters = list(mu = 0, s = 0),
+      fixed_parameters = .cswald_version_table[[version]][["fixed_parameters"]],
       default_priors = .cswald_version_table[[version]][["priors"]],
+      init_ranges = list(
+        drift = list(main = c(0.5,2), effects = c(-0.1,0.1)),
+        bound = list(main = c(1,2), effects = c(-0.1,0.1)),
+        ndt = list(main = c(0.05,0.1), effects = c(-0.1,0.1)),
+        zr = list(main = c(0.4,0.6), effects = c(-0.1,0.1)),
+        s = list(main = c(0.9,1.1), effects = c(-0.1,0.1))
+      ),
       void_mu = TRUE
     ),
     class = c("bmmodel", "cswald", paste0("cswald_", version)),
@@ -209,6 +225,9 @@ configure_model.cswald_simple <- function(model, data, formula) {
 
   stanvars <- brms::stanvar(scode = stan_functions, block = 'functions')
 
+  # get initfun for cswald model
+  # initfun_cswald <- construct_initfun(model, data, formula)
+
   # return the list
   nlist(formula, data, stanvars)
 }
@@ -245,8 +264,136 @@ configure_model.cswald_crisk <- function(model, data, formula) {
 
   stanvars <- brms::stanvar(scode = stan_functions, block = 'functions')
 
+  # get initfun for cswald model
+  # initfun_cswald_crisk <- construct_initfun(model, data, formula)
+
   # return the list
   nlist(formula, data, stanvars)
+}
+
+#' @export
+construct_initfun.cswald <- function(model, data, formula) {
+  family <- formula$family
+
+  # get model info
+  standata <- make_standata(formula, data, family)
+  prior_data <- get_prior(formula, data, family)
+  prior_data <- prior_data[which(prior_data$class %in% c("b","Intercept")),]
+  prior_data$base_par <- paste0(prior_data$nlpar,prior_data$dpar)
+  prior_data$par_name <- paste0(prior_data$class,"_",prior_data$base_par)
+  prior_data$K_name <- paste0("K_",prior_data$base_par)
+
+  prior_data <- prior_data[,c("base_par","par_name","K_name")]
+
+  # create initfun
+  # --- 2. The tailored init function to be returned ---
+  the_init_function <- function(chain_id = 1) {
+
+    init_list <- list()
+
+    # --- Initialize ALL Fixed Effects ---
+    for (i in 1:nrow(prior_data)) {
+
+      par <- prior_data$base_par[i]
+      K_name <- prior_data$K_name[i]
+      par_name <- prior_data$par_name[i]
+
+      if (K_name %in% names(standata)) {
+        n_coefs <- standata[[K_name]]
+
+        # --- THIS IS THE NEW LINK-AWARE LOGIC ---
+
+        # Get the link function for this parameter from the family object
+        link_fun <- family[[paste0("link_", par)]]
+
+        # Define safe value ranges for each parameter
+        if (par_name %in% c("b_bs", "b_ndt") && paste0("Intercept_", par) %in% prior_data$par_name) {
+          # For Intercept parameters, use a fixed safe value
+          safe_value <- switch(
+            par,
+            ndt = model$init_ranges,
+            bs  = c(-0.1, 0.1),
+            drift = c(-0.1, 0.1),
+            zr =
+          )
+          link_fun = "identity"
+        } else {
+          # Safe values for intercept or parameters in the formula without intercept
+          safe_value <- switch(
+            par,
+            ndt = c(0.05, 0.1),
+            bs  = c(0.5, 2),
+            drift = c(0.1, 1))
+        }
+
+        # Transform safe values according to the link function
+        init_val <- switch(
+          link_fun,
+          log      = log(safe_value),
+          logit    = qlogis(safe_value),
+          identity = safe_value,
+          {
+            warning(paste("Unrecognized link for", par, ". Using log-scale init."))
+            log(safe_value)
+          }
+        )
+
+        # Assign to init_list
+        init_list[[par_name]] <- runif(n_coefs, init_val[1], init_val[2])
+
+      }
+    }
+
+    # --- Initialize Random Effects ('sd', 'z', 'L') ---
+    # This logic remains the same, as it's already robust.
+    re_groups <- stringr::str_extract(names(standata), "M_\\d+") %>%
+      na.omit() %>% stringr::str_extract("\\d+") %>% as.integer()
+
+    for (i in re_groups) {
+      M <- standata[[paste0("M_", i)]]
+      N <- standata[[paste0("N_", i)]]
+
+      init_list[[paste0("sd_", i)]] <- runif(M, 0.01, 0.1) # Tiny but random sd
+      init_list[[paste0("z_", i)]] <- matrix(rnorm(M * N, 0, 0.01), nrow = M, ncol = N) # Tiny variance in z
+      init_list[[paste0("L_", i)]] <- diag(M) # Start with no correlation
+    }
+
+    return(init_list)
+  }
+
+  return(the_init_function)
+}
+
+#' @export
+construct_initfun.cswald_simple <- function(model, data, formula) {
+  # get model info
+  standata <- make_standata(formula, data, family)
+  prior_data <- get_prior(formula, data, family) %>%
+    filter(class %in% c("b", "Intercept")) %>%
+    mutate(
+      base_par = paste0(nlpar,dpar),
+      par_name = paste0(class, "_", base_par),
+      K_name = paste0("K_", base_par)) %>%
+    select(base_par, par_name, K_name) %>%
+    distinct()
+
+  return()
+}
+
+#' @export
+construct_initfun.cswald_crisk <- function(model, data, formula) {
+  # get model info
+  standata <- make_standata(formula, data, family)
+  prior_data <- get_prior(formula, data, family) %>%
+    filter(class %in% c("b", "Intercept")) %>%
+    mutate(
+      base_par = paste0(nlpar,dpar),
+      par_name = paste0(class, "_", base_par),
+      K_name = paste0("K_", base_par)) %>%
+    select(base_par, par_name, K_name) %>%
+    distinct()
+
+  return()
 }
 
 #############################################################################!
