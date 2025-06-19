@@ -38,10 +38,10 @@ real cswald_crisk_lpdf(real rt, real mu, real drift, real bound, real ndt, real 
   real bound_upper = bound - zr*bound;
   real bound_lower = zr*bound;
 
-  // compute lpdf for correct and incorrect responses
-  real lpdf_correct = swald_lpdf(rt | drift, bound_upper, ndt, s) + swald_lccdf(rt | -drift, bound_lower, ndt, s);
-  real lpdf_incorrect = swald_lpdf(rt | -drift, bound_lower, ndt, s) + swald_lccdf(rt | drift, bound_upper, ndt, s);
-
-  // return the summed likelihood
-  return response*lpdf_correct + (1-response)*lpdf_incorrect;
+  // compute lpdf dependent on response type
+  if (response == 1) {
+    return swald_lpdf(rt | drift, bound_upper, ndt, s) + swald_lccdf(rt | -drift, bound_lower, ndt, s);
+  } else {
+    return swald_lpdf(rt | -drift, bound_lower, ndt, s) + swald_lccdf(rt | drift, bound_upper, ndt, s);
+  }
 }

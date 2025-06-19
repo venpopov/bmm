@@ -35,7 +35,7 @@
       s = "diffusion constant"
     ),
     links = list(
-      drift = "log",
+      drift = "identity",
       bound = "log",
       ndt = "log",
       zr = "logit",
@@ -47,7 +47,7 @@
       s = 0
     ),
     priors = list(
-      drift = list(main = "normal(0,1)", effects = "normal(0,0.3)"),
+      drift = list(main = "normal(1,1)", effects = "normal(0,0.3)"),
       bound = list(main = "normal(0,0.3)", effects = "normal(0,0.3)"),
       ndt = list(main = "normal(-2,0.3)", effects = "normal(0,0.3)"),
       zr = list(main = "normal(0,0.3)", effects = "normal(0,0.2)"),
@@ -181,7 +181,7 @@ bmf2bf.cswald <- function(model, formula) {
   response_var <- model$resp_vars$response
 
   # set the base brmsformula based
-  brms_formula <- brms::bf(glue(rt_var, " | trials(", response_var, ") ~ 1"))
+  brms_formula <- brms::bf(glue(rt_var, " | dec(", response_var, ") ~ 1"))
 
   # return the brms_formula to add the remaining bmmformulas to it.
   brms_formula
@@ -210,10 +210,10 @@ configure_model.cswald_simple <- function(model, data, formula) {
       'cswald',
       dpars = c("mu","drift","bound","ndt","s"),
       links = c("identity", link_drift, link_bound, link_ndt, link_s),
-      lb = c(NA, NA, NA, NA, NA), # upper bounds for parameters
-      ub = c(NA, 0, 0, 0, 0), # lower bounds for parameters
+      ub = c(NA, NA, NA, NA, NA), # upper bounds for parameters
+      lb = c(NA, 0, 0, 0, 0), # lower bounds for parameters
       type = 'real', # real for continous dv, int for discrete dv
-      vars = 'trials[n]',
+      vars = 'dec[n]',
       loop = TRUE, # is the likelihood vectorized
     )
   }
@@ -249,10 +249,10 @@ configure_model.cswald_crisk <- function(model, data, formula) {
       'cswald_crisk',
       dpars = c("mu","drift","bound","ndt","zr","s"),
       links = c("identity", link_drift, link_bound, link_ndt, link_zr, link_s),
-      lb = c(NA, NA, NA, NA, 1, NA), # upper bounds for parameters
-      ub = c(NA, 0, 0, 0, 0, 0), # lower bounds for parameters
+      ub = c(NA, NA, NA, NA, 1, NA), # upper bounds for parameters
+      lb = c(NA, 0, 0, 0, 0, 0), # lower bounds for parameters
       type = 'real', # real for continous dv, int for discrete dv
-      vars = 'trials[n]',
+      vars = 'dec[n]',
       loop = TRUE, # is the likelihood vectorized
     )
   }
