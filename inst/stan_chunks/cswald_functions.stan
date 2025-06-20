@@ -34,5 +34,9 @@ real swald_lccdf(real rt, real drift, real bound, real ndt, real sigma) {
 
 // log-PDF of the censored shifted Wald model
 real cswald_lpdf(real rt, real mu, real drift, real bound, real ndt, real s, int response) {
-  return response * swald_lpdf(rt | drift, bound, ndt, s) + (1-response) * swald_lccdf(rt | drift, bound, ndt, s);
+  if (response == 1) {
+    return swald_lpdf(rt | drift, bound, ndt, s);
+  } else {
+    return swald_lccdf(rt | drift, bound, ndt, s);
+  }
 }
