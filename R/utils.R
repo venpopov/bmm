@@ -115,32 +115,33 @@ combine_args <- function(args) {
   dots <- args$dots
   stopif("family" %in% names(dots), "Unsupported argument 'family'. Use the model argument instead.")
   config_args$prior <- args$prior %||% config_args$prior
+  config_args$init <- args$init
   config_args[names(dots)] <- dots
   c(config_args, args$opts)
 }
 
 ############################
-#' @description 
-#'  stop2, warning2, and message2 are wrappers to the builting functions stop, warning and message. 
+#' @description
+#'  stop2, warning2, and message2 are wrappers to the builting functions stop, warning and message.
 #'  They automatically suppress the call stack and allow you to use glue syntax for the message.
 #' @param ... arguments to pass to glue() - these will form the message to the user
 #' @param env.frame the frame in which variables passed to glue will be evaluated. Default is the environment
 #'  of the function that calls stop2, message2, warning2
 #' @examples
 #' name <- "John"
-#' 
+#'
 #' stop2("Hi {name}, this is an error")
-#' 
+#'
 #' warning2("Hi {name}, this is a long warning \\
 #'  that is split on multiple rows \\
 #'  but no new lines are added in the output message \\
 #'  because of the double slashes at the end of each row.")
-#' 
+#'
 #' message2("Hi {name}, this is a long message
 #'      that is split on multiple rows
 #'      and the printed message shows every new line
 #'      because there are not back slashes on any line.
-#' 
+#'
 #'      You don't have to worry about identation or adding quotes
 #'      or commas to any row. Makes typing long messages a breeze!")
 #' @noRd
@@ -164,7 +165,7 @@ message2 <- function(..., env.frame = -1) {
 }
 
 # stopif and warnif work like the builtin stopifnot except that
-# the stoping condition is a single boolean expression, 
+# the stoping condition is a single boolean expression,
 # and you can provide a custom message
 stopif <- function(condition, message) {
   if (condition) {
@@ -404,7 +405,7 @@ get_variables <- function(x, all_variables, regex = FALSE) {
   if (!regex) {
     return(x)
   }
-  
+
   variables <- all_variables[grep(x, all_variables)]
   stopif(
     length(variables) == 0,
@@ -709,7 +710,7 @@ try_read_bmmfit <- function(file, file_refit) {
   if (is_try_error(out)) {
     return(NULL)
   }
-  
+
   stopif(!is_bmmfit(out), "Object loaded via 'file' is not of class 'bmmfit'.")
   out$file <- file
   out
