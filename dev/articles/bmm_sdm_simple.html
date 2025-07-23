@@ -255,17 +255,7 @@ with <code>cmdstanr</code>:</p>
 <p>The model takes about 30 seconds to fit after it is compiled.</p>
 <p>We can now inspect the results of the model fit:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>Loading required package<span class="sc">:</span> rstan</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>Loading required package<span class="sc">:</span> StanHeaders</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>rstan version <span class="dv">2</span>.<span class="fl">32.6</span> (Stan version <span class="dv">2</span>.<span class="fl">32.2</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>For execution on a local, multicore CPU with excess RAM we recommend calling</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="fu">options</span>(<span class="at">mc.cores =</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()).</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>To avoid recompilation of unchanged Stan programs, we recommend calling</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">rstan_options</span>(<span class="at">auto_write =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>For within<span class="sc">-</span>chain threading using <span class="st">`</span><span class="at">reduce_sum()</span><span class="st">`</span> or <span class="st">`</span><span class="at">map_rect()</span><span class="st">`</span> Stan functions,</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>change <span class="st">`</span><span class="at">threads_per_chain</span><span class="st">`</span> option<span class="sc">:</span></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">rstan_options</span>(<span class="at">threads_per_chain =</span> <span class="dv">1</span>)</span></code></pre></div>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>Loading required namespace<span class="sc">:</span> rstan</span></code></pre></div>
 <pre class="fansi fansi-output"><code><span style="color: #AF5FFF;">  Model: </span><span style="color: #FF875F;">sdm</span>(resp_error = "y") 
 <span style="color: #AF5FFF;">  Links: </span>mu = tan_half; c = log; kappa = log 
 <span style="color: #AF5FFF;">Formula: </span>mu = 0
@@ -407,7 +397,7 @@ Oberauer, Klaus. 2023. <span>“Measurement Models for Visual Working Memory—a
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
