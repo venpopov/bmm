@@ -1,4 +1,4 @@
-# bmm (development version)
+# bmm 1.2.0
 
 # bmm 1.2
 
