@@ -60,7 +60,11 @@ The `bmm` package implements several measurement models for analyzing continuous
 #### The Signal Discrimination Model (SDM) by [@Oberauer_2023]  {.unnumbered}
 
   - see `?sdm` and [the SDM article](https://venpopov.github.io/bmm/articles/bmm_sdm_simple.html)
-    
-    
+
+# Preparing data from half-circular stimulus spaces
+
+As already mentioned, some task require subjects to remember orientations (e.g. of bars or Gabor patches) without a direction. With such stimulus material the response error can range only from -90 to 90 degrees (or -pi/2 to pi/2). When using data from such a task, you have to multiply the `response_error` by 2 when pre-processing the data, so that the response error ranges from -180 to 180 degrees (or -pi to pi). The same applies to the `nt_features` relative to the target orientation.
+
+
 # References
 
