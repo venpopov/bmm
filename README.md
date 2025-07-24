@@ -37,14 +37,17 @@ cognitive processes underlying behavioral data.
 In the following sections you find more information on the `bmm`
 package:
 
-- [How to install bmm](#how-to-install-bmm)
-- [Available models](#available-models)
-- [Fitting models using bmm](#fitting-models-using-bmm)
-- [Exploring cogntive measurement
-  models](#exploring-cogntive-measurement-models)
-- [The general structure of the bmm
-  package](#the-general-structure-of-the-bmm-package)
-- [Contributing to the `bmm` package](#contributing-to-the-bmm-package)
+- [bmm](#bmm)
+  - [Overview](#overview)
+  - [Getting started](#getting-started)
+  - [How to install bmm](#how-to-install-bmm)
+  - [Available models](#available-models)
+  - [Fitting models using `bmm`](#fitting-models-using-bmm)
+  - [Exploring measurement models](#exploring-measurement-models)
+  - [The general structure of the `bmm`
+    package](#the-general-structure-of-the-bmm-package)
+  - [Contributing to the `bmm`
+    package](#contributing-to-the-bmm-package)
 
 ## How to install bmm
 
@@ -75,7 +78,7 @@ this step.
   and/or
   [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). We
   recommend using `cmdstanr`.
-- Install [brms](https://paul-buerkner.github.io/brms/#installation)
+- Install [brms](http://paulbuerkner.com/brms/#installation)
 
 </details>
 
