@@ -7,7 +7,7 @@
 \usage{
 softmax(eta, lambda = 1)
 
-softmaxinv(p, lambda = 1)
+softmaxinv(p, lambda = 1, ref_position = length(p), ref_value = 0)
 }
 \arguments{
 \item{eta}{A numeric vector input}
@@ -15,6 +15,10 @@ softmaxinv(p, lambda = 1)
 \item{lambda}{Tuning parameter (a single positive value)}
 
 \item{p}{A probability vector (i.e., numeric vector of non-negative values that sum to one)}
+
+\item{ref_position}{The reference position that should be used to calculate the inverse softmax function. The default is the last position.}
+
+\item{ref_value}{The value the reference position will be set to. The default is 0.}
 }
 \value{
 Value of the softmax function or its inverse
@@ -30,12 +34,12 @@ parameter.
 
 The current functions define the softmax as:
 
-\deqn{\Large P(\eta_i) = \frac{e^{\lambda \eta_i}}{1+ \sum_{j=1}^m e^{\lambda \eta_j}}}
+\deqn{\Large P(\eta_i) = \frac{e^{\lambda \eta_i}}{\sum_{j=1}^m e^{\lambda \eta_j}}}
 
 Code adapted from the \href{https://github.com/ben-oneill/utilities/}{utilities} package
 }
 \examples{
 softmax(5:7)
-softmaxinv(softmax(5:7))
+softmaxinv(softmax(5:7), ref_position = 1, ref_value = 5)
 }
 \keyword{transform}
