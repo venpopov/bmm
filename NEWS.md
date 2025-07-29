@@ -1,6 +1,6 @@
-# bmm 1.2.0
+# bmm (development version)
 
-# bmm 1.2
+# bmm 1.2.0
 
 ### New models
 * Add the Memory Measurement Model (Oberauer & Lewandowsky, 2019) and its generalization as the Multinomial Measurement Model for categorical decision tasks as new model class **m3** with three versions: simple span (**ss**), complex span (**cs**), and **custom**. For details, see the [article](https://venpopov.github.io/bmm/dev/articles/bmm_m3.html) on the `bmm` website (#237). Thanks to @GidonFrischkorn and @chenyu-psy
