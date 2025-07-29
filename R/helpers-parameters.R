@@ -18,19 +18,14 @@
 #' SDs_degress <- SDs * 180 / pi
 #'
 #' # plot the relationship between kappa and circular SD
-#' plot(kappas,SDs)
-#' plot(kappas,SDs_degress)
-#'
+#' plot(kappas, SDs)
+#' plot(kappas, SDs_degress)
 k2sd <- function(K) {
-  S <- matrix(0, 1, length(K))
-  for (j in 1:length(K)) {
-    if (K[j] == 0) S[j] <- Inf
-    if (is.infinite(K[j])) S[j] <- 0
-    if (K[j] >= 0 & !is.infinite(K[j])) {
-      S[j] <- sqrt(-2 * log(besselI(K[j], 1, expon.scaled = T) / besselI(K[j], 0, expon.scaled = T)))
-    }
-  }
-  as.numeric(S)
+  log_bessel_ratio <- log(besselI(K, 1, expon.scaled = T)) - log(besselI(K, 0, expon.scaled = T))
+  S <- sqrt(-2 * log_bessel_ratio)
+  S[K == 0] <- Inf
+  S[is.infinite(K)] <- 0
+  S
 }
 
 
@@ -57,7 +52,7 @@ k2sd <- function(K) {
 c_sqrtexp2bessel <- function(c, kappa) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(c < 0)), "c must be non-negative")
-  c * besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa)
+  c * besselI(kappa, 0, expon.scaled = TRUE) * sqrt(2 * pi * kappa)
 }
 
 #' @rdname c_parametrizations
@@ -66,5 +61,5 @@ c_sqrtexp2bessel <- function(c, kappa) {
 c_bessel2sqrtexp <- function(c, kappa) {
   stopif(isTRUE(any(kappa < 0)), "kappa must be non-negative")
   stopif(isTRUE(any(c < 0)), "c must be non-negative")
-  c / (besselI(kappa,0, expon.scaled = TRUE) * sqrt(2 * pi * kappa))
+  c / (besselI(kappa, 0, expon.scaled = TRUE) * sqrt(2 * pi * kappa))
 }

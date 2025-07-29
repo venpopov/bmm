@@ -12,7 +12,7 @@
 #'   skip this method, and the default method will be used (which returns the same
 #'   brmsfit object that was passed to it).
 #' @param model A model list object returned from check_model()
-#' @param fit the fitted brm model returned by `call_brm()`
+#' @param fit the fitted brm model
 #' @param ... Additional arguments passed to the method
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export
@@ -31,7 +31,8 @@ postprocess_brm.bmmodel <- function(model, fit, ...) {
   dots <- list(...)
   class(fit) <- c("bmmfit", "brmsfit")
   fit$version$bmm <- utils::packageVersion("bmm")
-  fit$bmm <- nlist(model,
+  fit$bmm <- nlist(
+    model,
     user_formula = dots$user_formula,
     configure_opts = dots$configure_opts
   )
@@ -39,11 +40,7 @@ postprocess_brm.bmmodel <- function(model, fit, ...) {
 
   # add bmm version to the stancode
   fit$model <- add_bmm_version_to_stancode(fit$model)
-
-  fit <- NextMethod("postprocess_brm")
-
-  # clean up environments stored in the fit object
-  reset_env(fit)
+  reset_env(NextMethod("postprocess_brm"))
 }
 
 #' @export
@@ -58,9 +55,8 @@ get_mu_pars <- function(object) {
     X <- get_model_matrix(dpars$mu$fe, object$data)
     return(colnames(X))
   }
-  return(NULL)
+  NULL
 }
-
 
 #' @title Generic S3 method for reverting any postprocessing of the fitted brm model
 #' @description Called by update.bmmfit() to automatically revert some of the postprocessing
@@ -75,7 +71,7 @@ get_mu_pars <- function(object) {
 #'   revert the postprocessing (if otherwise the update method would produce incorrect
 #'   results).
 #' @param model A model list object returned from check_model()
-#' @param fit the fitted brm model returned by `call_brm()`
+#' @param fit the fitted brm model
 #' @param ... Additional arguments passed to the method
 #' @return An object of class brmsfit, with any necessary postprocessing applied
 #' @export

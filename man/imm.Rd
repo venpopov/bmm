@@ -258,44 +258,56 @@ ff <- bmmformula(
 
 # specify the full IMM model with explicit column names for non-target features and distances
 # by default this fits the full version of the model
-model1 <- imm(resp_error = "dev_rad",
-              nt_features = paste0('col_nt', 1:7),
-              nt_distances = paste0('dist_nt', 1:7),
-              set_size = 'set_size')
+model1 <- imm(
+  resp_error = "dev_rad",
+  nt_features = paste0("col_nt", 1:7),
+  nt_distances = paste0("dist_nt", 1:7),
+  set_size = "set_size"
+)
 
 # fit the model
-fit <- bmm(formula = ff,
-           data = data,
-           model = model1,
-           cores = 4,
-           backend = 'cmdstanr')
+fit <- bmm(
+  formula = ff,
+  data = data,
+  model = model1,
+  cores = 4,
+  backend = "cmdstanr"
+)
 
 # alternatively specify the IMM model with a regular expression to match non-target features
 # this is equivalent to the previous call, but more concise
-model2 <- imm(resp_error = "dev_rad",
-              nt_features = 'col_nt',
-              nt_distances = 'dist_nt',
-              set_size = 'set_size',
-              regex = TRUE)
+model2 <- imm(
+  resp_error = "dev_rad",
+  nt_features = "col_nt",
+  nt_distances = "dist_nt",
+  set_size = "set_size",
+  regex = TRUE
+)
 
 # fit the model
-fit <- bmm(formula = ff,
-           data = data,
-           model = model2,
-           cores = 4,
-           backend = 'cmdstanr')
+fit <- bmm(
+  formula = ff,
+  data = data,
+  model = model2,
+  cores = 4,
+  backend = "cmdstanr"
+)
 
 # you can also specify the `bsc` or `abc` versions of the model to fit a reduced version
-model3 <- imm(resp_error = "dev_rad",
-              nt_features = 'col_nt',
-              set_size = 'set_size',
-              regex = TRUE,
-              version = 'abc')
-fit <- bmm(formula = ff,
-           data = data,
-           model = model3,
-           cores = 4,
-           backend = 'cmdstanr')
+model3 <- imm(
+  resp_error = "dev_rad",
+  nt_features = "col_nt",
+  set_size = "set_size",
+  regex = TRUE,
+  version = "abc"
+)
+fit <- bmm(
+  formula = ff,
+  data = data,
+  model = model3,
+  cores = 4,
+  backend = "cmdstanr"
+)
 \dontshow{\}) # examplesIf}
 }
 \keyword{bmmodel}

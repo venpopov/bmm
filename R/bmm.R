@@ -23,7 +23,7 @@
 #'   sampling will be slower. If "check" (the default), [bmm()] will check if
 #'   the data is sorted, and ask you via a console prompt if it should be
 #'   sorted. You can set the default value for this option using global
-#'   `options(bmm.sort_data = TRUE/FALSE/"check)`)` or via `bmm_options(sort_data)`
+#'   `options(bmm.sort_data = TRUE/FALSE/"check"))` or via `bmm_options(sort_data)`
 #' @param silent Verbosity level between 0 and 2. If 1 (the default), most of the
 #'   informational messages of compiler and sampler are suppressed. If 2, even
 #'   more messages are suppressed. The actual sampling progress is still
@@ -36,7 +36,7 @@
 #'  set the default backend using global `options(brms.backend = "rstan"/"cmdstanr")`
 #' @param file Either `NULL` or a character string. If a string, the fitted
 #'   model object is saved via [saveRDS] in a file named after the string. The
-#'   `.rds extension is added automatically. If the file already exists, `bmm`
+#'   .rds extension is added automatically. If the file already exists, `bmm`
 #'   will load and return the saved model object. Unless you specify the
 #'   `file_refit` argument as well, the existing files won't be overwritten, you
 #'   have to manually remove the file in order to refit and save the model under
@@ -45,11 +45,11 @@
 #' @param file_compress Logical or a character string, specifying one of the
 #'   compression algorithms supported by [saveRDS] when saving
 #'   the fitted model object.
-#' @param file_refit Logical. Modifies when the fit stored via the `file` argument is
-#'   re-used. Can be set globally for the current \R session via the
-#'   `"bmm.file_refit"` option (see [options]). If `TRUE` (the default), the
-#'   model is re-used if the file exists. If `FALSE`, the model is re-fitted. Note
-#'   that unlike `brms`, there is no "on_change" option
+#' @param file_refit Logical or character string. Modifies when the fit stored via the `file` argument is
+#'   re-used. Can be set globally for the current R session via the
+#'   `"bmm.file_refit"` option (see [options]). If `TRUE` or "always", the
+#'   model is fitted again. If `FALSE` or "never" (the default), the model saved under the name specified in `file`
+#'   will be re-used. Note that unlike in `brms`, there is no "on_change" option
 #' @param ... Further arguments passed to [brms::brm()] or Stan. See the
 #'   description of [brms::brm()] for more details
 #'
@@ -93,27 +93,35 @@
 #' ff <- bmmformula(c ~ 1, kappa ~ 1)
 #'
 #' # fit the model
-#' fit <- bmm(formula = ff,
-#'            data = dat,
-#'            model = sdm(resp_error = "y"),
-#'            cores = 4,
-#'            backend = 'cmdstanr')
+#' fit <- bmm(
+#'   formula = ff,
+#'   data = dat,
+#'   model = sdm(resp_error = "y"),
+#'   cores = 4,
+#'   backend = "cmdstanr"
+#' )
 bmm <- function(formula, data, model,
                 prior = NULL,
-                sort_data = getOption('bmm.sort_data', "check"),
-                silent = getOption('bmm.silent', 1),
-                backend = getOption('brms.backend', NULL),
+                sort_data = getOption("bmm.sort_data", "check"),
+                silent = getOption("bmm.silent", 1),
+                backend = getOption("brms.backend", NULL),
                 file = NULL, file_compress = TRUE,
-                file_refit = getOption('bmm.file_refit', FALSE), ...) {
+                file_refit = getOption("bmm.file_refit", FALSE), ...) {
   deprecated_args(...)
   dots <- list(...)
 
-  x <- read_bmmfit(file, file_refit)
-  if (!is.null(x)) return(x)
+  # check if the model has been previously fit and return it if requested
+  x <- try_read_bmmfit(file, file_refit)
+  if (!is.null(x)) {
+    return(x)
+  }
 
   # set temporary global options and return modified arguments for brms
-  configure_opts <- nlist(sort_data, silent, backend, parallel = dots$parallel,
-                          cores = dots$cores)
+  configure_opts <- nlist(
+    sort_data, silent, backend,
+    parallel = dots$parallel,
+    cores = dots$cores
+  )
   opts <- configure_options(configure_opts)
   dots$parallel <- NULL
 
@@ -131,14 +139,18 @@ bmm <- function(formula, data, model,
 
   # estimate the model
   fit_args <- combine_args(nlist(config_args, opts, dots, prior))
-  fit <- call_brm(fit_args)
+  fit <- brms::do_call(brms::brm, fit_args)
 
   # model post-processing
-  fit <- postprocess_brm(model, fit, fit_args = fit_args, user_formula = user_formula,
-                         configure_opts = configure_opts)
+  fit <- postprocess_brm(
+    model, fit,
+    fit_args = fit_args,
+    user_formula = user_formula,
+    configure_opts = configure_opts
+  )
 
-  # save the fitted model object if !is.null
-  save_bmmfit(fit, file, compress = file_compress)
+  # save the fitted model object if file argument provided and return the object
+  try_save_bmmfit(fit, file, compress = file_compress)
 }
 
 
@@ -147,11 +159,13 @@ bmm <- function(formula, data, model,
 #' @export
 fit_model <- function(formula, data, model,
                       prior = NULL,
-                      sort_data = getOption('bmm.sort_data', "check"),
-                      silent = getOption('bmm.silent', 1),
-                      backend = getOption('brms.backend', NULL),
+                      sort_data = getOption("bmm.sort_data", "check"),
+                      silent = getOption("bmm.silent", 1),
+                      backend = getOption("brms.backend", NULL),
                       ...) {
   message("You are using the deprecated `fit_model()` function. Please use `bmm()` instead.")
-  bmm(formula = formula, data = data, model = model, prior = prior,
-      sort_data = sort_data, silent = silent, backend = backend, ...)
+  bmm(
+    formula = formula, data = data, model = model, prior = prior,
+    sort_data = sort_data, silent = silent, backend = backend, ...
+  )
 }

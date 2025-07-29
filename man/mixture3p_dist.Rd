@@ -60,10 +60,10 @@ memory representations \code{kappa}, probability of recalling items from memory
 \examples{
 # generate random samples from the mixture3p model and overlay the density
 r <- rmixture3p(10000, mu = c(0, 2, -1.5), kappa = 4, p_mem = 0.6, p_nt = 0.2)
-x <- seq(-pi,pi,length.out=10000)
+x <- seq(-pi, pi, length.out = 10000)
 d <- dmixture3p(x, mu = c(0, 2, -1.5), kappa = 4, p_mem = 0.6, p_nt = 0.2)
-hist(r, breaks=60, freq=FALSE)
-lines(x,d,type="l", col="red")
+hist(r, breaks = 60, freq = FALSE)
+lines(x, d, type = "l", col = "red")
 
 }
 \references{

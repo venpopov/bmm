@@ -70,5 +70,5 @@ summary(fit)
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link{summary.brmsfit}}
+\code{\link[brms]{summary.brmsfit}}
 }

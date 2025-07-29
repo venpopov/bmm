@@ -1,11 +1,12 @@
 Package: bmm
 Title: Easy and Accessible Bayesian Measurement Models Using 'brms'
-Version: 1.0.1
+Version: 1.2.0
 Authors@R: c(
     person("Vencislav", "Popov", , "vencislav.popov@gmail.com", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-8073-4199")),
     person("Gidon T.", "Frischkorn", , "gidon.frischkorn@psychologie.uzh.ch", role = c("aut", "cph"),
            comment = c(ORCID = "0000-0002-5055-9764")),
+    person("Chenyu", "Li", role = c("ctb")),
     person("Paul-Christian", "Bürkner", , "paul.buerkner@gmail.com", role = "cph",
            comment = "Creator of 'brms', code portions of which are used in 'bmm'.")
   )
@@ -25,35 +26,37 @@ Depends:
 Imports: 
     brms (>= 2.21.0),
     crayon,
-    dplyr,
     fs,
     glue,
-    magrittr,
     matrixStats,
     methods,
     parallel,
     stats,
-    tidyr,
     withr
 Suggests: 
     bookdown,
     cmdstanr (>= 0.7.0),
     cowplot,
+    dplyr,
     fansi,
     ggplot2,
     ggthemes,
     knitr,
+    magrittr,
     mixtur,
     remotes,
     rmarkdown,
     stringr,
     testthat (>= 3.0.0),
     tidybayes,
+    tidyr,
     usethis,
-    waldo
-Additional_repositories: https://mc-stan.org/r-packages/
+    waldo,
+    gghalves
+Additional_repositories: https://stan-dev.r-universe.dev
 Config/testthat/edition: 3
+Config/Needs/website: rmarkdown
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

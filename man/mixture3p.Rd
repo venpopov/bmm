@@ -94,7 +94,7 @@ Three-parameter mixture model by Bays et al (2009).
 \dontshow{if (isTRUE(Sys.getenv("BMM_EXAMPLES"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # generate artificial data from the Bays et al (2009) 3-parameter mixture model
 dat <- data.frame(
-  y = rmixture3p(n=2000, mu = c(0,1,-1.5,2)),
+  y = rmixture3p(n = 2000, mu = c(0, 1, -1.5, 2)),
   nt1_loc = 1,
   nt2_loc = -1.5,
   nt3_loc = 2
@@ -108,27 +108,31 @@ ff <- bmmformula(
 )
 
 # specify the 3-parameter model with explicit column names for non-target features
-model1 <- mixture3p(resp_error = "y", nt_features = paste0('nt',1:3,'_loc'), set_size = 4)
+model1 <- mixture3p(resp_error = "y", nt_features = paste0("nt", 1:3, "_loc"), set_size = 4)
 
 # fit the model
-fit <- bmm(formula = ff,
-           data = dat,
-           model = model1,
-           cores = 4,
-           iter = 500,
-           backend = 'cmdstanr')
+fit <- bmm(
+  formula = ff,
+  data = dat,
+  model = model1,
+  cores = 4,
+  iter = 500,
+  backend = "cmdstanr"
+)
 
 # alternatively specify the 3-parameter model with a regular expression to match non-target features
 # this is equivalent to the previous call, but more concise
 model2 <- mixture3p(resp_error = "y", nt_features = "nt.*_loc", set_size = 4, regex = TRUE)
 
 # fit the model
-fit <- bmm(formula = ff,
-           data = dat,
-           model = model2,
-           cores = 4,
-           iter = 500,
-           backend = 'cmdstanr')
+fit <- bmm(
+  formula = ff,
+  data = dat,
+  model = model2,
+  cores = 4,
+  iter = 500,
+  backend = "cmdstanr"
+)
 \dontshow{\}) # examplesIf}
 }
 \keyword{bmmodel}

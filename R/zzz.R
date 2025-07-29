@@ -22,20 +22,7 @@
 
   optionsMsg <- tryCatch2(bmm_options())$message
 
-  if (interactive() && !isFALSE(as.logical(Sys.getenv("BMM_CHECK_CRAN_VERSION")))) {
-    # test if local installation is behind CRAN
-    cran_pkgs <- utils::available.packages(repos = "http://cran.us.r-project.org")
-    cran_version <- cran_pkgs[which(cran_pkgs[, "Package"] == "bmm"), "Version"]
-    behind_cran <- cran_version > local_version
-
-    if (length(behind_cran) > 0 && behind_cran) {
-      msg <- "A newer version of bmm is available on CRAN."
-      packageStartupMessage(msg, "\nWould you like to install it?")
-      if (utils::menu(c("Yes", "No")) == 1) {
-        utils::update.packages("bmm")
-      }
-    } else {
-      packageStartupMessage(banner, versionMsg, startUpMsg, optionsMsg)
-    }
+  if (interactive()) {
+    packageStartupMessage(banner, versionMsg, startUpMsg, optionsMsg)
   }
 }

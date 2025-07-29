@@ -1,3 +1,32 @@
+# bmm 1.2.0
+
+# bmm 1.2
+
+### New models
+* Add the Memory Measurement Model (Oberauer & Lewandowsky, 2019) and its generalization as the Multinomial Measurement Model for categorical decision tasks as new model class **m3** with three versions: simple span (**ss**), complex span (**cs**), and **custom**. For details, see the [article](https://venpopov.github.io/bmm/dev/articles/bmm_m3.html) on the `bmm` website (#237). Thanks to @GidonFrischkorn and @chenyu-psy
+
+### New features
+* Updates to the `bmf2bf` S3 methods for more flexible translation of `bmmformulas` into `brmsformulas` (#227).
+* New function **apply_links** adds link functions to all non-linear formulas in a **bmmformula** object.
+* New example data set **oberauer_lewandowsky_2019_e1** for exploring the **m3** model.
+* The `file_refit` argument of the `bmm` function now accepts character strings like `brms`. A warning is given when "on_change" is specified, as this is not currently implemented for `bmmodels` (#228).
+* New function **rejection_sampling**
+
+### Bug fixes
+* Fix conflict in setting default priors when model parameters were transformed in a non-linear formula (#232).
+* Allow a NULL formula (`formula(NULL)`) to be added to a bmmformula for consistentcy with brms (#264)
+* Improve error messages when attempting to construct bmmformulas without a left-hand-side variable
+
+### Documentation
+* Add documentation to the [continuous reproduction task](https://venpopov.github.io/bmm/articles/bmm_vwm_crt.html) article for pre-processing half-circular stimulus spaces when using `bmmodels` of the `circular` model class (#229, #233).
+* New online [article](https://venpopov.github.io/bmm/dev/articles/bmm_m3.html) to accompany the m3 model
+
+### Other changes
+* vectorize `k2sd()` function for improved performance
+* various internal refactorings (#246, #242)
+* dplyr, magrittr and tidyr dependencies are now optional (#240)
+* new contributor - Chenyun Li (chenyu-psy) for his work on the m3 model
+
 # bmm 1.0.0
 
 First version of the package on published on CRAN!

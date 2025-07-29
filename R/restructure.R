@@ -5,7 +5,7 @@
 #' internally when applying post-processing methods.
 #'
 #' @aliases restructure
-#' 
+#'
 #' @param x An object of class \code{bmmfit}.
 #' @param ... Currently ignored.
 #'
@@ -21,17 +21,17 @@
 restructure.bmmfit <- function(x, ...) {
   version <- x$version$bmm
   if (is.null(version)) {
-    version <- as.package_version('0.2.1')
+    version <- as.package_version("0.2.1")
     x$version$bmm <- version
   }
-  if (!inherits(x, 'bmmfit')) {
-    class(x) <- c('bmmfit', class(x))
+  if (!inherits(x, "bmmfit")) {
+    class(x) <- c("bmmfit", class(x))
   }
-  current_version <- packageVersion('bmm')
+  current_version <- packageVersion("bmm")
   restr_version <- restructure_version.bmm(x)
 
   if (restr_version >= current_version) {
-    x <- NextMethod('restructure')
+    x <- NextMethod("restructure")
     return(x)
   }
 
@@ -44,8 +44,17 @@ restructure.bmmfit <- function(x, ...) {
     info <- x$bmm$model$info
     x$bmm$model$info <- NULL
     x$bmm$model[names(info)] <- info
+    class(x$bmm$model)[1] <- "bmmodel"
+    cl_len <- length(class(x$bmm$model))
+    class(x$bmm$model)[cl_len] <- switch(class(x$bmm$model)[cl_len],
+       sdmSimple = "sdm",
+       IMMfull = "imm",
+       IMMabc = "imm",
+       IMMbsc = "imm",
+       class(x$bmm$model)[cl_len]
+    )
     x <- add_links(x)
-    x$bmm$user_formula <- assign_nl(x$bmm$user_formula)
+    x$bmm$user_formula <- assign_nl_attr(x$bmm$user_formula)
   }
 
   if (restr_version < "0.4.4") {
@@ -63,30 +72,28 @@ restructure.bmmfit <- function(x, ...) {
   if (restr_version < "0.4.8") {
     cl <- class(x$bmm$model)
     cl[1] <- "bmmodel"
-    if ('sdmSimple' %in% cl) {
-      cl[cl == 'sdmSimple'] <- 'sdm'
-      cl <- c(cl, 'sdm_simple')
-    } else if ('IMMfull' %in% cl) {
-      cl[cl == 'IMMfull'] <- 'imm'
-      cl <- c(cl, 'imm_full')
-    } else if ('IMMabc' %in% cl) {
-      cl[cl == 'IMMabc'] <- 'imm'
-      cl <- c(cl, 'imm_abc')
-    } else if ('IMMbsc' %in% cl) {
-      cl[cl == 'IMMbsc'] <- 'imm'
-      cl <- c(cl, 'imm_bsc')
+    if ("sdmSimple" %in% cl) {
+      cl[cl == "sdmSimple"] <- "sdm"
+      cl <- c(cl, "sdm_simple")
+    } else if ("IMMfull" %in% cl) {
+      cl[cl == "IMMfull"] <- "imm"
+      cl <- c(cl, "imm_full")
+    } else if ("IMMabc" %in% cl) {
+      cl[cl == "IMMabc"] <- "imm"
+      cl <- c(cl, "imm_abc")
+    } else if ("IMMbsc" %in% cl) {
+      cl[cl == "IMMbsc"] <- "imm"
+      cl <- c(cl, "imm_bsc")
     }
-    if ('nontargets' %in% cl) {
-      cl[cl == 'nontargets'] <- 'non_targets'
-      cl <- c(cl, 'non_targets')
+    if ("nontargets" %in% cl) {
+      cl[cl == "nontargets"] <- "non_targets"
+      cl <- c(cl, "non_targets")
     }
     class(x$bmm$model) <- cl
-
-
   }
 
   x$version$bmm_restructure <- current_version
-  NextMethod('restructure')
+  NextMethod("restructure")
 }
 
 restructure_version.bmm <- function(x) {
@@ -117,21 +124,23 @@ add_links.bmmodel <- function(x) {
 
 add_bmm_info <- function(x) {
   env <- x$family$env
-  if (is.null(env)) {
-    stop2("Unable to restructure the object for use with the latest version \\
-           of bmm. Please refit.")
-  }
+  stopif(
+    is.null(env),
+    "Unable to restructure the object for use with the latest version of bmm. Please refit."
+  )
   pforms <- env$formula$pforms
   names(pforms) <- NULL
   user_formula <- brms::do_call("bmf", pforms)
-  model = env$model
+  model <- env$model
   model$resp_vars <- list(resp_error = env$formula$resp)
   model$other_vars <- list()
-  if (inherits(model, 'sdm')) {
-    model$info$parameters$mu <- glue('Location parameter of the SDM distribution \\
-                                     (in radians; by default fixed internally to 0)')
+  if (inherits(model, "sdm")) {
+    model$info$parameters$mu <- glue(
+      "Location parameter of the SDM distribution \\
+      (in radians; by default fixed internally to 0)"
+    )
   } else {
-    model$info$parameters$mu1 = glue(
+    model$info$parameters$mu1 <- glue(
       "Location parameter of the von Mises distribution for memory responses \\
        (in radians). Fixed internally to 0 by default."
     )

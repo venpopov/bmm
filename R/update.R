@@ -29,28 +29,32 @@
 #' ff <- bmf(c ~ 1, kappa ~ 1)
 #'
 #' # fit the model
-#' fit <- bmm(formula = ff,
-#'            data = dat,
-#'            model = sdm(resp_error = "y"),
-#'            cores = 4,
-#'            backend = 'cmdstanr')
-#' 
+#' fit <- bmm(
+#'   formula = ff,
+#'   data = dat,
+#'   model = sdm(resp_error = "y"),
+#'   cores = 4,
+#'   backend = "cmdstanr"
+#' )
+#'
 #' # update the model
 #' fit <- update(fit, newdata = data.frame(y = rsdm(2000, kappa = 5)))
-#' 
+#'
 update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ...) {
   dots <- list(...)
+  stopif(
+    isTRUE(object$version$bmm < "0.3.0"),
+    "Updating bmm models works only with models fitted with version 0.3.0 or higher"
+  )
+  stopif(
+    "data" %in% names(dots),
+    "Please use argument 'newdata' to update the data."
+  )
+  stopif(
+    "model" %in% names(dots),
+    "You cannot update with a different model. Create a new fit with 'bmm()' instead."
+  )
 
-  if (isTRUE(object$version$bmm < "0.3.0")) {
-    stop2("Updating bmm models works only with models fitted with version 0.3.0 or higher")
-  }
-  if ("data" %in% names(dots)) {
-    stop2("Please use argument 'newdata' to update the data.")
-  }
-  if ("model" %in% names(dots)) {
-    stop2("You cannot update with a different model.
-          If you want to use a different model, please use `bmm()` instead.")
-  }
   object <- restructure(object)
 
   model <- object$bmm$model
@@ -76,10 +80,10 @@ update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ..
   }
   if (is.null(newdata)) {
     data <- check_data(model, olddata, user_formula)
-    attr(data, 'data_name') <- attr(olddata, 'data_name')
+    attr(data, "data_name") <- attr(olddata, "data_name")
   } else {
     data <- check_data(model, newdata, user_formula)
-    attr(data, 'data_name') <- substitute_name(newdata)
+    attr(data, "data_name") <- substitute_name(newdata)
   }
 
   # standard bmm checks and transformations
@@ -99,10 +103,14 @@ update.bmmfit <- function(object, formula., newdata = NULL, recompile = NULL, ..
   }
 
   # pass back to brms::update.brmsfit
-  object = NextMethod('update', object, formula = formula., newdata = newdata,
-                      prior = prior, recompile = recompile, ...)
+  object <- NextMethod("update", object,
+    formula = formula., newdata = newdata,
+    prior = prior, recompile = recompile, ...
+  )
 
   # bmm postprocessing
-  postprocess_brm(model, object, fit_args = new_fit_args, user_formula = user_formula,
-                  configure_opts = configure_opts)
+  postprocess_brm(model, object,
+    fit_args = new_fit_args, user_formula = user_formula,
+    configure_opts = configure_opts
+  )
 }

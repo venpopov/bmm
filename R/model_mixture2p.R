@@ -1,6 +1,6 @@
-#############################################################################!
+############################################################################# !
 # MODELS                                                                 ####
-#############################################################################!
+############################################################################# !
 
 .model_mixture2p <- function(resp_error = NULL, links = NULL, call = NULL, ...) {
   out <- structure(
@@ -16,8 +16,8 @@
         representations in visual working memory. Nature, 453(7192), 233-235"
       ),
       requirements = glue(
-        '- The response vairable should be in radians and \\
-        represent the angular error relative to the target'
+        "- The response vairable should be in radians and \\
+        represent the angular error relative to the target"
       ),
       parameters = list(
         mu1 = glue(
@@ -60,7 +60,7 @@
 #' @keywords bmmodel
 #' @examplesIf isTRUE(Sys.getenv("BMM_EXAMPLES"))
 #' # generate artificial data
-#' dat <- data.frame(y = rmixture2p(n=2000))
+#' dat <- data.frame(y = rmixture2p(n = 2000))
 #'
 #' # define formula
 #' ff <- bmmformula(kappa ~ 1, thetat ~ 1)
@@ -68,12 +68,14 @@
 #' model <- mixture2p(resp_error = "y")
 #'
 #' # fit the model
-#' fit <- bmm(formula = ff,
-#'            data = dat,
-#'            model = model,
-#'            cores = 4,
-#'            iter = 500,
-#'            backend = 'cmdstanr')
+#' fit <- bmm(
+#'   formula = ff,
+#'   data = dat,
+#'   model = model,
+#'   cores = 4,
+#'   iter = 500,
+#'   backend = "cmdstanr"
+#' )
 #' @export
 mixture2p <- function(resp_error, ...) {
   call <- match.call()
@@ -81,15 +83,14 @@ mixture2p <- function(resp_error, ...) {
   .model_mixture2p(resp_error = resp_error, call = call, ...)
 }
 
-#############################################################################!
+############################################################################# !
 # CONFIGURE_MODEL METHODS                                                ####
-#############################################################################!
+############################################################################# !
 # Each model should have a corresponding configure_model.* function. See
 # ?configure_model for more information.
 
 #' @export
 configure_model.mixture2p <- function(model, data, formula) {
-
   # construct the brmsformula
   formula <- bmf2bf(model, formula) +
     brms::lf(kappa2 ~ 1, mu2 ~ 1) +

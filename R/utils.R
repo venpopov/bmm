@@ -1,20 +1,4 @@
-#' Pipe operator
-#'
-#' See `magrittr::[\%>\%][magrittr::pipe]` for details.
-#'
-#' @name %>%
-#' @rdname pipe
-#' @keywords internal
-#' @export
-#' @importFrom magrittr %>%
-#' @usage lhs \%>\% rhs
-#' @param lhs A value or the magrittr placeholder.
-#' @param rhs A function call using the magrittr semantics.
-#' @return The result of calling `rhs(lhs)`.
-NULL
-
-
-#' Softmax and logsoftmax functions and their inverse functions
+#' Softmax function and its inverse
 #'
 #' `softmax` returns the value of the softmax function
 #' `softmaxinv` returns the value of the inverse-softmax function
@@ -42,20 +26,18 @@ NULL
 #' softmaxinv(softmax(5:7))
 softmax <- function(eta, lambda = 1) {
   stopifnot(requireNamespace("matrixStats", quietly = TRUE))
-  m <- length(eta) + 1
-  DEN <- matrixStats::logSumExp(c(lambda * eta, 0))
-  LSOFT <- c(lambda * eta, 0) - DEN
-  exp(LSOFT)
+  denom <- matrixStats::logSumExp(c(lambda * eta, 0))
+  exp(c(lambda * eta, 0) - denom)
 }
 
 #' @rdname softmax
 #' @export
 softmaxinv <- function(p, lambda = 1) {
-  m <- length(p)
-  if (m > 1) {
-    return((log(p) - log(p[m]))[1:(m - 1)] / lambda)
+  len <- length(p)
+  if (len <= 1) {
+    return(numeric(0))
   }
-  numeric(0)
+  (log(p) - log(p[len]))[1:(len - 1)] / lambda
 }
 
 #' @title Configure local options during model fitting
@@ -73,32 +55,29 @@ softmaxinv <- function(p, lambda = 1) {
 #' @return A list of options to pass to brm()
 configure_options <- function(opts, env = parent.frame()) {
   if (isTRUE(opts$parallel)) {
+    # for backward compatibility - we depricated the parallel argument
     cores <- parallel::detectCores()
-    chains <- opts$chains
-    if (is.null(opts$chains)) {
-      chains <- 4
-    }
+    chains <- opts$chains %||% 4
   } else {
-    cores = opts$cores %||% getOption('mc.cores', 1)
+    cores <- opts$cores %||% getOption("mc.cores", 1)
   }
-  if (not_in_list('silent', opts)) {
-    opts$silent <- getOption('bmm.silent', 1)
+  if (not_in_list("silent", opts)) {
+    opts$silent <- getOption("bmm.silent", 1)
   }
-  if (is.null(opts$backend)) {
-    if (requireNamespace('cmdstanr', quietly = TRUE)) {
-      opts$backend <- 'cmdstanr'
-    }
+  if (is.null(opts$backend) && requireNamespace("cmdstanr", quietly = TRUE)) {
+    opts$backend <- "cmdstanr"
   }
   withr::local_options(
     list(
       mc.cores = cores,
       bmm.silent = opts$silent,
-      bmm.sort_data = opts$sort_data %||% getOption('bmm.sort_data', 'check')
+      bmm.sort_data = opts$sort_data %||% getOption("bmm.sort_data", "check")
     ),
-    .local_envir = env)
+    .local_envir = env
+  )
 
   # return only options that can be passed to brms/rstan/cmdstanr
-  exclude_args <- c('parallel', 'sort_data', "cores")
+  exclude_args <- c("parallel", "sort_data", "cores")
   opts[not_in(names(opts), exclude_args)]
 }
 
@@ -112,13 +91,12 @@ not_in_list <- function(key, list) {
   !(key %in% names(list))
 }
 
-
 #' wrappers to construct a brms nlf and lf formulas from multiple string
 #' arguments
 #' @param ... string parts of the formula separated by commas
 #' @examples
-#' kappa_nts <- paste0('kappa_nt', 1:4)
-#' glue_nlf(kappa_nts[i], ' ~ kappa')  ## same as brms::nlf(kappa_nt1 ~ kappa)
+#' kappa_nts <- paste0("kappa_nt", 1:4)
+#' glue_nlf(kappa_nts[i], " ~ kappa") ## same as brms::nlf(kappa_nt1 ~ kappa)
 #' @noRd
 glue_nlf <- function(..., env.frame = -1) {
   brms::nlf(stats::as.formula(glue(..., .envir = sys.frame(env.frame))))
@@ -129,40 +107,43 @@ glue_lf <- function(..., env.frame = -1) {
   brms::lf(stats::as.formula(glue(..., .envir = sys.frame(env.frame))))
 }
 
-#' wrapper function to call brms, saving fit_args if backend is mock for testing
-#' not used directly, but called by bmm(). If bmm() is run with
-#' backend="mock", then we can perform tests on the fit_args to check if the
-#' model configuration is correct. Avoids compiling and running the model
-#' @noRd
-call_brm <- function(fit_args) {
-  fit <- brms::do_call(brms::brm, fit_args)
-}
-
-
 # function to ensure that if the user wants to overwrite an argument (such as
-# init), they can
+# init), they can. args$prior is NULL by default or is a user-provided prior
+# any argument in args$dots is potentially overwrite a default argument in config_args
 combine_args <- function(args) {
   config_args <- args$config_args
-  opts <- args$opts
   dots <- args$dots
-  if (!is.null(args$prior)) {
-    config_args$prior <- args$prior
-  }
-  if (is.null(dots)) {
-    return(c(config_args, opts))
-  }
-  for (i in names(dots)) {
-    if (not_in(i, c('family'))) {
-      config_args[[i]] <- dots[[i]]
-    } else {
-      stop2('You cannot provide a family argument to bmm(). \\
-             Please use the model argument instead.')
-    }
-  }
-  c(config_args, opts)
+  stopif("family" %in% names(dots), "Unsupported argument 'family'. Use the model argument instead.")
+  config_args$prior <- args$prior %||% config_args$prior
+  config_args[names(dots)] <- dots
+  c(config_args, args$opts)
 }
 
-
+############################
+#' @description 
+#'  stop2, warning2, and message2 are wrappers to the builting functions stop, warning and message. 
+#'  They automatically suppress the call stack and allow you to use glue syntax for the message.
+#' @param ... arguments to pass to glue() - these will form the message to the user
+#' @param env.frame the frame in which variables passed to glue will be evaluated. Default is the environment
+#'  of the function that calls stop2, message2, warning2
+#' @examples
+#' name <- "John"
+#' 
+#' stop2("Hi {name}, this is an error")
+#' 
+#' warning2("Hi {name}, this is a long warning \\
+#'  that is split on multiple rows \\
+#'  but no new lines are added in the output message \\
+#'  because of the double slashes at the end of each row.")
+#' 
+#' message2("Hi {name}, this is a long message
+#'      that is split on multiple rows
+#'      and the printed message shows every new line
+#'      because there are not back slashes on any line.
+#' 
+#'      You don't have to worry about identation or adding quotes
+#'      or commas to any row. Makes typing long messages a breeze!")
+#' @noRd
 stop2 <- function(..., env.frame = -1) {
   msg <- glue(..., .envir = sys.frame(env.frame))
   stop(msg, call. = FALSE)
@@ -174,7 +155,7 @@ warning2 <- function(..., env.frame = -1) {
 }
 
 message2 <- function(..., env.frame = -1) {
-  silent <- getOption('bmm.silent', 1)
+  silent <- getOption("bmm.silent", 1)
   msg <- glue(..., .envir = sys.frame(env.frame))
   if (silent < 2) {
     message(msg)
@@ -182,6 +163,9 @@ message2 <- function(..., env.frame = -1) {
   invisible()
 }
 
+# stopif and warnif work like the builtin stopifnot except that
+# the stoping condition is a single boolean expression, 
+# and you can provide a custom message
 stopif <- function(condition, message) {
   if (condition) {
     stop2(message, env.frame = -2)
@@ -194,13 +178,11 @@ warnif <- function(condition, message) {
   }
 }
 
-
 # function to ensure proper reading of stan files
 read_lines2 <- function(con) {
   lines <- readLines(con, n = -1L, warn = FALSE)
   paste(lines, collapse = "\n")
 }
-
 
 # for testing purposes
 install_and_load_bmm_version <- function(version, path) {
@@ -216,7 +198,6 @@ install_and_load_bmm_version <- function(version, path) {
   }
   library(bmm, lib.loc = path)
 }
-
 
 #' Extract information from a brmsfit object
 #' @param fit A brmsfit object, or a list of brmsfit objects
@@ -247,9 +228,9 @@ fit_info.brmsfit <- function(fit, what) {
   fit_attr <- attributes(fit$fit)
   metadata <- fit_attr$metadata
   switch(what,
-         time = metadata$time$chains,
-         time_mean = colMeans(metadata$time$chains),
-         inv_metric = metadata$inv_metric,
+    time = metadata$time$chains,
+    time_mean = colMeans(metadata$time$chains),
+    inv_metric = metadata$inv_metric,
   )
 }
 
@@ -258,7 +239,6 @@ fit_info.brmsfit_list <- function(fit, what) {
   .NotYetImplemented()
 }
 
-# if x is a variable present in the data, return x, else error
 is_data_var <- function(x, data) {
   is.character(x) && length(x) == 1 && x %in% names(data)
 }
@@ -280,6 +260,11 @@ is_bmmfit <- function(x) {
   inherits(x, "bmmfit")
 }
 
+is_namedlist <- function(x) {
+  nms <- names(x)
+  is.list(x) && !is.null(nms) && all(nzchar(nms))
+}
+
 as_numeric_vector <- function(x) {
   out <- tryCatch(as.numeric(as.character(x)), warning = function(w) w)
   if (is_try_warning(out)) {
@@ -294,7 +279,6 @@ stop_quietly <- function() {
   stop()
 }
 
-
 # for some models it is faster to sample if the normalizing constant is calculated
 # only once for all trials that have the same value for the predictors. Currently
 # this is only used in the sdm model, and to work it requires that the
@@ -307,11 +291,15 @@ order_data_query <- function(model, data, formula) {
   predictors <- predictors[not_in(predictors, dpars)]
   predictors <- predictors[predictors %in% colnames(data)]
 
+  if (length(predictors) == 0) {
+    return(data)
+  }
+
   if (sort_data == "check" && !is_data_ordered(data, formula)) {
-    message(
-      "\n\nData is not ordered by predictors.\nYou can speed up the model ",
-      "estimation up to several times (!) by ordering the data by all your ",
-      "predictor columns.\n\n"
+    message2(
+      "\n\nData is not ordered by predictors.
+      You can speed up the model estimation up to several times (!) by ordering \\
+      the data by all your predictor columns.\n\n"
     )
     caution_msg <- paste(strwrap("* caution: if you chose Option 2, you need to be careful
       when using brms postprocessing methods that rely on the data order, such as
@@ -354,16 +342,20 @@ order_data_query <- function(model, data, formula) {
         message("Then re-run the model with the newly sorted data.\n\n", disable_msg)
         stop_quietly()
       } else if (var == 2) {
-        message("Your data has been sorted by the following predictors: ",
-                paste(predictors, collapse = ", "), "\n")
-        data <- dplyr::arrange_at(data, predictors)
+        message(
+          "Your data has been sorted by the following predictors: ",
+          paste(predictors, collapse = ", "), "\n"
+        )
+        data <- data[do.call(order, data[predictors]),]
       }
     }
     message("\n\n", disable_msg)
   } else if (isTRUE(sort_data)) {
-    data <- dplyr::arrange_at(data, predictors)
-    message("\nYour data has been sorted by the following predictors: ",
-            paste(predictors, collapse = ", "), "\n")
+    data <- data[do.call(order, data[predictors]),]
+    message(
+      "\nYour data has been sorted by the following predictors: ",
+      paste(predictors, collapse = ", "), "\n"
+    )
     caution_msg <- paste(strwrap("* caution: you have set `sort_data=TRUE`. You need to be careful
         when using brms postprocessing methods that rely on the data order, such as
         generating predictions. Assuming you assigned the result of bmm() to a
@@ -391,9 +383,11 @@ missing_args <- function(which = -1) {
 stop_missing_args <- function() {
   missing <- missing_args(-2)
   fun <- as.character(sys.call(-1)[[1]])
-  stopif(length(missing) > 0,
-         "The following required arguments are missing in {fun}(): \\
-          {paste(missing, collapse = ', ')}")
+  stopif(
+    length(missing) > 0,
+    "The following required arguments are missing in {fun}(): \\
+          {paste(missing, collapse = ', ')}"
+  )
 }
 
 # custom method form printing nicely formatted character values via cat instead of print
@@ -402,19 +396,21 @@ print.message <- function(x, ...) {
   cat(x, ...)
 }
 
-
 # returns either x, or all variables that match the regular expression x
 # @param x character vector or regular expression
 # @param all_variables character vector of all variables within which to search
 # @param regex logical. If TRUE, x is treated as a regular expression
 get_variables <- function(x, all_variables, regex = FALSE) {
-  if (regex) {
-    variables <- all_variables[grep(x, all_variables)]
-    stopif(length(variables) == 0,
-           "No variables found that match the regular expression '{x}'")
-    return(variables)
+  if (!regex) {
+    return(x)
   }
-  x
+  
+  variables <- all_variables[grep(x, all_variables)]
+  stopif(
+    length(variables) == 0,
+    "No variables found that match the regular expression '{x}'"
+  )
+  variables
 }
 
 # replace the base identical function with a S3 method
@@ -444,7 +440,6 @@ identical.formula <- function(x, y, ...) {
   res <- waldo::compare(x, y, ignore_formula_env = TRUE)
   length(res) == 0
 }
-
 
 #' View or change global bmm options
 #' @param sort_data logical. If TRUE, the data will be sorted by the predictors.
@@ -508,27 +503,41 @@ identical.formula <- function(x, y, ...) {
 bmm_options <- function(sort_data, parallel, default_priors, silent,
                         color_summary, file_refit, reset_options = FALSE) {
   opts <- ls()
-  stopif(!missing(sort_data) && sort_data != "check" && !is.logical(sort_data),
-         "sort_data must be one of TRUE, FALSE, or 'check'")
-  stopif(!missing(parallel) && !is.logical(parallel),
-         "parallel must be one of TRUE or FALSE")
-  stopif(!missing(default_priors) && !is.logical(default_priors),
-         "default_priors must be a TRUE or FALSE")
-  stopif(!missing(silent) && (!is.numeric(silent) || silent < 0 || silent > 2),
-         "silent must be one of 0, 1, or 2")
-  stopif(!missing(color_summary) && !is.logical(color_summary),
-         "color_summary must be a logical value")
-  stopif(!missing(file_refit) && !is.logical(file_refit),
-         "file_refit must be a logical value")
+  stopif(
+    !missing(sort_data) && sort_data != "check" && !is.logical(sort_data),
+    "sort_data must be one of TRUE, FALSE, or 'check'"
+  )
+  stopif(
+    !missing(parallel) && !is.logical(parallel),
+    "parallel must either TRUE or FALSE"
+  )
+  stopif(
+    !missing(default_priors) && !is.logical(default_priors),
+    "default_priors must be either TRUE or FALSE"
+  )
+  stopif(
+    !missing(silent) && (!is.numeric(silent) || silent < 0 || silent > 2),
+    "silent must be one of 0, 1, or 2"
+  )
+  stopif(
+    !missing(color_summary) && !is.logical(color_summary),
+    "color_summary must be either TRUE or FALSE"
+  )
+  stopif(
+    !missing(file_refit) && !is.logical(file_refit),
+    "file_refit must be either TRUE or FALSE"
+  )
 
   # set default options if function is called for the first time or if reset_options is TRUE
   if (reset_options) {
-    options(bmm.sort_data = "check",
-            bmm.parallel = FALSE,
-            bmm.default_priors = TRUE,
-            bmm.silent = 1,
-            bmm.color_summary = TRUE,
-            bmm.file_refit = FALSE)
+    options(
+      bmm.sort_data = "check",
+      bmm.parallel = FALSE,
+      bmm.default_priors = TRUE,
+      bmm.silent = 1,
+      bmm.color_summary = TRUE,
+      bmm.file_refit = FALSE
+    )
   }
 
   # change options if arguments are provided. get argument name and loop over non-missing arguments
@@ -536,18 +545,22 @@ bmm_options <- function(sort_data, parallel, default_priors, silent,
   non_missing_args <- names(match.call())[-1]
   non_missing_args <- non_missing_args[!non_missing_args %in% "reset_options"]
   for (i in non_missing_args) {
-      op[[paste0('bmm.',i)]] <- get(i)
+    op[[paste0("bmm.", i)]] <- get(i)
   }
 
   old_op <- options(op)
-  message2("\nCurrent bmm options:\n",
-           crayon::green(paste0("  sort_data = ", getOption("bmm.sort_data"),"",
-                                 "\n  parallel = ", getOption("bmm.parallel"),
-                                 "\n  default_priors = ", getOption("bmm.default_priors"),
-                                 "\n  silent = ", getOption("bmm.silent"),
-                                 "\n  file_refit = ", getOption("bmm.file_refit"),
-                                 "\n  color_summary = ", getOption("bmm.color_summary"), "\n")),
-           "For more information on these options or how to change them, see help(bmm_options).\n")
+  message2(
+    "\nCurrent bmm options:\n",
+    crayon::green(paste0(
+      "  sort_data = ", getOption("bmm.sort_data"), "",
+      "\n  parallel = ", getOption("bmm.parallel"),
+      "\n  default_priors = ", getOption("bmm.default_priors"),
+      "\n  silent = ", getOption("bmm.silent"),
+      "\n  file_refit = ", getOption("bmm.file_refit"),
+      "\n  color_summary = ", getOption("bmm.color_summary"), "\n"
+    )),
+    "For more information on these options or how to change them, see help(bmm_options).\n"
+  )
   invisible(old_op)
 }
 
@@ -578,17 +591,13 @@ tryCatch2 <- function(expr, capture = FALSE) {
   }
 }
 
-
 # resets the environments stored within an objects
 reset_env <- function(object, env = NULL, ...) {
   UseMethod("reset_env")
 }
 
 #' @export
-reset_env.bmmfit <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.bmmfit <- function(object, env = globalenv(), ...) {
   object$formula <- reset_env(object$formula, env)
   object$family <- reset_env(object$family, env)
   object$bmm$user_formula <- reset_env(object$bmm$user_formula, env)
@@ -596,10 +605,9 @@ reset_env.bmmfit <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.bmmformula <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.bmmformula <- function(object, env = globalenv(), ...) {
+  # we loop this way instead of lapply or map because the latter
+  # will drop the attributes and class of a bmmformula
   for (par in names(object)) {
     object[[par]] <- reset_env(object[[par]], env)
   }
@@ -607,10 +615,7 @@ reset_env.bmmformula <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.brmsformula <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.brmsformula <- function(object, env = globalenv(), ...) {
   object$formula <- reset_env(object$formula, env)
   for (par in names(object$pforms)) {
     object$pforms[[par]] <- reset_env(object$pforms[[par]], env)
@@ -622,19 +627,13 @@ reset_env.brmsformula <- function(object, env = NULL, ...) {
 }
 
 #' @export
-reset_env.formula <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.formula <- function(object, env =  globalenv(), ...) {
   environment(object) <- env
   object
 }
 
 #' @export
-reset_env.brmsfamily <- function(object, env = NULL, ...) {
-  if (is.null(env)) {
-    env <- globalenv()
-  }
+reset_env.brmsfamily <- function(object, env = globalenv(), ...) {
   if (!is.null(object$env)) {
     object$env <- env
   }
@@ -645,7 +644,6 @@ reset_env.brmsfamily <- function(object, env = NULL, ...) {
 reset_env.default <- function(object, env = NULL, ...) {
   object
 }
-
 
 # Remove all attributes of an object except those specified as protected
 # @param x an R object
@@ -664,59 +662,73 @@ strip_attributes <- function(x, protect = c("names", "row.names", "class"),
       x[[i]] <- strip_attributes(x[[i]], protect, recursive)
     }
   }
-  return(x)
+  x
 }
-
 
 deprecated_args <- function(...) {
   dots <- list(...)
-  stopif("model_type" %in% names(dots),
-         'The "model_type" argument was deprecated on Feb 3, 2024. Either:
+  stopif(
+    "model_type" %in% names(dots),
+    'The "model_type" argument was deprecated on Feb 3, 2024. Either:
          - See ?bmm for the new usage;
          - or install the old version of the package with:
-           devtools::install_github("venpopov/bmm@v0.0.1")')
-  warnif("parallel" %in% names(dots),
-         'The "parallel" argument is deprecated. Please use cores instead.
-         See `help("brm")` for more information.')
+           devtools::install_github("venpopov/bmm@v0.0.1")'
+  )
+  warnif(
+    "parallel" %in% names(dots),
+    'The "parallel" argument is deprecated. Please use cores instead.
+         See `help("brm")` for more information.'
+  )
 }
 
+try_read_bmmfit <- function(file, file_refit) {
+  if (is.character(file_refit)) {
+    stopif(
+      !tolower(file_refit) %in% c("never", "always", "on_change"),
+      'You have provided an invalid option for the file_refit argument.
+      Valid options are: "never" or "always"
+      The "on_change" option available in brms is not yet implemented'
+    )
 
-read_bmmfit <- function(file, file_refit) {
+    warnif(
+      tolower(file_refit) == "on_change",
+      'The "on_change" option for the file_refit argument available in brms,
+      is currently not implemented for bmm.
+      To avoid overwriting an already saved bmmfit object, file_refit was set to "never".'
+    )
+    file_refit <- ifelse(file_refit == "always", TRUE, FALSE)
+  }
   file <- check_rds_file(file)
   if (is.null(file) || file_refit) {
     return(NULL)
   }
-  dir <- dirname(file)
-  dir <- try(fs::dir_create(dir))
+  dir <- try(fs::dir_create(dirname(file)))
   stopif(is_try_error(dir), "Cannot create directory for file.")
 
   out <- suppressWarnings(try(readRDS(file), silent = TRUE))
-  if (!is_try_error(out)) {
-    if (!is_bmmfit(out)) {
-      stop2("Object loaded via 'file' is not of class 'bmmfit'.")
-    }
-    out$file <- file
-  } else {
-    out <- NULL
+  if (is_try_error(out)) {
+    return(NULL)
   }
+  
+  stopif(!is_bmmfit(out), "Object loaded via 'file' is not of class 'bmmfit'.")
+  out$file <- file
   out
 }
 
-save_bmmfit <- function(x, file, compress) {
+try_save_bmmfit <- function(object, file, compress) {
   file <- check_rds_file(file)
-  x$file <- file
+  object$file <- file
   if (!is.null(file)) {
-    saveRDS(x, file, compress = compress)
+    saveRDS(object, file, compress = compress)
   }
-  x
+  object
 }
 
 check_rds_file <- function(file) {
   if (is.null(file)) {
     return(NULL)
   }
-  stopif(!is.character(file), "'file' must be a character string.")
-  stopif(length(file) > 1, "'file' must be a single character string.")
+  stopif(!is.character(file) || length(file) > 1, "'file' must be a single string.")
   ext <- fs::path_ext(file)
   if (ext != "rds") {
     file <- paste0(file, ".rds")
@@ -724,6 +736,12 @@ check_rds_file <- function(file) {
   file
 }
 
-`%||%` <- function(a, b) {
-  if (!is.null(a)) a else b
+`%||%` <- function(l, r) {
+  if (!is.null(l)) l else r
+}
+
+# like unlist, but keeps the final outcome a list of all
+# elements of nested lists. Only works 1-level deep
+unnest_list <- function(list_of_lists) {
+  do.call(c, list_of_lists)
 }

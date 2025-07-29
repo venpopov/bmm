@@ -2,7 +2,6 @@
 # CHECK_DATA METHODS                                                     ####
 ############################################################################# !
 
-
 #' @title Generic S3 method for checking data based on model type
 #' @description Called by [bmm()] to automatically perform checks on the
 #'   data depending on the model type. It will call the appropriate check_data
@@ -38,7 +37,7 @@ check_data <- function(model, data, formula) {
 
 #' @export
 check_data.default <- function(model, data, formula) {
-  return(data)
+  data
 }
 
 #' @export
@@ -53,7 +52,6 @@ check_data.bmmodel <- function(model, data, formula) {
   NextMethod("check_data")
 }
 
-
 #' @export
 check_data.circular <- function(model, data, formula) {
   resp_name <- model$resp_vars[[1]]
@@ -62,24 +60,23 @@ check_data.circular <- function(model, data, formula) {
     "The response variable '{resp_name}' is not present in the data."
   )
   warnif(
-    max(abs(data[[resp_name]]), na.rm = T) > 2 * pi,
+    max(abs(data[[resp_name]]), na.rm = TRUE) > 2 * pi,
     "It appears your response variable is in degrees.
-          The model requires the response variable to be in radians.
-          The model will continue to run, but the results may be compromised."
+    The model requires the response variable to be in radians.
+    The model will continue to run, but the results may be compromised."
   )
 
   NextMethod("check_data")
 }
 
-
 #' @export
 check_data.non_targets <- function(model, data, formula) {
   nt_features <- model$other_vars$nt_features
   warnif(
-    max(abs(data[, nt_features]), na.rm = T) > 2 * pi,
+    max(abs(data[, nt_features]), na.rm = TRUE) > 2 * pi,
     "It appears at least one of your non_target variables are in degrees.
-          The model requires these variable to be in radians.
-          The model will continue to run, but the results may be compromised."
+    The model requires these variable to be in radians.
+    The model will continue to run, but the results may be compromised."
   )
 
   ss <- check_var_set_size(model$other_vars$set_size, data)
@@ -89,7 +86,7 @@ check_data.non_targets <- function(model, data, formula) {
   stopif(
     !isTRUE(all.equal(length(nt_features), max_set_size - 1)),
     "The number of columns for non-target values in the argument \\
-         'nt_features' should equal max(set_size)-1"
+    'nt_features' should equal max(set_size)-1"
   )
 
   # create index variables for nt_features and correction variable for theta due to set_size
@@ -109,29 +106,26 @@ check_data.non_targets <- function(model, data, formula) {
   NextMethod("check_data")
 }
 
-
 check_var_set_size <- function(set_size, data) {
   stopif(
     length(set_size) > 1,
     "The set_size variable '{set_size}' must be a single numeric value or \\
-          a single variable in your data. You provided a vector of length \\
-          {length(set_size)}"
+    a single variable in your data. You provided a vector of length \\
+    {length(set_size)}"
   )
 
-  # class check - is set_size a single numeric value or a variable in the data
-  # coericble to a numeric vector?
   if (is_data_var(set_size, data)) {
-    ss_numeric <- try(as_numeric_vector(data[[set_size]]), silent = T)
+    ss_numeric <- try(as_numeric_vector(data[[set_size]]), silent = TRUE)
 
     stopif(
       is_try_error(ss_numeric),
       "The set_size variable '{set_size}' must be coercible to a numeric \\
-           vector. Did you code your set size as a character vector?"
+      vector. Did you code your set size as a character vector?"
     )
 
-    max_set_size <- max(ss_numeric, na.rm = T)
+    max_set_size <- max(ss_numeric, na.rm = TRUE)
   } else {
-    max_set_size <- try(as_one_integer(set_size), silent = T)
+    max_set_size <- try(as_one_integer(set_size), silent = TRUE)
 
     stopif(
       is_try_error(max_set_size) | is.logical(set_size),
@@ -142,25 +136,17 @@ check_var_set_size <- function(set_size, data) {
     ss_numeric <- rep(max_set_size, nrow(data))
   }
 
-  # value check
   stopif(
-    any(ss_numeric < 1, na.rm = T),
-    "Values of the set_size variable '{set_size}' must be greater than 0"
-  )
-
-  stopif(
-    any(ss_numeric %% 1 != 0, na.rm = T),
-    "Values of the set_size variable '{set_size}' must be whole numbers"
+    any(ss_numeric < 1 | ss_numeric %% 1 != 0, na.rm = TRUE),
+    "Values of the set_size variable '{set_size}' must be positive whole numbers"
   )
 
   list(max_set_size = max_set_size, ss_numeric = ss_numeric)
 }
 
-
 ############################################################################# !
 # HELPER FUNCTIONS                                                       ####
 ############################################################################# !
-
 #' Calculate response error relative to non-target values
 #'
 #' @description Given a vector of responses, and the values of non-targets, this
@@ -185,9 +171,11 @@ check_var_set_size <- function(set_size, data) {
 #'
 calc_error_relative_to_nontargets <- function(data, response, nt_features) {
   y <- y_nt <- non_target_name <- non_target_value <- NULL
-  data <- data %>%
-    tidyr::gather(non_target_name, non_target_value, eval(nt_features))
-
+  stopif(
+    !requireNamespace("tidyr", quietly = TRUE),
+    'The "tidyr" package is required for this functionality'
+  )
+  data <- tidyr::gather(data, non_target_name, non_target_value, eval(nt_features))
   data$y_nt <- wrap(data[[response]] - data[["non_target_value"]])
   data
 }
@@ -250,20 +238,15 @@ rad2deg <- function(rad) {
 #' @description Given the `model`, the `data` and the `formula` for the model,
 #'   this function will return the combined stan data generated by `bmm` and
 #'   `brms`
-#'
 #' @inheritParams bmm
 #' @aliases standata
 #' @param object A `bmmformula` object
 #' @param ... Further arguments passed to [brms::standata()]. See the
 #'   description of [brms::standata()] for more details
-#'
 #' @return A named list of objects containing the required data to fit a bmm
 #'   model with Stan.
-#'
 #' @seealso [supported_models()], [brms::standata()]
-#'
 #' @keywords extract_info
-#'
 #' @examples
 #' sdata1 <- standata(bmf(c ~ 1, kappa ~ 1),
 #'   data = oberauer_lin_2017,
@@ -272,7 +255,7 @@ rad2deg <- function(rad) {
 #' str(sdata1)
 #' @importFrom brms standata
 #' @export
-standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
+standata.bmmformula <- function(object, data, model, ...) {
   # check model, formula and data, and transform data if necessary
   formula <- object
   configure_options(list(...))
@@ -283,12 +266,9 @@ standata.bmmformula <- function(object, data, model, prior = NULL, ...) {
   # generate the model specification to pass to brms later
   config_args <- configure_model(model, data, formula)
 
-  # configure the default prior and combine with user-specified prior
-  prior <- configure_prior(model, data, config_args$formula, prior)
-
-  # extract stan code
+  # extract stan data
   dots <- list(...)
-  fit_args <- combine_args(nlist(config_args, dots, prior))
+  fit_args <- combine_args(nlist(config_args, dots))
   fit_args$object <- fit_args$formula
   fit_args$formula <- NULL
   brms::do_call(brms::standata, fit_args)
@@ -300,14 +280,13 @@ is_data_ordered <- function(data, formula) {
   predictors <- rhs_vars(formula)
   predictors <- predictors[not_in(predictors, dpars)]
   predictors <- predictors[predictors %in% colnames(data)]
-  data <- data[, predictors]
+  data <- data[predictors]
   if (length(predictors) > 1) {
     gr_idx <- do.call(paste, c(data, list(sep = "_")))
   } else {
     gr_idx <- unlist(data)
   }
-  is_ordered <- !has_nonconsecutive_duplicates(gr_idx)
-  is_ordered
+  !has_nonconsecutive_duplicates(gr_idx)
 }
 
 # checks if all repetitions of a given value are consecutive in a vector

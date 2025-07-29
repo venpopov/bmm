@@ -23,7 +23,7 @@ jobs:
       matrix:
         config:
           - {os: macos-latest,   r: 'release'}
-          # - {os: windows-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,   r: 'release'}
 
     env:
@@ -53,6 +53,7 @@ jobs:
           extra-packages: |
             rmarkdown
             withr
+            dplyr
             knitr
             posterior
             here

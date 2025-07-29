@@ -12,10 +12,12 @@ test_that("default_prior() works with formula", {
 
 test_that("default_prior() works with bmmformula", {
   ff <- bmmformula(kappa ~ 1, thetat ~ 1, thetant ~ 1)
-  prior <- default_prior(ff, oberauer_lin_2017, mixture3p(resp_error = "dev_rad",
-                                                         nt_features = "col_nt",
-                                                         set_size = "set_size",
-                                                         regex = T))
+  prior <- default_prior(ff, oberauer_lin_2017, mixture3p(
+    resp_error = "dev_rad",
+    nt_features = "col_nt",
+    set_size = "set_size",
+    regex = T
+  ))
   expect_equal(class(prior)[1], "brmsprior")
 })
 
@@ -45,12 +47,11 @@ test_that("in combine prior, prior2 overwrites only shared components with prior
 })
 
 test_that("no check for sort_data with default_priors function", {
-  withr::local_options('bmm.sort_data' = 'check')
-  res <- capture_messages(default_prior(bmf(kappa ~ set_size, c ~ set_size),
-                                        oberauer_lin_2017,
-                                        sdm('dev_rad')))
+  withr::local_options("bmm.sort_data" = "check")
+  res <- capture_messages(default_prior(
+    bmf(kappa ~ set_size, c ~ set_size),
+    oberauer_lin_2017,
+    sdm("dev_rad")
+  ))
   expect_false(any(grepl("sort", res)))
 })
-
-
-

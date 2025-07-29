@@ -63,6 +63,16 @@ syntax. For more information on the \code{brms} formula syntax, see
 \code{\link[brms:brmsformula]{brms::brmsformula()}}.
 
 You can also use the \code{bmf()} function as a shorthand for \code{bmmformula()}.
+
+You can also set parameters to a constant value by using par = value syntax:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{      bmf(drift ~ condition + (condition | id),
+          bs ~ 1 + (1 | id),
+          ndt ~ 1 + (1 | id),
+          bias = 0.5)
+}\if{html}{\out{</div>}}
+
+in which case the bias parameter will not be estimated but it will be fixed to 0.5
 }
 
 \examples{
