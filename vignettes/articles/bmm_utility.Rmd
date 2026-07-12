@@ -204,4 +204,19 @@ ratio-scale, and `gamma` measures how strongly value modulates activation rather
 than a normative utility. The `utility()` model is built on the same
 multinomial-logit likelihood as the [m3](bmm_m3.html) model.
 
+A further identification caveat applies to the random-utility story itself. The
+i.i.d. Gumbel derivation is one route to the softmax rule, but not the only one:
+the same multinomial-logit probabilities arise from random-utility models whose
+utilities are correlated rather than independent [@Kilani_2025]. Nor does a
+representation of those probabilities need a distributional assumption at all.
+One can be constructed by maximizing Shannon entropy over ranking probabilities,
+subject only to the linear constraints that the observed choice probabilities
+impose [@Kilani_Colonius_2026]. That construction is in turn not the only one.
+Falmagne's representation problem [@Falmagne_1978] asks which latent random
+variables can generate a given system of choice probabilities, and with four or
+more options it admits infinitely many solutions [@Kilani_Colonius_2026]. The
+estimated weights and sensitivities are therefore identified as scale values of
+the choice rule; independence and the Gumbel form of the latent noise are
+modeling conventions that choice data cannot test.
+
 ## References
