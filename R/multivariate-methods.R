@@ -104,7 +104,9 @@ parameters.mvbmmfit <- function(x, ...) {
       return(NULL)
     }
     table <- parameters(comp$model, formula = comp$user_formula, ...)
-    table$response <- rep(comp$resp, nrow(table))
+    # the sanitized name is the one brms gives the response inside the fit, so
+    # it is the value that works in pp_check(resp = ) and brms::log_lik(resp = )
+    table$response <- rep(comp$resp_name, nrow(table))
     table
   })
   tables <- Filter(Negate(is.null), tables)

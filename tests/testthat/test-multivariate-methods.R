@@ -67,6 +67,25 @@ test_that("parameters() reports all component parameters with their response", {
   expect_output(print(pars), "sigma")
 })
 
+test_that("parameters() reports the response name that pp_check() accepts", {
+  dat_rt <- data.frame(
+    id = factor(rep(1:8, each = 10)),
+    mean_rt = rlnorm(80, meanlog = -0.5, sdlog = 0.3)
+  )
+  joint <- bmm_component(
+    bmf(thetat ~ 1 + (1 | p | id), kappa ~ 1 + (1 | p | id)),
+    model = mixture2p(resp_error = "error"), data = mvm_dat_vwm
+  ) +
+    bmm_component(bmf(mean_rt ~ 1 + (1 | p | id), sigma ~ 1),
+      family = brms::lognormal(), data = dat_rt
+    )
+  fit <- bmm(joint, backend = "mock", mock_fit = 1, rename = FALSE)
+
+  accepted <- vapply(fit$bmm$components, function(x) x$resp_name, character(1))
+  expect_equal(unique(parameters(fit)$response), accepted)
+  expect_equal(accepted, c("error", "meanrt"))
+})
+
 test_that("summary() of a multivariate fit shows components and correlations", {
   skip_on_cran()
   path <- test_path("assets/bmmfit_example_mv.rds")
